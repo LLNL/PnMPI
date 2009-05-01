@@ -1,0 +1,5 @@
+PROJECT(pnmpi)
+
+ADD_DEFINITIONS("-Wall")
+
+ADD_SUBDIRECTORY(patch)
