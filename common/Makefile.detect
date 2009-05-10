@@ -1,0 +1,386 @@
+#...............................................
+# Machines
+#...............................................
+
+MACHINENAME = unknown
+
+#...............................................
+# mcr
+
+ifeq ($(findstring mcr,$(HOST)),mcr)
+MACHINENAME = mcr
+OS = Linux
+CPU = IA32
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# mcr
+
+ifeq ($(findstring alc,$(HOST)),alc)
+MACHINENAME = alc
+OS = Linux
+CPU = IA32
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# mcr
+
+ifeq ($(findstring sphere,$(HOST)),sphere)
+MACHINENAME = mcr
+OS = Linux
+CPU = IA32
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# bigdev
+
+ifeq ($(findstring bigdev,$(HOST)),bigdev)
+MACHINENAME = bigdev
+OS = Linux
+CPU = IA32
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# thunder
+
+ifeq ($(findstring thunder,$(HOST)),thunder)
+MACHINENAME = thunder
+OS = Linux
+CPU = IA64
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+ifeq ($(findstring thundericc,$(HOST)),thundericc)
+MACHINENAME = thunder
+OS = Linux
+CPU = IA64
+COMP = INTEL
+DLLs = yes
+
+CC    = icc
+MPICC = mpiicc
+MPIXX = mpiicpc
+MPIF77 = mpiifort
+MPIF90 = mpiifort
+F77    = ifort
+FLD    = ifort
+LD    = icc
+CXX   = icpc
+LDXX  = icpc
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# pelotons
+
+ifeq ($(findstring zeus,$(HOST)),zeus)
+MACHINENAME = zeus
+OS = Linux
+CPU = OPT
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+MPILD  = gcc
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+MPILDXX  = mpiCC
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+EXPERIMENTAL_UNWIND = enabled
+
+endif
+
+ifeq ($(findstring atlas,$(HOST)),atlas)
+MACHINENAME = atlas
+OS = Linux
+CPU = OPT
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+MPILD  = gcc
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+MPILDXX  = mpiCC
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+EXPERIMENTAL_UNWIND = enabled
+
+endif
+
+ifeq ($(findstring vertex,$(HOST)),vertex)
+MACHINENAME = vertex
+OS = Linux
+CPU = OPT
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+MPILD  = gcc
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+MPILDXX  = mpiCC
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# up
+
+ifeq ($(findstring up,$(HOST)),up)
+MACHINENAME = up
+OS = AIX
+CPU = Power5
+COMP = IBM
+DLLs = yes
+
+CC    = xlc
+#MPICC = mpcc_r7
+MPICC = mpxlc
+#MPICC = xlc -lc -lmpi_r -L/usr/lpp/ppe.poe/lib -I/usr/lpp/ppe.poe/include
+MPIXX = mpxlC
+MPIF77 = mpxlf
+MPIF90 = mpxlf90
+F77    = xlf
+FLD    = xlf
+LD     = xlc
+MPILD    = mpxlc
+#LD = mpcc_r7
+CXX   = xlC
+LDXX  = xlC
+MPILDXX  = mpxlC
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = gmake
+
+endif
+
+#...............................................
+# berg
+
+ifeq ($(findstring berg,$(HOST)),berg)
+MACHINENAME = berg
+OS = AIX
+CPU = Power4
+COMP = IBM
+DLLs = yes
+
+CC    = xlc
+MPICC = mpxlc
+MPIXX = mpxlC
+MPIF77 = mpxlf
+MPIF90 = mpxlf90
+F77    = xlf
+FLD    = xlf
+LD    = xlc
+CXX   = xlC
+LDXX  = xlC
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = gmake
+
+endif
+
+#...............................................
+# ubgl
+
+ifeq ($(findstring ubgl,$(HOST)),ubgl)
+MACHINENAME = ubgl
+OS = Linux
+CPU = PowerPC
+COMP = CROSS
+DLLs = no
+
+CC = mpxlc
+LD = mpxlc
+MPICC = mpxlc
+MPIXX = mpxlC
+MPIF77 = mpxlf
+MPIF90 = mpxlf90
+F77 = mpxlf
+FLD = mpxlf
+CXX = mpxlC
+LDXX = mpxlC
+MPILD = mpxlc
+MPILDXX = mpxlC
+
+#CC    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#MPICC = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#MPIXX = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+#LD    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#CXX   = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+#LDXX  = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# default
+
+ifeq ($(findstring unknown,$(MACHINENAME)),unknown)
+
+OS = Linux
+CPU = IA32
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+
+AR  = ar
+
+F77SYMBOL = symbol_
+MAKE = gmake
+
+endif
+
+
+
+

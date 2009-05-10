@@ -1,0 +1,106 @@
+ifneq ($(findstring AIX,$(OS)),AIX)
+CFLAGS  = -Wall
+CCFLAGS = -Wall
+endif
+LFLAGS =
+SFLAGS =
+
+ifeq ($(findstring yes,$(DEBUG)),yes)
+CFLAGS  += -g
+CCFLAGS += -g
+ifneq ($(findstring AIX,$(OS)),AIX)
+LFLAGS += -g
+SFLAGS += -g
+endif
+endif
+
+CFLAGS  += -D$(OS) -D$(COMP) -DDBGLEVEL=$(DEBUGLEVEL) 
+CCFLAGS += -D$(OS) -D$(COMP) -DDBGLEVEL=$(DEBUGLEVEL) 
+
+#...............................................
+# base settings
+#...............................................
+# GNU
+
+ifeq ($(findstring GNU,$(COMP)),GNU)
+
+ARFLAGS = -ru
+
+CFLAGS += -O3
+CCFLAGS += -O3
+
+LFLAGS = -O3
+SFLAGS = -shared -fPIC -lc -O3
+
+endif
+
+#...............................................
+# GNU
+
+ifeq ($(findstring INTEL,$(COMP)),INTEL)
+
+ARFLAGS = -ru
+
+CFLAGS += -O2
+CCFLAGS += -O2
+
+LFLAGS = -O2
+SFLAGS = -shared -fPIC -lc -O2
+
+endif
+
+#...............................................
+# IBM
+
+ifeq ($(findstring IBM,$(COMP)),IBM)
+
+ARFLAGS = -ru
+
+CFLAGS += -O2
+CCFLAGS += -O2
+
+CFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) -D_ALL_SOURCE
+CCFLAGS +=-D_ALL_SOURCE
+
+LFLAGS += -lc
+SFLAGS += -G -bexpall -bnoentry -brtl -lc
+#SFLAGS += -G -bexpall -bnoentry -bso -blazy -bnoglink -brtl
+#SFLAGS += -bM:SRE -G -bexpall -bnoentry
+
+endif
+
+
+#...............................................
+# CROSS
+
+ifeq ($(findstring CROSS,$(COMP)),CROSS)
+
+ARFLAGS = -ru
+
+CFLAGS = -O1
+CCFLAGS = -O1
+
+CFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) -D_ALL_SOURCE
+CCFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) -D_ALL_SOURCE
+
+LFLAGS += -lc
+SFLAGS += -G -bexpall -bnoentry -brtl -lc
+#SFLAGS += -G -bexpall -bnoentry -bso -blazy -bnoglink -brtl
+#SFLAGS += -bM:SRE -G -bexpall -bnoentry
+
+endif
+
+
+#...............................................
+# Linux
+
+ifeq ($(findstring Linux,$(OS)),Linux)
+
+CFLAGS += -I$(OPENSS_BASE)/include
+CCFLAGS += -I$(OPENSS_BASE)/include
+
+LFLAGS += -L$(OPENSS_BASE)/lib -L$(OPENSS_BASE)/lib64
+SFLAGS += -L$(OPENSS_BASE)/lib -L$(OPENSS_BASE)/lib64
+
+endif
+

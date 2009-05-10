@@ -1,0 +1,140 @@
+P^nMPI Tool Infrastructure, Version 1.2
+Generic Communication Module
+
+Martin Schulz, 2005-2008, LLNL
+schulzm@llnl.gov
+
+(please see README in the main directory for general 
+information on P^nMPI)
+
+The communication module abstracts any MPI communication in a small
+number of callbacks and thereby simplies the task of writing tools
+that want to track communication. E.g., instead of explicitly
+writing wrappers for all point-to-point routines, the communication
+module provides a start and end callback that is invoked for any
+send/receive pair independent of which MPI routines were used.
+
+
+A) Creating New Submodules
+
+Each communication module is constructed from two components/source
+files:
+- comm.cpp provides the generic functionality of intercepting
+  all communication calls (the same for all submodules, should
+  not be changed)
+- commsub-<mymodule>.cpp provides the callback routines for the
+  new tool (implementation of the actual tool functionality)
+
+The easiest way to start is with a copy commsub-empty.cpp and to fill
+in all necessary callback routines. To build the new module, the new
+module name <mymodule> must be added to the SUBMOD variable in the
+Makefile.
+
+
+B) Callback Interface
+
+The interface provides the following callback routines:
+
+
+COMM_ALL_INIT
+	called once during init
+COMM_ALL_FINALIZE
+	called once during finalize
+
+SEND_P2P_START
+	called for any initiated send before the send is executed
+SEND_P2P_END
+	called for any completed send (for asynchronous calls this
+ 	is called after the matching Test or Wait completes)
+
+SEND_P2P_ASYNC_MID1
+	called after an asynchronous send is called, but before
+	control is returned to the application
+
+COMM_P2P_ASYNC_MID2
+	called once before any Wait or Test operation is called
+COMM_P2P_ASYNC_COMPLETION
+	called once after any Wait or Test operation completes
+	and the corresponding _END callbacks have been invoked
+	(can be used to cleanup state from COMM_P2P_ASYNC_MID2)
+
+RECV_P2P_START
+	called for any initiated receive before the receive is executed
+RECV_P2P_END
+	called for any completed receive (for asynchronous calls
+	this is called after the matching Test or Wait completes)
+RECV_P2P_ASYNC_MID1
+	called after an asynchronous receive is called, but before
+	control is returned to the application
+
+COMM_COLL_REDUCE
+	called for any reduce operation
+
+COMM_COLL_START
+	called before any collective operation
+COMM_COLL_END
+	called after any collective operation
+
+
+All routines have a type argument that identifies both the general
+group of MPI calls as well as the specific call that lead to the
+invocation of the callback. The matching constants are defined in
+commsub.h.
+
+All _START routines provide a pointer argument that can be used
+to store internal information and that is handed on to all
+subsequent routines for the same communication event (in case
+of asynchronous communication all the way to the matching
+_END call). Additionally, COMM_P2P_ASYNC_COMPLETION provides
+a second pointer that is handed to the corresponding _END and
+_COMPLETION call(s).
+
+During the init routine (and only there!), the user can set the variable
+"pnmpimod_comm_collective_support" to control how the module treats
+collectives. The matching constants are defined in commsub.h and can
+be combined using OR:
+- PNMPIMOD_COMM_KEEPCOLLECTIVE     
+	execute the collective callbacks
+- PNMPIMOD_COMM_DISSOLVECOLLECTIVE 
+	translate collective into matching P2P calls and invoke
+	the matching P2P callbacks (no P2P communication is
+        executed, just the callbacks are called)
+- PNMPIMOD_COMM_REPLACECOLLECTIVE 
+	do not call the actual collective calls
+	WARNING: this should only be used together with	
+	PNMPIMOD_COMM_DISSOLVECOLLECTIVE and the actual
+	collective functionality must be emulated by the
+	P2P callbacks (in the user code)
+- PNMPIMOD_COMM_IGNOREDATA         
+	when translating collectives into P2P calls, avoid
+	a (potentially costly) translation of the buffer
+	start addresses (should only be used if the P2P
+	callbacks only use simple information like total
+	message size and endpoints, but do not rely on the
+        actual message content).
+
+The default setting is:
+
+PNMPIMOD_COMM_DISSOLVECOLLECTIVE|PNMPIMOD_COMM_KEEPCOLLECTIVE
+
+I.e., call P2P translations for all collectives, but keep the
+actual collective calls. This allows tools to conceptually
+track all communication (incl. collectives) by only filling
+in the P2P callbacks, but also provides separate callbacks
+for collectives. Further, all collectives are still executed.
+
+
+C) Running a new Communication module
+
+To activate a module created as described above, the following
+modules need to be activated in the .pnmpi-conf file:
+
+module status
+module datatype
+module commsub-<mymodule>
+module requests
+
+Known issue: in its current version, only one communication module
+can be run at any time. This limitation will be removed in future
+versions of P^nMPI.
+

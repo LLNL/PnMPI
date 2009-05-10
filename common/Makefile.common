@@ -1,0 +1,31 @@
+DEBUG = yes
+
+ifndef DBGLEBEL
+DEBUGLEVEL = 0x0000
+endif
+
+include $(PROJECTS)/common/Makefile.detect
+include $(PROJECTS)/common/Makefile.base
+
+INSTALLDIR = $(LOCAL)
+
+LIBDIR = $(INSTALLDIR)/lib
+INCDIR = $(INSTALLDIR)/include
+BINDIR = $(INSTALLDIR)/bin
+
+
+.SUFFIXES: .c .o .cpp .h .cxx
+
+
+.c.o: 
+	$(CC) -c $(CFLAGS) $<
+
+.cpp.o:
+	$(CXX) -c $(CCFLAGS) $<
+
+.cxx.o:
+	$(CXX) -c $(CCFLAGS) $<
+
+%.c: %.w
+
+

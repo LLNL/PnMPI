@@ -1,0 +1,329 @@
+P^nMPI Tool Infrastructure, Version 1.3
+
+Martin Schulz, 2005-2008, LLNL
+schulzm@llnl.gov
+
+
+P^nMPI is a dynamic MPI tool infrastructure that builds on top of
+the standardized PMPI interface. It allows the user to
+- run multiple PMPI tools concurrently
+- activate PMPI tools without relinking by just changing a
+  configuration file
+- multiplex toolsets during a single run
+- write cooperative PMPI tools
+
+The package contains three main components:
+- The P^nMPI core infrastructure
+- An MPI wrapper creation infrastructure
+- Tool modules that can explicitly exploit P^nMPI's capabilities
+
+So far, this software has mainly been tested on Linux clusters with
+RHEL-based OS distributions as well as IBM AIX systems. Some
+preliminary experiments have also included SGI Altix systems. Ports to
+other platforms should be straightforward, but this is not
+extensivelytested. Please contact the author if you run into problems
+porting P^nMPI or if you successfully deployed P^nMPI on a new
+platform.
+
+
+A) Directory Structure
+======================
+
+   - common: Makefile settings
+   - patch: utility to patch shared libraries
+   - wrappergen: MPI wrapper generator (based on MPICH)
+   - wrapper: mpi.h detection and MPI wrappers for P^nMPI
+   - src: actual PNMPI code
+   - modules: P^nMPI modules (source)
+   - lib/$SYS_TYPE: test modules (binaries) and libpnmpi
+   - demo: test codes
+   - include: P^nMPI header files
+
+Remark: lib and include are initially empty and will be populated 
+        during the installation
+
+
+B) How to install it
+====================
+
+B1) Prerequisites
+-----------------
+
+The install procedure uses scripts built on top of tcsh. For it to
+run properly, tcsh must be installed and be available at /bin/tcsh
+or all scripts (ending in .sh) must be adjusted to point to the
+correct location of tcsh.
+
+
+B2) Environment Variables
+-------------------------
+
+- Set SYS_TYPE to reflect local OS and architecture
+  (it is up to the user to chose an arbitrary, yet unique identifier)
+- Set PROJECTS to the main pnmpi directory
+- Set PNMPI_LIB_PATH to $PROJECTS/lib/$SYS_TYPE
+- Set PNMPI_INC_PATH to $PROJECTS/include
+- Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
+
+
+B3) Adjust make environment
+---------------------------
+
+All changes should be made in common/Makefile.common
+
+
+B4) Compile PNMPI
+-----------------
+
+run: "make"
+
+This will first compile some utilities (patch and wrappergen),
+then create system specific wrappers (wrapper). After that it
+will create the P^nMPI core system (src) as well as a set
+of modules (modules/*). After this step, all P^nMPI modules
+will be located in $PNMPI_LIB_PATH. Finally, it will create
+a few simple demo programs in the demo directory.
+
+All components can can also be compiled separately (by running
+"make"), as long as the above order is maintained. Also, all
+makefiles support "make clean", to remove compilation results,
+and "make clobber", to remove compilation results, installed
+modules, and source backup files (from emacs).
+
+
+C) Modules
+==========
+
+P^nMPI supports two different kind of tool modules:
+- transparent modules
+- P^nMPI specific modules
+
+Among the former are modules that have been created independently of
+P^nMPI and are just based on the PMPI interface. To use a transparent
+module in P^nMPI the user has to perform two steps after creating a
+statically linked version of the tool:
+- convert the tool into a shared library
+- patch the tool using the "patch" utility in "patch"
+  Usage: patch <original tool (in)> <patched tool (out)>
+After that, copy the tool in the $PNMPI_LIB_PATH directory so that
+P^nMPI can pick it up.
+
+The second option is the use of P^nMPI specific modules: these modules
+also rely on the PMPI interface, but explicitly use some of the P^nMPI
+features (i.e., they won't run outside of P^nMPI).  These modules
+include the "pnmpimod.h" header file. This file also describes the
+interface that modules can use. In short, the interface offers an
+ability to register a module and after that use a publish/subscribe
+interface to offer/use services in other modules. Note: also P^nMPI
+specific modules have to be patched using the utility described above.
+
+This packages includes a set of modules that can be used both
+to create other tools using their services and as templates
+for new modules.
+
+The source for all modules is stored in separate directories
+inside the "module" directory. There are:
+
+sample: a set of example modules that show how to wrap send and
+        receive operations. These modules are used in the demo
+        codes described below.
+
+empty: a transparent module that simply wraps all calls without
+       executing any code. This can be used to test overhead
+       or as a sample for new modules.
+
+status: This P^nMPI specific module offers a service to add
+        extra data to each status object to store additional
+        information.
+
+requests: This P^nMPI specific module offers a service to track
+          asynchronous communication requests. It relies on the
+          status module.
+
+datatype: This P^nMPI specific module tracks all datatype
+          creations and provides an iterator to walk any datatype.
+
+comm: This P^nMPI specific module abstracts all communication in 
+      a few simple callback routines. It can be used to write 
+      quick prototype tools that intercept all communication
+      operations independent of the originating MPI call.
+      This infrastructure can be used by creating submodules: two 
+      such submodules are included: an empty one that can be used 
+      as a template and one that prints every message.
+      Note: this module relies on the status, requests, and 
+      datatype modules. A more detailed description on how to
+      implemented submodules is included in the comm directory
+      as a separate README.
+
+
+D) Configuration and Demo codes
+===============================
+
+The P^nMPI distribution includes two demo codes (in C and F77).
+They can be used to experiment with the basic P^nMPI functionalities 
+and to test the system setup. The following describes the
+C version (the F77 version works similarly):
+
+- change into the "demo" directory
+- The program "simple.c", which sends a message from any task with
+  ID>0 to task 0, was compiled into three binaries:
+    - simple    (plain MPI code)
+    - simple-pn (linked with P^nMPI)
+    - simple-s1 (plain code linked with sample1.so)
+
+- executing simple will run as usual
+  The program output (for 2 nodes) will be:
+GOT 1
+- by relinking the code, one can use any of the 
+  original (unpatched) modules with this codes. 
+  The unpatched modules are in modules/sample
+  Examples: simplest-s1 linked with sample1
+
+- P^nMPI is configured through a configuration file that lists all modules
+  to be load by P^nMPI as well as optional arguments. The name for this
+  file can be specified by the environment variable "PNMPI_CONF". If this
+  variable is not set or the file specified can not be found, P^nMPI looks
+  for a file called ".pnmpi_conf" in the current working directory, and
+  if not found, in the user's home directory.
+
+  By default the file in the demo directory is named ".pnmpi_conf" and
+  looks as follows:
+
+module sample1
+module sample2
+module sample3
+module sample4
+
+  This configuration causes these four modules to be loaded
+  in the specified order. P^nMPI will look for the corresponding
+  modules ( .so shared library files) in $PNMPI_LIB_PATH.
+
+- Running simple-pn will load all four modules in the specified 
+  order and intercept all MPI calls included in these modules:
+    - sample1: send and receive
+    - sample2: send
+    - sample3: receive
+    - sample4: send and receive
+  The program output (for 2 nodes) will be:
+
+    0:
+    0:            ---------------------------
+    0:           | P^N-MPI Interface         |
+    0:           | Martin Schulz, 2005, LLNL |
+    0:            ---------------------------
+    0:
+    0: Number of modules: 4
+    0: Pcontrol Setting:  0
+    0:
+    0: Module sample1: not registered (Pctrl 1)
+    0: Module sample2: not registered (Pctrl 0)
+    0: Module sample3: not registered (Pctrl 0)
+    0: Module sample4: not registered (Pctrl 0)
+    0:
+WRAPPER 1: Before recv
+WRAPPER 1: Before send
+WRAPPER 3: Before recv
+WRAPPER 4: Before recv
+WRAPPER 2: Before send
+WRAPPER 4: Before send
+WRAPPER 4: After recv
+WRAPPER 3: After recv
+WRAPPER 1: After recv
+WRAPPER 4: After send
+WRAPPER 2: After send
+WRAPPER 1: After send
+WRAPPER 1: Before recv
+WRAPPER 3: Before recv
+WRAPPER 1: Before send
+WRAPPER 2: Before send
+WRAPPER 4: Before send
+WRAPPER 4: After send
+WRAPPER 2: After send
+WRAPPER 1: After send
+GOT 1
+WRAPPER 4: Before recv
+WRAPPER 4: After recv
+WRAPPER 3: After recv
+WRAPPER 1: After recv
+
+
+E) Using of MPI_Pcontrol
+========================
+
+The MPI standard defines the MPI_Pcontrol, which does not have any
+direct effect (it is implemented as a dummy call inside of MPI), but
+that can be replaced by PMPI to accepts additional information from
+MPI applications (e.g., turn on/off data collection or markers for
+main iterations). The information is used by a PMPI tool linked to
+the application. When it is used with P^nMPI the user must therefore
+decide which tool an MPI_Pcontrol call is directed to.
+
+By default P^nMPI will direct Pcontrol calls to first module in the
+tool stack only. If this is not the desired effect, users can turn
+on and off which module Pcontrols reach by adding "pcontrol on" and
+"pcontrol off" into the configuration file in a separate line
+following the corresponding module specification. Note that P^nMPI
+allows that Pcontrol calls are sent to multiple modules.
+
+In addition, the general behavior of Pcontrols can be specified
+with a global option at the beginning of the configuration file.
+This option is called "globalpcontrol" and can take one of the
+following arguments:
+
+	int	only deliver the first argment, but ignore
+	        the variable list arguments (default)
+	pmpi	forward the variable list arguments
+	pnmpi	requires the application to specify a specific
+	        format in the variable argument list known to
+	        P^nMPI (level must be PNMPI_PCONTROL_LEVEL)
+	mixed   same as pnmpi, if level==PNMPI_PCONTROL_LEVEL
+                same as pmpi,  if level!=PNMPI_PCONTROL_LEVEL
+
+The P^nMPI internal format for Pcontrol arguments is as follows:
+
+	int level (same semantics as for MPI_Pcontrol itself)
+	int type = PNMPI_PCONTROL_SINGLE or PNMPI_PCONTROL_MULTIPLE 
+                   (target one or more modules) |
+                   PNMPI_PCONTROL_VARG or PNMPI_PCONTROL_PTR
+                   (arguments as vargs or one pointer)
+	int mod = target module (if SINGLE)
+	int modnum = number of modules (if MULTIPLE)
+	int *mods = pointer to array of modules
+	int size = length of all variable arguments (if VARG)
+	void *buf = pointer to argument block (if PTR)
+
+Known issues:
+
+Forwarding the variable argument list as done in pmpi and mixed is only 
+implemented in a highly experimental version and disabled by default.
+To enable, compile P^nMPI with the flag EXPERIMENTAL_UNWIND and link
+P^nMPI with the libunwind library. Note that this is not extensively
+tested and not portable across platforms.
+
+
+F) References
+=============
+
+More documentation on P^nMPI can be found in the following two
+published articles:
+
+Martin Schulz and Bronis R. de Supinski
+P^nMPI Tools: A Whole Lot Greater Than the Sum of Their Parts
+Supercomputing 2007
+November 2007, Reno, NV, USA
+Available at: http://sc07.supercomputing.org/schedule/pdf/pap224.pdf
+
+Martin Schulz and Bronis R. de Supinski
+A Flexible and Dynamic Infrastructure for MPI Tool Interoperability
+International Conference on Parallel Processing (ICPP)
+August 2005, Columbus, OH, USA
+Published by IEEE Press
+Available at: http://ieeexplore.ieee.org/iel5/11126/35641/01690620.pdf?isnumber=35641&prod=CNF&arnumber=1690620&arSt=193&ared=202&arAuthor=Martin+Schulz%3B+Bronis+R.+de+Supinski
+
+
+G) Contact
+==========
+
+For more information or in case of questions, please contact
+Martin Schulz at schulzm@llnl.gov.
+
