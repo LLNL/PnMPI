@@ -1,0 +1,5 @@
+BEGIN { found = 0; }
+
+((found==0)&&( $2 ~ "PMPI_" )&&( $2==fct )) { print $0; found=1; next; }
+((found==0)&&( $3 ~ "PMPI_" )&&( $3==fct )) { print $0; found=1; next; }
+((found==0)&&( $4 ~ "PMPI_" )&&( $4==fct )) { print $0; found=1; next; }
