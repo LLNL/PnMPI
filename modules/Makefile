@@ -1,4 +1,4 @@
-MODS = d_sample d_empty d_datatype d_status d_requests d_comm d_switch-matrix d_virtual
+MODS = d_sample d_empty d_datatype d_status d_requests d_comm d_switch-matrix d_virtual d_timelapse
 
 all: $(MODS)
 
@@ -25,6 +25,9 @@ d_datatype:
 
 d_status:
 	cd status ; $(MAKE)  ; cd -
+
+d_timelapse:
+	cd timelapse ; $(MAKE)  ; cd -
 
 
 clean:
