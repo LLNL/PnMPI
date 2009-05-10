@@ -5,6 +5,7 @@ all: $(TARGET)
 prep:
 	mkdir -p lib
 	mkdir -p $(PNMPI_LIB_PATH)
+	mkdir -p $(PNMPI_INC_PATH)
 
 d_patch:
 	cd patch; $(MAKE)

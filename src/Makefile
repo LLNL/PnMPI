@@ -30,13 +30,10 @@ wrapperf.o: core.h ../wrapper/wrapper.c ../wrapper/wrapper.h debug.h ../wrapper/
 debug.o: core.h debug.h
 services.c: pnmpimod.h core.h debug.h
 
-vargcall.c: create-vargcall.py
-	python create-vargcall.py > vargcall.c
-
 ../wrapper/wrapper.h: ../wrapper/wrapper_h.w
 	cd ../wrapper ; $(MAKE) ; cd -
 
-../wrapper/wrapper.c ../wrapper/f77symbols.h ../wrapper/wrapper_f77.c: ../wrapper/wrapper_c.w vargcall.c
+../wrapper/wrapper.c: ../wrapper/wrapper_c.w vargcall.c
 	cd ../wrapper ; $(MAKE) ; cd -
 
 .c.o: $(DEPS)
