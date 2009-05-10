@@ -5,5 +5,6 @@
 module status
 module datatype
 module commsub-print
+argument verbose 1
 module requests
 
