@@ -58,12 +58,12 @@ correct location of tcsh.
 B2) Environment Variables
 -------------------------
 
-- Set SYS_TYPE to reflect local OS and architecture
-  (it is up to the user to chose an arbitrary, yet unique identifier)
-- Set PROJECTS to the main pnmpi directory
-- Set PNMPI_LIB_PATH to $PROJECTS/lib/$SYS_TYPE
-- Set PNMPI_INC_PATH to $PROJECTS/include
-- Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
+   - Set SYS_TYPE to reflect local OS and architecture
+     (it is up to the user to chose an arbitrary, yet unique identifier)
+   - Set PROJECTS to the main pnmpi directory
+   - Set PNMPI_LIB_PATH to $PROJECTS/lib/$SYS_TYPE
+   - Set PNMPI_INC_PATH to $PROJECTS/include
+   - Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
 
 
 B3) Adjust make environment
