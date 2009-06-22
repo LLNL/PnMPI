@@ -14,7 +14,7 @@ the standardized PMPI interface. It allows the user to
 
 The package contains three main components:
 - The P^nMPI core infrastructure
-- An MPI wrapper creation infrastructure
+- An MPI wrapper generation infrastructure
 - Tool modules that can explicitly exploit P^nMPI's capabilities
 
 So far, this software has mainly been tested on Linux clusters with
