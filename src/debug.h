@@ -41,9 +41,17 @@ extern int _status_node;
 #define DBGPRINT3(format,args...) DBGPRINT(DBGLEVEL3,format,##args)
 #define DBGPRINT4(format,args...) DBGPRINT(DBGLEVEL4,format,##args)
 
+/**
+ * Tobias:
+ * "_dbg_node" is used in DOPRINT which is defined even if
+ * DBGLEVEL is not defined, just fixed it somehow, no clue
+ * whether this is good or not ...
+ */
+extern int _dbg_node;
+
 #ifdef DBGLEVEL
 
-extern int _dbg_node;
+/*extern int _dbg_node; //Tobias: Moved see above!*/
 extern int _dbg_cur_level;
 extern int _dbg_cur_node;
 #define DBGPRINT(level,format,args...) \
@@ -66,7 +74,7 @@ extern int _dbg_cur_node;
 #else
 
 #define DBGPRINT(level,format,args...)
-#define DBGEARLYNIT()
+#define DBGEARLYINIT()
 #define DBGLATEINIT()
 #endif
 
