@@ -96,6 +96,8 @@ int PNMPI_Service_RegisterGlobal(PNMPI_Global_descriptor_t *global);
 
 int PNMPI_Service_GetModuleByName(char *name, PNMPI_modHandle_t *handle);
 
+int PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
+
 int PNMPI_Service_GetStackByName(char *name, PNMPI_modHandle_t *handle);
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, 
