@@ -87,6 +87,16 @@ int PNMPI_Service_GetStackByName(char *name, PNMPI_modHandle_t *handle)
 
 
 /*........................................................*/
+/* get handle for the own modues */
+
+int PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
+{
+  *handle=pnmpi_level;
+  return PNMPI_SUCCESS;
+}
+ 
+
+/*........................................................*/
 /* find a registered module using a given user name */
 
 int PNMPI_Service_GetModuleByName(char *name, PNMPI_modHandle_t *handle)
