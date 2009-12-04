@@ -125,18 +125,14 @@ int PNMPIMOD_Status_RequestStorage(int size)
 int MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count)
 {
   int err;
-  ALLOCATE_STATUS(newstatus,1)
-  err=PMPI_Get_count(newstatus, datatype, count);
-  COPY_STATUS(status,newstatus,1)
+  err=PMPI_Get_count(status, datatype, count);
   return err;
 }
 
 int MPI_Get_elements(MPI_Status *status, MPI_Datatype datatype, int *count)
 {
   int err;
-  ALLOCATE_STATUS(newstatus,1)
-  err=PMPI_Get_elements(newstatus, datatype, count);
-  COPY_STATUS(status,newstatus,1)
+  err=PMPI_Get_elements(status, datatype, count);
   return err;
 }
 
