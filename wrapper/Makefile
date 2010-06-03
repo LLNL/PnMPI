@@ -16,8 +16,8 @@ TARGET = wrapper.c wrapper.h newstack.h wrapper_f77.c f77symbols.h
 
 all: $(TARGET)
 
-dummy.fct: dummy.c
-	$(MPICC) -E dummy.c | gawk -f join_lines | grep -e "PMPI_" | grep -v "_FN" | grep -v f2c | grep -v c2f | sed 's/(/ (/' | grep -v PMPI_Pcontrol | grep -v PMPI_Type_count > dummy.fct
+dummy.fct: dummy.c removeattr
+	$(MPICC) -E dummy.c | ./removeattr | gawk -f join_lines | grep -e "PMPI_" | grep -v "_FN" | grep -v f2c | grep -v c2f | sed 's/(/ (/' | grep -v PMPI_Pcontrol | grep -v PMPI_Type_count > dummy.fct
 
 wrapper.c: $(PROTOFILE) $(FCTFILE) $(WRAPPERC)
 	$(WR) -p $(PROTOFILE) -f $(FCTFILE) -w $(WRAPPERC) -o wrapper.c
@@ -33,7 +33,7 @@ newstack.h: $(PROTOFILE) $(FCTFILE) $(NEWSTACK)
 wrapper_f77.c f77_symbol.h: mpi-f77.txt makefortran.py
 	python makefortran.py --xlate --f77symbol $(F77SYMBOL) mpi-f77.txt
 
-mpi_pnmpi_fct-nopctrl: dummy.fct
+mpi_pnmpi_fct-nopctrl: dummy.fct 
 	cat dummy.fct | gawk -f get_fct | sed 's/PMPI/MPI/' | sort | uniq > mpi_pnmpi_fct-nopctrl
 
 mpi_pnmpi_fct: mpi_pnmpi_fct-nopctrl
@@ -48,8 +48,14 @@ extrargs: extrargs.o
 extrargs.o: extrargs.c
 	$(CC) -c $< -g
 
+removeattr: removeattr.o
+	$(CC) -o $@ -g $<
+
+removeattr.o: removeattr.c
+	$(CC) -c $< -g
+
 clean:
-	rm -f dummy.fct $(PROTOFILE) $(FCTFILE) $(TARGET) extrarg *.o
+	rm -f dummy.fct $(PROTOFILE) $(FCTFILE) $(TARGET) extrarg removeattr *.o
 
 clobber: clean
 	rm -f *~
