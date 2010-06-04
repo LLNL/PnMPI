@@ -4,8 +4,8 @@ ifndef DBGLEBEL
 DEBUGLEVEL = 0x0000
 endif
 
-include $(PROJECTS)/common/Makefile.detect
-include $(PROJECTS)/common/Makefile.base
+include $(PNMPIBASE)/common/Makefile.detect
+include $(PNMPIBASE)/common/Makefile.base
 
 INSTALLDIR = $(LOCAL)
 
