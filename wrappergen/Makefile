@@ -2,7 +2,7 @@
 #  (C) 1993 by Argonne National Laboratory and Mississipi State University.
 #
 
-include $(PROJECTS)/common/Makefile.common
+include $(PNMPIBASE)/common/Makefile.common
 
 EXECS = wrappergen write_proto
 MPI_PROTO = '-DPROTO_FILE="../wrapper/mpi_proto_def"'

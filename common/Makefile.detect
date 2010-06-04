@@ -358,7 +358,7 @@ endif
 
 ifeq ($(findstring unknown,$(MACHINENAME)),unknown)
 
-OS = Linux
+OS = Unkown
 CPU = IA32
 COMP = GNU
 DLLs = yes

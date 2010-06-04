@@ -1,4 +1,4 @@
-include $(PROJECTS)/common/Makefile.common
+include $(PNMPIBASE)/common/Makefile.common
 
 MPISPEC = mpi_pnmpi
 #MPISPEC = mpi_def

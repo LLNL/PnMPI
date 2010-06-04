@@ -1,4 +1,4 @@
-include $(PROJECTS)/common/Makefile.common
+include $(PNMPIBASE)/common/Makefile.common
 
 #TARGET = local loader
 TARGET = simple simple-pn simple-s1 fdemo fdemo-pn fdemo-s1
