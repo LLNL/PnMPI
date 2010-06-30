@@ -2,9 +2,21 @@
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
-module status
-module datatype
-module commsub-print
-argument verbose 1
-module requests
+module sample1
+module sample2
+module sample3
+module sample4
 
+#module dataviz
+#module status
+#module datatype
+#module commsub-print
+#argument verbose 1
+#module nope
+#module requests
+
+#module testargval
+#argument value 1
+#module testargval
+#argument value 2
+##

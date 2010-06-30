@@ -42,6 +42,8 @@ int PNMPI_RegistrationPoint()
   if (err!=PNMPI_SUCCESS)
     return MPI_ERROR_PNMPI;
 
+  _timelapse_off=PMPI_Wtime();
+
   return err;
 }
 
@@ -56,8 +58,6 @@ int MPI_Init(int *argc, char ***argv)
   err=PMPI_Init(argc,argv);
 
   /* initial state is off */
-
-  _timelapse_off=PMPI_Wtime();
 
   return err;
 }

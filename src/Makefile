@@ -26,7 +26,7 @@ core.o: core.h wrapper.h pnmpimod.h debug.h
 debug.o: debug.h
 wrapper.o: core.h ../wrapper/wrapper.c ../wrapper/wrapper.h debug.h ../wrapper/f77symbols.h ../wrapper/wrapper_f77.c
 wrapperf.o: core.h ../wrapper/wrapper.c ../wrapper/wrapper.h debug.h ../wrapper/f77symbols.h ../wrapper/wrapper_f77.c
-	$(MPICC) -c $(CFLAGS) $(INCS) wrapper.c -o wrapperf.o
+	$(MPICC) -c $(CFLAGS) $(INCS) wrapper.c -o wrapperf.o -DCOMPILE_FOR_FORTRAN
 debug.o: core.h debug.h
 services.c: pnmpimod.h core.h debug.h
 

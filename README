@@ -194,6 +194,8 @@ module sample2
 module sample3
 module sample4
 
+  (plus some additional lines starting with #, which indicates comments)
+
   This configuration causes these four modules to be loaded
   in the specified order. P^nMPI will look for the corresponding
   modules ( .so shared library files) in $PNMPI_LIB_PATH.
