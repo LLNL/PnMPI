@@ -185,7 +185,11 @@ int main (int argc, char** argv)
   if ((last!=' ')&&(inp!='\t')&&(last!='\n'))
     {
       types[num][ct] = (char)0;
-    }
+
+		/* new - added due to bug on OSX - not fully verified */
+		names[num][cn]=(char) 0;
+		spcls[num][cs]=(char) 0;
+	}
 
   if (feof(stdin))
     {

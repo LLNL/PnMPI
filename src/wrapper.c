@@ -368,22 +368,82 @@ int MPI_Pcontrol(int level, ... )
 
   DBGPRINT3("Entering Old MPI_Pcontrol at base level");
 
-  /* This mode just delegates the level arg to modules w/pcontrol on. */
-  if (modules.pcontrol == PNMPI_PCONTROL_INT) {
-    for (i=0; i<pnmpi_max_level; i++)
-    {
-      if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
-	  (modules.module[i]->pcontrol))
-            {
-              /* yes, we need to call this Pcontrol */
-              ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
-              if (ret!=MPI_SUCCESS) return ret;
-            }
-    }
-    return MPI_SUCCESS;
-  }
-
-
+	/* This mode just delegates the level arg to modules w/pcontrol on. */
+	if ((modules.pcontrol == PNMPI_PCONTROL_INT) ||
+		((modules.pcontrol == PNMPI_PCONTROL_TYPED) && (modules.pcontrol_typed_level != level)))
+	{
+		for (i=0; i<pnmpi_max_level; i++)
+		{
+			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
+				(modules.module[i]->pcontrol))
+			{
+				/* yes, we need to call this Pcontrol */
+				ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
+				if (ret!=MPI_SUCCESS) return ret;
+			}
+		}
+		return MPI_SUCCESS;
+	}
+	
+	/* This mode delegates the level arg plus one typed parameter to modules w/pcontrol on. */
+	/* in this case: modules.pcontrol_typed_level == level */
+	if (modules.pcontrol == PNMPI_PCONTROL_TYPED)
+	{
+		int arg_int;
+		long arg_long;
+		void* arg_ptr;
+		double arg_double;
+		
+		va_start(va_alist,level);
+		switch (modules.pcontrol_typed_type)
+		{
+			case PNMPI_PCONTROL_TYPE_INT: 
+				arg_int=va_arg(va_alist,int);
+				break;
+			case PNMPI_PCONTROL_TYPE_LONG: 
+				arg_long=va_arg(va_alist,long);
+				break;
+			case PNMPI_PCONTROL_TYPE_PTR: 
+				arg_ptr=va_arg(va_alist,void*);
+				break;
+			case PNMPI_PCONTROL_TYPE_DOUBLE: 
+				arg_double=va_arg(va_alist,double);
+				break;
+			default:
+				WARNPRINT("Unknown pcontrol argument type, defaulting to PNMPI_PCONTROL_TYPED\n");
+		}
+		va_end(va_alist);
+		
+		for (i=0; i<pnmpi_max_level; i++)
+		{
+			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
+				(modules.module[i]->pcontrol))
+			{
+				ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
+				switch (modules.pcontrol_typed_type)
+				{
+					case PNMPI_PCONTROL_TYPE_INT: 
+						ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level,arg_int);
+						break;
+					case PNMPI_PCONTROL_TYPE_LONG: 
+						ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level,arg_long);
+						break;
+					case PNMPI_PCONTROL_TYPE_PTR: 
+						ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level,arg_ptr);
+						break;
+					case PNMPI_PCONTROL_TYPE_DOUBLE: 
+						ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level,arg_double);
+						break;
+					default:
+						ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
+				}
+				if (ret!=MPI_SUCCESS) return ret;
+			}
+		}
+		return MPI_SUCCESS;
+	}
+	
+	
   if (modules.pcontrol==PNMPI_PCONTROL_OFF)
     {
       return MPI_SUCCESS;
