@@ -62,7 +62,7 @@ typedef struct module_def_d
   int registered;
   void *handle;
   module_arg_p args;
-  int pcontrol;
+  int pcontrol;	
   module_servlist_p services;
   module_globlist_p globals;
   int stack_delimiter;
@@ -73,6 +73,8 @@ typedef struct modules_d
   int num;
   int numalloc;
   int pcontrol;
+	int pcontrol_typed_level;
+	int pcontrol_typed_type;
   module_def_p *module;
 } modules_t;
 

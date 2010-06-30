@@ -446,20 +446,42 @@ void pnmpi_PreInit()
 		}
 	    }
 	  else if ((cmdargc==2) && (strcmp(cmdargv[0],"globalpcontrol")==0))
-	    {
-	      /* check if module is active */
+	  {
+	      /* find global pcontrol setting with no extra argument */
 	      
 	      if (strcmp(cmdargv[1],"on")==0) modules.pcontrol=PNMPI_PCONTROL_ON;
 	      else if (strcmp(cmdargv[1],"off")==0) modules.pcontrol=PNMPI_PCONTROL_OFF;
 	      else if (strcmp(cmdargv[1],"pmpi")==0) modules.pcontrol=PNMPI_PCONTROL_PMPI;
 	      else if (strcmp(cmdargv[1],"pnmpi")==0) modules.pcontrol=PNMPI_PCONTROL_PNMPI;
 	      else if (strcmp(cmdargv[1],"mixed")==0) modules.pcontrol=PNMPI_PCONTROL_MIXED;
-              else if (strcmp(cmdargv[1],"int")==0) modules.pcontrol=PNMPI_PCONTROL_INT;
+		  else if (strcmp(cmdargv[1],"int")==0) modules.pcontrol=PNMPI_PCONTROL_INT;
 	      else
-		{
-		  WARNPRINT("Can't understand globalpcontrol argument - ignoring it");
-		}
-	    }
+		  {
+			  WARNPRINT("Can't understand globalpcontrol argument - ignoring it");
+		  }
+	  }
+	  else if ((cmdargc==4) && (strcmp(cmdargv[0],"globalpcontrol")==0))
+	  {
+		  /* find global pcontrol setting with two extra arguments */
+			  
+		  if (strcmp(cmdargv[1],"typed")==0) 
+		  {
+			  modules.pcontrol=PNMPI_PCONTROL_TYPED;
+			  modules.pcontrol_typed_level=atoi(cmdargv[2]);
+			  if (strcmp(cmdargv[3],"int")==0) modules.pcontrol_typed_type=PNMPI_PCONTROL_TYPE_INT;
+			  else if (strcmp(cmdargv[3],"pointer")==0) modules.pcontrol_typed_type=PNMPI_PCONTROL_TYPE_PTR;
+			  else if (strcmp(cmdargv[3],"double")==0) modules.pcontrol_typed_type=PNMPI_PCONTROL_TYPE_DOUBLE;
+			  else if (strcmp(cmdargv[3],"long")==0) modules.pcontrol_typed_type=PNMPI_PCONTROL_TYPE_LONG;
+			  else
+			  {
+				  WARNPRINT("Can't understand globalpcontrol argument - ignoring it");
+			  }
+		  }
+		  else
+		  {
+			  WARNPRINT("Can't understand globalpcontrol argument - ignoring it");
+		  }
+	  }
 	  else if ((cmdargc>=3) && (strcmp(cmdargv[0],"argument")==0))
 	    {
 	      /* check if module is active */

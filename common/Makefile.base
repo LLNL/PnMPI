@@ -96,11 +96,18 @@ endif
 
 ifeq ($(findstring Linux,$(OS)),Linux)
 
-CFLAGS += -I$(OPENSS_BASE)/include
-CCFLAGS += -I$(OPENSS_BASE)/include
+#CFLAGS += -I$(OPENSS_BASE)/include
+#CCFLAGS += -I$(OPENSS_BASE)/include
 
-LFLAGS += -L$(OPENSS_BASE)/lib -L$(OPENSS_BASE)/lib64
-SFLAGS += -L$(OPENSS_BASE)/lib -L$(OPENSS_BASE)/lib64
+#LFLAGS += -L$(OPENSS_BASE)/lib -L$(OPENSS_BASE)/lib64
+#SFLAGS += -L$(OPENSS_BASE)/lib -L$(OPENSS_BASE)/lib64
+
+endif
+
+#...............................................
+# Linux
+
+ifeq ($(findstring OSX,$(OS)),OSX)
 
 endif
 
