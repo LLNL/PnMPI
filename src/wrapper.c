@@ -389,10 +389,10 @@ int MPI_Pcontrol(int level, ... )
 	/* in this case: modules.pcontrol_typed_level == level */
 	if (modules.pcontrol == PNMPI_PCONTROL_TYPED)
 	{
-		int arg_int;
-		long arg_long;
-		void* arg_ptr;
-		double arg_double;
+		int arg_int=0;
+		long arg_long=0;
+		void* arg_ptr=NULL;
+		double arg_double=0.0;
 		
 		va_start(va_alist,level);
 		switch (modules.pcontrol_typed_type)
@@ -419,7 +419,6 @@ int MPI_Pcontrol(int level, ... )
 			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
 				(modules.module[i]->pcontrol))
 			{
-				ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
 				switch (modules.pcontrol_typed_type)
 				{
 					case PNMPI_PCONTROL_TYPE_INT: 
