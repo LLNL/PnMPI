@@ -260,7 +260,7 @@ int MPI_Test(MPI_Request *request, int *flag, MPI_Status *status)
 {
   int err;
   ALLOCATE_STATUS(newstatus,1)
-  err=PMPI_Test(request, flag, status);
+  err=PMPI_Test(request, flag, newstatus);
   COPY_STATUS(status,newstatus,1)
   return err;
 }
