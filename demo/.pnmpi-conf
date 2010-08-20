@@ -11,7 +11,7 @@ module sample4
 #module status
 #module datatype
 #module commsub-print
-#argument verbose 1
+#argument verbose 255
 #module nope
 #module requests
 
@@ -19,4 +19,6 @@ module sample4
 #argument value 1
 #module testargval
 #argument value 2
-##
+#a
+#
+

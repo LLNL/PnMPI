@@ -9,8 +9,8 @@ CFILES = $(addsuffix .cxx, $(addprefix $(PREFIX)-,$(SUBMOD)))
 MOD    = $(addsuffix .so,$(addprefix $(PREFIX)-,$(SUBMOD)))
 
 
-CFLAGS += -I$(PNMPI_INC_PATH) -fPIC -I$(PNMPIBASE)/modules/comm
-CCFLAGS += -I$(PNMPI_INC_PATH) -fPIC -I$(LOCAL)/include -I$(OPENSS_BASE)/include -I$(PNMPIBASE)/modules/comm
+CFLAGS += -I$(PNMPI_INC_PATH) -I$(PNMPIBASE)/modules/comm
+CCFLAGS += -I$(PNMPI_INC_PATH) -I$(LOCAL)/include -I$(OPENSS_BASE)/include -I$(PNMPIBASE)/modules/comm
 
 
 all: $(MOD) install
@@ -20,7 +20,7 @@ $(OFILES): $(PNMPIBASE)/modules/comm/comm.o
 .SUFFIXES: .c .o .so
 
 .o.so: $(PNMPIBASE)/modules/comm/comm.o
-	$(CXX) -o $@ $< comm.o $(SFLAGS)
+	$(CROSSLDXX) -o $@ $< comm.o $(SFLAGS)
 
 .c.o:
 	$(MPICC) -c $(CFLAGS) -DSUBMODNAME=\"$(basename $(subst $(PREFIX)-,,$@))\" $<

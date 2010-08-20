@@ -16,10 +16,15 @@ HEADER = pnmpi.h pnmpimod.h
 all: $(TARGET) install
 
 #MPICC = purify gcc-3.4.4
+#ifeq ($(findstring AIX,$(OS)),AIX)
+#CFLAGS += -fPIC -G
+#else
+#CFLAGS += -fPIC
+#endif
+
+#MPICC = purify gcc-3.4.4
 ifeq ($(findstring AIX,$(OS)),AIX)
-CFLAGS += -fPIC -G
-else
-CFLAGS += -fPIC
+CFLAGS += -G
 endif
 
 core.o: core.h wrapper.h pnmpimod.h debug.h
@@ -63,7 +68,7 @@ libpnmpif.so: $(FOBJS)
 	$(MPIF77) -o $@ $(SFLAGS) $(FOBJS)
 
 forcempi.o: forcempi.c
-	$(CC) -c $<
+	$(MPICC) -c $<
 
 forcempi.a: forcempi.o
 	$(AR) $(ARFLAGS) $@ $<
@@ -72,8 +77,13 @@ ifdef EXPERIMENTAL_UNWIND
 libpnmpif.so: $(FOBJS)
 	$(MPIF77) $(FOBJS) -o $@ $(SFLAGS) -lunwind -ldl
 else
+ifeq ($(findstring CNKP,$(OS)),CNKP)
+libpnmpif.so: $(FOBJS)
+	$(MPICC) $(FOBJS) -o $@ $(SFLAGS)
+else
 libpnmpif.so: $(FOBJS)
 	$(MPIF77) $(FOBJS) -o $@ $(SFLAGS) -ldl
+endif
 endif
 endif
 

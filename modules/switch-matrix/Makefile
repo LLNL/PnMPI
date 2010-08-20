@@ -14,13 +14,13 @@ WRAPPERH = wrapper_h.w
 
 WR = ../../wrappergen/wrappergen
 
-CFLAGS += -I../../include -fPIC
+CFLAGS += -I../../include
 
 all: $(MOD) install
 
 
 switch-matrix.so: switch-matrix.o
-	$(MPICC) -o $@ $(SFLAGS) $<
+	$(CROSSLD) -o $@ $(SFLAGS) $<
 
 switch-matrix.o: switch-matrix.c switch-matrix.h
 	$(MPICC) -c $(CFLAGS) $<

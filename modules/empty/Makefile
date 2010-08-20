@@ -6,7 +6,7 @@ MOD    = empty.so
 CFILES = $(MOD:.so=.c)
 OFILES = $(MOD:.so=.o)
 
-CFLAGS += -I../../include -fPIC
+CFLAGS += -I../../include 
 
 MPISPEC = mpi_pnmpi
 WRAPDIR = ../../wrapper
@@ -27,7 +27,7 @@ all: $(TARGET)
 	$(AR) $(ARFLAGS) $@ $<
 
 .o.so: 
-	$(LD) -o $@ $(SFLAGS) $< 
+	$(CROSSLD) -o $@ $(SFLAGS) $< 
 
 .c.o:
 	$(MPICC) -c $(CFLAGS) $<

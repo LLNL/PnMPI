@@ -1,6 +1,8 @@
 ifneq ($(findstring AIX,$(OS)),AIX)
+ifneq ($(findstring CNKP,$(OS)),CNKP)
 CFLAGS  = -Wall
 CCFLAGS = -Wall
+endif
 endif
 LFLAGS =
 SFLAGS =
@@ -26,11 +28,11 @@ ifeq ($(findstring GNU,$(COMP)),GNU)
 
 ARFLAGS = -ru
 
-CFLAGS += -O3
-CCFLAGS += -O3
+CFLAGS += -O3 -fPIC
+CCFLAGS += -O3 -fPIC
 
-LFLAGS = -O3
-SFLAGS = -shared -fPIC -lc -O3
+LFLAGS += -O3 -fPIC
+SFLAGS += -shared -fPIC -lc -O3
 
 endif
 
@@ -41,11 +43,11 @@ ifeq ($(findstring INTEL,$(COMP)),INTEL)
 
 ARFLAGS = -ru
 
-CFLAGS += -O2
-CCFLAGS += -O2
+CFLAGS += -O2 -fPIC
+CCFLAGS += -O2 -fPIC
 
-LFLAGS = -O2
-SFLAGS = -shared -fPIC -lc -O2
+LFLAGS += -O2 -fPIC
+SFLAGS += -shared -fPIC -lc -O2
 
 endif
 
@@ -56,8 +58,8 @@ ifeq ($(findstring IBM,$(COMP)),IBM)
 
 ARFLAGS = -ru
 
-CFLAGS += -O2
-CCFLAGS += -O2
+CFLAGS += -O2 -fPIC
+CCFLAGS += -O2 -fPIC
 
 CFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) -D_ALL_SOURCE
 CCFLAGS +=-D_ALL_SOURCE
@@ -77,14 +79,15 @@ ifeq ($(findstring CROSS,$(COMP)),CROSS)
 
 ARFLAGS = -ru
 
-CFLAGS = -O1
-CCFLAGS = -O1
+CFLAGS += -O2 -qpic
+CCFLAGS += -O2 -qpic
 
-CFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) -D_ALL_SOURCE
-CCFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) -D_ALL_SOURCE
+CFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) #-D_ALL_SOURCE
+CCFLAGS += -D DBGLEVEL=$(DEBUGLEVEL) #-D_ALL_SOURCE
 
-LFLAGS += -lc
-SFLAGS += -G -bexpall -bnoentry -brtl -lc
+LFLAGS += -O2 -qpic -qnostaticlink
+SFLAGS += -O2 -qpic -qmkshrobj -qnostaticlink
+
 #SFLAGS += -G -bexpall -bnoentry -bso -blazy -bnoglink -brtl
 #SFLAGS += -bM:SRE -G -bexpall -bnoentry
 
@@ -95,6 +98,15 @@ endif
 # Linux
 
 ifeq ($(findstring Linux,$(OS)),Linux)
+
+ARFLAGS = -ru
+
+CFLAGS += -O2 -fPIC
+CCFLAGS += -O2 -fPIC
+
+LFLAGS += -O2 -fPIC 
+SFLAGS += -shared -fPIC -lc -O2 
+
 
 #CFLAGS += -I$(OPENSS_BASE)/include
 #CCFLAGS += -I$(OPENSS_BASE)/include

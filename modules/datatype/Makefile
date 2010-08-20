@@ -3,8 +3,8 @@ include $(PNMPIBASE)/common/Makefile.common
 MOD    = datatype.so dtprint.so
 HEADER = datatype.h
 
-CFLAGS += -I$(PNMPI_INC_PATH) -fPIC
-CCFLAGS += -I$(PNMPI_INC_PATH) -fPIC
+CFLAGS += -I$(PNMPI_INC_PATH)
+CCFLAGS += -I$(PNMPI_INC_PATH)
 
 all: $(MOD) install
 
@@ -12,7 +12,7 @@ all: $(MOD) install
 .SUFFIXES: .c .o .so
 
 .o.so: 
-	$(CXX) $(SFLAGS) -o $@ $<
+	$(CROSSLDXX) $(SFLAGS) -o $@ $<
 
 .c.o:
 	$(MPICC) -c $(CFLAGS) $<

@@ -3,8 +3,8 @@ include $(PNMPIBASE)/common/Makefile.common
 MOD    = timelapse.so
 HEADER = timelapse.h
 
-CFLAGS += -I$(PNMPI_INC_PATH) -fPIC
-CCFLAGS += -I$(PNMPI_INC_PATH) -fPIC
+CFLAGS += -I$(PNMPI_INC_PATH)
+CCFLAGS += -I$(PNMPI_INC_PATH)
 
 all: $(MOD) install
 
@@ -13,7 +13,7 @@ timelapse.o: timelapse.h
 .SUFFIXES: .c .o .so
 
 .o.so: 
-	$(CXX) -o $@ $(SFLAGS) $<
+	$(CROSSLDXX) -o $@ $(SFLAGS) $<
 
 .c.o:
 	$(MPICC) -c $(CFLAGS) $<

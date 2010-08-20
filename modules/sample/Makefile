@@ -5,7 +5,7 @@ MOD    = sample1.so sample2.so sample3.so sample4.so sample1f.so
 CFILES = $(MOD:.so=.c)
 OFILES = $(MOD:.so=.o)
 
-CFLAGS += -I$(PNMPI_INC_PATH) -fPIC
+CFLAGS += -I$(PNMPI_INC_PATH) 
 
 TARGET = $(MOD) install-d 
 
@@ -19,7 +19,7 @@ all: $(TARGET)
 	$(AR) $(ARFLAGS) $@ $<
 
 .o.so: 
-	$(LD) -o $@ $(SFLAGS) $< 
+	$(CROSSLD) -o $@ $(SFLAGS) $< 
 
 .c.o:
 	$(MPICC) -c $(CFLAGS) $<

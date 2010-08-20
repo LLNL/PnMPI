@@ -1,7 +1,7 @@
 include $(PNMPIBASE)/common/Makefile.common
 
 #TARGET = local loader
-TARGET = simple simple-pn simple-pns simple-s1 fdemo fdemo-pn fdemo-pns fdemo-s1
+TARGET = simple simple-pn simple-pns simple-s1 fdemo fdemo-pn fdemo-pns # fdemo-s1
 
 ifeq ($(findstring AIX,$(OS)),AIX)
 PNMPILIB = $(PNMPI_LIB_PATH)/libpnmpi.so $(PNMPI_LIB_PATH)/forcempi.a
@@ -25,13 +25,14 @@ fdemo: fdemo.o
 	$(MPIF77) -o $@ $(LFLAGS) $<
 
 fdemo-pn: $(PNMPILIB) fdemo.o
-	$(MPIF77) -o $@ $(LFLAGS)  fdemo.o $(PNMPILIBF) -ldl
+#	$(MPIF77) -o $@ $(LFLAGS)  fdemo.o $(PNMPILIBF) -ldl
+	$(MPIF77) -o $@ $(LFLAGS)  fdemo.o -L$(PNMPI_LIB_PATH) -lpnmpif 
 
 fdemo-pns: $(PNMPILIB) fdemo.o
 	$(MPIF77) -o $@ $(LFLAGS)  fdemo.o $(PNMPILIBFS) -ldl
 
-fdemo-s1: fdemo.o
-	$(MPIF77) -o $@ $(LFLAGS) $< ../modules/sample/sample1f.so 
+#fdemo-s1: fdemo.o
+#	$(MPIF77) -o $@ $(LFLAGS) $< ../modules/sample/sample1f.so 
 
 simple: simple.o
 	$(MPICC) -o $@ $(LFLAGS) $< 
@@ -40,7 +41,7 @@ simple-pn: $(PNMPILIB) simple.o
 	$(MPICC) -o $@  $(LFLAGS) simple.o -L$(PNMPI_LIB_PATH) -lpnmpi
 
 simple-pns: $(PNMPILIB) simple.o
-	$(MPICC) -o $@  $(LFLAGS) simple.o $(PNMPI_LIB_PATH)/libpnmpi.a
+	$(MPICC) -o $@  $(LFLAGS) simple.o $(PNMPI_LIB_PATH)/libpnmpi.a -ldl
 
 simple-s1: $(PNMPILIB) simple.o
 	$(MPICC) -o $@  $(LFLAGS) simple.o ../modules/sample/sample1.so -ldl

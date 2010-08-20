@@ -204,7 +204,7 @@ void pnmpi_PreInit()
 	  while ((!feof(conffile)) && (c!='\n'))
 	    {
 	      c=(char)getc(conffile);
-	      if (c=='#')
+	      if ((c=='#') || (c==(char)255))
 		comment=1;
 	      if (!comment)
 		{

@@ -21,7 +21,7 @@ all: $(MOD) install
 
 
 virtual.so: virtual.o
-	$(MPICC) -o $@ $(SFLAGS) $<
+	$(CROSSLD) -o $@ $(SFLAGS) $<
 
 virtual.o: virtual.c virtual.h
 	$(MPICC) -c $(CFLAGS) $<

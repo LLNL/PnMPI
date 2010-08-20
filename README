@@ -248,6 +248,12 @@ WRAPPER 4: After recv
 WRAPPER 3: After recv
 WRAPPER 1: After recv
 
+When running on a BG/P systems, it is necessary to explicitly export 
+some environment variables. Here is an example:
+
+mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH -cwd $PWD simple-pn
+
+
 
 E) Using of MPI_Pcontrol
 ========================

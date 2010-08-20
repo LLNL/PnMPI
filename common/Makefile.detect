@@ -24,6 +24,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -53,6 +58,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = awk
@@ -82,6 +92,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -111,6 +126,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -140,6 +160,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -169,6 +194,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -195,6 +225,11 @@ FLD    = ifort
 LD    = icc
 CXX   = icpc
 LDXX  = icpc
+MPILD = mpiicc
+MPILDXX = mpiicpc
+CROSSLD = icc
+CROSSLDXX = icpc
+CROSSF = ifort
 
 AR  = ar
 AWK = gawk
@@ -226,6 +261,9 @@ LD    = gcc
 CXX   = g++
 LDXX  = g++
 MPILDXX  = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -255,6 +293,9 @@ LD    = gcc
 CXX   = g++
 LDXX  = g++
 MPILDXX  = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -284,6 +325,9 @@ LD    = gcc
 CXX   = g++
 LDXX  = g++
 MPILDXX  = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk
@@ -318,6 +362,9 @@ MPILD    = mpxlc
 CXX   = xlC
 LDXX  = xlC
 MPILDXX  = mpxlC
+CROSSLD = xlc
+CROSSLDXX = xlC
+CROSSF = xlf
 
 AR  = ar
 AWK = gawk
@@ -347,6 +394,11 @@ FLD    = xlf
 LD    = xlc
 CXX   = xlC
 LDXX  = xlC
+MPILD = mpxlc
+MPILDXX = mpxlC
+CROSSLD = xlc
+CROSSLDXX = xlC
+CROSSF = xlf
 
 AR  = ar
 AWK = gawk
@@ -361,7 +413,7 @@ endif
 
 ifeq ($(findstring ubgl,$(HOST)),ubgl)
 MACHINENAME = ubgl
-OS = Linux
+OS = CNKL
 CPU = PowerPC
 COMP = CROSS
 DLLs = no
@@ -378,6 +430,51 @@ CXX = mpxlC
 LDXX = mpxlC
 MPILD = mpxlc
 MPILDXX = mpxlC
+CROSSLD = bgxlc
+CROSSLDXX = bgxlC
+CROSSF = bgxlf
+
+#CC    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#MPICC = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#MPIXX = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+#LD    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#CXX   = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+#LDXX  = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+
+AR  = ar
+AWK = gawk
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
+# ubgl
+
+ifeq ($(findstring dawndev,$(HOST)),dawndev)
+MACHINENAME = dawndev
+OS = CNKP
+CPU = PowerPC
+COMP = CROSS
+DLLs = yes
+
+CC = gcc
+LD = gcc
+MPICC = mpixlc
+MPIXX = mpixlcxx
+MPIF77 = mpixlf77
+MPIF90 = mpixlf90
+MPIF95 = mpixlf95
+F77 = gfortran
+FLD = gfortran
+CXX = g++
+LDXX = g++
+MPILD = mpixlc
+MPILDXX = mpixlcxx
+CROSSLD = bgxlc
+CROSSLDXX = bgxlc++
+CROSSF = bgxlf
 
 #CC    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
 #MPICC = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
@@ -414,6 +511,11 @@ FLD    = g77
 LD    = gcc
 CXX   = g++
 LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
 
 AR  = ar
 AWK = gawk

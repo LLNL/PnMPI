@@ -3,7 +3,7 @@ include $(PNMPIBASE)/common/Makefile.common
 MOD    = requests.so
 HEADER = requests.h
 
-CFLAGS += -I$(PNMPI_INC_PATH) -fPIC
+CFLAGS += -I$(PNMPI_INC_PATH)
 
 all: $(MOD) install
 
@@ -11,7 +11,7 @@ all: $(MOD) install
 .SUFFIXES: .c .o .so
 
 .o.so: 
-	$(CXX) -o $@ $(SFLAGS) $<
+	$(CROSSLDXX) -o $@ $(SFLAGS) $<
 
 .c.o:
 	$(MPICC) -c $(CFLAGS) $<
