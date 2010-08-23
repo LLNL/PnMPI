@@ -50,6 +50,7 @@
 char prefix0,prefix1,prefix2;
 
 int verbose = 0;
+int copyonly = 0;
 int status = 0;
 
 
@@ -121,16 +122,19 @@ void hook_dynstab(char *mem, bfd_size_type size)
   for(i=0;i<size;i++) 
     {
       c3=mem[i];
-      if ((c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
-	{
-	  mem[i-3]='X';
-	  printf("Found dynamic PNMPI symbol\n");
-	}
+      if (!copyonly)
+      {
+        if ((c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
+        {
+          mem[i-3]='X';
+          printf("Found dynamic PNMPI symbol\n");
+        }
+      }
       c0=c1;
       c1=c2;
       c2=c3;
     }
-
+  
   if (verbose)
     {
       printf("BEFORE:\n");
@@ -1105,35 +1109,42 @@ void copy_file (const char *input_filename, const char *output_filename,
   do
     {
       res=read(fd_in,&c4,1);
-      if (res==1)
-	{
-	  if ((c4=='_') && (c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
-	    {
-	      c0='X';
-	      printf("Found a dynamic symbol\n");
-	    }
-	  if ((c3=='_') && (c2=='I') && (c1=='P') && (c0=='M'))
-	    {
-	      c0=prefix0;
-	      c1=prefix1;
-	      c2=prefix2;
-	      printf("Found generic symbol\n");
-	    }
-	  if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m'))
-	    {
-	      c0='p';
-	      c1='n';
-	      c2='m';
-	      c3='p';
-	      c4='i';
-	      printf("Found library name\n");
-	    }
-	  write(fd_out,&c0,1);
-	  c0=c1;
-	  c1=c2;
-	  c2=c3;
-	  c3=c4;
-	}
+      if (!copyonly)
+      {
+        if (res==1)
+        {
+          if ((c4=='_') && (c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
+          {
+            c0='X';
+            printf("Found a dynamic symbol\n");
+          }
+          if ((c3=='_') && (c2=='I') && (c1=='P') && (c0=='M'))
+          {
+            c0=prefix0;
+            c1=prefix1;
+            c2=prefix2;
+            printf("Found generic symbol\n");
+          }
+#if 0
+          if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m'))
+          {
+            c0='p';
+            c1='n';
+            c2='m';
+            c3='p';
+            c4='i';
+            printf("Found library name\n");
+          }
+#endif
+        }
+        
+        write(fd_out,&c0,1);
+
+        c0=c1;
+        c1=c2;
+        c2=c3;
+        c3=c4;
+      }
     }
   while(res==1);
 
@@ -1159,36 +1170,55 @@ int main (int argc, char *argv[])
   int argvindex;
   char *input_filename = NULL;
   char *output_filename = NULL;
- 
-  if (((argc==4) || (argc==5)) && (strcmp(argv[1],"-v")==0))
+  int efargc;
+
+  efargc=argc;
+  verbose=0;
+  copyonly=0;
+  if (efargc>3)
   {
-    verbose=1;
-    argvindex=1;
-  }
-  else
+    if (strcmp(argv[1],"-v")==0)
     {
-      if ((argc==3) || (argc==4))
-        {
-          verbose=0;
-          argvindex=0;
-        }
-      else
-        {
-          printf("Usage: patch [-v] <in-tool> <out-tool> [<prefix>]\n");
-          exit(1);
-        }
+      verbose=1;
     }
+    if (strcmp(argv[1],"-c")==0)
+    {
+      copyonly=1;
+    }
+    efargc--;
+  }
+
+  if (efargc>3)
+  {
+    if (strcmp(argv[1],"-v")==0)
+    {
+      verbose=1;
+    }
+    if (strcmp(argv[1],"-c")==0)
+    {
+      copyonly=1;
+    }
+    efargc--;
+  }
+
+  argvindex=argc-efargc;
+
+  if ((efargc!=3) && (efargc!=4))
+  {    
+    printf("Usage: patch [-v] [-c] <in-tool> <out-tool> [<prefix>]\n");
+    exit(1);
+  }
 
   input_filename  = argv[argvindex+1];
   output_filename = argv[argvindex+2];
-  if (argc+argvindex==4)
+  if (efargc==4)
     {
       if (strlen(argv[argvindex+3])!=3)
-	{
-          printf("Usage: patch [-v] <in-tool> <out-tool> [<prefix>]\n");
-	  printf("prefix has to be exactly three characters.\n");
-          exit(1);
-        }
+      {
+        printf("Usage: patch [-v] <in-tool> <out-tool> [<prefix>]\n");
+        printf("prefix has to be exactly three characters.\n");
+        exit(1);
+      }
       prefix0=argv[argvindex+3][0];
       prefix1=argv[argvindex+3][1];
       prefix2=argv[argvindex+3][2];

@@ -5,6 +5,40 @@
 MACHINENAME = unknown
 
 #...............................................
+# hera
+
+ifeq ($(findstring hera,$(HOST)),hera)
+MACHINENAME = hera
+OS = Linux
+CPU = IA32
+COMP = GNU
+DLLs = yes
+
+CC    = gcc
+MPICC = mpicc
+MPIXX = mpiCC
+MPIF77 = mpif77
+MPIF90 = mpif90
+F77    = g77
+FLD    = g77
+LD    = gcc
+CXX   = g++
+LDXX  = g++
+MPILD = mpicc
+MPILDXX = mpiCC
+CROSSLD = gcc
+CROSSLDXX = g++
+CROSSF = g77
+
+AR  = ar
+AWK = gawk
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+#...............................................
 # mcr
 
 ifeq ($(findstring mcr,$(HOST)),mcr)
