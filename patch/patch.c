@@ -1091,11 +1091,12 @@ void copy_file (const char *input_filename, const char *output_filename,
 #else
 
 void copy_file (const char *input_filename, const char *output_filename,
-		const char *input_target,   const char *output_target)
+        const char *input_target,   const char *output_target)
 {
   int res,fd_in,fd_out;
   char c1,c2,c3,c0,c4;
- 
+  char cOld = 'a';
+
   fd_in=open(input_filename, O_RDONLY);
   fd_out=open(output_filename, O_WRONLY|O_CREAT|O_TRUNC,S_IRWXU);
 
@@ -1137,7 +1138,6 @@ void copy_file (const char *input_filename, const char *output_filename,
           }
 #endif
         }
-        
         write(fd_out,&c0,1);
 
         c0=c1;
@@ -1156,6 +1156,7 @@ void copy_file (const char *input_filename, const char *output_filename,
   close(fd_in);
   close(fd_out);
 }
+
 
 
 /*=======================================================================*/

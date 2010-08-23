@@ -26,6 +26,12 @@ ADD_LIBRARY(${TARGET_PNMPILIB}f_shared SHARED
     
 ADD_LIBRARY(forcempi STATIC forcempi.c)
 
+#Add the fortran define for the fortran libs!
+SET_TARGET_PROPERTIES (
+	${TARGET_PNMPILIB}f ${TARGET_PNMPILIB}f_shared
+	PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN"
+	)
+
 #Set properties for shared libraries
 SET_TARGET_PROPERTIES (${TARGET_PNMPILIB}_shared ${TARGET_PNMPILIB}f_shared
     PROPERTIES 

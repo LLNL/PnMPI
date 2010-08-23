@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 

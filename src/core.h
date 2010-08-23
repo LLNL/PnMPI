@@ -18,8 +18,9 @@
 
 #define MODULE_SKIP       20
 #define MAX_ARG_NAME      30
-#define MAX_ARG_VALUE     70
-#define MAX_LINE          (2*PNMPI_MODULE_FILENAMELEN)
+#define MAX_ARG_VALUE     1024
+#define MAX_LINE          MAX_ARG_VALUE+MAX_ARG_NAME
+/*Was once: (2*PNMPI_MODULE_FILENAMELEN), needs to be long for some projects ...*/
 
 #define MAX_CMDARGS       10
 

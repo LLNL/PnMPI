@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <stdlib.h>
 
 #include <mpi.h>
 #include <pnmpimod.h>
