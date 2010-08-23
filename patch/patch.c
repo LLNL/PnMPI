@@ -1121,7 +1121,7 @@ void copy_file (const char *input_filename, const char *output_filename,
           printf("Found generic symbol\n");
         }
       if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m') &&
-          (cOld != 'o'))
+          (cOld != 'o') && (cOld != 'u'))
         {
           c0='p';
           c1='n';
