@@ -1087,11 +1087,12 @@ void copy_file (const char *input_filename, const char *output_filename,
 #else
 
 void copy_file (const char *input_filename, const char *output_filename,
-		const char *input_target,   const char *output_target)
+        const char *input_target,   const char *output_target)
 {
   int res,fd_in,fd_out;
   char c1,c2,c3,c0,c4;
- 
+  char cOld = 'a';
+
   fd_in=open(input_filename, O_RDONLY);
   fd_out=open(output_filename, O_WRONLY|O_CREAT|O_TRUNC,S_IRWXU);
 
@@ -1106,34 +1107,36 @@ void copy_file (const char *input_filename, const char *output_filename,
     {
       res=read(fd_in,&c4,1);
       if (res==1)
-	{
-	  if ((c4=='_') && (c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
-	    {
-	      c0='X';
-	      printf("Found a dynamic symbol\n");
-	    }
-	  if ((c3=='_') && (c2=='I') && (c1=='P') && (c0=='M'))
-	    {
-	      c0=prefix0;
-	      c1=prefix1;
-	      c2=prefix2;
-	      printf("Found generic symbol\n");
-	    }
-	  if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m'))
-	    {
-	      c0='p';
-	      c1='n';
-	      c2='m';
-	      c3='p';
-	      c4='i';
-	      printf("Found library name\n");
-	    }
-	  write(fd_out,&c0,1);
-	  c0=c1;
-	  c1=c2;
-	  c2=c3;
-	  c3=c4;
-	}
+    {
+      if ((c4=='_') && (c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
+        {
+          c0='X';
+          printf("Found a dynamic symbol\n");
+        }
+      if ((c3=='_') && (c2=='I') && (c1=='P') && (c0=='M'))
+        {
+          c0=prefix0;
+          c1=prefix1;
+          c2=prefix2;
+          printf("Found generic symbol\n");
+        }
+      if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m') &&
+          (cOld != 'o'))
+        {
+          c0='p';
+          c1='n';
+          c2='m';
+          c3='p';
+          c4='i';
+          printf("Found library name\n");
+        }
+      write(fd_out,&c0,1);
+      cOld = c0;
+      c0=c1;
+      c1=c2;
+      c2=c3;
+      c3=c4;
+    }
     }
   while(res==1);
 
@@ -1145,6 +1148,7 @@ void copy_file (const char *input_filename, const char *output_filename,
   close(fd_in);
   close(fd_out);
 }
+
 
 
 /*=======================================================================*/
