@@ -278,7 +278,7 @@ with a global option at the beginning of the configuration file.
 This option is called "globalpcontrol" and can take one of the
 following arguments:
 
-	int	only deliver the first argment, but ignore
+	int	only deliver the first argument, but ignore
 	        the variable list arguments (default)
 	pmpi	forward the variable list arguments
 	pnmpi	requires the application to specify a specific
@@ -286,6 +286,11 @@ following arguments:
 	        P^nMPI (level must be PNMPI_PCONTROL_LEVEL)
 	mixed   same as pnmpi, if level==PNMPI_PCONTROL_LEVEL
                 same as pmpi,  if level!=PNMPI_PCONTROL_LEVEL
+	typed  	<tlevel> <type> 
+		forward the first argument in any case, the 
+ 		second only if the level matches <tlevel>. In
+		this case, assume that the second argument is
+		of type <type>
 
 The P^nMPI internal format for Pcontrol arguments is as follows:
 
