@@ -1,3 +1,7 @@
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
+# All rights reserved - please read information in "LICENCSE"
+
 include $(PNMPIBASE)/common/Makefile.common
 
 MOD    = sample1.so sample2.so sample3.so sample4.so sample1f.so

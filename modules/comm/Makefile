@@ -1,3 +1,7 @@
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
+# All rights reserved - please read information in "LICENCSE"
+
 include $(PNMPIBASE)/common/Makefile.common
 
 PREFIX = commsub
@@ -5,7 +9,7 @@ PREFIX = commsub
 SUBMOD = print checksum empty
 
 OFILES = $(addsuffix .o, $(addprefix $(PREFIX)-,$(SUBMOD)))
-CFILES = $(addsuffix .cxx, $(addprefix $(PREFIX)-,$(SUBMOD)))
+CFILES = $(addsuffix .cpp, $(addprefix $(PREFIX)-,$(SUBMOD)))
 MOD    = $(addsuffix .so,$(addprefix $(PREFIX)-,$(SUBMOD)))
 
 
@@ -17,7 +21,7 @@ all: $(MOD) install
 
 $(OFILES): $(PNMPIBASE)/modules/comm/comm.o
 
-.SUFFIXES: .c .o .so
+.SUFFIXES: .c .o .so .cpp
 
 .o.so: $(PNMPIBASE)/modules/comm/comm.o
 	$(CROSSLDXX) -o $@ $< comm.o $(SFLAGS)
@@ -25,10 +29,10 @@ $(OFILES): $(PNMPIBASE)/modules/comm/comm.o
 .c.o:
 	$(MPICC) -c $(CFLAGS) -DSUBMODNAME=\"$(basename $(subst $(PREFIX)-,,$@))\" $<
 
-.cxx.o:
+.cpp.o:
 	$(MPIXX) -c $(CCFLAGS) -DSUBMODNAME=\"$(basename $(subst $(PREFIX)-,,$@))\" $<
 
-$(PNMPIBASE)/modules/comm/comm.o: $(PNMPIBASE)/modules/comm/comm.cxx
+$(PNMPIBASE)/modules/comm/comm.o: $(PNMPIBASE)/modules/comm/comm.cpp
 	$(MPIXX) -c $(CCFLAGS) $< -o $@
 
 install: $(MOD)

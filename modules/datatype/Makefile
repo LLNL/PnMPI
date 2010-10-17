@@ -1,3 +1,7 @@
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
+# All rights reserved - please read information in "LICENCSE"
+
 include $(PNMPIBASE)/common/Makefile.common
 
 MOD    = datatype.so dtprint.so
@@ -9,7 +13,7 @@ CCFLAGS += -I$(PNMPI_INC_PATH)
 all: $(MOD) install
 
 
-.SUFFIXES: .c .o .so
+.SUFFIXES: .c .o .so .cpp
 
 .o.so: 
 	$(CROSSLDXX) $(SFLAGS) -o $@ $<
@@ -17,7 +21,7 @@ all: $(MOD) install
 .c.o:
 	$(MPICC) -c $(CFLAGS) $<
 
-.cxx.o:
+.cpp.o:
 	$(MPIXX) -c $(CFLAGS) $<
 
 install: $(MOD)

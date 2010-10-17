@@ -1,3 +1,7 @@
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
+# All rights reserved - please read information in "LICENCSE"
+
 TARGET = prep d_patch d_wrappergen d_wrapper d_src d_modules d_demo
 
 all: $(TARGET)

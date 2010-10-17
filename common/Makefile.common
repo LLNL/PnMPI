@@ -1,3 +1,7 @@
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
+# All rights reserved - please read information in "LICENCSE"
+
 DEBUG = yes
 
 ifndef DBGLEBEL
@@ -14,16 +18,13 @@ INCDIR = $(INSTALLDIR)/include
 BINDIR = $(INSTALLDIR)/bin
 
 
-.SUFFIXES: .c .o .cpp .h .cxx
+.SUFFIXES: .c .o .cpp .h
 
 
 .c.o: 
 	$(CC) -c $(CFLAGS) $<
 
 .cpp.o:
-	$(CXX) -c $(CCFLAGS) $<
-
-.cxx.o:
 	$(CXX) -c $(CCFLAGS) $<
 
 %.c: %.w
