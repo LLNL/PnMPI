@@ -85,7 +85,12 @@ echo ":" $1 already has a header
 else
 echo -n ":" Adding $HEADER header
 cp $1 $1.headertoadd.tmp
+if ( $1 =~ "*.sh" ) then
+head -1 $1.headertoadd.tmp > $1 
+cat $HF $1.headertoadd.tmp >> $1
+else
 cat $HF $1.headertoadd.tmp > $1
+endif
 rm $1.headertoadd.tmp
 
 if ( $1 =~ "*.sh" ) then
