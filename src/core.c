@@ -424,25 +424,11 @@ void pnmpi_PreInit()
 		      modules.module[modules.num]->args=NULL;
 		      modules.module[modules.num]->username[0]=(char) 0;
 		      
-		      /* check if this module has a RegistrationPoint and if yes, all it */
+		      /* PNMPI_RegistrationPoint will be called later */
 		      
 		      pnmpi_level=modules.num;
-		      regPoint=(PNMPI_RegistrationPoint_t)dlsym(modules.module[modules.num]->handle,PNMPI_REGISTRATION_POINT);
-		      if (regPoint!=0)
-			{
-			  err=regPoint();
-			  if (err!=PNMPI_SUCCESS)
-			    {
-			      WARNPRINT("Error registering module %s (Error %i)",modname,err);
-			    }
-			  else
-			    modules.num++;
-			}
-		      else
-			{
-			  /*WARNPRINT("Module %s has no registration point",modname);*/
-			  modules.num++;
-			}
+		 	  modules.num++;
+
 		    }
 		}
 	    }
@@ -562,6 +548,31 @@ void pnmpi_PreInit()
 	    }
 	} /* while eof */
     } /* if file open */
+
+
+  /*
+   * Call the module registration point functions
+   * (done now as to load arguments first)
+   */
+  {
+	  int i;
+
+	  for (i = 0; i < modules.num; i++)
+	  {
+		  regPoint=(PNMPI_RegistrationPoint_t)dlsym(modules.module[i]->handle,PNMPI_REGISTRATION_POINT);
+		  if (regPoint!=0)
+		  {
+			  /* check if this module has a RegistrationPoint and if yes, all it */
+
+			  pnmpi_level=i;
+			  err=regPoint();
+			  if (err!=PNMPI_SUCCESS)
+			  {
+				  WARNPRINT("Error registering module %s (Error %i)",modname,err);
+			  }
+		  }
+	  }/*for modules*/
+  }/*call PNMPI_REGISTRATION_POINT*/
 
   /* if we are debugging, print the parsed information */
 
