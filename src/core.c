@@ -559,6 +559,10 @@ void pnmpi_PreInit()
 
 	  for (i = 0; i < modules.num; i++)
 	  {
+		  //continue for stacks (they have no reg point)
+		  if (modules.module[i]->stack_delimiter)
+			  continue;
+
 		  regPoint=(PNMPI_RegistrationPoint_t)dlsym(modules.module[i]->handle,PNMPI_REGISTRATION_POINT);
 		  if (regPoint!=0)
 		  {
