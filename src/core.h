@@ -130,14 +130,6 @@ void pnmpi_PreInit(void);
 extern int iargc_(void);
 extern char *getarg_(int*,char*,int);
 
-
-/*
- * Rational on the extra mydlsym with RTLD_SELF:
- *    If a module has a dependency to the PnMPI lib or the MPI lib, a
- *    dlsym for MPI_X will return the symbol of the mpi lib or the PnMPI lib if the module
- *    itself does not defines MPI_X. So we have to check for exactly this case, which we
- *    can do with the comparison against the return of the dlsym call with RTLD_SELF.
- */
 #define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods)    \
 {                                                                                        \
   int __i;                                                                                 \
@@ -148,14 +140,7 @@ extern char *getarg_(int*,char*,int);
     { WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
   for (__i=0; __i<mods.num; __i++)                                                          \
     { pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
-      if (pnmpi_function_ptrs.stack[__i] != mydlsym(RTLD_SELF,routine)) \
-      {  \
-        if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor);                \
-      } \
-      else \
-      { \
-    	    pnmpi_function_ptrs.stack[__i] = NULL; \
-      } \
+      if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
       DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
     }                                                                                    \
 }
