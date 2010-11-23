@@ -34,6 +34,7 @@ Boston, MA 02111-1307 USA
 #include <iostream>
 #include <map>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <mpi.h>
 #include <pnmpimod.h>
