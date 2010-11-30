@@ -44,10 +44,9 @@ Boston, MA 02111-1307 USA
 #define STATUSPRINTN(format,args...)
 #define STATUSINIT()
 #else
-extern int _status_node;
-#define STATUSPRINT1(format,args...) { if (_status_node==0) DOPRINT(format,##args); }
+#define STATUSPRINT1(format,args...) { if (_print_node==0) DOPRINT(format,##args); }
 #define STATUSPRINTN(format,args...) DOPRINT(format,##args)
-#define STATUSINIT() {MPI_Comm_rank(MPI_COMM_WORLD,&_status_node);}
+#define STATUSINIT() {}
 #endif
 
 #ifdef NOWARNINGS
@@ -68,32 +67,24 @@ extern int _status_node;
 #define DBGLEVEL2  0x0002  /* module load and instantiation */
 #define DBGLEVEL3  0x0004  /* entry and exit of layers */
 #define DBGLEVEL4  0x0008  /* arguments and parse information */
+#define DBGLEVEL5  0x0010  /* print count statistics for each module */
+#define DBGLEVEL6  0x0020  /* print timing statistics for each module */
 
 #define DBGPRINT1(format,args...) DBGPRINT(DBGLEVEL1,format,##args)
 #define DBGPRINT2(format,args...) DBGPRINT(DBGLEVEL2,format,##args)
 #define DBGPRINT3(format,args...) DBGPRINT(DBGLEVEL3,format,##args)
 #define DBGPRINT4(format,args...) DBGPRINT(DBGLEVEL4,format,##args)
-
-/**
- * Tobias:
- * "_dbg_node" is used in DOPRINT which is defined even if
- * DBGLEVEL is not defined, just fixed it somehow, no clue
- * whether this is good or not ...
- */
-extern int _dbg_node;
+#define DBGPRINT5(format,args...) DBGPRINT(DBGLEVEL5,format,##args)
+#define DBGPRINT6(format,args...) DBGPRINT(DBGLEVEL6,format,##args)
 
 #ifdef DBGLEVEL
 
-/*extern int _dbg_node; //Tobias: Moved see above!*/
 extern int _dbg_cur_level;
 extern int _dbg_cur_node;
 #define DBGPRINT(level,format,args...) \
-         { if ((level&_dbg_cur_level) && ((_dbg_cur_node==_dbg_node)||(_dbg_node<0)||(_dbg_cur_node<0))) \
+         { if ((level&_dbg_cur_level) && ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0))) \
               DOPRINT("L%04x "format,_dbg_cur_level,##args); }
-#define DBGLATEINIT()                       \
-{                                           \
-  MPI_Comm_rank(MPI_COMM_WORLD,&_dbg_node); \
-}
+#define DBGLATEINIT() {}
 #define DBGEARLYINIT()                      \
 {                                           \
   char *dbglevel,*dbgnode;                  \
@@ -111,10 +102,12 @@ extern int _dbg_cur_node;
 #define DBGLATEINIT()
 #endif
 
+extern int _print_node;
+#define PRINTINIT() {MPI_Comm_rank(MPI_COMM_WORLD,&_print_node);}
 #define DOPRINT(format,args...)                       \
  {                                                    \
-   if (_dbg_node>-2)                                  \
-     printf("%5i: "format"\n",_dbg_node,## args);     \
+   if (_print_node>-2)                                  \
+     printf("%5i: "format"\n",_print_node,## args);     \
    else                                               \
      printf(format"\n",## args);                      \
    fflush(stdout);                                    \
@@ -153,22 +146,22 @@ extern int _status_node;
 #define DBGLEVEL1  0x0001  /* entry and exit prints */
 #define DBGLEVEL2  0x0002  /* module load and instantiation */
 #define DBGLEVEL3  0x0004  /* entry and exit of layers */
-#define DBGLEVEL4  0x0008
+#define DBGLEVEL4  0x0008  /* arguments and parse information */
+#define DBGLEVEL5  0x0010  /* print count statistics for each module */
+#define DBGLEVEL6  0x0020  /* print timing statistics for each module */
 
 #define DBGPRINT1 dbg_debugprint1
 #define DBGPRINT2 dbg_debugprint2
 #define DBGPRINT3 dbg_debugprint3
 #define DBGPRINT4 dbg_debugprint4
+#define DBGPRINT5 dbg_debugprint5
+#define DBGPRINT6 dbg_debugprint6
 
 #ifdef DBGLEVEL
-extern int _dbg_node;
 extern int _dbg_cur_level;
 extern int _dbg_cur_node;
 
-#define DBGLATEINIT()                       \
-{                                           \
-  MPI_Comm_rank(MPI_COMM_WORLD,&_dbg_node); \
-}
+#define DBGLATEINIT() {}
 #define DBGEARLYINIT()                      \
 {                                           \
   char *dbglevel,*dbgnode;                  \
@@ -184,6 +177,8 @@ extern int _dbg_cur_node;
 #define DBGEARLYINIT()
 #endif
 
+extern int _print_node;
+#define PRINTINIT() {MPI_Comm_rank(MPI_COMM_WORLD,&_print_node);}
 
 #endif /* else of COMP==GNU */
 

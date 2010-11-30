@@ -90,6 +90,7 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
   if (returnVal!=MPI_SUCCESS)
     return returnVal;
 
+  PRINTINIT();
   DBGLATEINIT();
   STATUSINIT();
   DBGPRINT1("Leaving Init");

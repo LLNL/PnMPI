@@ -35,16 +35,11 @@ Boston, MA 02111-1307 USA
 #include <stdarg.h>
 
 #ifdef DBGLEVEL
-int _dbg_node = -2;
 int _dbg_cur_level = DBGLEVEL;
 int _dbg_cur_node  = -1;
-#else
-int _dbg_node = -2;
 #endif
 
-#ifndef NOSTATUS
-int _status_node = 0;
-#endif
+int _print_node = -2;
 
 
 /*-----------------------------------------------------------------*/
@@ -70,34 +65,32 @@ void dbg_statusprint1(char *format,...)
 {
   va_list va_alist;
 
-  if (_status_node==0) 
-    {
-      if (_dbg_node>-2) 
+  if (_print_node==0) 
 	{
 	  va_start(va_alist,format);
-	  fprintf(stdout,"%5i: ",_dbg_node);
+	  fprintf(stdout,"%5i: ",_g_node);
 	  vfprintf(stdout,format,va_alist);  
 	  fprintf(stdout,"\n");
 	  va_end(va_alist);
 	}
-      else                                              
+
+  if (_print_node==-2)
 	{
 	  va_start(va_alist,format);
 	  vfprintf(stdout,format,va_alist);  
 	  fprintf(stdout,"\n");
 	  va_end(va_alist);
 	}
-    }
 }
 
 void dbg_statusprintn(char *format,...) 
 {
   va_list va_alist;
 
-  if (_dbg_node>-2) 
+  if (_print_node>-2) 
     {
       va_start(va_alist,format);
-      fprintf(stdout,"%5i: ",_dbg_node);
+      fprintf(stdout,"%5i: ",_print_node);
       vfprintf(stdout,format,va_alist);  
       fprintf(stdout,"\n");
       va_end(va_alist);
@@ -157,7 +150,7 @@ void dbg_debugprint1(char *format,...)
   va_list va_alist;
 
   if (((DBGLEVEL1)&_dbg_cur_level) && 
-      ((_dbg_cur_node==_dbg_node)||(_dbg_node<0)||(_dbg_cur_node<0)))
+      ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0)))
     {
       va_start(va_alist,format);
       fprintf(stdout,"L%04x ",format,_dbg_cur_level);
@@ -172,7 +165,7 @@ void dbg_debugprint2(char *format,...)
   va_list va_alist;
 
   if (((DBGLEVEL2)&_dbg_cur_level) && 
-      ((_dbg_cur_node==_dbg_node)||(_dbg_node<0)||(_dbg_cur_node<0)))
+      ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0)))
     {
       va_start(va_alist,format);
       fprintf(stdout,"L%04x ",format,_dbg_cur_level);
@@ -187,7 +180,7 @@ void dbg_debugprint3(char *format,...)
   va_list va_alist;
 
   if (((DBGLEVEL3)&_dbg_cur_level) && 
-      ((_dbg_cur_node==_dbg_node)||(_dbg_node<0)||(_dbg_cur_node<0)))
+      ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0)))
     {
       va_start(va_alist,format);
       fprintf(stdout,"L%04x ",format,_dbg_cur_level);
@@ -202,7 +195,37 @@ void dbg_debugprint4(char *format,...)
   va_list va_alist;
 
   if (((DBGLEVEL4)&_dbg_cur_level) && 
-      ((_dbg_cur_node==_dbg_node)||(_dbg_node<0)||(_dbg_cur_node<0)))
+      ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0)))
+    {
+      va_start(va_alist,format);
+      fprintf(stdout,"L%04x ",format,_dbg_cur_level);
+      vfprintf(stdout,format,va_alist);  
+      fprintf(stdout,"\n");
+      va_end(va_alist);
+    }
+}
+
+void dbg_debugprint5(char *format,...)
+{
+  va_list va_alist;
+
+  if (((DBGLEVEL5)&_dbg_cur_level) && 
+      ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0)))
+    {
+      va_start(va_alist,format);
+      fprintf(stdout,"L%04x ",format,_dbg_cur_level);
+      vfprintf(stdout,format,va_alist);  
+      fprintf(stdout,"\n");
+      va_end(va_alist);
+    }
+}
+
+void dbg_debugprint6(char *format,...)
+{
+  va_list va_alist;
+
+  if (((DBGLEVEL6)&_dbg_cur_level) && 
+      ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0)))
     {
       va_start(va_alist,format);
       fprintf(stdout,"L%04x ",format,_dbg_cur_level);
