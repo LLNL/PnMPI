@@ -427,9 +427,8 @@ void pnmpi_PreInit()
 		      /* PNMPI_RegistrationPoint will be called later */
 		      
 		      pnmpi_level=modules.num;
-		 	  modules.num++;
-
-		    }
+          modules.num++;
+        }
 		}
 	    }
 	  else if (((cmdargc==1)||(cmdargc==2)) && (strcmp(cmdargv[0],"pcontrol")==0))
@@ -574,7 +573,11 @@ void pnmpi_PreInit()
 			  {
 				  WARNPRINT("Error registering module %s (Error %i)",modname,err);
 			  }
-		  }
+      }
+      else
+      {
+        DBGPRINT2("Module %s has no registration point",modname);
+      }
 	  }/*for modules*/
   }/*call PNMPI_REGISTRATION_POINT*/
 
