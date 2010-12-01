@@ -27,21 +27,31 @@
 #=========================================================
 MACRO (PNMPI_MAC_PATCH_LIB targetname version patcher)
     #TODO: test whether this works with Windows pathes (spaces and such)
-    SET (lib ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
+    #SET (lib ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
+    #Modules shouldn't have prefixes
+    SET (libin ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
+    SET (libout ${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
     
-    FILE (WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${lib}.cmake 
+    FILE (WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake 
         "MESSAGE (\"Patching ${lib}\")\n"
+        "EXECUTE_PROCESS (COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/modules/"
+        "   RESULT_VARIABLE result"
+        "   OUTPUT_VARIABLE output"
+        "   ERROR_VARIABLE output)\n"
+        "IF (result)\n"
+        "   MESSAGE (FATAL_ERROR MKDIR MODULES \${output})\n"
+        "ENDIF (result)\n"
         "EXECUTE_PROCESS (COMMAND ${patcher}"
-        "   ${LIBRARY_OUTPUT_PATH}/${lib} ${CMAKE_INSTALL_PREFIX}/modules/${lib}"
+        "   ${LIBRARY_OUTPUT_PATH}/${libin} ${CMAKE_INSTALL_PREFIX}/modules/${libout}"
         "   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/install-scripts"
         "   RESULT_VARIABLE result"
         "   OUTPUT_VARIABLE output"
         "   ERROR_VARIABLE output)\n"
         "IF (result)\n"
-        "   MESSAGE (FATAL_ERROR \${output})\n"
+        "   MESSAGE (FATAL_ERROR PATCHING \${output})\n"
         "ENDIF (result)\n"
         )
-    INSTALL (SCRIPT ${PROJECT_BINARY_DIR}/install-scripts/patch-${lib}.cmake)
+    INSTALL (SCRIPT ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake)
 ENDMACRO (PNMPI_MAC_PATCH_LIB)
 
 #=========================================================
@@ -63,15 +73,15 @@ MACRO (PNMPI_MAC_ADD_MODULE targetname sources)
         )    
 
     #Install it with reasonable file permissions
-    INSTALL(TARGETS ${targetname}
-        PERMISSIONS 
-            OWNER_READ OWNER_WRITE OWNER_EXECUTE 
-            GROUP_EXECUTE GROUP_READ 
-            WORLD_EXECUTE
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION modules
-        ARCHIVE DESTINATION modules
-        )
+    #INSTALL(TARGETS ${targetname}
+    #    PERMISSIONS 
+    #        OWNER_READ OWNER_WRITE OWNER_EXECUTE 
+    #        GROUP_EXECUTE GROUP_READ 
+    #        WORLD_EXECUTE
+    #    RUNTIME DESTINATION bin
+    #    LIBRARY DESTINATION modules
+    #    ARCHIVE DESTINATION modules
+    #    )
     
     #Patch it during installation
     PNMPI_MAC_PATCH_LIB (

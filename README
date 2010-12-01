@@ -2,9 +2,9 @@
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
-P^nMPI Tool Infrastructure, Version 1.3 (git)
+P^nMPI Tool Infrastructure, Version 1.4 (git)
 
-Martin Schulz, 2005-2009, LLNL
+Martin Schulz, 2005-2010, LLNL
 schulzm@llnl.gov
 
 
@@ -22,12 +22,13 @@ The package contains three main components:
 - Tool modules that can explicitly exploit P^nMPI's capabilities
 
 So far, this software has mainly been tested on Linux clusters with
-RHEL-based OS distributions as well as IBM AIX systems. Some
-preliminary experiments have also included SGI Altix systems. Ports to
-other platforms should be straightforward, but this is not
-extensivelytested. Please contact the author if you run into problems
-porting P^nMPI or if you successfully deployed P^nMPI on a new
-platform.
+RHEL-based OS distributions as well as IBM's BG/P systems. Additionally
+the system ran on IBM AIX systems, but this support has been depricated.
+Some preliminary experiments have also included SGI Altix systems and
+Mac OSX 10.6. Ports to other platforms should be straightforward, but 
+this is not extensivelytested. Please contact the author if you run 
+into problems porting P^nMPI or if you successfully deployed P^nMPI 
+on a new platform.
 
 
 A) Directory Structure
@@ -47,8 +48,15 @@ Remark: lib and include are initially empty and will be populated
         during the installation
 
 
-B) How to install it
-====================
+B) How to install it (Standard build using Makefiles)
+=====================================================
+
+The default way to build P^nMPI is using a set of Makefiles
+with a common Makefile for project wide configurations, which
+is located in the "common" directory (more below). In the 
+future, this will be replaced with a cmake based build
+systems, which currently (as of P^nMPI 1.4) exists as a
+beta version (see Section C of this README file).
 
 B1) Prerequisites
 -----------------
@@ -57,7 +65,6 @@ The install procedure uses scripts built on top of tcsh. For it to
 run properly, tcsh must be installed and be available at /bin/tcsh
 or all scripts (ending in .sh) must be adjusted to point to the
 correct location of tcsh.
-
 
 B2) Environment Variables
 -------------------------
@@ -69,12 +76,10 @@ B2) Environment Variables
    - Set PNMPI_INC_PATH to $PNMPIBASE/include
    - Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
 
-
 B3) Adjust make environment
 ---------------------------
 
 All changes should be made in common/Makefile.common
-
 
 B4) Compile PNMPI
 -----------------
@@ -95,7 +100,98 @@ and "make clobber", to remove compilation results, installed
 modules, and source backup files (from emacs).
 
 
-C) Modules
+C) How to install it (Experimental Build using CMake)
+=====================================================
+
+Since P^nMPI version 1.4, the software can also be built using
+the cmake build system. This is currently experimental, but it
+is planned to be the default configuration mechanism in future
+versions of P^nMPI.
+
+C1) Install CMake
+-----------------
+
+Before using the cmake build system, the cmake software needs
+to be installed. For Linux systems, a minimum version of 2.6
+is required, for builds on BG/P a minimum version of 2.8.3.
+CMake can be downloaded from Kitware at:
+http://www.cmake.org/
+
+C2) Set environment variables
+-----------------------------
+
+The build technically does not need any environment variables,
+but they can be used to simplify things, including the examples
+below. They are, however, needed to run P^nMPI.
+
+Decide on an installation directory, referred to as <install path>
+
+   - Set PNMPIBASE to the main pnmpi directory
+   - Set PNMPI_LIB_PATH to <install path>/modules
+   - Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
+   - Add <install path>/lib to global LD_LIBRARY_PATH
+
+C3) Configure the project
+-------------------------
+
+Create a new build directory (e.g., named according to the
+platform you are using), cd into it, and run:
+
+cmake \
+  -DCMAKE_INSTALL_PREFIX=<install path> \
+  -DMPI_H_DIR=<path to mpi.h> \
+  <path to P^nMPI source> 
+
+To build a debug build:
+
+cmake \
+  -DCMAKE_INSTALL_PREFIX=<install path> \
+  -DMPI_H_DIR=<path to mpi.h> \
+  -DCMAKE_BUILD_TYPE=Debug
+  <path to P^nMPI source> 
+
+Example on LLNL systems:
+
+cd $PNMPIBASE
+mkdir $SYS_TYPE
+cd $SYS_TYPE
+cmake \
+  -DCMAKE_INSTALL_PREFIX=$PWD/install \
+  -DMPI_H_DIR=/usr/local/tools/mvapich-gnu/include \
+  -DCMAKE_BUILD_TYPE=Debug \
+  ..
+
+C4) Compile the project
+-----------------------
+
+Run "make" in the build directory created above.
+
+To get a verbose build, use "make VERBOSE=TRUE"
+
+C5) Install the project
+-----------------------
+
+Run "make install"
+
+C6) Installed structure
+-----------------------
+
+All central components will now be in <install path>, the 
+path specified during the project configuration. This 
+includes:
+  - bin: patching utility
+  - lib: P^nMPI library to link against (or to preload)
+  - include: includes to build modules
+  - modules: compiled and ready to use modules
+
+Additionally, the demo codes used below are in the "bin"
+directory of the build directory from which cmake was
+invoked. By default, the demo directory does not contain
+a P^nMPI configuration file. Such a file can be copied
+from the demo directory in the source tree.
+
+ 
+D) Modules
 ==========
 
 P^nMPI supports two different kind of tool modules:
@@ -159,8 +255,14 @@ comm: This P^nMPI specific module abstracts all communication in
       implemented submodules is included in the comm directory
       as a separate README.
 
+Note: All modules should be compiled with mpicc or equivalent
+(which includes the MPI header files) and should be linked 
+without linking to the MPI library (to avoid MPI routines
+being linked to multiple times). All example Makefiles that
+are included in this distribution are configured in this way.
 
-D) Configuration and Demo codes
+
+E) Configuration and Demo codes
 ===============================
 
 The P^nMPI distribution includes two demo codes (in C and F77).
@@ -259,7 +361,7 @@ mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH -cwd $PWD simple-p
 
 
 
-E) Using of MPI_Pcontrol
+F) Using of MPI_Pcontrol
 ========================
 
 The MPI standard defines the MPI_Pcontrol, which does not have any
@@ -318,7 +420,7 @@ P^nMPI with the libunwind library. Note that this is not extensively
 tested and not portable across platforms.
 
 
-F) References
+G) References
 =============
 
 More documentation on P^nMPI can be found in the following two
@@ -338,7 +440,7 @@ Published by IEEE Press
 Available at: http://ieeexplore.ieee.org/iel5/11126/35641/01690620.pdf?isnumber=35641&prod=CNF&arnumber=1690620&arSt=193&ared=202&arAuthor=Martin+Schulz%3B+Bronis+R.+de+Supinski
 
 
-G) Contact
+H) Contact
 ==========
 
 For more information or in case of questions, please contact

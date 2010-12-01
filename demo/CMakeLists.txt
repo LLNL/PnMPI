@@ -78,4 +78,5 @@ IF (PNMPI_ENABLE_FORTRAN)
             -np 2 ${EXECUTABLE_OUTPUT_PATH}/fdemo-pn
         )
 ENDIF (PNMPI_ENABLE_FORTRAN)
- 
+
+INSTALL(FILES .pnmpi-conf-democonf DESTINATION ${EXECUTABLE_OUTPUT_PATH} RENAME .pnmpi-conf)
