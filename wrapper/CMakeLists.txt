@@ -39,11 +39,11 @@ CONFIGURE_FILE(
     )
 ADD_CUSTOM_COMMAND(
     TARGET ${TARGET_EXTRARGS} POST_BUILD 
-    COMMAND eval ARGS "${CMAKE_C_COMPILER} -I${MPI_H_DIR} -E ${CMAKE_SOURCE_DIR}/wrapper/dummy.c | sed 's/__attribute__[(][(]visibility[(]\"default\"[)][)][)][[:space:]]//' | gawk -f ${CMAKE_SOURCE_DIR}/wrapper/join_lines | grep -e \"PMPI_\" | grep -v \"_FN\" | grep -v f2c | grep -v c2f | sed 's/(/ (/' | grep -v PMPI_Pcontrol | grep -v PMPI_Type_count > dummy.fct"
+    COMMAND eval ARGS "${CMAKE_C_COMPILER} -I${MPI_H_DIR} -E ${CMAKE_SOURCE_DIR}/wrapper/dummy.c | sed 's/__attribute__[(][(]visibility[(]\"default\"[)][)][)][[:space:]]//' | ${AWK} -f ${CMAKE_SOURCE_DIR}/wrapper/join_lines | grep -e \"PMPI_\" | grep -v \"_FN\" | grep -v f2c | grep -v c2f | sed 's/(/ (/' | grep -v PMPI_Pcontrol | grep -v PMPI_Type_count > dummy.fct"
     COMMAND eval ARGS "python ${CMAKE_SOURCE_DIR}/wrapper/makefortran.py --xlate --f77symbol ${F77SYMBOL} ${CMAKE_SOURCE_DIR}/wrapper/mpi-f77.txt"
-    COMMAND eval ARGS "cat dummy.fct | gawk -f ${CMAKE_SOURCE_DIR}/wrapper/get_fct | sed 's/PMPI/MPI/' | sort | uniq > mpi_pnmpi_fct-nopctrl"
-    COMMAND eval ARGS "gawk 'BEGIN{print \"MPI_Pcontrol\"}{print}'< mpi_pnmpi_fct-nopctrl > mpi_pnmpi_fct"
-    COMMAND eval ARGS "tcsh generate_protp_file_cmake.sh mpi_pnmpi_fct-nopctrl dummy.fct | gawk -f ${CMAKE_SOURCE_DIR}/wrapper/add-pctrl> mpi_pnmpi_proto" 
+    COMMAND eval ARGS "cat dummy.fct | ${AWK} -f ${CMAKE_SOURCE_DIR}/wrapper/get_fct | sed 's/PMPI/MPI/' | sort | uniq > mpi_pnmpi_fct-nopctrl"
+    COMMAND eval ARGS "${AWK} 'BEGIN{print \"MPI_Pcontrol\"}{print}'< mpi_pnmpi_fct-nopctrl > mpi_pnmpi_fct"
+    COMMAND eval ARGS "tcsh generate_protp_file_cmake.sh mpi_pnmpi_fct-nopctrl dummy.fct | ${AWK} -f ${CMAKE_SOURCE_DIR}/wrapper/add-pctrl> mpi_pnmpi_proto" 
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Invoking preparation for wrapper generation" 
     VERBATIM)

@@ -20,7 +20,6 @@ ELSE(CMAKE_SYSTEM MATCHES "AIX")
     SET (LIBS ${TARGET_PNMPILIB}_shared) 
 ENDIF(CMAKE_SYSTEM MATCHES "AIX")
 
-
 ##Add targets
 #C
 ADD_EXECUTABLE(simple simple.c)
@@ -55,6 +54,7 @@ ADD_TEST(
     ${MPIRUN} 
         -x PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/modules
         -x LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:${CMAKE_INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
+        -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:${CMAKE_INSTALL_PREFIX}/lib:$DYLD_LIBRARY_PATH
         -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
         -np 2 ${EXECUTABLE_OUTPUT_PATH}/simple-pn
     )
@@ -74,6 +74,7 @@ IF (PNMPI_ENABLE_FORTRAN)
         ${MPIRUN} 
             -x PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/modules
             -x LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$LD_LIBRARY_PATH
+            -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$DYLD_LIBRARY_PATH
             -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
             -np 2 ${EXECUTABLE_OUTPUT_PATH}/fdemo-pn
         )

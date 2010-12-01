@@ -15,7 +15,7 @@ SET (SUBMOD "print" "empty") #"checksum" ##TODO checksum removed due to incompat
 #Loop over all targets (submods)
 FOREACH(mod ${SUBMOD})
     #Use macro to: add target for module, version it, install it, patch it
-    PNMPI_MAC_ADD_MODULE (${PREFIX}-${mod} "${PREFIX}-${mod}.cpp;comm.cpp")
+    PNMPI_MAC_ADD_MODULE (${PREFIX}-${mod} "${PREFIX}-${mod}.cpp;comm.cpp" "CXX")
     
     #Add the submodname define as a flag
     ##TODO Martin, please have a look at the "SUBMODNAME" define, is that what you want ???

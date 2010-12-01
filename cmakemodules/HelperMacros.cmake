@@ -6,7 +6,7 @@
 #      a reference to the license or license file!
 #
 # This files is partially from the MUST project and bears the follwing copyright.
-# Copyright (c) 2009, ZIH, Technische Universität Dresden, Federal Republic of Germany
+# Copyright (c) 2009, ZIH, Technische Universitaet Dresden, Federal Republic of Germany
 # Copyright (c) 2009, LLNL, United States of America
 #
 # @file HelperMacros.cmake
@@ -25,7 +25,7 @@
 #   directory. The script is added as a install script.
 #   (executed at install time)
 #=========================================================
-MACRO (PNMPI_MAC_PATCH_LIB targetname version patcher)
+MACRO (PNMPI_MAC_PATCH_LIB targetname patcher)
     #TODO: test whether this works with Windows pathes (spaces and such)
     #SET (lib ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
     #Modules shouldn't have prefixes
@@ -60,18 +60,36 @@ ENDMACRO (PNMPI_MAC_PATCH_LIB)
 #   Takes a targetname and a list of source files.
 #   Adds a module with given name and sources, installs 
 #   patches and versions it.
+# 
+# language: in C, CXX, FORTRAN
 #=========================================================
-MACRO (PNMPI_MAC_ADD_MODULE targetname sources)
+MACRO (PNMPI_MAC_ADD_MODULE targetname sources language)
     #Add target and its dependency on the patcher
     ADD_LIBRARY(${targetname} MODULE ${sources})
     ADD_DEPENDENCIES(${targetname} ${TARGET_PATCHER})
     
     #Set lib version
-    SET_TARGET_PROPERTIES (${targetname} PROPERTIES 
-        VERSION ${PNMPI_VERSION}
-        SOVERSION ${PNMPI_LIB_INTERFACE_VERSION}
-        )    
-
+    ## Removed versions here, MAC doesn't likes that, actually versions might really not make much sense for a module
+    #SET_TARGET_PROPERTIES (${targetname} PROPERTIES
+    #    VERSION ${PNMPI_VERSION}
+    #    SOVERSION ${PNMPI_LIB_INTERFACE_VERSION}
+    #    )  
+    
+    #For Apple set that undefined symbols should be looked up dynamically
+    #(On linux this is already the default)
+    IF (APPLE)
+        SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    ENDIF (APPLE)
+       
+     #Add avoid MPICXX header flags for C++                                                                                     
+    IF ("${language}" STREQUAL "CXX")
+        SET (TEMP "")
+        FOREACH (skip_flag ${MPI_CXX_SKIP_FLAGS})
+            SET (TEMP "${TEMP} ${skip_flag}")
+        ENDFOREACH (skip_flag)
+        SET_TARGET_PROPERTIES(${targetname} PROPERTIES COMPILE_FLAGS "${TEMP}")
+    ENDIF ("${language}" STREQUAL "CXX") 
+    
     #Install it with reasonable file permissions
     #INSTALL(TARGETS ${targetname}
     #    PERMISSIONS 
@@ -86,7 +104,6 @@ MACRO (PNMPI_MAC_ADD_MODULE targetname sources)
     #Patch it during installation
     PNMPI_MAC_PATCH_LIB (
         ${targetname}
-        ${PNMPI_VERSION}
         ${PATCHER}
-        )
+        )       
 ENDMACRO (PNMPI_MAC_ADD_MODULE)

@@ -15,7 +15,7 @@ SET (PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
 SET (FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
 
 #Use macro to: add target for module, version it, install it, patch it
-PNMPI_MAC_ADD_MODULE (empty "empty.c")
+PNMPI_MAC_ADD_MODULE (empty "empty.c" "C")
 ADD_CUSTOM_TARGET(empty-prepare ALL)
 ADD_DEPENDENCIES(empty empty-prepare)
 ADD_DEPENDENCIES(empty-prepare ${TARGET_PATCHER})

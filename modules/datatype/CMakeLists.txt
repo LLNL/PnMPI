@@ -14,7 +14,7 @@ SET (MODS "datatype" "dtprint")
 #Loop over all targets (submods)
 FOREACH(mod ${MODS})
     #Use macro to: add target for module, version it, install it, patch it
-    PNMPI_MAC_ADD_MODULE (${mod} "${mod}")
+    PNMPI_MAC_ADD_MODULE (${mod} "${mod}" "CXX")
 ENDFOREACH(mod)
 
 #Add header to intermediate include dir

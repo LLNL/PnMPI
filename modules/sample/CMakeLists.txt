@@ -14,9 +14,10 @@ SET(MODS "sample1" "sample2" "sample3" "sample4" "sample1f")
 #loop over modules and build them
 FOREACH (mod ${MODS})
     #Use macro to: add target for module, version it, install it, patch it
-    PNMPI_MAC_ADD_MODULE (${mod} "${mod}.c")
+    PNMPI_MAC_ADD_MODULE (${mod} "${mod}.c" "C")
 ENDFOREACH (mod ${MODS})
 
 #Create special non-patched version of sample1 (as SHARED and not as MODULE)
 #Used as part of the demo
 ADD_LIBRARY(sample1-non-patched SHARED sample1.c)
+TARGET_LINK_LIBRARIES(sample1-non-patched ${MPI_LIBRARIES})

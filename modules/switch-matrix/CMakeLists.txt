@@ -15,7 +15,7 @@ SET (PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
 SET (FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
 
 #Use macro to: add target for module, version it, install it, patch it
-PNMPI_MAC_ADD_MODULE (switch-matrix "switch-matrix.c")
+PNMPI_MAC_ADD_MODULE (switch-matrix "switch-matrix.c" "C")
 ADD_CUSTOM_TARGET(switch-matrix-prepare ALL)
 ADD_DEPENDENCIES(switch-matrix switch-matrix-prepare)
 ADD_DEPENDENCIES(switch-matrix-prepare ${TARGET_PATCHER})

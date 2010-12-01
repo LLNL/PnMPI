@@ -130,7 +130,6 @@ void pnmpi_PreInit(void);
 extern int iargc_(void);
 extern char *getarg_(int*,char*,int);
 
-
 #define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods)    \
 {                                                                                        \
   int __i;                                                                                 \
@@ -141,8 +140,7 @@ extern char *getarg_(int*,char*,int);
     { WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
   for (__i=0; __i<mods.num; __i++)                                                          \
     { pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
-      if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor);                \
+      if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
       DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
     }                                                                                    \
 }
-    
