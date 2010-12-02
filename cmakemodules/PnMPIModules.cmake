@@ -9,7 +9,7 @@
 # Copyright (c) 2009, ZIH, Technische Universitaet Dresden, Federal Republic of Germany
 # Copyright (c) 2009, LLNL, United States of America
 #
-# @file HelperMacros.cmake
+# @file PnMPIModules.cmake
 #       Contains helpful macros.
 #
 # @author Tobias Hilbrich

@@ -47,10 +47,35 @@ int pnmpi_max_level;
 
 modules_t modules;
 
-static void* mydlopen(char *s, int f)
+static void* mydlopen(char *s, char *path, int f)
 {
   void *ret;
-  ret=dlopen(s,f);
+  char *pathdup,*start,*end;
+  module_name_t mod;
+
+  pathdup=strdup(path);
+  start=pathdup;
+  do
+  {
+    end=strchr(start,':');
+    if (end!=NULL)
+    {
+      *end=(char)0;
+      end++;
+    }
+
+    sprintf(mod,"%s/%s",start,s);
+    ret=dlopen(mod,f);
+
+    start=end;
+  }
+  while ((end!=NULL) && (ret==NULL));
+
+  if (ret!=NULL)
+  {
+    DBGPRINT2("Loading module %s\n",mod);
+  }
+
   return ret;
 }
 
@@ -351,7 +376,9 @@ void pnmpi_PreInit()
 		    }
 		  strncpy(modules.module[modules.num]->name,cmdargv[1],PNMPI_MODULE_FILENAMELEN);
 		  modules.module[modules.num]->name[PNMPI_MODULE_FILENAMELEN-1]=(char) 0;
-		  sprintf(modname,"%s/%s.so",libdir,modules.module[modules.num]->name);
+
+      /* I don't think we need this - seems copy and paste error 
+         sprintf(modname,"%s/%s.so",libdir,modules.module[modules.num]->name); */
 		  
 		  modules.module[modules.num]->stack_delimiter=1;
 		  modules.module[modules.num]->registered=0;
@@ -397,7 +424,7 @@ void pnmpi_PreInit()
 		    }
 		  strncpy(modules.module[modules.num]->name,cmdargv[1],PNMPI_MODULE_FILENAMELEN);
 		  modules.module[modules.num]->name[PNMPI_MODULE_FILENAMELEN-1]=(char) 0;
-		  sprintf(modname,"%s/%s.so",libdir,modules.module[modules.num]->name);
+		  sprintf(modname,"%s.so",modules.module[modules.num]->name);
 		  
 		  /* The first module gets the pcontrol by default */
 		  
@@ -406,7 +433,7 @@ void pnmpi_PreInit()
 		  else
 		    modules.module[modules.num]->pcontrol=0;
 		  
-		  modules.module[modules.num]->handle=mydlopen(modname,RTLD_LAZY);
+		  modules.module[modules.num]->handle=mydlopen(modname,libdir,RTLD_LAZY);
 		  if (modules.module[modules.num]->handle==NULL)
 		    {
 		      WARNPRINT("Can't load module %s (Error %s)",modname,dlerror());
