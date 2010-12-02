@@ -29,12 +29,12 @@ MACRO (PNMPI_MAC_PATCH_LIB targetname patcher)
     #TODO: test whether this works with Windows pathes (spaces and such)
     #SET (lib ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
     #Modules shouldn't have prefixes
-    SET (libin ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
+    SET (libin ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
     SET (libout ${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
     
     FILE (WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake 
-        "MESSAGE (\"Patching ${lib}\")\n"
-        "EXECUTE_PROCESS (COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/modules/"
+        "MESSAGE (\"Patching ${libout}\")\n"
+        "EXECUTE_PROCESS (COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/modules"
         "   RESULT_VARIABLE result"
         "   OUTPUT_VARIABLE output"
         "   ERROR_VARIABLE output)\n"

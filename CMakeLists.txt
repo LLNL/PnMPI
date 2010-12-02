@@ -88,7 +88,8 @@ SET (MPI_H_DIR "/home/hilbrich/local/openmpi/include" CACHE PATH "Path to MPI he
 SET (MPICC "mpicc"  CACHE FILEPATH "MPI C compiler." ) #mpi C compiler
 SET (MPIF77 "mpif77" CACHE FILEPATH "MPI Fortran77 compiler.") #mpi Fortran compiler
 SET (MPIRUN "mpirun" CACHE FILEPATH "MPI mpiexec command.") #mpirun command
-SET (MPI_LIBRARIES "-lmpi" CACHE STRING "List of libraries that are used for MPI and its PMPI bindings.")
+#SET (MPI_LIBRARIES "-lmpi" CACHE STRING "List of libraries that are used for MPI and its PMPI bindings.")
+SET (MPI_LIBRARIES "" CACHE STRING "List of libraries that are used for MPI and its PMPI bindings.")
 SET (MPI_CXX_SKIP_FLAGS "-DMPI_NO_CPPBIND" "-DOMPI_SKIP_MPICXX" "-D_MPICC_H" "-DMPICH_SKIP_MPICXX" "-DMPIBULL_SKIP_MPICXX" CACHE STRING "Default skip-flags used (for SGI,OpenMPI,HP-MPI,MPICH,BULL-MPI)")
 
 SET(F77SYMBOL symbol_ CACHE STRING "Name demangling scheme.") #Fortran name mangling
