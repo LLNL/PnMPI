@@ -160,6 +160,15 @@ cmake \
   -DMPI_H_DIR=/usr/local/tools/mvapich-gnu/include \
   -DCMAKE_BUILD_TYPE=Debug \
   ..
+  
+On MAC OS-X systems it is additionally necessary to 
+manually specify the MPI libraries as follows:  
+
+cmake -DCMAKE_INSTALL_PREFIX=$LOCAL/pnmpi \
+  -DMPI_H_DIR=$LOCAL/include \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DMPI_LIBRARIES="-L$LOCAL/lib -lmpi -lmpi_f77" \
+  ..
 
 C4) Compile the project
 -----------------------
