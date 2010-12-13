@@ -170,6 +170,10 @@ cmake -DCMAKE_INSTALL_PREFIX=$LOCAL/pnmpi \
   -DMPI_LIBRARIES="-L$LOCAL/lib -lmpi -lmpi_f77" \
   ..
 
+If your system has no Fortran compiler you need to manually 
+disable all Fortran features of P^nMPI as follows:
+cmake -DPNMPI_ENABLE_FORTRAN=False ..
+
 C4) Compile the project
 -----------------------
 
