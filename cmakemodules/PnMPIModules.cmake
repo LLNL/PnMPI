@@ -34,7 +34,7 @@ MACRO (PNMPI_MAC_PATCH_LIB targetname patcher)
     
     FILE (WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake 
         "MESSAGE (\"Patching ${libout}\")\n"
-        "EXECUTE_PROCESS (COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/modules"
+        "EXECUTE_PROCESS (COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules"
         "   RESULT_VARIABLE result"
         "   OUTPUT_VARIABLE output"
         "   ERROR_VARIABLE output)\n"
@@ -42,7 +42,7 @@ MACRO (PNMPI_MAC_PATCH_LIB targetname patcher)
         "   MESSAGE (FATAL_ERROR MKDIR MODULES \${output})\n"
         "ENDIF (result)\n"
         "EXECUTE_PROCESS (COMMAND ${patcher}"
-        "   ${LIBRARY_OUTPUT_PATH}/${libin} ${CMAKE_INSTALL_PREFIX}/modules/${libout}"
+        "   ${LIBRARY_OUTPUT_PATH}/${libin} ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules/${libout}"
         "   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/install-scripts"
         "   RESULT_VARIABLE result"
         "   OUTPUT_VARIABLE output"

@@ -2,5 +2,5 @@ TLCC Linux:
 cmake -DCMAKE_INSTALL_PREFIX=$LOCAL/pnmpi -DMPI_H_DIR=/usr/local/tools/mvapich-gnu/include -DCMAKE_BUILD_TYPE=Debug ..
 
 MAC
-cmake -DCMAKE_INSTALL_PREFIX=$LOCAL/pnmpi -DMPI_H_DIR=$LOCAL/include -DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_TYPE=Debug -DMPI_LIBRARIES="-L$LOCAL/lib -lmpi -lmpi_f77"
+cmake -DCMAKE_INSTALL_PREFIX=$LOCAL/pnmpi -DMPI_H_DIR=$LOCAL/include -DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_TYPE=Debug -DMPI_LIBRARIES="-L$LOCAL/lib;-lmpi;-lmpi_f77"
 
