@@ -41,6 +41,18 @@ Boston, MA 02111-1307 USA
 
 #include "core.h"
 
+
+/*-------------------------------------------------------------------*/
+/* timing variables for DBGLEVEL 6 */
+
+#ifdef DBGLEVEL6
+timing_t _pnmpi_start_time_incl;
+timing_t _pnmpi_start_time_excl;
+timing_t _pnmpi_end_time_incl;
+timing_t _pnmpi_end_time_excl;
+#endif
+
+
 /*-------------------------------------------------------------------*/
 /* include generated wrappers */
 
@@ -154,6 +166,13 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
     STATUSPRINT1("");
   }
 
+#ifdef DBGLEVEL6 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL6))
+	{
+		_pnmpi_start_time_excl=get_time_ns();
+	}
+#endif
+	
   return returnVal;
 }
 
@@ -166,6 +185,13 @@ void mpi_init_(int *ierr)
 
   int argc;
   char **argv;
+
+#ifdef DBGLEVEL6 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL6))
+	{
+		_pnmpi_start_time_incl=get_time_ns();
+	}
+#endif
 
 #if 0
   int i, argsize = 1024;
@@ -242,7 +268,14 @@ void mpi_init_(int *ierr)
 
 int MPI_Init(int *argc, char ***argv)
 {
-  DBGEARLYINIT();
+	DBGEARLYINIT();
+
+#ifdef DBGLEVEL6 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL6))
+	{
+		_pnmpi_start_time_incl=get_time_ns();
+	}
+#endif
 
   DBGPRINT3("Entering Old MPI_Init at base level");
 
@@ -303,16 +336,35 @@ int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
 
 int MPI_Finalize(void)
 {
-  DBGPRINT3("Entering Old MPI_Finalize at base level - Location = %px",&(MPI_Finalize));
+	int err;
+	
+	DBGPRINT3("Entering Old MPI_Finalize at base level - Location = %px",&(MPI_Finalize));
 
-  if (NOT_ACTIVATED(MPI_Finalize_MAJOR,MPI_Finalize_MINOR))
-    return PMPI_Finalize();
-  else
-    {
-      int err=Internal_XMPI_Finalize();
-      PMPI_Finalize();
-      return err;
-    }
+#ifdef DBGLEVEL6 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL6))
+	{
+		_pnmpi_end_time_excl=get_time_ns();
+	}
+#endif
+	
+	if (NOT_ACTIVATED(MPI_Finalize_MAJOR,MPI_Finalize_MINOR))
+		err=PMPI_Finalize();
+	else
+		{
+			err=Internal_XMPI_Finalize();
+			PMPI_Finalize();
+		}
+	
+#ifdef DBGLEVEL6 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL6))
+	{
+		_pnmpi_end_time_incl=get_time_ns();
+		DBGPRINT6("Totaltime Excl: %li ns",_pnmpi_end_time_excl-_pnmpi_start_time_excl);
+		DBGPRINT6("Totaltime Incl: %li ns",_pnmpi_end_time_incl-_pnmpi_start_time_incl);		
+	}
+#endif
+	
+	return err;
 }
 
 int NQJ_Finalize(void)

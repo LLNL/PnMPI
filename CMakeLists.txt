@@ -100,6 +100,27 @@ SET(F77SYMBOL symbol_ CACHE STRING "Name demangling scheme.") #Fortran name mang
 INCLUDE_DIRECTORIES(BEFORE ${MPI_H_DIR})
 SET (PATCHER "${EXECUTABLE_OUTPUT_PATH}/patch")
 
+
+#===================================	
+# Ennable PnMPI internal debugging 
+#===================================	
+
+IF (CMAKE_BUILD_TYPE MATCHES Debug)
+ADD_DEFINITIONS(-DDBGLEVEL=0)
+ENDIF (CMAKE_BUILD_TYPE MATCHES Debug)
+
+
+#===================================	
+#Check for adept_utils timers
+#===================================	
+
+IF (ADEPT_UTILS)
+ADD_DEFINITIONS(-DHAVE_ADEPT_UTILS)
+INCLUDE_DIRECTORIES(${ADEPT_UTILS}/include)
+LINK_DIRECTORIES(${ADEPT_UTILS}/lib)
+ENDIF (ADEPT_UTILS)
+
+
 #===================================
 #Recurse to sub-directories
 #===================================
