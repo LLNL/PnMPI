@@ -26,7 +26,7 @@ ADD_EXECUTABLE(simple simple.c)
 ADD_EXECUTABLE(simple-pn simple.c)
 ADD_EXECUTABLE(simple-s1 simple.c)
 
-TARGET_LINK_LIBRARIES(simple-pn ${LIBS})
+TARGET_LINK_LIBRARIES(simple-pn ${LIBS} dl)
 TARGET_LINK_LIBRARIES(simple-s1 sample1-non-patched dl) 
 
 #Fortran (if enabled)
@@ -35,7 +35,7 @@ IF (PNMPI_ENABLE_FORTRAN)
     ADD_EXECUTABLE(fdemo-pn fdemo.f)
     ADD_EXECUTABLE(fdemo-s1 fdemo.f)
     
-    TARGET_LINK_LIBRARIES(fdemo-pn ${LIBS})
+    TARGET_LINK_LIBRARIES(fdemo-pn ${LIBS} dl)
     TARGET_LINK_LIBRARIES(fdemo-s1 sample1-non-patched dl)    
 ENDIF (PNMPI_ENABLE_FORTRAN)
 

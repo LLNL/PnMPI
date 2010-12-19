@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cmake \
+    -D CMAKE_INSTALL_PREFIX=$LOCAL/pnmpi \
+    -D MPI_H_DIR=$LOCAL/include \
+    -D CMAKE_BUILD_TYPE=Debug \
+    -DMPI_LIBRARIES="-L$LOCAL/lib;-lmpi;-lmpi_f77" \
+    ..
