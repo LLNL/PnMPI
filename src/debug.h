@@ -133,10 +133,9 @@ extern int _print_node;
 #define STATUSPRINTN dbg_statusprintn
 #define STATUSINIT()
 #else
-extern int _status_node;
 #define STATUSPRINT1 dbg_statusprint1
 #define STATUSPRINTN dbg_statusprintn
-#define STATUSINIT() {MPI_Comm_rank(MPI_COMM_WORLD,&_status_node);}
+#define STATUSINIT() // {MPI_Comm_rank(MPI_COMM_WORLD,&_print_node);}
 #endif
 
 #ifdef NOWARNINGS

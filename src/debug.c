@@ -68,7 +68,7 @@ void dbg_statusprint1(char *format,...)
   if (_print_node==0) 
 	{
 	  va_start(va_alist,format);
-	  fprintf(stdout,"%5i: ",_g_node);
+	  fprintf(stdout,"%5i: ",_print_node);
 	  vfprintf(stdout,format,va_alist);  
 	  fprintf(stdout,"\n");
 	  va_end(va_alist);

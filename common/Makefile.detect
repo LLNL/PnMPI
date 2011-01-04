@@ -1,3 +1,4 @@
+
 # Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
@@ -492,6 +493,45 @@ endif
 
 ifeq ($(findstring dawndev,$(HOST)),dawndev)
 MACHINENAME = dawndev
+OS = CNKP
+CPU = PowerPC
+COMP = CROSS
+DLLs = yes
+
+CC = gcc
+LD = gcc
+MPICC = mpixlc
+MPIXX = mpixlcxx
+MPIF77 = mpixlf77
+MPIF90 = mpixlf90
+MPIF95 = mpixlf95
+F77 = gfortran
+FLD = gfortran
+CXX = g++
+LDXX = g++
+MPILD = mpixlc
+MPILDXX = mpixlcxx
+CROSSLD = bgxlc
+CROSSLDXX = bgxlc++
+CROSSF = bgxlf
+
+#CC    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#MPICC = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#MPIXX = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+#LD    = /opt/ibmcmp/vac/7.0/bin/blrts_xlc
+#CXX   = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+#LDXX  = /opt/ibmcmp/vacpp/7.0/bin/blrts_xlC
+
+AR  = ar
+AWK = gawk
+
+F77SYMBOL = symbol_
+MAKE = make
+
+endif
+
+ifeq ($(findstring login,$(HOST)),login)
+MACHINENAME = intrepid
 OS = CNKP
 CPU = PowerPC
 COMP = CROSS
