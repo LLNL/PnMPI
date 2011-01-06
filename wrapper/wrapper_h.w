@@ -64,8 +64,32 @@ typedef struct pnmpi_functions_d
 {{endforallfn}}
 } pnmpi_functions_t;
 
+#ifdef DBGLEVEL5
+typedef struct pnmpi_functions_statscount_d
+{
+{{forallfn fn_name}} long {{fn_name}};
+{{endforallfn}}
+} pnmpi_functions_statscount_t;
+
+#define DBGPRINT5_COUNTS_ALL_ALL(buf,num,div,out) \
+{{forallfn fn_name}}DBGPRINT5_COUNTS_FCT_ALL(buf,num,div,out,{{fn_name}},"{{fn_name}}");\
+{{endforallfn}}
+#endif
+
+#ifdef DBGLEVEL6
+typedef struct pnmpi_functions_statstiming_d
+{
+{{forallfn fn_name}}  timing_t {{fn_name}};
+{{endforallfn}}
+} pnmpi_functions_statstiming_t;
+
+#define DBGPRINT6_TIMING_ALL_ALL(buf,num,div,out) \
+{{forallfn fn_name}}DBGPRINT6_TIMING_FCT_ALL(buf,num,div,out,{{fn_name}},"{{fn_name}}");\
+{{endforallfn}}
+#endif
+
 
 #define INITIALIZE_ALL_FUNCTION_STACKS(mods) \
-{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}",{{fn_name}}_MAJOR,{{fn_name}}_MINOR,pnmpi_int_{{fn_name}}_t,pnmpi_int_{{fn_name}},mods);\
+{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}",{{fn_name}}_MAJOR,{{fn_name}}_MINOR,pnmpi_int_{{fn_name}}_t,pnmpi_int_{{fn_name}},mods,{{fn_name}});\
 {{endforallfn}}
 

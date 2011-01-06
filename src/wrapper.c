@@ -43,13 +43,14 @@ Boston, MA 02111-1307 USA
 
 
 /*-------------------------------------------------------------------*/
-/* timing variables for DBGLEVEL 6 */
+/* timing and count variables for DBGLEVEL 5 and 6 */
 
+#ifdef DBGLEVEL5
+pnmpi_functions_statscount_t pnmpi_totalstats_count;
+#endif
 #ifdef DBGLEVEL6
-timing_t _pnmpi_start_time_incl;
-timing_t _pnmpi_start_time_excl;
-timing_t _pnmpi_end_time_incl;
-timing_t _pnmpi_end_time_excl;
+pnmpi_functions_statstiming_t pnmpi_totalstats_timing;
+timing_t pnmpi_overall_timing;
 #endif
 
 
@@ -77,6 +78,207 @@ void pmpi_init_(int *ierror);
 #endif
 
 static int init_was_fortran = -1;
+
+
+/*-------------------------------------------------------------------*/
+/* Statistics output for Debuglevel 5 */
+
+#ifdef DBGLEVEL5 /* additional timing statistics */
+
+#define DBGPRINT5_COUNTS_FCT_ALL(_buf,_num,_div,_out,_routine,_name)\
+{\
+int _sum,_i;\
+_sum=0;\
+for (_i=0; _i<_num; _i++) _sum+=(_buf[_i])._routine;\
+if (_sum>0)\
+{\
+fprintf(_out,"%s\t%li",_name,((_buf[_num])._routine)/_div);\
+for (_i=0; _i<_num; _i++)\
+fprintf(_out,"\t%li",((_buf[_i])._routine)/_div);\
+fprintf(_out,"\n");\
+}\
+}
+
+#define DBGPRINT5_TIMING_FCT_ALL(_buf,_num,_div,_out,_routine,_name)\
+{\
+timing_t _sum;\
+int _i;\
+_sum=0;\
+for (_i=0; _i<_num; _i++) _sum+=(_buf[_i])._routine;\
+if (sum>0)\
+{\
+fprintf(_out,"%s\t%f",_name,(_buf[_num])._routine/_div);\
+for (_i=0; _i<_num; _i++)\
+fprintf(_out,"\t%f",(_buf[_i])._routine/_div);\
+fprintf(_out,"\n");\
+}\
+}
+
+void pnmpi_int_print_countstats()
+{
+	if (DBGCHECK(DBGLEVEL5))
+	{
+		FILE *out;
+		int num, rank, size, i, err;
+		pnmpi_functions_statscount_t *collect_max, *collect_min, *collect_sum;
+		
+		
+		err=MPI_Barrier(MPI_COMM_WORLD);
+		if (err!=MPI_SUCCESS)
+		{
+			DBGPRINT5("MPI Operation failed while writing statistics");
+			return;
+		}
+		err=MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+		if (err!=MPI_SUCCESS)
+		{
+			DBGPRINT5("MPI Operation failed while writing statistics");
+			return;
+		}
+		err=MPI_Comm_size(MPI_COMM_WORLD, &rank);
+		if (err!=MPI_SUCCESS)
+		{
+			DBGPRINT5("MPI Operation failed while writing statistics");
+			return;
+		}
+		
+		num=sizeof(pnmpi_functions_statscount_t)/sizeof(long);
+		
+		if (rank==0)
+		{
+			DBGPRINT5("Writing statistics for counts");
+			out=fopen("pnmpi-stats-count.txt","w");
+		
+			collect_min=(pnmpi_functions_statscount_t*) malloc(sizeof(pnmpi_functions_statscount_t)*(modules.num+1));
+			if (collect_min==NULL)
+			{
+				DBGPRINT5("Memory allocation failed while writing statistics");
+				return;
+			}
+			collect_max=(pnmpi_functions_statscount_t*) malloc(sizeof(pnmpi_functions_statscount_t)*(modules.num+1));
+			if (collect_min==NULL)
+			{
+				DBGPRINT5("Memory allocation failed while writing statistics");
+				return;
+			}
+			collect_sum=(pnmpi_functions_statscount_t*) malloc(sizeof(pnmpi_functions_statscount_t)*(modules.num+1));
+			if (collect_min==NULL)
+			{
+				DBGPRINT5("Memory allocation failed while writing statistics");
+				return;
+			}
+		}
+		
+		for (i=0; i<modules.num; i++)
+		{
+			err=MPI_Reduce(&(modules.module[i]->statscount), &(collect_min[i]), num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
+			if (err!=MPI_SUCCESS)
+			{
+				DBGPRINT5("MPI Operation failed while writing statistics");
+				return;
+			}
+			err=MPI_Reduce(&(modules.module[i]->statscount), &(collect_max[i]), num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
+			if (err!=MPI_SUCCESS)
+			{
+				DBGPRINT5("MPI Operation failed while writing statistics");
+				return;
+			}
+			err=MPI_Reduce(&(modules.module[i]->statscount), &(collect_sum[i]), num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+			if (err!=MPI_SUCCESS)
+			{
+				DBGPRINT5("MPI Operation failed while writing statistics");
+				return;
+			}
+		}
+
+		err=MPI_Reduce(&(pnmpi_totalstats_count), &(collect_min[modules.num]), num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
+		if (err!=MPI_SUCCESS)
+		{
+			DBGPRINT5("MPI Operation failed while writing statistics");
+			return;
+		}
+		err=MPI_Reduce(&(pnmpi_totalstats_count), &(collect_max[modules.num]), num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
+		if (err!=MPI_SUCCESS)
+		{
+			DBGPRINT5("MPI Operation failed while writing statistics");
+			return;
+		}
+		err=MPI_Reduce(&(pnmpi_totalstats_count), &(collect_sum[modules.num]), num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+		if (err!=MPI_SUCCESS)
+		{
+			DBGPRINT5("MPI Operation failed while writing statistics");
+			return;
+		}
+		
+		if (rank==0)
+		{
+			fprintf(out,"AVG\tPnMPI");
+			for (i=0; i<modules.num; i++)
+			{
+				fprintf(out,"\t%s",modules.module[i]->name);
+			}
+			fprintf(out,"\n");
+			DBGPRINT5_COUNTS_ALL_ALL(collect_sum,modules.num,size,out);
+			fprintf(out,"\n");
+		}
+		
+		if (rank==0)
+		{
+			fprintf(out,"MAX\tPnMPI");
+			for (i=0; i<modules.num; i++)
+			{
+				fprintf(out,"\t%s",modules.module[i]->name);
+			}
+			fprintf(out,"\n");
+			DBGPRINT5_COUNTS_ALL_ALL(collect_max,modules.num,1,out);
+			fprintf(out,"\n");
+		}
+		
+		if (rank==0)
+		{
+			fprintf(out,"MIN\tPnMPI");
+			for (i=0; i<modules.num; i++)
+			{
+				fprintf(out,"\t%s",modules.module[i]->name);
+			}
+			fprintf(out,"\n");
+			DBGPRINT5_COUNTS_ALL_ALL(collect_min,modules.num,1,out);
+			fprintf(out,"\n");
+		}
+		
+		if (rank==0)
+		{
+			fprintf(out,"SUM\tPnMPI");
+			for (i=0; i<modules.num; i++)
+			{
+				fprintf(out,"\t%s",modules.module[i]->name);
+			}
+			fprintf(out,"\n");
+			DBGPRINT5_COUNTS_ALL_ALL(collect_sum,modules.num,1,out);
+			
+			fclose(out);
+		}
+		
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+}
+
+#endif
+
+/*-------------------------------------------------------------------*/
+/* Statistics output for Debuglevel 5 */
+ 
+#ifdef DBGLEVEL6 /* additional timing statistics */
+
+void pnmpi_int_print_timingstats()
+{
+	if (DBGCHECK(DBGLEVEL6))
+	{
+	}
+}
+
+#endif
+
 
 /*-------------------------------------------------------------------*/
 /* MPI_Init */
@@ -165,13 +367,6 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
       }
     STATUSPRINT1("");
   }
-
-#ifdef DBGLEVEL6 /* additional timing statistics */
-	if (DBGCHECK(DBGLEVEL6))
-	{
-		_pnmpi_start_time_excl=get_time_ns();
-	}
-#endif
 	
   return returnVal;
 }
@@ -185,11 +380,15 @@ void mpi_init_(int *ierr)
 
   int argc;
   char **argv;
+	
+#ifdef DBGLEVEL6
+	timing_t start_timer;
+#endif
 
 #ifdef DBGLEVEL6 /* additional timing statistics */
 	if (DBGCHECK(DBGLEVEL6))
 	{
-		_pnmpi_start_time_incl=get_time_ns();
+		pnmpi_overall_timing=get_time_ns();
 	}
 #endif
 
@@ -204,7 +403,16 @@ void mpi_init_(int *ierr)
 
   DBGPRINT3("Entering Old Fortran MPI_Init at base level");
 
-  if (init_was_fortran==0)
+#ifdef DBGLEVEL5
+    if (DBGCHECK(DBGLEVEL5))
+		pnmpi_totalstats_timing.MPI_Init++;
+#endif
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		start_timer=get_time_ns();
+#endif
+
+	if (init_was_fortran==0)
     {
       *ierr=MPI_SUCCESS;
       return;
@@ -260,6 +468,12 @@ void mpi_init_(int *ierr)
   argv=NULL;
     
   *ierr=PNMPI_Common_MPI_Init(&argc,&argv);
+
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		pnmpi_totalstats_timing.MPI_Init=get_time_ns()-start_timer;
+#endif
+
   return;
 }
 #endif
@@ -268,23 +482,44 @@ void mpi_init_(int *ierr)
 
 int MPI_Init(int *argc, char ***argv)
 {
-	DBGEARLYINIT();
-
+	int err;
+#ifdef DBGLEVEL6
+	timing_t start_timer;
+#endif
+	
 #ifdef DBGLEVEL6 /* additional timing statistics */
 	if (DBGCHECK(DBGLEVEL6))
 	{
-		_pnmpi_start_time_incl=get_time_ns();
+		pnmpi_overall_timing=get_time_ns();
 	}
 #endif
 
-  DBGPRINT3("Entering Old MPI_Init at base level");
+	DBGEARLYINIT();
 
+	DBGPRINT3("Entering Old MPI_Init at base level");
+	
+#ifdef DBGLEVEL5
+    if (DBGCHECK(DBGLEVEL5))
+		pnmpi_totalstats_timing.MPI_Init++;
+#endif
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		start_timer=get_time_ns();
+#endif
+	
   if (init_was_fortran==1)
     return MPI_SUCCESS;
 
   init_was_fortran=0;
   
-  return PNMPI_Common_MPI_Init(argc,argv);
+  err=PNMPI_Common_MPI_Init(argc,argv);
+
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		pnmpi_totalstats_timing.MPI_Init=get_time_ns()-start_timer;
+#endif
+	
+  return err;
 }
 
 
@@ -303,9 +538,25 @@ int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
         {
           if (pnmpi_function_ptrs.pnmpi_int_MPI_Init[pnmpi_level]!=NULL)
 	    {
-	      DBGPRINT3("Calling a wrapper in MPI_Init at level %i FROM %px",pnmpi_level,&(Internal_XMPI_Init));
-	      res=(pnmpi_function_ptrs.pnmpi_int_MPI_Init)[pnmpi_level](_pnmpi_arg_0, _pnmpi_arg_1);
-	      DBGPRINT3("Done with wrapper in MPI_Init at level %i - reseting to %i",pnmpi_level,start_level);
+#ifdef DBGLEVEL6
+			timing_t start_timer;
+#endif	      
+			
+			DBGPRINT3("Calling a wrapper in MPI_Init at level %i FROM %px",pnmpi_level,&(Internal_XMPI_Init));
+#ifdef DBGLEVEL5
+			if (DBGCHECK(DBGLEVEL5))
+				modules.module[pnmpi_level]->statscount.MPI_Init++;
+#endif
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				start_timer=get_time_ns();
+#endif
+			res=(pnmpi_function_ptrs.pnmpi_int_MPI_Init)[pnmpi_level](_pnmpi_arg_0, _pnmpi_arg_1);
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				modules.module[pnmpi_level]->statstiming.MPI_Init+=get_time_ns()-start_timer;
+#endif
+			DBGPRINT3("Done with wrapper in MPI_Init at level %i - reseting to %i",pnmpi_level,start_level);
 	      pnmpi_level=start_level;
 	      return res;
             }
@@ -337,33 +588,56 @@ int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
 int MPI_Finalize(void)
 {
 	int err;
+#ifdef DBGLEVEL6
+	timing_t start_timer;
+#endif
 	
 	DBGPRINT3("Entering Old MPI_Finalize at base level - Location = %px",&(MPI_Finalize));
 
-#ifdef DBGLEVEL6 /* additional timing statistics */
-	if (DBGCHECK(DBGLEVEL6))
-	{
-		_pnmpi_end_time_excl=get_time_ns();
-	}
+#ifdef DBGLEVEL5
+    if (DBGCHECK(DBGLEVEL5))
+		pnmpi_totalstats_timing.MPI_Finalize++;
+#endif
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		start_timer=get_time_ns();
 #endif
 	
 	if (NOT_ACTIVATED(MPI_Finalize_MAJOR,MPI_Finalize_MINOR))
-		err=PMPI_Finalize();
+	{
+	}
 	else
 		{
 			err=Internal_XMPI_Finalize();
-			PMPI_Finalize();
 		}
+	
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		pnmpi_totalstats_timing.MPI_Finalize=get_time_ns()-start_timer;
+#endif
 	
 #ifdef DBGLEVEL6 /* additional timing statistics */
 	if (DBGCHECK(DBGLEVEL6))
 	{
-		_pnmpi_end_time_incl=get_time_ns();
-		DBGPRINT6("Totaltime Excl: %li ns",_pnmpi_end_time_excl-_pnmpi_start_time_excl);
-		DBGPRINT6("Totaltime Incl: %li ns",_pnmpi_end_time_incl-_pnmpi_start_time_incl);		
+		pnmpi_overall_timing-=get_time_ns();
 	}
 #endif
 	
+#ifdef DBGLEVEL5 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL5))
+	{
+		pnmpi_int_print_countstats();
+	}
+#endif
+	
+#ifdef DBGLEVEL6 /* additional timing statistics */
+	if (DBGCHECK(DBGLEVEL6))
+	{
+		pnmpi_int_print_timingstats();
+	}
+#endif
+
+	err=PMPI_Finalize();
 	return err;
 }
 
@@ -380,9 +654,25 @@ int NQJ_Finalize(void)
         {
           if (pnmpi_function_ptrs.pnmpi_int_MPI_Finalize[pnmpi_level]!=NULL)
 	    {
+#ifdef DBGLEVEL6
+			timing_t start_timer;
+#endif
+			
 	      DBGPRINT3("Calling a wrapper in MPI_Finalize at level %i FROM %px",pnmpi_level,&(Internal_XMPI_Finalize));
-	      res=(pnmpi_function_ptrs.pnmpi_int_MPI_Finalize)[pnmpi_level]();
-	      DBGPRINT3("Done with wrapper in MPI_Finalize at level %i - reseting to %i",pnmpi_level,start_level);
+#ifdef DBGLEVEL5
+			if (DBGCHECK(DBGLEVEL5))
+				modules.module[pnmpi_level]->statscount.MPI_Finalize++;
+#endif
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				start_timer=get_time_ns();
+#endif
+			res=(pnmpi_function_ptrs.pnmpi_int_MPI_Finalize)[pnmpi_level]();
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				modules.module[pnmpi_level]->statstiming.MPI_Finalize+=get_time_ns()-start_timer;
+#endif
+			DBGPRINT3("Done with wrapper in MPI_Finalize at level %i - reseting to %i",pnmpi_level,start_level);
 	      pnmpi_level=start_level;
 	      return res;
             }
@@ -397,6 +687,14 @@ int NQJ_Finalize(void)
   return res;
 }
 
+#ifdef COMPILE_FOR_FORTRAN
+void mpi_finalize_(int *ierr)
+{
+	*ierr=MPI_Finalize();
+	return;
+}
+#endif
+	
 /*-------------------------------------------------------------------*/
 /* MPI_Pcontrol */
 
@@ -452,7 +750,20 @@ int MPI_Pcontrol(int level, ... )
 
   int ret,i;
 
-  DBGPRINT3("Entering Old MPI_Pcontrol at base level");
+#ifdef DBGLEVEL6
+	timing_t start_timer2;
+#endif	      
+
+#ifdef DBGLEVEL5
+    if (DBGCHECK(DBGLEVEL5))
+		pnmpi_totalstats_timing.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		start_timer2=get_time_ns();
+#endif
+
+	DBGPRINT3("Entering Old MPI_Pcontrol at base level");
 
 	/* This mode just delegates the level arg to modules w/pcontrol on. */
 	if ((modules.pcontrol == PNMPI_PCONTROL_INT) ||
@@ -463,11 +774,31 @@ int MPI_Pcontrol(int level, ... )
 			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
 				(modules.module[i]->pcontrol))
 			{
+#ifdef DBGLEVEL6
+				timing_t start_timer;
+#endif	      
+				
+#ifdef DBGLEVEL5
+				if (DBGCHECK(DBGLEVEL5))
+					modules.module[i]->statscount.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+				if (DBGCHECK(DBGLEVEL6))
+					start_timer=get_time_ns();
+#endif
 				/* yes, we need to call this Pcontrol */
 				ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
+#ifdef DBGLEVEL6
+				if (DBGCHECK(DBGLEVEL6))
+					modules.module[i]->statstiming.MPI_Pcontrol+=get_time_ns()-start_timer;
+#endif
 				if (ret!=MPI_SUCCESS) return ret;
 			}
 		}
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
 		return MPI_SUCCESS;
 	}
 	
@@ -505,6 +836,18 @@ int MPI_Pcontrol(int level, ... )
 			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
 				(modules.module[i]->pcontrol))
 			{
+#ifdef DBGLEVEL6
+				timing_t start_timer;
+#endif	      
+				
+#ifdef DBGLEVEL5
+				if (DBGCHECK(DBGLEVEL5))
+					modules.module[i]->statscount.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+				if (DBGCHECK(DBGLEVEL6))
+					start_timer=get_time_ns();
+#endif
 				switch (modules.pcontrol_typed_type)
 				{
 					case PNMPI_PCONTROL_TYPE_INT: 
@@ -522,22 +865,38 @@ int MPI_Pcontrol(int level, ... )
 					default:
 						ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
 				}
+#ifdef DBGLEVEL6
+				if (DBGCHECK(DBGLEVEL6))
+					modules.module[i]->statstiming.MPI_Pcontrol+=get_time_ns()-start_timer2;
+#endif
 				if (ret!=MPI_SUCCESS) return ret;
 			}
 		}
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
 		return MPI_SUCCESS;
 	}
 	
 	
   if (modules.pcontrol==PNMPI_PCONTROL_OFF)
     {
-      return MPI_SUCCESS;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+		return MPI_SUCCESS;
     }
 
   if ((modules.pcontrol==PNMPI_PCONTROL_PNMPI) &&
       (level!=PNMPI_PCONTROL_LEVEL))
     {
-      return PNMPI_ERROR;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+		return PNMPI_ERROR;
     }
 
   /* start processing the variable list arguments */
@@ -603,9 +962,25 @@ int MPI_Pcontrol(int level, ... )
 	      if (pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[mods[i]]!=NULL)
 		{
 		  /* yes, we need to call this Pcontrol */
-		  ret=PNMPI_Internal_CallVarg(pnmpi_function_ptrs.
+#ifdef DBGLEVEL6
+			timing_t start_timer;
+#endif	      
+			
+#ifdef DBGLEVEL5
+			if (DBGCHECK(DBGLEVEL5))
+				modules.module[i]->statscount.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				start_timer=get_time_ns();
+#endif
+			ret=PNMPI_Internal_CallVarg(pnmpi_function_ptrs.
 					      pnmpi_int_MPI_Pcontrol[mods[i]],
 					      actlevel,start,leni);
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				modules.module[i]->statstiming.MPI_Pcontrol+=get_time_ns()-start_timer2;
+#endif
 		}
 	      else
 		ret=MPI_SUCCESS;
@@ -616,7 +991,11 @@ int MPI_Pcontrol(int level, ... )
 
       va_end(va_alist);
 
-      return error;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+		return error;
     }
   else
     {
@@ -654,18 +1033,37 @@ int MPI_Pcontrol(int level, ... )
 	       (modules.module[i]->pcontrol)))
 	    {
 	      /* yes, we need to call this Pcontrol */
-	      
-	      ret=PNMPI_Internal_CallVarg(pnmpi_function_ptrs.
+#ifdef DBGLEVEL6
+			timing_t start_timer;
+#endif	      
+			
+#ifdef DBGLEVEL5
+			if (DBGCHECK(DBGLEVEL5))
+				modules.module[i]->statscount.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				start_timer=get_time_ns();
+#endif
+			ret=PNMPI_Internal_CallVarg(pnmpi_function_ptrs.
 					  pnmpi_int_MPI_Pcontrol[i],
 					  level,start,leni);
-	      if (ret!=MPI_SUCCESS) error=ret;
+#ifdef DBGLEVEL6
+			if (DBGCHECK(DBGLEVEL6))
+				modules.module[i]->statstiming.MPI_Pcontrol+=get_time_ns()-start_timer2;
+#endif
+			if (ret!=MPI_SUCCESS) error=ret;
 	    }
 	}
 
 #endif /*else EXPERIMENTAL_UNWIND*/
       va_end(va_alist);
 
-      return error;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+		return error;
     }
 }
 
@@ -674,19 +1072,41 @@ void mpi_pcontrol_(int *level,int *ierr)
 {
   int i,ret;
 
-  DBGPRINT3("Entering Old Fortran MPI_Pcontrol at base level");
+#ifdef DBGLEVEL6
+	timing_t start_timer2;
+#endif
+
+#ifdef DBGLEVEL5
+    if (DBGCHECK(DBGLEVEL5))
+		pnmpi_totalstats_timing.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+    if (DBGCHECK(DBGLEVEL6))
+		start_timer2=get_time_ns();
+#endif
+
+	DBGPRINT3("Entering Old Fortran MPI_Pcontrol at base level");
 
   if (modules.pcontrol==PNMPI_PCONTROL_OFF)
     {
-      *ierr=MPI_SUCCESS;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+		*ierr=MPI_SUCCESS;
       return;
     }
   if ((modules.pcontrol==PNMPI_PCONTROL_PNMPI) ||
-      ((modules.pcontrol==PNMPI_PCONTROL_MIXED) && 
+	  (modules.pcontrol==PNMPI_PCONTROL_TYPED) ||
+	  ((modules.pcontrol==PNMPI_PCONTROL_MIXED) && 
        (*level==PNMPI_PCONTROL_LEVEL)))
     {
       /* can't do that in Fortran */
-      *ierr=PNMPI_ERROR;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+		*ierr=PNMPI_ERROR;
       return;
     }
   
@@ -697,14 +1117,33 @@ void mpi_pcontrol_(int *level,int *ierr)
 	  ((modules.pcontrol==PNMPI_PCONTROL_ON) ||
 	   (modules.module[i]->pcontrol)))
 	{
+#ifdef DBGLEVEL6
+		timing_t start_timer;
+#endif
 	  /* yes, we need to call this Pcontrol */
-	  ret=PNMPI_Internal_CallVarg(pnmpi_function_ptrs.
+#ifdef DBGLEVEL5
+		if (DBGCHECK(DBGLEVEL5))
+		    modules.module[i]->statscount.MPI_Pcontrol++;
+#endif
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+		    start_timer=get_time_ns();
+#endif
+		ret=PNMPI_Internal_CallVarg(pnmpi_function_ptrs.
 					pnmpi_int_MPI_Pcontrol[i],
 					*level,NULL,0);
-	  if (ret!=MPI_SUCCESS) *ierr=ret;
+#ifdef DBGLEVEL6
+		if (DBGCHECK(DBGLEVEL6))
+		    modules.module[i]->statstiming.MPI_Pcontrol+=get_time_ns()-start_timer2;
+#endif
+		if (ret!=MPI_SUCCESS) *ierr=ret;
 	}
     }
-  return;
+#ifdef DBGLEVEL6
+	if (DBGCHECK(DBGLEVEL6))
+		pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
+#endif
+	return;
 }
 
 /*-------------------------------------------------------------------*/
@@ -717,7 +1156,27 @@ double mpi_wtick_(void)
   if (NOT_ACTIVATED(MPI_Wtick_MAJOR,MPI_Wtick_MINOR))
     return PMPI_Wtick();
   else
-    return Internal_XMPI_Wtick();
+  {
+	  double ret;
+#ifdef DBGLEVEL6
+	  timing_t start_timer;
+#endif
+	  
+#ifdef DBGLEVEL5
+	  if (DBGCHECK(DBGLEVEL5))
+		  pnmpi_totalstats_timing.MPI_Wtick++;
+#endif
+#ifdef DBGLEVEL6
+	  if (DBGCHECK(DBGLEVEL6))
+		  start_timer=get_time_ns();
+#endif
+	  ret=Internal_XMPI_Wtick();
+#ifdef DBGLEVEL6
+	  if (DBGCHECK(DBGLEVEL6))
+		  pnmpi_totalstats_timing.MPI_Wtick=get_time_ns()-start_timer;
+#endif
+	  return ret;
+  }
 }
 
 double mpi_wtime_(void)
@@ -727,7 +1186,27 @@ double mpi_wtime_(void)
   if (NOT_ACTIVATED(MPI_Wtime_MAJOR,MPI_Wtime_MINOR))
     return PMPI_Wtime();
   else
-    return Internal_XMPI_Wtime();
+  {
+	  double ret;
+#ifdef DBGLEVEL6
+	  timing_t start_timer;
+#endif
+	  
+#ifdef DBGLEVEL5
+	  if (DBGCHECK(DBGLEVEL5))
+		  pnmpi_totalstats_timing.MPI_Wtime++;
+#endif
+#ifdef DBGLEVEL6
+	  if (DBGCHECK(DBGLEVEL6))
+		  start_timer=get_time_ns();
+#endif
+	  ret=Internal_XMPI_Wtime();
+#ifdef DBGLEVEL6
+	  if (DBGCHECK(DBGLEVEL6))
+		  pnmpi_totalstats_timing.MPI_Wtime=get_time_ns()-start_timer;
+#endif
+	  return ret;
+  }
 }
 
 

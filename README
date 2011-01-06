@@ -192,7 +192,7 @@ After the adpet_utils and built and installed, their
 location should be specified during the CMake 
 configuration with:
 
--DHAVE_ADEPT_UTILS=<path to adept_utils>
+-DADEPT_UTILS=<path to adept_utils>
 
 Once PnMPI is compiled with adpet_utils, the additional
 timing statistics can be enabled dynamically (see 
