@@ -135,7 +135,7 @@ void pnmpi_int_print_countstats()
 			DBGPRINT5("MPI Operation failed while writing statistics");
 			return;
 		}
-		err=MPI_Comm_size(MPI_COMM_WORLD, &rank);
+		err=MPI_Comm_size(MPI_COMM_WORLD, &size);
 		if (err!=MPI_SUCCESS)
 		{
 			DBGPRINT5("MPI Operation failed while writing statistics");
