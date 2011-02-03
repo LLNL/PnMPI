@@ -12,7 +12,8 @@
 # @authors Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
-ADD_DEFINITIONS("-DPROTO_FILE=\"../wrapper/mpi_proto_def\"")
-ADD_EXECUTABLE(${TARGET_WRAPPERGEN} readproto.c wrappergen.c args.c)
+set(CMAKE_C_COMPILER gcc)
+add_definitions("-DPROTO_FILE=\"../wrapper/mpi_proto_def\"")
+add_executable(${TARGET_WRAPPERGEN} readproto.c wrappergen.c args.c)
 
  

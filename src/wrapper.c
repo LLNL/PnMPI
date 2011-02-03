@@ -405,7 +405,7 @@ void mpi_init_(int *ierr)
 
 #ifdef DBGLEVEL5
     if (DBGCHECK(DBGLEVEL5))
-		pnmpi_totalstats_timing.MPI_Init++;
+		pnmpi_totalstats_count.MPI_Init++;
 #endif
 #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
@@ -500,7 +500,7 @@ int MPI_Init(int *argc, char ***argv)
 	
 #ifdef DBGLEVEL5
     if (DBGCHECK(DBGLEVEL5))
-		pnmpi_totalstats_timing.MPI_Init++;
+		pnmpi_totalstats_count.MPI_Init++;
 #endif
 #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
@@ -596,7 +596,7 @@ int MPI_Finalize(void)
 
 #ifdef DBGLEVEL5
     if (DBGCHECK(DBGLEVEL5))
-		pnmpi_totalstats_timing.MPI_Finalize++;
+		pnmpi_totalstats_count.MPI_Finalize++;
 #endif
 #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
@@ -756,7 +756,7 @@ int MPI_Pcontrol(int level, ... )
 
 #ifdef DBGLEVEL5
     if (DBGCHECK(DBGLEVEL5))
-		pnmpi_totalstats_timing.MPI_Pcontrol++;
+		pnmpi_totalstats_count.MPI_Pcontrol++;
 #endif
 #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
@@ -1078,7 +1078,7 @@ void mpi_pcontrol_(int *level,int *ierr)
 
 #ifdef DBGLEVEL5
     if (DBGCHECK(DBGLEVEL5))
-		pnmpi_totalstats_timing.MPI_Pcontrol++;
+		pnmpi_totalstats_count.MPI_Pcontrol++;
 #endif
 #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
@@ -1164,7 +1164,7 @@ double mpi_wtick_(void)
 	  
 #ifdef DBGLEVEL5
 	  if (DBGCHECK(DBGLEVEL5))
-		  pnmpi_totalstats_timing.MPI_Wtick++;
+		  pnmpi_totalstats_count.MPI_Wtick++;
 #endif
 #ifdef DBGLEVEL6
 	  if (DBGCHECK(DBGLEVEL6))
@@ -1194,7 +1194,7 @@ double mpi_wtime_(void)
 	  
 #ifdef DBGLEVEL5
 	  if (DBGCHECK(DBGLEVEL5))
-		  pnmpi_totalstats_timing.MPI_Wtime++;
+		  pnmpi_totalstats_count.MPI_Wtime++;
 #endif
 #ifdef DBGLEVEL6
 	  if (DBGCHECK(DBGLEVEL6))

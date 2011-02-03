@@ -205,6 +205,7 @@ void dbg_debugprint4(char *format,...)
     }
 }
 
+#ifdef DBGLEVEL5
 void dbg_debugprint5(char *format,...)
 {
   va_list va_alist;
@@ -219,7 +220,9 @@ void dbg_debugprint5(char *format,...)
       va_end(va_alist);
     }
 }
+#endif
 
+#ifdef DBGLEVEL6
 void dbg_debugprint6(char *format,...)
 {
   va_list va_alist;
@@ -234,6 +237,8 @@ void dbg_debugprint6(char *format,...)
       va_end(va_alist);
     }
 }
+#endif
+
 #endif /* else of not def DBGLEVEL */
 
 #endif /* __GNUC__*/

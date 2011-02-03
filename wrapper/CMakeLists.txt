@@ -19,6 +19,7 @@ SET (WRAPPERH "wrapper_h.w")
 SET (NEWSTACK "newstack_h.w")
 
 #Target for "extrargs" tool from P^nMPI
+set(CMAKE_C_COMPILER gcc)
 ADD_EXECUTABLE(${TARGET_EXTRARGS} extrargs.c)
 ADD_DEPENDENCIES(${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
 
