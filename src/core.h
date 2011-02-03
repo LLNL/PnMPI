@@ -41,8 +41,8 @@ Boston, MA 02111-1307 USA
 #include "pnmpi.h"
 #include "pnmpimod.h"
 
-#include "wrapper.h"
 #include "debug.h"
+#include "wrapper.h"
 
 /* Private Interface for PNMPI */
 
@@ -100,6 +100,12 @@ typedef struct module_def_d
   module_servlist_p services;
   module_globlist_p globals;
   int stack_delimiter;
+#ifdef DBGLEVEL5
+	pnmpi_functions_statscount_t statscount;
+#endif
+#ifdef DBGLEVEL6
+	pnmpi_functions_statstiming_t statstiming;
+#endif
 } module_def_t;
 
 typedef struct modules_d
@@ -130,7 +136,9 @@ void pnmpi_PreInit(void);
 extern int iargc_(void);
 extern char *getarg_(int*,char*,int);
 
-#define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods)    \
+#ifndef DBGLEVEL6
+#ifndef DBGLEVEL5
+#define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods,mpiroutine)    \
 {                                                                                        \
   int __i;                                                                                 \
   DBGPRINT2("Initialize stack for %s\n",routine);                                        \
@@ -144,3 +152,78 @@ extern char *getarg_(int*,char*,int);
       DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
     }                                                                                    \
 }
+#endif
+#endif
+
+#ifndef DBGLEVEL6
+#ifdef DBGLEVEL5
+#define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods,mpiroutine)    \
+{                                                                                        \
+int __i;                                                                                 \
+DBGPRINT2("Initialize stack for %s\n",routine);                                        \
+if (pnmpi_function_ptrs.stack==NULL)                                                   \
+pnmpi_function_ptrs.stack=(r_type*) malloc(mods.num*sizeof(r_type));              \
+if (pnmpi_function_ptrs.stack==NULL)                                                   \
+{ WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
+for (__i=0; __i<mods.num; __i++)                                                          \
+{ pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
+DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
+if (DBGCHECK(DBGLEVEL5)) \
+  mods.module[__i]->statscount.mpiroutine=0; \
+}                                                                                    \
+if (DBGCHECK(DBGLEVEL5)) \
+  pnmpi_totalstats_count.mpiroutine=0; \
+}
+#endif
+#endif
+
+#ifdef DBGLEVEL6
+#ifndef DBGLEVEL5
+#define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods,mpiroutine)    \
+{                                                                                        \
+int __i;                                                                                 \
+DBGPRINT2("Initialize stack for %s\n",routine);                                        \
+if (pnmpi_function_ptrs.stack==NULL)                                                   \
+pnmpi_function_ptrs.stack=(r_type*) malloc(mods.num*sizeof(r_type));              \
+if (pnmpi_function_ptrs.stack==NULL)                                                   \
+{ WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
+for (__i=0; __i<mods.num; __i++)                                                          \
+{ pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
+DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
+if (DBGCHECK(DBGLEVEL6)) \
+  mods.module[__i]->statstiming.mpiroutine=0; \
+}                                                                                    \
+if (DBGCHECK(DBGLEVEL6)) \
+pnmpi_totalstats_timing.mpiroutine=0; \
+}
+#endif
+#endif
+
+#ifdef DBGLEVEL6
+#ifdef DBGLEVEL5
+#define INITIALIZE_FUNCTION_STACK(routine,major,minor,r_type,stack,mods,mpiroutine)    \
+{                                                                                        \
+int __i;                                                                                 \
+DBGPRINT2("Initialize stack for %s\n",routine);                                        \
+if (pnmpi_function_ptrs.stack==NULL)                                                   \
+pnmpi_function_ptrs.stack=(r_type*) malloc(mods.num*sizeof(r_type));              \
+if (pnmpi_function_ptrs.stack==NULL)                                                   \
+{ WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
+for (__i=0; __i<mods.num; __i++)                                                          \
+{ pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
+DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
+if (DBGCHECK(DBGLEVEL5)) \
+  mods.module[__i]->statscount.mpiroutine=0; \
+if (DBGCHECK(DBGLEVEL6)) \
+  mods.module[__i]->statstiming.mpiroutine=0; \
+}                                                                                    \
+if (DBGCHECK(DBGLEVEL5)) \
+pnmpi_totalstats_count.mpiroutine=0; \
+if (DBGCHECK(DBGLEVEL6)) \
+pnmpi_totalstats_timing.mpiroutine=0; \
+}
+#endif
+#endif

@@ -48,6 +48,7 @@ using namespace std;
 
 PNMPIMOD_Datatype_getReference_t dt_get;
 PNMPIMOD_Datatype_delReference_t dt_del;
+PNMPIMOD_Datatype_getSize_t dt_size;
 
 int verbosity_level;
 
@@ -181,7 +182,6 @@ int MPI_Init(int *argc, char ***argv)
   char name[1000];
 
 
-
   /* query the datatype module */
 
   err=PNMPI_Service_GetModuleByName(PNMPI_MODULE_DATATYPE,&handle_dt);
@@ -193,12 +193,17 @@ int MPI_Init(int *argc, char ***argv)
     return err;
   dt_get=(PNMPIMOD_Datatype_getReference_t) ((void*)serv.fct);
 
-  err=PNMPI_Service_GetServiceByName(handle_dt,"delDatatypeReference","p",&serv);
-  if (err!=PNMPI_SUCCESS)
-    return err;  
-  dt_del=(PNMPIMOD_Datatype_delReference_t) ((void*)serv.fct);
-
-
+	err=PNMPI_Service_GetServiceByName(handle_dt,"delDatatypeReference","p",&serv);
+	if (err!=PNMPI_SUCCESS)
+		return err;  
+	dt_del=(PNMPIMOD_Datatype_delReference_t) ((void*)serv.fct);
+	
+	err=PNMPI_Service_GetServiceByName(handle_dt,"getDatatypeSize","mp",&serv);
+	if (err!=PNMPI_SUCCESS)
+		return err;  
+	dt_size=(PNMPIMOD_Datatype_getSize_t) ((void*)serv.fct);
+	
+	
   /* query the request module */
 
   err=PNMPI_Service_GetModuleByName(PNMPI_MODULE_REQUEST,&handle_req);

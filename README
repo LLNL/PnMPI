@@ -174,19 +174,44 @@ If your system has no Fortran compiler you need to manually
 disable all Fortran features of P^nMPI as follows:
 cmake -DPNMPI_ENABLE_FORTRAN=False ..
 
-C4) Compile the project
+C4) Adding ADEPT Timing Option
+------------------------------
+
+PnMPI contains the ability to measure internal timing 
+information. This includes measurements on how often
+which wrappers have been invoked and how long they took.
+
+To enable this option, PnMPI must be configured with
+additional timing routines, which are part of the
+adept-utils package. The package can be downloaded
+from 
+
+TBD
+
+After the adpet_utils and built and installed, their
+location should be specified during the CMake 
+configuration with:
+
+-DADEPT_UTILS=<path to adept_utils>
+
+Once PnMPI is compiled with adpet_utils, the additional
+timing statistics can be enabled dynamically (see 
+Section E).
+
+
+C5) Compile the project
 -----------------------
 
 Run "make" in the build directory created above.
 
 To get a verbose build, use "make VERBOSE=TRUE"
 
-C5) Install the project
+C6) Install the project
 -----------------------
 
 Run "make install"
 
-C6) Installed structure
+C7) Installed structure
 -----------------------
 
 All central components will now be in <install path>, the 
@@ -275,7 +300,27 @@ being linked to multiple times). All example Makefiles that
 are included in this distribution are configured in this way.
 
 
-E) Configuration and Demo codes
+E) Debug Options
+================
+
+The debug build of PnMPI includes debug print options, that can 
+be dynamically enabled. To control it, the environment variable 
+DBGLEVEL can be set to any combination of the following flags:
+
+0x01 - Trace all entry and exit points for PnMPI
+0x02 - Additional information for module load and instantiation
+0x04 - Trace all entry and exit points for all modules
+0x08 - Debug information for parsing and module arguments
+0x10 - Collect and print statistics about module invocations
+0x20 - Collect and print statistics about module timings
+(only available if compiled with adept_utils - see Section C4)
+
+Additionally, the printouts can be restricted to a single 
+node (except for the 0x10 and 0x20, which always only print
+on node 0) by setting the variable DBGNODE to an MPI rank.
+
+
+F) Configuration and Demo codes
 ===============================
 
 The P^nMPI distribution includes two demo codes (in C and F77).
@@ -373,8 +418,7 @@ some environment variables. Here is an example:
 mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH -cwd $PWD simple-pn
 
 
-
-F) Using of MPI_Pcontrol
+G) Using of MPI_Pcontrol
 ========================
 
 The MPI standard defines the MPI_Pcontrol, which does not have any

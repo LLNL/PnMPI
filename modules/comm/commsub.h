@@ -42,6 +42,7 @@ extern "C" {
 
 extern PNMPIMOD_Datatype_getReference_t dt_get;
 extern PNMPIMOD_Datatype_delReference_t dt_del;
+extern PNMPIMOD_Datatype_getSize_t dt_size;
 extern int verbosity_level;
 
 extern int pnmpimod_comm_collective_support;

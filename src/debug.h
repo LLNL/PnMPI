@@ -37,6 +37,10 @@ Boston, MA 02111-1307 USA
 /*---------------------------------------------------*/
 /* GNU */
 
+#ifdef HAVE_ADEPT_UTILS
+#include <timing.h>
+#endif
+
 #ifdef __GNUC__
 
 #ifdef NOSTATUS
@@ -62,13 +66,16 @@ Boston, MA 02111-1307 USA
 							   __FILE__,__LINE__,##args); exit(1); } }
 #endif
 
-
+#ifdef DBGLEVEL
 #define DBGLEVEL1  0x0001  /* entry and exit prints */
 #define DBGLEVEL2  0x0002  /* module load and instantiation */
 #define DBGLEVEL3  0x0004  /* entry and exit of layers */
 #define DBGLEVEL4  0x0008  /* arguments and parse information */
 #define DBGLEVEL5  0x0010  /* print count statistics for each module */
+#ifdef HAVE_ADEPT_UTILS
 #define DBGLEVEL6  0x0020  /* print timing statistics for each module */
+#endif
+#endif /*DBGLEVEL*/
 
 #define DBGPRINT1(format,args...) DBGPRINT(DBGLEVEL1,format,##args)
 #define DBGPRINT2(format,args...) DBGPRINT(DBGLEVEL2,format,##args)
@@ -84,6 +91,7 @@ extern int _dbg_cur_node;
 #define DBGPRINT(level,format,args...) \
          { if ((level&_dbg_cur_level) && ((_dbg_cur_node==_print_node)||(_print_node<0)||(_dbg_cur_node<0))) \
               DOPRINT("L%04x "format,_dbg_cur_level,##args); }
+#define DBGCHECK(level) ((level&_dbg_cur_level)!=0)
 #define DBGLATEINIT() {}
 #define DBGEARLYINIT()                      \
 {                                           \
@@ -98,6 +106,7 @@ extern int _dbg_cur_node;
 #else
 
 #define DBGPRINT(level,format,args...)
+#define DBGCHECK(level) (0)
 #define DBGEARLYINIT()
 #define DBGLATEINIT()
 #endif
