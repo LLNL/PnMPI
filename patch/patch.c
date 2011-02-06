@@ -989,7 +989,11 @@ copy_unknown_element:
 	  l->obfd = output_bfd;
 
 	  *ptr = output_bfd;
+#ifdef NEW_BFD
+	  ptr = &output_bfd->archive_next;
+#else
 	  ptr = &output_bfd->next;
+#endif
 
 	  last_element = this_element;
 
