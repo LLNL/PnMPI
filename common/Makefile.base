@@ -127,3 +127,6 @@ ifeq ($(findstring OSX,$(OS)),OSX)
 
 endif
 
+CFLAGS += $(USER_CFLAGS)
+CCFLAGS += $(USER_CCFLAGS)
+
