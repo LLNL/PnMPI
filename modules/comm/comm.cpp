@@ -1,41 +1,6 @@
-/*
-Copyright (c) 2008
-Lawrence Livermore National Security, LLC. 
-
-Produced at the Lawrence Livermore National Laboratory. 
-Written by Martin Schulz, schulzm@llnl.gov.
-LLNL-CODE-402774,
-All rights reserved.
-
-This file is part of P^nMPI. 
-
-Please also read the file "LICENSE" included in this package for 
-Our Notice and GNU Lesser General Public License.
-
-This program is free software; you can redistribute it and/or 
-modify it under the terms of the GNU General Public License 
-(as published by the Free Software Foundation) version 2.1 
-dated February 1999.
-
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY 
-OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-terms and conditions of the GNU General Public License for more 
-details.
-
-You should have received a copy of the GNU Lesser General Public 
-License along with this program; if not, write to the 
-
-Free Software Foundation, Inc., 
-59 Temple Place, Suite 330, 
-Boston, MA 02111-1307 USA
-*/
-
 #include <iostream>
 #include <map>
 #include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 using namespace std;
 
@@ -56,8 +21,7 @@ PNMPIMOD_Requests_RequestStorage_t req_add;
 PNMPIMOD_Requests_MapRequest_t PNMPIMOD_requestmap;
 
 static int offset,*StatusOffsetInRequest;
-static int *TotalStatusExtension;
-
+int *TotalStatusExtension;
 
 #define COMM_REQ_FROM_STATUS(status) REQ_FROM_STATUS(status,(*StatusOffsetInRequest))
 #define COMM_INFO_FROM_STATUS(status,type) INFO_FROM_STATUS(status,(*StatusOffsetInRequest),type)
@@ -74,6 +38,10 @@ static int *TotalStatusExtension;
 #if 0
 
 void COMM_ALL_INIT(int argc, char**argv) 
+{
+}
+
+void COMM_ALL_PREINIT(int argc, char**argv) 
 {
 }
 
@@ -107,7 +75,8 @@ void RECV_P2P_ASYNC_MID1(void *buf, int count, MPI_Datatype dt, int node, int ta
 }
 
 void RECV_P2P_END(void *buf, int count, MPI_Datatype dt, int node, int tag, 
-		  MPI_Comm comm, int err, void **ptr, void **midptr, int type) 
+                  MPI_Comm comm, int err, void **ptr, void **midptr, int type,
+                  MPI_Status *statusarray, int numindex, int index) 
 {
 }
 
@@ -181,7 +150,6 @@ int MPI_Init(int *argc, char ***argv)
   char *vlevel_s;
   char name[1000];
 
-
   /* query the datatype module */
 
   err=PNMPI_Service_GetModuleByName(PNMPI_MODULE_DATATYPE,&handle_dt);
@@ -193,17 +161,18 @@ int MPI_Init(int *argc, char ***argv)
     return err;
   dt_get=(PNMPIMOD_Datatype_getReference_t) ((void*)serv.fct);
 
-	err=PNMPI_Service_GetServiceByName(handle_dt,"delDatatypeReference","p",&serv);
-	if (err!=PNMPI_SUCCESS)
-		return err;  
-	dt_del=(PNMPIMOD_Datatype_delReference_t) ((void*)serv.fct);
-	
-	err=PNMPI_Service_GetServiceByName(handle_dt,"getDatatypeSize","mp",&serv);
-	if (err!=PNMPI_SUCCESS)
-		return err;  
-	dt_size=(PNMPIMOD_Datatype_getSize_t) ((void*)serv.fct);
-	
-	
+  err=PNMPI_Service_GetServiceByName(handle_dt,"delDatatypeReference","p",&serv);
+  if (err!=PNMPI_SUCCESS)
+    return err;  
+  dt_del=(PNMPIMOD_Datatype_delReference_t) ((void*)serv.fct);
+
+  err=PNMPI_Service_GetServiceByName(handle_dt,"getDatatypeSize","mp",&serv);
+  if (err!=PNMPI_SUCCESS)
+    return err;  
+  dt_size=(PNMPIMOD_Datatype_getSize_t) ((void*)serv.fct);
+
+
+
   /* query the request module */
 
   err=PNMPI_Service_GetModuleByName(PNMPI_MODULE_REQUEST,&handle_req);
@@ -264,8 +233,7 @@ int MPI_Init(int *argc, char ***argv)
 
   offset=req_add(sizeof(void*));
 
-  /* call the init routines */
-
+  COMM_ALL_PREINIT(*argc, *argv);
   defer_err=PMPI_Init(argc,argv);
 
   if (defer_err==MPI_SUCCESS)
@@ -394,7 +362,7 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag, M
   err=PMPI_Recv(buf,count,datatype,source,tag,comm,status);
   PMPI_Get_count(status, datatype, &count);
   RECV_P2P_END(buf,count,datatype,status->MPI_SOURCE,status->MPI_TAG,comm,status->MPI_ERROR,
-	       &ptr,NULL,PNMPIMOD_COMM_P2P);
+               &ptr,NULL,PNMPIMOD_COMM_P2P, status, 1, -1);
   return err;
 }
 
@@ -408,9 +376,6 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, 
   void *ptr;
   RECV_P2P_START(buf,count,datatype,source,tag,comm,&ptr,PNMPIMOD_COMM_ASYNC_P2P);
   err=PMPI_Irecv(buf,count,datatype,source,tag,comm,request);
-#ifdef REQDEBUG
-  printf("Found: req %i, offset %i, addr to store %x\n",*request,offset,(((void*)((((PNMPIMOD_Requests_Parameters_t*)*RequestTableBase)[(MyReq_t)*request].data)+offset))));
-#endif
   RECV_P2P_ASYNC_MID1(buf,count,datatype,source,tag,comm,err,&ptr,PNMPIMOD_COMM_ASYNC_P2P);
   REQ_STORAGE(*request,PNMPIMOD_requestmap,offset,void*,ptr);
   return err;
@@ -434,7 +399,7 @@ int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, 
   SEND_P2P_END(sendbuf,sendcount,sendtype,dest,sendtag,comm,err,&sptr,NULL,PNMPIMOD_COMM_P2P);
   PMPI_Get_count(status, recvtype, &recvcount);
   RECV_P2P_END(recvbuf,recvcount,recvtype,status->MPI_SOURCE,status->MPI_TAG,comm,status->MPI_ERROR,
-	       &rptr,NULL,PNMPIMOD_COMM_P2P);
+               &rptr,NULL,PNMPIMOD_COMM_P2P,status,1,0);
   return err;
 }
 
@@ -450,7 +415,7 @@ int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, 
   SEND_P2P_END(buf,count,datatype,dest,sendtag,comm,err,&sptr,NULL,PNMPIMOD_COMM_P2P);
   PMPI_Get_count(status, datatype, &count);
   RECV_P2P_END(buf,count,datatype,status->MPI_SOURCE,status->MPI_TAG,comm,status->MPI_ERROR,
-	       &rptr,NULL,PNMPIMOD_COMM_P2P);
+               &rptr,NULL,PNMPIMOD_COMM_P2P,status,1,0);
   return err;
 }
 
@@ -466,6 +431,7 @@ int MPI_Wait(MPI_Request *request, MPI_Status *status)
   COMM_P2P_ASYNC_MID2(1,request,PNMPIMOD_COMM_WAIT|PNMPIMOD_COMM_ONE,&mid2ptr);
 
   err=PMPI_Wait(request,status);
+
   if (COMM_REQ_FROM_STATUS(status).inreq!=MPI_REQUEST_NULL)  
   {
   if (COMM_REQ_FROM_STATUS(status).type==PNMPIMOD_REQUESTS_RECV)
@@ -473,28 +439,28 @@ int MPI_Wait(MPI_Request *request, MPI_Status *status)
       int count;
       PMPI_Get_count(status, COMM_REQ_FROM_STATUS(status).datatype, &count);
       RECV_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		   count,
-		   COMM_REQ_FROM_STATUS(status).datatype,
-		   status->MPI_SOURCE,
-		   status->MPI_TAG,
-		   COMM_REQ_FROM_STATUS(status).comm,
-		   status->MPI_ERROR,
-		   &(COMM_INFO_FROM_STATUS(status,void*)),
-		   &mid2ptr,
-		   PNMPIMOD_COMM_ASYNC_P2P);
+                   count,
+                   COMM_REQ_FROM_STATUS(status).datatype,
+                   status->MPI_SOURCE,
+                   status->MPI_TAG,
+                   COMM_REQ_FROM_STATUS(status).comm,
+                   status->MPI_ERROR,
+                   &(COMM_INFO_FROM_STATUS(status,void*)),
+                   &mid2ptr,
+                   PNMPIMOD_COMM_ASYNC_P2P,status, 1, 0);
     }
   else
     {
       SEND_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		   COMM_REQ_FROM_STATUS(status).count,
-		   COMM_REQ_FROM_STATUS(status).datatype,
-		   COMM_REQ_FROM_STATUS(status).node,
-		   COMM_REQ_FROM_STATUS(status).tag,
-		   COMM_REQ_FROM_STATUS(status).comm,
-		   status->MPI_ERROR,
-		   &(COMM_INFO_FROM_STATUS(status,void*)),
-		   &mid2ptr,
-		   PNMPIMOD_COMM_ASYNC_P2P);
+                   COMM_REQ_FROM_STATUS(status).count,
+                   COMM_REQ_FROM_STATUS(status).datatype,
+                   COMM_REQ_FROM_STATUS(status).node,
+                   COMM_REQ_FROM_STATUS(status).tag,
+                   COMM_REQ_FROM_STATUS(status).comm,
+                   status->MPI_ERROR,
+                   &(COMM_INFO_FROM_STATUS(status,void*)),
+                   &mid2ptr,
+                   PNMPIMOD_COMM_ASYNC_P2P);
     }
   }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_WAIT|PNMPIMOD_COMM_ONE);
@@ -517,28 +483,29 @@ int MPI_Waitany(int count, MPI_Request *array_of_requests, int *index, MPI_Statu
       int count;
       PMPI_Get_count(status, COMM_REQ_FROM_STATUS(status).datatype, &count);
       RECV_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		   count,
-		   COMM_REQ_FROM_STATUS(status).datatype,
-		   status->MPI_SOURCE,
-		   status->MPI_TAG,
-		   COMM_REQ_FROM_STATUS(status).comm,
-		   status->MPI_ERROR,
-		   &(COMM_INFO_FROM_STATUS(status,void*)),
-		   &mid2ptr,
-		   PNMPIMOD_COMM_ASYNC_P2P);
+                   count,
+                   COMM_REQ_FROM_STATUS(status).datatype,
+                   status->MPI_SOURCE,
+                   status->MPI_TAG,
+                   COMM_REQ_FROM_STATUS(status).comm,
+                   status->MPI_ERROR,
+                   &(COMM_INFO_FROM_STATUS(status,void*)),
+                   &mid2ptr,
+                   PNMPIMOD_COMM_ASYNC_P2P,
+                   status,1,0);
     }
   else
     {
       SEND_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		   COMM_REQ_FROM_STATUS(status).count,
-		   COMM_REQ_FROM_STATUS(status).datatype,
-		   COMM_REQ_FROM_STATUS(status).node,
-		   COMM_REQ_FROM_STATUS(status).tag,
-		   COMM_REQ_FROM_STATUS(status).comm,
-		   status->MPI_ERROR,
-		   &(COMM_INFO_FROM_STATUS(status,void*)),
-		   &mid2ptr,
-		   PNMPIMOD_COMM_ASYNC_P2P);
+                   COMM_REQ_FROM_STATUS(status).count,
+                   COMM_REQ_FROM_STATUS(status).datatype,
+                   COMM_REQ_FROM_STATUS(status).node,
+                   COMM_REQ_FROM_STATUS(status).tag,
+                   COMM_REQ_FROM_STATUS(status).comm,
+                   status->MPI_ERROR,
+                   &(COMM_INFO_FROM_STATUS(status,void*)),
+                   &mid2ptr,
+                   PNMPIMOD_COMM_ASYNC_P2P);
     }
   }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_WAIT|PNMPIMOD_COMM_ANY);
@@ -554,36 +521,38 @@ int MPI_Waitsome(int count, MPI_Request *array_of_requests, int *outcount, int *
 
   err=PMPI_Waitsome(count,array_of_requests,outcount,array_of_indices,array_of_statuses);
   for (i=0; i<*outcount; i++)
-  if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).inreq!=MPI_REQUEST_NULL)  
+    if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).inreq!=MPI_REQUEST_NULL)  
     {
       if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).type==PNMPIMOD_REQUESTS_RECV)
-	{
-	  int c;
-	  PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
-	  RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-		       c,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-		       array_of_statuses[i].MPI_SOURCE,
-		       array_of_statuses[i].MPI_TAG,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-		       array_of_statuses[i].MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      {
+        int c;
+        PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
+
+        RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                     c,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                     array_of_statuses[i].MPI_SOURCE,
+                     array_of_statuses[i].MPI_TAG,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                     array_of_statuses[i].MPI_ERROR,
+                     &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                     &mid2ptr,
+                     PNMPIMOD_COMM_ASYNC_P2P,
+                     array_of_statuses,count,i);
+      }
       else
-	{
-	  SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-		       array_of_statuses[i].MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      {
+        SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                     array_of_statuses[i].MPI_ERROR,
+                     &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                     &mid2ptr,
+                     PNMPIMOD_COMM_ASYNC_P2P);
+      }
     }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_WAIT|PNMPIMOD_COMM_SOME);
   return err;  
@@ -594,43 +563,50 @@ int MPI_Waitall(int count, MPI_Request *array_of_requests, MPI_Status *array_of_
   int err,i;
   void *mid2ptr;
 
+  if(count > 0)
+  {
   COMM_P2P_ASYNC_MID2(count,array_of_requests,PNMPIMOD_COMM_WAIT|PNMPIMOD_COMM_ALL,&mid2ptr);
 
   err=PMPI_Waitall(count,array_of_requests,array_of_statuses);
 
   for (i=0; i<count; i++)
       if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).inreq!=MPI_REQUEST_NULL)  
-    {
-      if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).type==PNMPIMOD_REQUESTS_RECV)
-	{
-	  int c;
-	  PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
-	  RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-		       c,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-		       array_of_statuses[i].MPI_SOURCE,
-		       array_of_statuses[i].MPI_TAG,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-		       array_of_statuses[i].MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
-      else
-	{
-	  SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-		       array_of_statuses[i].MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
-    }
+      {
+        if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).type==PNMPIMOD_REQUESTS_RECV)
+        {
+          int c;
+          PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
+          RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                       c,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                       array_of_statuses[i].MPI_SOURCE,
+                       array_of_statuses[i].MPI_TAG,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                       array_of_statuses[i].MPI_ERROR,
+                       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                       &mid2ptr,
+                       PNMPIMOD_COMM_ASYNC_P2P, array_of_statuses, count, i);
+        }
+        else
+        {
+          SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
+                       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                       array_of_statuses[i].MPI_ERROR,
+                       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                       &mid2ptr,
+                       PNMPIMOD_COMM_ASYNC_P2P);
+        }
+      }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_WAIT|PNMPIMOD_COMM_ALL);
+  }
+  else
+  {
+    err=PMPI_Waitall(count,array_of_requests,array_of_statuses);
+  }
   return err;
 }
 
@@ -646,36 +622,37 @@ int MPI_Test(MPI_Request *request, int *flag, MPI_Status *status)
   COMM_P2P_ASYNC_MID2(1,request,PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_ONE,&mid2ptr);
 
   err=PMPI_Test(request, flag, status);
-  if ((flag) && (COMM_REQ_FROM_STATUS(status).inreq!=MPI_REQUEST_NULL))
+  if ((*flag) && (COMM_REQ_FROM_STATUS(status).inreq!=MPI_REQUEST_NULL))
     {
       if (COMM_REQ_FROM_STATUS(status).type==PNMPIMOD_REQUESTS_RECV)
-	{
-	  int count;
-	  PMPI_Get_count(status, COMM_REQ_FROM_STATUS(status).datatype, &count);
-	  RECV_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		       count,
-		       COMM_REQ_FROM_STATUS(status).datatype,
-		       status->MPI_SOURCE,
-		       status->MPI_TAG,
-		       COMM_REQ_FROM_STATUS(status).comm,
-		       status->MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUS(status,void*)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      {
+        int count;
+        PMPI_Get_count(status, COMM_REQ_FROM_STATUS(status).datatype, &count);
+        RECV_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
+                     count,
+                     COMM_REQ_FROM_STATUS(status).datatype,
+                     status->MPI_SOURCE,
+                     status->MPI_TAG,
+                     COMM_REQ_FROM_STATUS(status).comm,
+                     status->MPI_ERROR,
+                     &(COMM_INFO_FROM_STATUS(status,void*)),
+                     &mid2ptr,
+                     PNMPIMOD_COMM_ASYNC_P2P,
+                     status,1,0);
+      }
       else
-	{
-	  SEND_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		       COMM_REQ_FROM_STATUS(status).count,
-		       COMM_REQ_FROM_STATUS(status).datatype,
-		       COMM_REQ_FROM_STATUS(status).node,
-		       COMM_REQ_FROM_STATUS(status).tag,
-		       COMM_REQ_FROM_STATUS(status).comm,
-		       status->MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUS(status,void*)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      {
+        SEND_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
+                     COMM_REQ_FROM_STATUS(status).count,
+                     COMM_REQ_FROM_STATUS(status).datatype,
+                     COMM_REQ_FROM_STATUS(status).node,
+                     COMM_REQ_FROM_STATUS(status).tag,
+                     COMM_REQ_FROM_STATUS(status).comm,
+                     status->MPI_ERROR,
+                     &(COMM_INFO_FROM_STATUS(status,void*)),
+                     &mid2ptr,
+                     PNMPIMOD_COMM_ASYNC_P2P);
+      }
     }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_ONE);
   return err;
@@ -689,37 +666,38 @@ int MPI_Testany(int count, MPI_Request *array_of_requests, int *index, int *flag
   COMM_P2P_ASYNC_MID2(count,array_of_requests,PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_ANY,&mid2ptr);
 
   err=PMPI_Testany(count,array_of_requests,index,flag,status);
-  if ((flag) && (COMM_REQ_FROM_STATUS(status).inreq!=MPI_REQUEST_NULL))
+  if ((*flag) && (COMM_REQ_FROM_STATUS(status).inreq!=MPI_REQUEST_NULL))
+  {
+    if (COMM_REQ_FROM_STATUS(status).type==PNMPIMOD_REQUESTS_RECV)
     {
-      if (COMM_REQ_FROM_STATUS(status).type==PNMPIMOD_REQUESTS_RECV)
-	{
-	  int count;
-	  PMPI_Get_count(status, COMM_REQ_FROM_STATUS(status).datatype, &count);
-	  RECV_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		       count,
-		       COMM_REQ_FROM_STATUS(status).datatype,
-		       status->MPI_SOURCE,
-		       status->MPI_TAG,
-		       COMM_REQ_FROM_STATUS(status).comm,
-		       status->MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUS(status,void*)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
-      else
-	{
-	  SEND_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
-		       COMM_REQ_FROM_STATUS(status).count,
-		       COMM_REQ_FROM_STATUS(status).datatype,
-		       COMM_REQ_FROM_STATUS(status).node,
-		       COMM_REQ_FROM_STATUS(status).tag,
-		       COMM_REQ_FROM_STATUS(status).comm,
-		       status->MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUS(status,void*)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      int count;
+      PMPI_Get_count(status, COMM_REQ_FROM_STATUS(status).datatype, &count);
+      RECV_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
+                   count,
+                   COMM_REQ_FROM_STATUS(status).datatype,
+                   status->MPI_SOURCE,
+                   status->MPI_TAG,
+                   COMM_REQ_FROM_STATUS(status).comm,
+                   status->MPI_ERROR,
+                   &(COMM_INFO_FROM_STATUS(status,void*)),
+                   &mid2ptr,
+                   PNMPIMOD_COMM_ASYNC_P2P,
+                   status,1,0);
     }
+    else
+    {
+      SEND_P2P_END(COMM_REQ_FROM_STATUS(status).buf,
+                   COMM_REQ_FROM_STATUS(status).count,
+                   COMM_REQ_FROM_STATUS(status).datatype,
+                   COMM_REQ_FROM_STATUS(status).node,
+                   COMM_REQ_FROM_STATUS(status).tag,
+                   COMM_REQ_FROM_STATUS(status).comm,
+                   status->MPI_ERROR,
+                   &(COMM_INFO_FROM_STATUS(status,void*)),
+                   &mid2ptr,
+                   PNMPIMOD_COMM_ASYNC_P2P);
+    }
+  }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_ANY);
   return err;  
 }
@@ -736,33 +714,34 @@ int MPI_Testsome(int count, MPI_Request *array_of_requests, int *outcount, int *
   if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).inreq!=MPI_REQUEST_NULL)  
     {
       if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).type==PNMPIMOD_REQUESTS_RECV)
-	{
-	  int c;
-	  PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
-	  RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-		       c,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-		       array_of_statuses[i].MPI_SOURCE,
-		       array_of_statuses[i].MPI_TAG,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-		       array_of_statuses[i].MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      {
+        int c;
+        PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
+        RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                     c,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                     array_of_statuses[i].MPI_SOURCE,
+                     array_of_statuses[i].MPI_TAG,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                     array_of_statuses[i].MPI_ERROR,
+                     &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                     &mid2ptr,
+                     PNMPIMOD_COMM_ASYNC_P2P,
+                     array_of_statuses,count,i);
+      }
       else
-	{
-	  SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
-		       COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-		       array_of_statuses[i].MPI_ERROR,
-		       &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-		       &mid2ptr,
-		       PNMPIMOD_COMM_ASYNC_P2P);
-	}
+      {
+        SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
+                     COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                     array_of_statuses[i].MPI_ERROR,
+                     &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                     &mid2ptr,
+                     PNMPIMOD_COMM_ASYNC_P2P);
+      }
     }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_SOME);
   return err;  
@@ -773,45 +752,54 @@ int MPI_Testall(int count, MPI_Request *array_of_requests, int *flag, MPI_Status
   int err,i;
   void *mid2ptr;
 
+  if (count>0)
+  {
+
   COMM_P2P_ASYNC_MID2(count,array_of_requests,PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_ALL,&mid2ptr);
 
   err=PMPI_Testall(count, array_of_requests, flag, array_of_statuses);
-  if (flag) 
+  if (*flag) 
     {
       for (i=0; i<count; i++)
-      if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).inreq!=MPI_REQUEST_NULL)  
-	{
-	  if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).type==PNMPIMOD_REQUESTS_RECV)
-	    {
-	      int c;
-	      PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
-	      RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-			   c,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-			   array_of_statuses[i].MPI_SOURCE,
-			   array_of_statuses[i].MPI_TAG,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-			   array_of_statuses[i].MPI_ERROR,
-			   &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-			   &mid2ptr,
-			   PNMPIMOD_COMM_ASYNC_P2P);
-	    }
-	  else
-	    {
-	      SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
-			   COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
-			   array_of_statuses[i].MPI_ERROR,
-			   &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
-			   &mid2ptr,
-			   PNMPIMOD_COMM_ASYNC_P2P);
-	    }
-	}
+        if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).inreq!=MPI_REQUEST_NULL)  
+        {
+          if (COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).type==PNMPIMOD_REQUESTS_RECV)
+          {
+            int c;
+            PMPI_Get_count(&(array_of_statuses[i]), COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype, &c);
+            RECV_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                         c,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                         array_of_statuses[i].MPI_SOURCE,
+                         array_of_statuses[i].MPI_TAG,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                         array_of_statuses[i].MPI_ERROR,
+                         &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                         &mid2ptr,
+                         PNMPIMOD_COMM_ASYNC_P2P,
+                         array_of_statuses,count,i);
+          }
+          else
+          {
+            SEND_P2P_END(COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).buf,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).count,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).datatype,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).node,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).tag,
+                         COMM_REQ_FROM_STATUSARRAY(array_of_statuses,count,i).comm,
+                         array_of_statuses[i].MPI_ERROR,
+                         &(COMM_INFO_FROM_STATUSARRAY(array_of_statuses,void*,count,i)),
+                         &mid2ptr,
+                         PNMPIMOD_COMM_ASYNC_P2P);
+          }
+        }
     }
   COMM_P2P_ASYNC_COMPLETION(PNMPIMOD_COMM_TEST|PNMPIMOD_COMM_ALL);
+  }
+  else
+  {
+  err=PMPI_Testall(count, array_of_requests, flag, array_of_statuses);
+  }
   return err;
 }
 
@@ -833,7 +821,9 @@ int MPI_Barrier(MPI_Comm comm)
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_REPLACECOLLECTIVE)
     err=MPI_SUCCESS;
   else
+  {
     err=PMPI_Barrier(comm);
+  }
 
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_KEEPCOLLECTIVE)
     COMM_COLL_END(comm,-1,PNMPIMOD_COMM_BARRIER|PNMPIMOD_COMM_COLL_BARRIER,&cptr);
@@ -882,25 +872,25 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm co
     err=PMPI_Bcast(buf,count,datatype,root,comm);
 
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_DISSOLVECOLLECTIVE)
+  {
+    if (r==root)
     {
-      if (r==root)
-	{
-	  for (i=0; i<s; i++)
+      for (i=0; i<s; i++)
 	    {
 	      SEND_P2P_END(buf,count,datatype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_BCAST);
+                     NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_BCAST);
 	    }
-	}
-      RECV_P2P_END(buf,count,datatype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
-		   NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_BCAST);
-
-      if ((sptr!=NULL) && (r==root))
-	free(sptr);
     }
+    RECV_P2P_END(buf,count,datatype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
+                 NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_BCAST,NULL,0,-1);
+    
+    if ((sptr!=NULL) && (r==root))
+      free(sptr);
+  }
 
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_KEEPCOLLECTIVE)
     COMM_COLL_END(comm,root,PNMPIMOD_COMM_BCAST|PNMPIMOD_COMM_COLL_FANOUT,&cptr);
-
+  
   return err;
 }
 
@@ -928,83 +918,83 @@ int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       PMPI_Comm_rank(comm,&r);
       PMPI_Comm_size(comm,&s);
       if (r==root)
-	sptr=(void**) malloc(sizeof(void*)*s);
+        sptr=(void**) malloc(sizeof(void*)*s);
     }
-
+  
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_DISSOLVECOLLECTIVE)
+  {
+    if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_IGNOREDATA)
     {
-      if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_IGNOREDATA)
-	{
-	  if (r==root)
+      if (r==root)
 	    {
 	      for (i=0; i<s; i++)
-		{
-		  SEND_P2P_START(sendbuf,sendcount,sendtype,i,PNMPIMOD_COMM_COLLTAG,comm,&(sptr[i]),
-				 PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-		}
+        {
+          SEND_P2P_START(sendbuf,sendcount,sendtype,i,PNMPIMOD_COMM_COLLTAG,comm,&(sptr[i]),
+                         PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
+        }
 	    }
-	  RECV_P2P_START(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,&rptr,
-			 PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-	}
-      else
-	{
-	  PMPI_Type_extent(sendtype,&e);
-
-	  if (r==root)
-	    {
-	      for (i=0; i<s; i++)
-		{
-		  SEND_P2P_START(((void*) (((char*)sendbuf)+i*e)),sendcount,sendtype,i,
-				 PNMPIMOD_COMM_COLLTAG, comm,&(sptr[i]),
-				 PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-		}
-	    }
-	  RECV_P2P_START(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,&rptr,
-			 PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-	}
+      RECV_P2P_START(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,&rptr,
+                     PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
     }
-
+    else
+    {
+      PMPI_Type_extent(sendtype,&e);
+      
+      if (r==root)
+	    {
+	      for (i=0; i<s; i++)
+        {
+          SEND_P2P_START(((void*) (((char*)sendbuf)+i*e)),sendcount,sendtype,i,
+                         PNMPIMOD_COMM_COLLTAG, comm,&(sptr[i]),
+                         PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
+        }
+	    }
+      RECV_P2P_START(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,&rptr,
+                     PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
+    }
+  }
+  
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_REPLACECOLLECTIVE)
     err=MPI_SUCCESS;
   else
     err=PMPI_Scatter(sendbuf,sendcount,sendtype,recvbuf,recvcount,recvtype,root,comm);
-
+  
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_DISSOLVECOLLECTIVE)
+  {
+    if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_IGNOREDATA)
     {
-      if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_IGNOREDATA)
-	{
-	  if (r==root)
+      if (r==root)
 	    {
 	      for (i=0; i<s; i++)
-		{
-		  SEND_P2P_END(sendbuf,sendcount,sendtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-		}
+        {
+          SEND_P2P_END(sendbuf,sendcount,sendtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
+                       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
+        }
 	    }
-	  RECV_P2P_END(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
-		       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
+      RECV_P2P_END(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
+                   NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER,NULL,0,-1);
 	}
-      else
-	{
-	  if (r==root)
+    else
+    {
+      if (r==root)
 	    {
 	      for (i=0; i<s; i++)
-		{
-		  SEND_P2P_END(((void*) (((char*)sendbuf)+e*i)),sendcount,sendtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-		}
+        {
+          SEND_P2P_END(((void*) (((char*)sendbuf)+e*i)),sendcount,sendtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
+                       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
+        }
 	    }
-	  RECV_P2P_END(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
-		       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER);
-	}
-
-      if ((sptr!=NULL) && (r==root))
-	free(sptr);
+      RECV_P2P_END(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
+                   NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTER,NULL,0,-1);
     }
-
+    
+    if ((sptr!=NULL) && (r==root))
+      free(sptr);
+  }
+  
   if (pnmpimod_comm_collective_support & PNMPIMOD_COMM_KEEPCOLLECTIVE)
     COMM_COLL_END(comm,root,PNMPIMOD_COMM_SCATTER|PNMPIMOD_COMM_COLL_FANOUT,&cptr);
-
+  
   return err;
 }
 
@@ -1087,7 +1077,7 @@ int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendt
 		}
 	    }
 	  RECV_P2P_END(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
-		       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTERV);
+                 NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTERV,NULL,0,-1);
 	  
 	}
       else
@@ -1097,12 +1087,12 @@ int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendt
 	      for (i=0; i<s; i++)
 		{
 		  SEND_P2P_END(((void*) (((char*)sendbuf)+e*displs[i])),sendcounts[i],sendtype,i,
-			       PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTERV);
+                   PNMPIMOD_COMM_COLLTAG,comm,err,&(sptr[i]),
+                   NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTERV);
 		}
 	    }
 	  RECV_P2P_END(recvbuf,recvcount,recvtype,root,PNMPIMOD_COMM_COLLTAG,comm,err,&rptr,
-		       NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTERV);
+                 NULL,PNMPIMOD_COMM_COLL_FANOUT|PNMPIMOD_COMM_SCATTERV,NULL,0,-1);
 	  
 	}
       if ((sptr!=NULL) && (r==root))
@@ -1188,7 +1178,7 @@ int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbu
 	      for (i=0; i<s; i++)
 		{
 		  RECV_P2P_END(recvbuf,recvcount,recvtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHER);
+                   NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHER,NULL,0,-1);
 		}
 	    }
 	}
@@ -1202,7 +1192,7 @@ int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbu
 		{
 		  RECV_P2P_END(((void*) (((char*)recvbuf)+i*e)),recvcount,recvtype,i,
 			       PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHER);
+                   NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHER,NULL,0,-1);
 		}
 	    }
 	}
@@ -1299,7 +1289,7 @@ int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvb
 		{
 		  RECV_P2P_END(recvbuf,recvcounts[i],recvtype,i,
 			       PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHERV);
+                   NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHERV,NULL,0,-1);
 		}
 	    }
 	}
@@ -1313,7 +1303,7 @@ int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvb
 		{
 		  RECV_P2P_END(((void*) (((char*)recvbuf)+e*displs[i])),recvcounts[i],recvtype,i,
 			       PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			       NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHERV);
+                   NULL,PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_GATHERV,NULL,0,-1);
 		}
 	    }
 	}
@@ -1409,7 +1399,7 @@ int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 	  for (i=0; i<s; i++)
 	    {
 	      RECV_P2P_END(recvbuf,recvcount,recvtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHER);
+                     NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHER,NULL,0,-1);
 	    }
 	}
       else
@@ -1424,7 +1414,7 @@ int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 	    {
 	      RECV_P2P_END(((void*) (((char*)recvbuf)+i*e)),recvcount,recvtype,i,
 			   PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHER);
+                     NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHER,NULL,0,-1);
 	    }
 	}
 
@@ -1521,7 +1511,7 @@ int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 	    {
 	      RECV_P2P_END(recvbuf,recvcounts[i],recvtype,i,
 			   PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHERV);
+                     NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHERV,NULL,0,-1);
 	    }
 	}
       else
@@ -1536,7 +1526,7 @@ int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 	    {
 	      RECV_P2P_END(((void*) (((char*)recvbuf)+e*displs[i])),recvcounts[i],recvtype,i,
 			   PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHERV);
+                     NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALLGATHERV,NULL,0,-1);
 	    }
 	}
 
@@ -1631,7 +1621,7 @@ int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
 	  for (i=0; i<s; i++)
 	    {
 	      RECV_P2P_END(recvbuf,recvcount,recvtype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),NULL,
-			     PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALL);
+                     PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALL,NULL,0,-1);
 	    }
 	}
       else
@@ -1647,7 +1637,7 @@ int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
 	    {
 	      RECV_P2P_END(((void*) (((char*)recvbuf)+i*re)),recvcount,recvtype,i,
 			   PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),NULL,
-			   PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALL);
+                     PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALL,NULL,0,-1);
 	    }
 	}
 
@@ -1748,7 +1738,7 @@ int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype sen
 	    {
 	      RECV_P2P_END(recvbuf,recvcounts[i],recvtype,i,
 			   PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALLV);
+                     NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALLV,NULL,0,-1);
 	    }
 	}
       else
@@ -1764,7 +1754,7 @@ int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype sen
 	    {
 	      RECV_P2P_END(((void*) (((char*)recvbuf)+re*rdispls[i])),recvcounts[i],recvtype,i,
 			   PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALLV);
+                     NULL,PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_ALL2ALLV,NULL,0,-1);
 	    }
 	}
 
@@ -1832,7 +1822,7 @@ int MPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, M
 	  for (i=0; i<s; i++)
 	    {
 	      RECV_P2P_END(recvbuf,count,datatype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_REDUCE|PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_COLL_REDUCE);
+                     NULL,PNMPIMOD_COMM_REDUCE|PNMPIMOD_COMM_COLL_FANIN|PNMPIMOD_COMM_COLL_REDUCE,NULL,0,-1);
 	    }
 	}
       if (rptr!=NULL)
@@ -1904,7 +1894,8 @@ int MPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
       for (i=0; i<s; i++)
 	{
 	  RECV_P2P_END(recvbuf,count,datatype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-		       NULL,PNMPIMOD_COMM_ALLREDUCE|PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_COLL_REDUCE);
+                 NULL,PNMPIMOD_COMM_ALLREDUCE|PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_COLL_REDUCE,
+                 NULL,0,-1);
 	}
 
       if (rptr!=NULL)
@@ -2018,7 +2009,8 @@ int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Dataty
 	  for (i=0; i<s; i++)
 	    {
 	      RECV_P2P_END(recvbuf,recvcounts[i],datatype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-			   NULL,PNMPIMOD_COMM_REDUCESCATTER|PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_COLL_REDUCE);
+                     NULL,PNMPIMOD_COMM_REDUCESCATTER|PNMPIMOD_COMM_COLL_ALL2ALL|PNMPIMOD_COMM_COLL_REDUCE,
+                     NULL,0,-1);
 	    }
 	}
 
@@ -2091,7 +2083,7 @@ int MPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI
       for (i=0; i<=r; i++)
 	{
 	  RECV_P2P_END(recvbuf,count,datatype,i,PNMPIMOD_COMM_COLLTAG,comm,err,&(rptr[i]),
-		       NULL,PNMPIMOD_COMM_SCAN|PNMPIMOD_COMM_COLL_OTHER|PNMPIMOD_COMM_COLL_REDUCE);
+                 NULL,PNMPIMOD_COMM_SCAN|PNMPIMOD_COMM_COLL_OTHER|PNMPIMOD_COMM_COLL_REDUCE,NULL,0,-1);
 	}
 
       if (rptr!=NULL)

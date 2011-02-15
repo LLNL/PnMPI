@@ -171,6 +171,7 @@ extern int _print_node;
 extern int _dbg_cur_level;
 extern int _dbg_cur_node;
 
+#define DBGCHECK(level) ((level&_dbg_cur_level)!=0)
 #define DBGLATEINIT() {}
 #define DBGEARLYINIT()                      \
 {                                           \

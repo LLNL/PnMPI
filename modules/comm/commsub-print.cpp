@@ -46,6 +46,10 @@ void COMM_ALL_INIT(int argc, char**argv)
 {
 }
 
+void COMM_ALL_PREINIT(int argc, char**argv) 
+{
+}
+
 void COMM_ALL_FINALIZE() 
 {
 }
@@ -139,7 +143,8 @@ void RECV_P2P_ASYNC_MID1(void *buf, int count, MPI_Datatype dt, int node, int ta
 }
 
 void RECV_P2P_END(void *buf, int count, MPI_Datatype dt, int node, int tag, 
-		  MPI_Comm comm, int err, void **ptr, void **midptr, int type) 
+                  MPI_Comm comm, int err, void **ptr, void **midptr, int type,
+                  MPI_Status *statusarray, int numindex, int index) 
 {
   int done; 
   PNMPIMOD_Datatype_Parameters_t ref;
