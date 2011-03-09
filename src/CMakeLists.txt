@@ -9,31 +9,30 @@
 # @date 07-07-2009
 
 #Add include dir 
-INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
+include_directories(BEFORE
+  "${CMAKE_BINARY_DIR}/include"
+  ${MPI_C_INCLUDE_PATH})
 
 #Create library targets
-ADD_LIBRARY(${TARGET_PNMPILIB} STATIC 
-    debug.c services.c core.c wrapper.c
-    )
+add_library(${TARGET_PNMPILIB} STATIC 
+    debug.c services.c core.c wrapper.c)
     
-ADD_LIBRARY(${TARGET_PNMPILIB}_shared SHARED 
-    debug.c services.c core.c wrapper.c
-    )
+add_library(${TARGET_PNMPILIB}_shared SHARED 
+    debug.c services.c core.c wrapper.c)
 
-ADD_LIBRARY(forcempi STATIC forcempi.c)
+add_library(forcempi STATIC forcempi.c)
 
 #Set properties for shared libraries
-SET_TARGET_PROPERTIES (${TARGET_PNMPILIB}_shared
+set_target_properties(${TARGET_PNMPILIB}_shared
     PROPERTIES 
     VERSION ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-    SOVERSION ${PNMPI_LIB_INTERFACE_VERSION}
-    )
+    SOVERSION ${PNMPI_LIB_INTERFACE_VERSION})
     
 #Add library dependency to MPI lib
-TARGET_LINK_LIBRARIES(${TARGET_PNMPILIB}_shared ${MPI_LIBRARIES})
+target_link_libraries(${TARGET_PNMPILIB}_shared ${MPI_C_LIBRARIES})
 
 #Install pnmpi core with reasonable file permissions
-INSTALL(
+install(
     TARGETS 
         ${TARGET_PNMPILIB} 
         ${TARGET_PNMPILIB}_shared 
@@ -48,71 +47,65 @@ INSTALL(
     )  
     
 #Add dependencies
-ADD_DEPENDENCIES(${TARGET_PNMPILIB}  
+add_dependencies(${TARGET_PNMPILIB}  
     ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
-ADD_DEPENDENCIES(${TARGET_PNMPILIB}_shared  
+add_dependencies(${TARGET_PNMPILIB}_shared  
     ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
-ADD_DEPENDENCIES(forcempi            
+add_dependencies(forcempi            
     ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
 
 #copy header files to include directory in binary dir
-CONFIGURE_FILE(pnmpi.h "${INCLUDE_OUTPUT_PATH}/pnmpi.h" COPYONLY)
-CONFIGURE_FILE(pnmpimod.h "${INCLUDE_OUTPUT_PATH}/pnmpimod.h" COPYONLY) 
+configure_file(pnmpi.h     "${INCLUDE_OUTPUT_PATH}/pnmpi.h"   COPYONLY)
+configure_file(pnmpimod.h "${INCLUDE_OUTPUT_PATH}/pnmpimod.h" COPYONLY) 
 
 #Fortran PnMPI lib (If Fortran available)    
-IF (PNMPI_ENABLE_FORTRAN)
-    ADD_LIBRARY(${TARGET_PNMPILIB}f STATIC 
-        debug.c services.c core.c wrapper.c         
-        )
-    
-    ADD_LIBRARY(${TARGET_PNMPILIB}f_shared SHARED 
-        debug.c services.c core.c wrapper.c         
-        )
-        
-    #Add library dependency to MPI lib
-    TARGET_LINK_LIBRARIES(${TARGET_PNMPILIB}f_shared ${MPI_LIBRARIES})
-
-    #Add the fortran define for the fortran libs!
-    SET_TARGET_PROPERTIES (
-	    ${TARGET_PNMPILIB}f ${TARGET_PNMPILIB}f_shared
-	    PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN"
-	    )
-	    
+if (PNMPI_ENABLE_FORTRAN)
+  add_library(${TARGET_PNMPILIB}f STATIC 
+    debug.c services.c core.c wrapper.c)
+  
+  add_library(${TARGET_PNMPILIB}f_shared SHARED 
+    debug.c services.c core.c wrapper.c)
+  
+  #Add library dependency to MPI lib
+  target_link_libraries(${TARGET_PNMPILIB}f_shared ${MPI_Fortran_LIBRARIES})
+  
+  #Add the fortran define for the fortran libs!
+  set_target_properties(
+	  ${TARGET_PNMPILIB}f ${TARGET_PNMPILIB}f_shared
+	  PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
+	
 	#Set properties for shared libraries
-    SET_TARGET_PROPERTIES (${TARGET_PNMPILIB}f_shared
-        PROPERTIES 
-        VERSION ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-        SOVERSION ${PNMPI_LIB_INTERFACE_VERSION}
-        )
-        
-    #Install pnmpi core for Fortran with reasonable file permissions
-    INSTALL(
-        TARGETS 
-            ${TARGET_PNMPILIB}f 
-            ${TARGET_PNMPILIB}f_shared
-        PERMISSIONS 
-            OWNER_READ OWNER_WRITE OWNER_EXECUTE 
-            GROUP_EXECUTE GROUP_READ 
-            WORLD_EXECUTE
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        )      
+  set_target_properties (${TARGET_PNMPILIB}f_shared
+    PROPERTIES 
+    VERSION ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
+    SOVERSION ${PNMPI_LIB_INTERFACE_VERSION})
+  
+  #Install pnmpi core for Fortran with reasonable file permissions
+  install(
+    TARGETS 
+      ${TARGET_PNMPILIB}f 
+      ${TARGET_PNMPILIB}f_shared
+    PERMISSIONS 
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE 
+      GROUP_EXECUTE GROUP_READ 
+      WORLD_EXECUTE
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)      
         
     #Add dependencies
-    ADD_DEPENDENCIES(${TARGET_PNMPILIB}f 
-        ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
-    ADD_DEPENDENCIES(${TARGET_PNMPILIB}f_shared 
-        ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
-ENDIF (PNMPI_ENABLE_FORTRAN)
+    add_dependencies(${TARGET_PNMPILIB}f ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
+    add_dependencies(${TARGET_PNMPILIB}f_shared ${TARGET_EXTRARGS} ${TARGET_WRAPPERGEN})
+endif()
     
 #Add linkage to adept utils if we have them
-IF (ADEPT_UTILS)
-TARGET_LINK_LIBRARIES(${TARGET_PNMPILIB} -ltiming)
-TARGET_LINK_LIBRARIES(${TARGET_PNMPILIB}_shared -ltiming)
-IF (PNMPI_ENABLE_FORTRAN)
-TARGET_LINK_LIBRARIES(${TARGET_PNMPILIB}f -ltiming)
-TARGET_LINK_LIBRARIES(${TARGET_PNMPILIB}f_shared -ltiming)
-ENDIF (PNMPI_ENABLE_FORTRAN)
-ENDIF (ADEPT_UTILS)
+if (AdeptUtils_FOUND)
+  include_directories(${AdeptUtils_INCLUDE_PATH})
+  target_link_libraries(${TARGET_PNMPILIB} AdeptUtilsTiming)
+  target_link_libraries(${TARGET_PNMPILIB}_shared AdeptUtilsTiming)
 
+  if (PNMPI_ENABLE_FORTRAN)
+    target_link_libraries(${TARGET_PNMPILIB}f AdeptUtilsTiming)
+    target_link_libraries(${TARGET_PNMPILIB}f_shared AdeptUtilsTiming)
+  endif()
+endif()

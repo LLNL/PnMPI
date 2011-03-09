@@ -110,99 +110,81 @@ versions of P^nMPI.
 
 C1) Install CMake
 -----------------
+CMake can be downloaded from http://www.cmake.org.
+You will need at least version 2.6, and for BG/P systems you
+will need version 2.8.3. 
 
-Before using the cmake build system, the cmake software needs
-to be installed. For Linux systems, a minimum version of 2.6
-is required, for builds on BG/P a minimum version of 2.8.3.
-CMake can be downloaded from Kitware at:
-http://www.cmake.org/
-
-C2) Set environment variables
------------------------------
-
-The build technically does not need any environment variables,
-but they can be used to simplify things, including the examples
-below. They are, however, needed to run P^nMPI.
-
-Decide on an installation directory, referred to as <install path>
-
-   - Set PNMPIBASE to the main pnmpi directory
-   - Set PNMPI_LIB_PATH to <install path>/modules
-   - Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
-   - Add <install path>/lib to global LD_LIBRARY_PATH
-
-C3) Configure the project
+C2) Configure the project
 -------------------------
-
 Create a new build directory (e.g., named according to the
 platform you are using), cd into it, and run:
 
-cmake \
-  -DCMAKE_INSTALL_PREFIX=<install path> \
-  -DMPI_H_DIR=<path to mpi.h> \
-  <path to P^nMPI source> 
+  cmake \
+    -D CMAKE_INSTALL_PREFIX=<install path> \
+    <path to P^nMPI source> 
 
 To build a debug build:
 
-cmake \
-  -DCMAKE_INSTALL_PREFIX=<install path> \
-  -DMPI_H_DIR=<path to mpi.h> \
-  -DCMAKE_BUILD_TYPE=Debug
-  <path to P^nMPI source> 
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=<install path> \
+    -DCMAKE_BUILD_TYPE=Debug \
+    <path to P^nMPI source> 
 
 Example on LLNL systems:
 
-cd $PNMPIBASE
-mkdir $SYS_TYPE
-cd $SYS_TYPE
-cmake \
-  -DCMAKE_INSTALL_PREFIX=$PWD/install \
-  -DMPI_H_DIR=/usr/local/tools/mvapich-gnu/include \
-  -DCMAKE_BUILD_TYPE=Debug \
-  ..
+  cd /path/to/pnmpi/source
+  mkdir $SYS_TYPE
+  cd $SYS_TYPE
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=$PWD/install \
+    -DCMAKE_BUILD_TYPE=Debug \
+    ..
   
-On MAC OS-X systems it is additionally necessary to 
-manually specify the MPI libraries as follows:  
-
-cmake -DCMAKE_INSTALL_PREFIX=$LOCAL/pnmpi \
-  -DMPI_H_DIR=$LOCAL/include \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DMPI_LIBRARIES="-L$LOCAL/lib -lmpi -lmpi_f77" \
-  ..
-
 If your system has no Fortran compiler you need to manually 
-disable all Fortran features of P^nMPI as follows:
-cmake -DPNMPI_ENABLE_FORTRAN=False ..
+disable all Fortran features of P^nMPI by adding this option
+to the cmake command line:
+
+  -D PNMPI_ENABLE_FORTRAN=False
+
+PnMPI should autdetect your MPI installation and determine
+library and header locations.  If you want to build with a
+particular MPI that is NOT the one autodetected by the build,
+see the documentation in cmakemodules/FindMPI.cmake for
+info on the build options to do this.
+
 
 C4) Adding ADEPT Timing Option
 ------------------------------
+PnMPI can optionally profile itself and record internal timing 
+information. This includes measurements on how frequently
+particular wrappers have been invoked and how long they took.
 
-PnMPI contains the ability to measure internal timing 
-information. This includes measurements on how often
-which wrappers have been invoked and how long they took.
+To enable this option, PnMPI must be configured with additional
+timing routines, which are part of the adept-utils package.
+The package is currently LLNL-internal, but can be distributed
+on request.
 
-To enable this option, PnMPI must be configured with
-additional timing routines, which are part of the
-adept-utils package. The package can be downloaded
-from 
+If adept utils are installed in a standard system location, CMake
+will autodetect them.  If they are in a custom location, you will
+need to set the AdeptUtils_DIR environment variable to the prefix
+under which adept-utils was installed, e.g.:
 
-TBD
+  setenv AdeptUtils_DIR /opt/my-custom-adept-utils
 
-After the adpet_utils and built and installed, their
-location should be specified during the CMake 
-configuration with:
+This will allow CMake to autodetect the build.  On LC machines,
+you can just use adept-utils via the dotkit:
 
--DADEPT_UTILS=<path to adept_utils>
+  use adept-utils
 
-Once PnMPI is compiled with adpet_utils, the additional
-timing statistics can be enabled dynamically (see 
-Section E).
+Once PnMPI is compiled with adpet_utils, the additional timing
+statistics can be enabled dynamically (see Section E).
 
 
 C5) Compile the project
 -----------------------
 
-Run "make" in the build directory created above.
+Run "make" in the CMake build directory created above.  Note that
+PnMPI does not currently support parallel make (make -j).
 
 To get a verbose build, use "make VERBOSE=TRUE"
 
@@ -213,7 +195,6 @@ Run "make install"
 
 C7) Installed structure
 -----------------------
-
 All central components will now be in <install path>, the 
 path specified during the project configuration. This 
 includes:
@@ -227,6 +208,27 @@ directory of the build directory from which cmake was
 invoked. By default, the demo directory does not contain
 a P^nMPI configuration file. Such a file can be copied
 from the demo directory in the source tree.
+
+So that PnMPI can find its modules, you will need to set
+PNMPI_LIB_PATH to the full path to the lib/pnmpi-modules
+directory in your PnMPI installation.
+
+C8) RPATH settings
+-----------------------
+By default, the build adds the paths of all dependency libraries
+to the rpath of the installed PnMPI library.  This is the preferred
+behavior on LLNL systems, where many packages are installed and
+LD_LIBRARY_PATH usage can become confusing.
+
+If you are installing on a system where you do NOT want dependet
+libraries added to your RPATH, e.g. if you expect all of PnMPI's
+dependencies to be found in system paths, then you can build without
+rpath additions using this option to cmake:
+
+  -D CMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE
+
+This will add only the PnMPI installation lib directory to the
+rpath of the PnMPI library.
 
  
 D) Modules
