@@ -10,7 +10,8 @@
 
 #Add include dir 
 include_directories(BEFORE
-  "${CMAKE_BINARY_DIR}/include"
+  ${CMAKE_BINARY_DIR}/include
+  ${CMAKE_SOURCE_DIR}
   ${MPI_C_INCLUDE_PATH})
 
 #Create library targets
