@@ -132,6 +132,8 @@ set(TARGET_PNMPILIB     pnmpi)
 set(TARGET_PATCHER      patch)
 
 add_subdirectory(wrappergen)
+get_target_property(WRAPPERGEN ${TARGET_WRAPPERGEN} LOCATION)  # here we can get the wrappergen program for use by commands.
+
 add_subdirectory(wrapper)
 add_subdirectory(src)
 add_subdirectory(patch)

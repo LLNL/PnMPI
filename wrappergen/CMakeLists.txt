@@ -13,6 +13,7 @@
 # @date 07-07-2009
 
 ADD_DEFINITIONS("-DPROTO_FILE=\"../wrapper/mpi_proto_def\"")
-ADD_EXECUTABLE(${TARGET_WRAPPERGEN} readproto.c wrappergen.c args.c)
+ADD_EXECUTABLE(${TARGET_WRAPPERGEN} readproto.c ${TARGET_WRAPPERGEN}.c args.c)
+
 
  

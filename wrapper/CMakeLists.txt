@@ -38,7 +38,9 @@ configure_file(
     "${CMAKE_CURRENT_BINARY_DIR}/generate_protp_file_cmake.sh")
 
 # Make -I includes from MPI include directories
-string(REGEX REPLACE "([^ ]+)" "-I\\1" MPI_INCLUDES "${MPI_C_INCLUDE_PATH}")
+string(REGEX REPLACE ";" " " MPI_INCLUDES "${MPI_C_INCLUDE_PATH}")
+string(REGEX REPLACE "([^ ]+)" "-I\\1" MPI_INCLUDES "${MPI_INCLUDES}")
+
 
 add_custom_command(
     TARGET ${TARGET_EXTRARGS} POST_BUILD
@@ -54,9 +56,9 @@ add_custom_command(
 #Invoke generation of wrappers as pre build event of wrapper lib target
 add_custom_command(
     TARGET ${TARGET_EXTRARGS} POST_BUILD 
-    COMMAND ${TARGET_WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_SOURCE_DIR}/wrapper/${WRAPPERC}" "-o" "wrapper.c"
-    COMMAND ${TARGET_WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_SOURCE_DIR}/wrapper/${WRAPPERH}" "-o" "wrapper.h"
-    COMMAND ${TARGET_WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_SOURCE_DIR}/wrapper/${NEWSTACK}" "-o" "newstack.h"
+    COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_SOURCE_DIR}/wrapper/${WRAPPERC}" "-o" "wrapper.c"
+    COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_SOURCE_DIR}/wrapper/${WRAPPERH}" "-o" "wrapper.h"
+    COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_SOURCE_DIR}/wrapper/${NEWSTACK}" "-o" "newstack.h"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     COMMENT "Generating wrapper sources" 
     VERBATIM)
@@ -66,4 +68,5 @@ add_custom_command(TARGET ${TARGET_EXTRARGS} POST_BUILD
     COMMAND cp ARGS "${CMAKE_CURRENT_BINARY_DIR}/newstack.h" "${INCLUDE_OUTPUT_PATH}/newstack.h"
     COMMENT "Copying generated header to common header directory"
     VERBATIM)
+
 
