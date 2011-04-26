@@ -15,5 +15,3 @@
 set(CMAKE_C_COMPILER gcc)
 add_definitions("-DPROTO_FILE=\"../wrapper/mpi_proto_def\"")
 add_executable(${TARGET_WRAPPERGEN} readproto.c wrappergen.c args.c)
-
- 

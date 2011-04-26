@@ -20,4 +20,4 @@ ENDFOREACH (mod ${MODS})
 #Create special non-patched version of sample1 (as SHARED and not as MODULE)
 #Used as part of the demo
 ADD_LIBRARY(sample1-non-patched SHARED sample1.c)
-TARGET_LINK_LIBRARIES(sample1-non-patched ${MPI_LIBRARIES})
+TARGET_LINK_LIBRARIES(sample1-non-patched ${MPI_C_LIBRARIES})

@@ -8,16 +8,16 @@
 # @authors Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
-#Add include directories for the dependent modules
-INCLUDE_DIRECTORIES(BEFORE datatype requests status ${INCLUDE_OUTPUT_PATH})
+# Add include directories for the dependent modules -- this applies to all subdirectories
+include_directories(BEFORE datatype requests status ${INCLUDE_OUTPUT_PATH} ${MPI_C_INCLUDE_PATH})
 
 #Recurse to sub-directories
-ADD_SUBDIRECTORY(comm)
-ADD_SUBDIRECTORY(datatype)
-ADD_SUBDIRECTORY(empty)
-ADD_SUBDIRECTORY(requests)
-ADD_SUBDIRECTORY(sample)
-ADD_SUBDIRECTORY(status)
-ADD_SUBDIRECTORY(switch-matrix)
-ADD_SUBDIRECTORY(timelapse)
-ADD_SUBDIRECTORY(virtual)
+add_subdirectory(comm)
+add_subdirectory(datatype)
+add_subdirectory(empty)
+add_subdirectory(requests)
+add_subdirectory(sample)
+add_subdirectory(status)
+add_subdirectory(switch-matrix)
+add_subdirectory(timelapse)
+add_subdirectory(virtual)

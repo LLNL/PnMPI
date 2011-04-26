@@ -2,6 +2,5 @@
 
 cmake \
     -D CMAKE_INSTALL_PREFIX=$LOCAL/pnmpi \
-    -D MPI_H_DIR=/usr/local/tools/mvapich-gnu/include \
     -D CMAKE_BUILD_TYPE=Debug \
     ..

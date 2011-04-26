@@ -24,7 +24,7 @@ ADD_DEPENDENCIES(switch-matrix-prepare ${TARGET_PATCHER})
 ## - For details on that see the "wrapper" cmake build script
 ADD_CUSTOM_COMMAND(
     TARGET switch-matrix-prepare PRE_BUILD 
-    COMMAND ${TARGET_WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_CURRENT_SOURCE_DIR}/switch-matrix.w" "-o" "switch-matrix.h"
+    COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_CURRENT_SOURCE_DIR}/switch-matrix.w" "-o" "switch-matrix.h"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     COMMENT "Generating module sources for the \"switch-matrix\" module" 
     VERBATIM
