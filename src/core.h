@@ -147,7 +147,8 @@ extern char *getarg_(int*,char*,int);
   if (pnmpi_function_ptrs.stack==NULL)                                                   \
     { WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
   for (__i=0; __i<mods.num; __i++)                                                          \
-    { pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+    { if (mods.module[__i]->stack_delimiter) continue; \
+      pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
       if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
       DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
     }                                                                                    \
@@ -166,7 +167,8 @@ pnmpi_function_ptrs.stack=(r_type*) malloc(mods.num*sizeof(r_type));            
 if (pnmpi_function_ptrs.stack==NULL)                                                   \
 { WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
 for (__i=0; __i<mods.num; __i++)                                                          \
-{ pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+{ if (mods.module[__i]->stack_delimiter) continue; \
+pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
 if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
 DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
 if (DBGCHECK(DBGLEVEL5)) \
@@ -189,7 +191,8 @@ pnmpi_function_ptrs.stack=(r_type*) malloc(mods.num*sizeof(r_type));            
 if (pnmpi_function_ptrs.stack==NULL)                                                   \
 { WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
 for (__i=0; __i<mods.num; __i++)                                                          \
-{ pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+{ if (mods.module[__i]->stack_delimiter) continue; \
+pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
 if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
 DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
 if (DBGCHECK(DBGLEVEL6)) \
@@ -212,7 +215,8 @@ pnmpi_function_ptrs.stack=(r_type*) malloc(mods.num*sizeof(r_type));            
 if (pnmpi_function_ptrs.stack==NULL)                                                   \
 { WARNPRINT("Can't allocate stack for (%i/%i) - exiting",major,minor); exit(1); }    \
 for (__i=0; __i<mods.num; __i++)                                                          \
-{ pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
+{ if (mods.module[__i]->stack_delimiter) continue; \
+pnmpi_function_ptrs.stack[__i]=(r_type) mydlsym(mods.module[__i]->handle,routine);  \
 if (pnmpi_function_ptrs.stack[__i]!=NULL) SET_ACTIVATED(major,minor) \
 DBGPRINT2("Symbol for routine %s in module %s: value %px",routine,mods.module[__i]->name,pnmpi_function_ptrs.stack[__i]);\
 if (DBGCHECK(DBGLEVEL5)) \
