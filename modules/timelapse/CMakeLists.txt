@@ -9,7 +9,7 @@
 # @date 07-07-2009
 
 #Use macro to: add target for module, version it, install it, patch it
-PNMPI_MAC_ADD_MODULE (timelapse "timelapse.c" "C")
+pnmpi_mac_add_module(timelapse "timelapse.c" "C")
 
 #Add header to intermediate include dir
-CONFIGURE_FILE(timelapse.h "${INCLUDE_OUTPUT_PATH}/timelapse.h" COPYONLY)
+install(FILES timelapse.h DESTINATION include)

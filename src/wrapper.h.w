@@ -1,4 +1,4 @@
-/*
+/* -*- c -*-
 Copyright (c) 2008
 Lawrence Livermore National Security, LLC. 
 
@@ -33,30 +33,35 @@ Boston, MA 02111-1307 USA
 
 /* automatically generated wrapper header */
 
-{{forallfnpp fnpp_name fn_name MPI_Pcontrol}}
-{{retType}} {{fnpp_name}}{{argTypeListVoid}};
-{{endforallfnpp}}
+typedef int (*pnmpi_int_MPI_Pcontrol_t)(int level, ... );
+
+void mpi_init_(int *ierr);
+double mpi_wtick_(void);
+double mpi_wtime_(void);
 
 {{forallfn fn_name MPI_Pcontrol}}
-{{retType}} X{{fn_name}}{{argTypeListVoid}};
+{{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
 {{endforallfn}}
 
 {{forallfn fn_name MPI_Pcontrol}}
-{{retType}} X{{fn_name}}_NewStack(PNMPI_modHandle_t stack {{argTypeListOpen}});
+{{ret_type}} X{{fn_name}}({{formals}});
+{{endforallfn}}
+
+{{forallfn fn_name MPI_Pcontrol}}
+{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
 {{endforallfn}}
 
 
 {{forallfn fn_name}}
-#define {{fn_name}}_MAJOR ({{fn_num}}/8)
-#define {{fn_name}}_MINOR (1<<({{last_num}}%8))
+#define {{fn_name}}_ID {{fn_num}}
 {{endforallfn}}
 
-{{forallfnpp fnpp_name fn_name MPI_Pcontrol}}
-#define Internal_X{{fn_name}} {{fnpp_name}}
-{{endforallfnpp}}
+{{forallfn fn_name MPI_Pcontrol}}
+#define Internal_X{{fn_name}} {{sub {{fn_name}} '^MPI_' NQJ_}}
+{{endforallfn}}
 
 {{forallfn fn_name MPI_Pcontrol}}
-typedef {{retType}} (*pnmpi_int_{{fn_name}}_t){{argTypeList}};{{endforallfn}}
+typedef {{ret_type}} (*pnmpi_int_{{fn_name}}_t)({{formals}});{{endforallfn}}
 
 typedef struct pnmpi_functions_d
 {
@@ -83,13 +88,25 @@ typedef struct pnmpi_functions_statstiming_d
 {{endforallfn}}
 } pnmpi_functions_statstiming_t;
 
+
 #define DBGPRINT6_TIMING_ALL_ALL(buf,num,div,out) \
 {{forallfn fn_name}}DBGPRINT6_TIMING_FCT_ALL(buf,num,div,out,{{fn_name}},"{{fn_name}}");\
 {{endforallfn}}
 #endif
 
-
 #define INITIALIZE_ALL_FUNCTION_STACKS(mods) \
-{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}",{{fn_name}}_MAJOR,{{fn_name}}_MINOR,pnmpi_int_{{fn_name}}_t,pnmpi_int_{{fn_name}},mods,{{fn_name}});\
+{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}", {{fn_name}}_ID, pnmpi_int_{{fn_name}}_t, pnmpi_int_{{fn_name}}, mods, {{fn_name}});\
 {{endforallfn}}
+
+/*-------------------------------------------------------------------*/
+/* timing and count variables for DBGLEVEL 5 and 6 */
+
+#ifdef DBGLEVEL5
+extern pnmpi_functions_statscount_t pnmpi_totalstats_count;
+#endif
+#ifdef DBGLEVEL6
+extern pnmpi_functions_statstiming_t pnmpi_totalstats_timing;
+extern timing_t pnmpi_overall_timing;
+#endif
+
 

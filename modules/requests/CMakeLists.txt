@@ -9,7 +9,7 @@
 # @date 07-07-2009
 
 #Use macro to: add target for module, version it, install it, patch it
-PNMPI_MAC_ADD_MODULE (requests "requests.cpp" "CXX")
+pnmpi_mac_add_module(requests "requests.cpp" "CXX")
 
 #Add header to intermediate include dir
-CONFIGURE_FILE(requests.h "${INCLUDE_OUTPUT_PATH}/requests.h" COPYONLY)
+install(FILES requests.h DESTINATION include)

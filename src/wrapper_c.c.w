@@ -1,4 +1,4 @@
-/*
+/* -*- c -*-
 Copyright (c) 2008
 Lawrence Livermore National Security, LLC. 
 
@@ -33,15 +33,17 @@ Boston, MA 02111-1307 USA
 
 /* automatically generated wrapper code */
 
-{{forallfnpp fnpp_name fn_name MPI_Pcontrol MPI_Init MPI_Finalize}}
-{{retType}} {{fnpp_name}}{{argTypeListVoid}}
+#include "core.h"
+
+{{forallfn fn_name MPI_Pcontrol MPI_Init MPI_Finalize}}
+{{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}})
 {
-  {{retType}} res;
+  {{ret_type}} res;
   int start_level;
   
   start_level=pnmpi_level;
   
-  if (IS_ACTIVATED({{fn_name}}_MAJOR,{{fn_name}}_MINOR))
+  if (IS_ACTIVATED({{fn_name}}_ID))
     {
        while ((pnmpi_level<pnmpi_max_level) && (modules.module[pnmpi_level]->stack_delimiter==0))
         {
@@ -59,7 +61,7 @@ Boston, MA 02111-1307 USA
 		  if (DBGCHECK(DBGLEVEL6))
 		    start_timer=get_time_ns();
 		  #endif
-	      res=(pnmpi_function_ptrs.pnmpi_int_{{fn_name}})[pnmpi_level]{{argList}};
+      res=(pnmpi_function_ptrs.pnmpi_int_{{fn_name}})[pnmpi_level]({{args}});
 		  #ifdef DBGLEVEL6
 		  if (DBGCHECK(DBGLEVEL6))
 		    modules.module[pnmpi_level]->statstiming.{{fn_name}}+=get_time_ns()-start_timer;
@@ -73,21 +75,21 @@ Boston, MA 02111-1307 USA
     }
 
   DBGPRINT3("Calling a original MPI in {{fn_name}}");
-  res=P{{fn_name}}{{argList}};
+  res=P{{fn_name}}({{args}});
   DBGPRINT3("Done with original MPI in {{fn_name}}");
   pnmpi_level=start_level;
   return res;
 }
-{{endforallfnpp}}
+{{endforallfn}}
 
 
 {{forallfn fn_name MPI_Init MPI_Pcontrol MPI_Finalize}}
-{{retType}} {{fn_name}}{{argTypeListVoid}}
+{{ret_type}} {{fn_name}}({{formals}})
 {
   DBGPRINT3("Entering Old {{fn_name}} at base level - Location = %px",&({{fn_name}}));
 
-  if (NOT_ACTIVATED({{fn_name}}_MAJOR,{{fn_name}}_MINOR))
-    return P{{fn_name}}{{argList}};
+  if (NOT_ACTIVATED({{fn_name}}_ID))
+    return P{{fn_name}}({{args}});
   else
     {
 	int err;
@@ -102,7 +104,7 @@ Boston, MA 02111-1307 USA
     if (DBGCHECK(DBGLEVEL6))
       start_timer=get_time_ns();
 	#endif
-	err=Internal_X{{fn_name}}{{argList}};
+    err=Internal_X{{fn_name}}({{args}});
 	#ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
       pnmpi_totalstats_timing.{{fn_name}}=get_time_ns()-start_timer;
@@ -114,27 +116,27 @@ Boston, MA 02111-1307 USA
 
 
 {{forallfn fn_name MPI_Pcontrol}}
-{{retType}} X{{fn_name}}{{argTypeListVoid}}
+{{ret_type}} X{{fn_name}}({{formals}})
 {
-  {{retType}} returnVal;
+  {{ret_type}} returnVal;
   pnmpi_level++;
-  returnVal=Internal_X{{fn_name}}{{argList}};
+  returnVal=Internal_X{{fn_name}}({{args}});
   pnmpi_level--;
   return returnVal;
 }
 {{endforallfn}}
 
 {{forallfn fn_name MPI_Pcontrol}}
-{{retType}} X{{fn_name}}_NewStack(PNMPI_modHandle_t stack {{argTypeListOpen}})
+{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}})
 {
-  {{retType}} returnVal;
+  {{ret_type}} returnVal;
   int current=pnmpi_level;
   if (stack>=0)
     pnmpi_level=stack;
   else
     pnmpi_level++;
 
-  returnVal=Internal_X{{fn_name}}{{argList}};
+  returnVal=Internal_X{{fn_name}}({{args}});
   pnmpi_level=current;
   return returnVal;
 }

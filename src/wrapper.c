@@ -32,13 +32,15 @@ Boston, MA 02111-1307 USA
 */
 
 /* Special wrappers not covered by the generator */
-
 #ifdef EXPERIMENTAL_UNWIND
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #endif
 #include <stdarg.h>
 
+#include <mpi.h>
+
+#include "pnmpi-config.h"
 #include "core.h"
 
 
@@ -54,26 +56,11 @@ timing_t pnmpi_overall_timing;
 #endif
 
 
-/*-------------------------------------------------------------------*/
-/* include generated wrappers */
-
-/*int NQJ_Finalize(void);
-  int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1);*/
-
-
 extern void *MPIR_ToPointer (int idx);
 
-#include "../wrapper/wrapper.c"
-#include "../wrapper/f77symbols.h"
-#include "../wrapper/wrapper_f77.c"
+#include "f77symbols.h"
 
-/* Fortran wrappers */
-#if 0
-#include "../wrapper/wrapperf.h"
-#include "../wrapper/wrapperf.c"
-#endif
-
-#ifdef COMPILE_FOR_FORTRAN
+#ifdef PNMPI_HAVE_FORTRAN
 void pmpi_init_(int *ierror); 
 #endif
 
@@ -289,9 +276,9 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
 
   pnmpi_PreInit();  /* this will never fail */
   
-  if (NOT_ACTIVATED(MPI_Init_MAJOR,MPI_Init_MINOR))
+  if (NOT_ACTIVATED(MPI_Init_ID))
     {
-#ifdef COMPILE_FOR_FORTRAN
+#ifdef PNMPI_HAVE_FORTRAN
       if (init_was_fortran)
 	pmpi_init_(&returnVal);
       else
@@ -373,7 +360,7 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
 
 #ifndef AIX
 
-#ifdef COMPILE_FOR_FORTRAN
+#ifdef PNMPI_HAVE_FORTRAN
 void mpi_init_(int *ierr)
 {
   /* some code in here is taken from MPICH-1 */
@@ -532,7 +519,7 @@ int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
   
   start_level=pnmpi_level;
   
-  if (IS_ACTIVATED(MPI_Init_MAJOR,MPI_Init_MINOR))
+  if (IS_ACTIVATED(MPI_Init_ID))
     {
        while ((pnmpi_level<pnmpi_max_level) && (modules.module[pnmpi_level]->stack_delimiter==0))
         {
@@ -572,7 +559,7 @@ int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
   else
     {
       DBGPRINT3("Calling a original MPI in MPI_Init");
-#ifdef COMPILE_FOR_FORTRAN
+#ifdef PNMPI_HAVE_FORTRAN
       if (init_was_fortran)
 	pmpi_init_(&res);
       else
@@ -603,7 +590,7 @@ int MPI_Finalize(void)
 		start_timer=get_time_ns();
 #endif
 	
-	if (NOT_ACTIVATED(MPI_Finalize_MAJOR,MPI_Finalize_MINOR))
+  if (NOT_ACTIVATED(MPI_Finalize_ID))
 	{
 	}
 	else
@@ -648,7 +635,7 @@ int NQJ_Finalize(void)
   
   start_level=pnmpi_level;
   
-  if (IS_ACTIVATED(MPI_Finalize_MAJOR,MPI_Finalize_MINOR))
+  if (IS_ACTIVATED(MPI_Finalize_ID))
     {
        while ((pnmpi_level<pnmpi_max_level) && (modules.module[pnmpi_level]->stack_delimiter==0))
         {
@@ -687,7 +674,7 @@ int NQJ_Finalize(void)
   return res;
 }
 
-#ifdef COMPILE_FOR_FORTRAN
+#ifdef PNMPI_HAVE_FORTRAN
 void mpi_finalize_(int *ierr)
 {
 	*ierr=MPI_Finalize();
@@ -1153,7 +1140,7 @@ double mpi_wtick_(void)
 {
   DBGPRINT3("Entering Old Fortran mpi_wtick_ at base level - Location = %px",&(MPI_Wtick));
 
-  if (NOT_ACTIVATED(MPI_Wtick_MAJOR,MPI_Wtick_MINOR))
+  if (NOT_ACTIVATED(MPI_Wtick_ID))
     return PMPI_Wtick();
   else
   {
@@ -1183,7 +1170,7 @@ double mpi_wtime_(void)
 {
   DBGPRINT3("Entering Old Fortran mpi_wtime_ at base level - Location = %px",&(MPI_Wtime));
 
-  if (NOT_ACTIVATED(MPI_Wtime_MAJOR,MPI_Wtime_MINOR))
+  if (NOT_ACTIVATED(MPI_Wtime_ID))
     return PMPI_Wtime();
   else
   {

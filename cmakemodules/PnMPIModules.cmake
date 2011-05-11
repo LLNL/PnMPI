@@ -25,34 +25,34 @@
 #   directory. The script is added as a install script.
 #   (executed at install time)
 #=========================================================
-MACRO (PNMPI_MAC_PATCH_LIB targetname patcher)
+macro(pnmpi_mac_patch_lib targetname patcher)
     #TODO: test whether this works with Windows pathes (spaces and such)
     #SET (lib ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
     #Modules shouldn't have prefixes
-    SET (libin ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
-    SET (libout ${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
+    set(libin ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
+    set(libout ${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
     
-    FILE (WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake 
-        "MESSAGE (\"Patching ${libout}\")\n"
-        "EXECUTE_PROCESS (COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules"
-        "   RESULT_VARIABLE result"
-        "   OUTPUT_VARIABLE output"
+    file(WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake
+        "message(\"Patching ${libout}\")\n"
+        "execute_process(COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules\n"
+        "   RESULT_VARIABLE result\n"
+        "   OUTPUT_VARIABLE output\n"
         "   ERROR_VARIABLE output)\n"
-        "IF (result)\n"
-        "   MESSAGE (FATAL_ERROR MKDIR MODULES \${output})\n"
-        "ENDIF (result)\n"
-        "EXECUTE_PROCESS (COMMAND ${patcher}"
-        "   ${LIBRARY_OUTPUT_PATH}/${libin} ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules/${libout}"
-        "   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/install-scripts"
-        "   RESULT_VARIABLE result"
-        "   OUTPUT_VARIABLE output"
+        "if(result)\n"
+        "   message(FATAL_ERROR MKDIR MODULES \${output})\n"
+        "endif()\n"
+        "execute_process(COMMAND ${patcher}\n"
+        "   ${LIBRARY_OUTPUT_PATH}/${libin} ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules/${libout}\n"
+        "   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/install-scripts\n"
+        "   RESULT_VARIABLE result\n"
+        "   OUTPUT_VARIABLE output\n"
         "   ERROR_VARIABLE output)\n"
-        "IF (result)\n"
-        "   MESSAGE (FATAL_ERROR PATCHING \${output})\n"
-        "ENDIF (result)\n"
+        "if(result)\n"
+        "   message(FATAL_ERROR PATCHING \${output})\n"
+        "endif()\n"
         )
-    INSTALL (SCRIPT ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake)
-ENDMACRO (PNMPI_MAC_PATCH_LIB)
+    install(SCRIPT ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake)
+endmacro()
 
 #=========================================================
 # Macro
@@ -63,10 +63,10 @@ ENDMACRO (PNMPI_MAC_PATCH_LIB)
 # 
 # language: in C, CXX, FORTRAN
 #=========================================================
-MACRO (PNMPI_MAC_ADD_MODULE targetname sources language)
+macro(pnmpi_mac_add_module targetname sources language)
     #Add target and its dependency on the patcher
-    ADD_LIBRARY(${targetname} MODULE ${sources})
-    ADD_DEPENDENCIES(${targetname} ${TARGET_PATCHER})
+    add_library(${targetname} MODULE ${sources})
+    add_dependencies(${targetname} ${TARGET_PATCHER})
     
     #Set lib version
     ## Removed versions here, MAC doesn't likes that, actually versions might really not make much sense for a module
@@ -77,18 +77,18 @@ MACRO (PNMPI_MAC_ADD_MODULE targetname sources language)
     
     #For Apple set that undefined symbols should be looked up dynamically
     #(On linux this is already the default)
-    IF (APPLE)
-        SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    ENDIF (APPLE)
+    if(APPLE)
+        set_target_properties(${targetname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif()
        
      #Add avoid MPICXX header flags for C++                                                                                     
-    IF ("${language}" STREQUAL "CXX")
-        SET (TEMP "")
-        FOREACH (skip_flag ${MPI_CXX_SKIP_FLAGS})
-            SET (TEMP "${TEMP} ${skip_flag}")
-        ENDFOREACH (skip_flag)
-        SET_TARGET_PROPERTIES(${targetname} PROPERTIES COMPILE_FLAGS "${TEMP}")
-    ENDIF ("${language}" STREQUAL "CXX") 
+    if("${language}" STREQUAL "CXX")
+        set(TEMP "")
+        foreach(skip_flag ${MPI_CXX_SKIP_FLAGS})
+            set(TEMP "${TEMP} ${skip_flag}")
+        endforeach()
+        set_target_properties(${targetname} PROPERTIES COMPILE_FLAGS "${TEMP}")
+    endif()
     
     #Install it with reasonable file permissions
     #INSTALL(TARGETS ${targetname}
@@ -102,8 +102,7 @@ MACRO (PNMPI_MAC_ADD_MODULE targetname sources language)
     #    )
     
     #Patch it during installation
-    PNMPI_MAC_PATCH_LIB (
+    pnmpi_mac_patch_lib(
         ${targetname}
-        ${PATCHER}
-        )       
-ENDMACRO (PNMPI_MAC_ADD_MODULE)
+        ${PROJECT_BINARY_DIR}/patch/patch)
+endmacro()

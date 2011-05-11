@@ -39,7 +39,7 @@ Boston, MA 02111-1307 USA
 
 #include "core.h"
 
-char pnmpi_activated[NUM_MPI_CELLS];
+pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
 
 int pnmpi_level;
@@ -643,9 +643,9 @@ void pnmpi_PreInit()
 #ifdef DBGLEVEL
  {
    int _i;
-   for (_i=0;_i<NUM_MPI_CELLS;_i++)
+   for (_i=0;_i < NUM_MPI_CELLS;_i++)
      {
-       DBGPRINT3("Cell %i = %02x",_i,pnmpi_activated[_i]);
+       DBGPRINT3("Cell %i = %lx",_i,pnmpi_activated[_i]);
      }
  }
 #endif

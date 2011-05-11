@@ -9,20 +9,20 @@
 # @date 07-07-2009
 
 #Definitions
-SET (WRAPDIR "../../wrapper")
-SET (MPISPEC "mpi_pnmpi")
-SET (PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
-SET (FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
+set(WRAPDIR "../../wrapper")
+set(MPISPEC "mpi_pnmpi")
+set(PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
+set(FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
 
 #Use macro to: add target for module, version it, install it, patch it
-PNMPI_MAC_ADD_MODULE (empty "empty.c" "C")
-ADD_CUSTOM_TARGET(empty-prepare ALL)
-ADD_DEPENDENCIES(empty empty-prepare)
-ADD_DEPENDENCIES(empty-prepare ${TARGET_PATCHER})
+pnmpi_mac_add_module(empty "empty.c" "C")
+add_custom_target(empty-prepare ALL)
+add_dependencies(empty empty-prepare)
+add_dependencies(empty-prepare ${TARGET_PATCHER})
 
 #Invoke generation of the empty.h header 
 ## - For details on that see the "wrapper" cmake build script
-ADD_CUSTOM_COMMAND(
+add_custom_command(
     TARGET empty-prepare PRE_BUILD 
     COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_CURRENT_SOURCE_DIR}/empty.w" "-o" "empty.h"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
@@ -31,4 +31,4 @@ ADD_CUSTOM_COMMAND(
     )
     
 #Add the generated header into the include search path
-INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR}) 
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}) 

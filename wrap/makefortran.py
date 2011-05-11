@@ -1,9 +1,9 @@
+#!/usr/local/bin/python 
+# -*- python -*-
+#
 # Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
-
-#!/usr/local/bin/python 
-# -*- python -*-
 #
 #   mpiP MPI Profiler ( http://mpip.sourceforge.net/ )
 #
@@ -629,6 +629,9 @@ def StandardFileHeader(fname):
     olist.append("/* Location: " + socket.gethostname () + " " + os.name + " */\n")
     olist.append("\n")
     olist.append("\n")
+    olist.append("#include <mpi.h>\n")
+    olist.append("#include \"f77symbols.h\"\n")
+    olist.append("#include \"core.h\"\n")
     return olist
 
 
@@ -899,7 +902,7 @@ def CreateWrapper(funct, olist):
                  'DBGPRINT3("Entering Old Fortran ' + funct + ' at base level");\n');
 
     olist.append("\n"+
-                 "if (NOT_ACTIVATED(" + funct + "_MAJOR, " + funct + "_MINOR))\n"+
+                 "if (NOT_ACTIVATED(" + funct + "_ID))\n"+
                  "  rc=P" + funct + "( " )
 
     argname = ""

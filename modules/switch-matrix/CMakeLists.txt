@@ -9,20 +9,20 @@
 # @date 07-07-2009
 
 #Definitions
-SET (WRAPDIR "../../wrapper")
-SET (MPISPEC "mpi_pnmpi")
-SET (PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
-SET (FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
+set(WRAPDIR "../../wrapper")
+set(MPISPEC "mpi_pnmpi")
+set(PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
+set(FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
 
 #Use macro to: add target for module, version it, install it, patch it
-PNMPI_MAC_ADD_MODULE (switch-matrix "switch-matrix.c" "C")
-ADD_CUSTOM_TARGET(switch-matrix-prepare ALL)
-ADD_DEPENDENCIES(switch-matrix switch-matrix-prepare)
-ADD_DEPENDENCIES(switch-matrix-prepare ${TARGET_PATCHER})
+pnmpi_mac_add_module(switch-matrix "switch-matrix.c" "C")
+add_custom_target(switch-matrix-prepare ALL)
+add_dependencies(switch-matrix switch-matrix-prepare)
+add_dependencies(switch-matrix-prepare ${TARGET_PATCHER})
 
 #Invoke generation of the empty.h header 
 ## - For details on that see the "wrapper" cmake build script
-ADD_CUSTOM_COMMAND(
+add_custom_command(
     TARGET switch-matrix-prepare PRE_BUILD 
     COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_CURRENT_SOURCE_DIR}/switch-matrix.w" "-o" "switch-matrix.h"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
@@ -31,4 +31,4 @@ ADD_CUSTOM_COMMAND(
     )
     
 #Add the generated header into the include search path
-INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR}) 
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}) 

@@ -9,13 +9,13 @@
 # @date 07-07-2009
 
 #Set names for targets
-SET (MODS "datatype" "dtprint")
+set(MODS "datatype" "dtprint")
 
 #Loop over all targets (submods)
-FOREACH(mod ${MODS})
+foreach(mod ${MODS})
     #Use macro to: add target for module, version it, install it, patch it
-    PNMPI_MAC_ADD_MODULE (${mod} "${mod}" "CXX")
-ENDFOREACH(mod)
+    pnmpi_mac_add_module(${mod} "${mod}" "CXX")
+endforeach()
 
 #Add header to intermediate include dir
-CONFIGURE_FILE(datatype.h "${INCLUDE_OUTPUT_PATH}/datatype.h" COPYONLY)
+install(FILES datatype.h DESTINATION include)
