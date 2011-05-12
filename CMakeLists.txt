@@ -66,6 +66,9 @@ set(MPI_CXX_SKIP_FLAGS
 # TODO: detect fortran name mangling, e.g.: F77SYMBOL = symbol_
 option(F77SYMBOL "Name demangling scheme." symbol_) 
 
+# BFD is used by the patch utility.
+find_package(BFD)
+
 #===================================	
 # Ennable PnMPI internal debugging 
 #===================================	

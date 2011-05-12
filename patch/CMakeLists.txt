@@ -8,15 +8,14 @@
 # @authors Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
-# TODO:
-#       Should be detected, BFD presence can be tested for. 
-IF ( LINUX )
-   ADD_DEFINITIONS( "-DBFD_COPY" )
-ELSE()
-   ADD_DEFINITIONS( "-DDIRECT_COPY" )
-ENDIF()
 
 #Add the target for the patcher
 set(CMAKE_C_COMPILER gcc)
+
 add_executable(${TARGET_PATCHER} patch.c)
+if (BFD_FOUND)
+  target_link_libraries(patch ${BFD_LIBRARIES})
+endif()
 install(TARGETS ${TARGET_PATCHER} RUNTIME DESTINATION bin)
+
+include_directories(${CMAKE_BINARY_DIR})

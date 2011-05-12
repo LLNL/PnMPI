@@ -53,26 +53,26 @@ Boston, MA 02111-1307 USA
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-
 #include <stdarg.h>
-
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef BFD_COPY
-#include <bfd.h>
-#endif
-#include <sys/stat.h>
 #include <errno.h>
-#ifdef BFD_COPY
-#include <libiberty.h>
-#endif
 #include <string.h>
 #include <assert.h>
+
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+// TODO: Include pnmpi-config.h here when the BFD version works.
+// TODO: Right now it doesn't seem to link properly.  Do we need it?
+#ifdef PNMPI_HAVE_BFD
+#include <bfd.h>
+#include <libiberty.h>
+#endif
 
 #ifdef AIX
 #define DYNSTAB ".loader"
@@ -92,7 +92,7 @@ int status = 0;
 /* BFD BASED COPY BASED ON objcopy from the binutils */
 /*=======================================================================*/
 
-#ifdef BFD_COPY
+#ifdef PNMPI_HAVE_BFD
 
 static asymbol **isympp = NULL;	/* Input symbols.  */
 static asymbol **osympp = NULL;	/* Output symbols that survive stripping.  */

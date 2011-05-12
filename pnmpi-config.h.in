@@ -40,6 +40,9 @@ Boston, MA 02111-1307 USA
 /* Built with Adept Utils. */
 #define PNMPI_HAVE_ADEPT_UTILS @AdeptUtils_FOUND@
 
+/* Built with BFD support. */
+#define PNMPI_HAVE_BFD @BFD_FOUND@
+
 /* PnMPI version information -- numerical and a version string. */
 #define PNMPI_MAJOR_VERSION @PNMPI_MAJOR_VERSION@
 #define PNMPI_MINOR_VERSION @PNMPI_MINOR_VERSION@
