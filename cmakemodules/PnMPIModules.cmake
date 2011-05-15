@@ -68,13 +68,6 @@ macro(pnmpi_mac_add_module targetname sources language)
     add_library(${targetname} MODULE ${sources})
     add_dependencies(${targetname} ${TARGET_PATCHER})
     
-    #Set lib version
-    ## Removed versions here, MAC doesn't likes that, actually versions might really not make much sense for a module
-    #SET_TARGET_PROPERTIES (${targetname} PROPERTIES
-    #    VERSION ${PNMPI_VERSION}
-    #    SOVERSION ${PNMPI_LIB_INTERFACE_VERSION}
-    #    )  
-    
     #For Apple set that undefined symbols should be looked up dynamically
     #(On linux this is already the default)
     if(APPLE)

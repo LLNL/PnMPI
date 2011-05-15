@@ -101,7 +101,7 @@ set(TARGET_PATCHER      patch)
 
 add_subdirectory(src)
 add_subdirectory(patch)
-#add_subdirectory(modules)
+add_subdirectory(modules)
 enable_testing() #activates creation of tests
 #add_subdirectory(demo)
 

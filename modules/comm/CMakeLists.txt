@@ -10,7 +10,8 @@
 
 #Set names for targets
 set(PREFIX "commsub")
-set(SUBMOD "print" "empty") #"checksum" ##TODO checksum removed due to incompatibility with OpenMPI
+set(SUBMOD "print" "empty") 
+# TODO: "checksum" module removed due to incompatibility with OpenMPI
 
 #Loop over all targets (submods)
 foreach(mod ${SUBMOD})
