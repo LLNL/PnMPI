@@ -15,87 +15,38 @@
 # @author Tobias Hilbrich
 # @date 16.03.2009
 
-#=========================================================
-# Macro
-# Does:
-#   Gets the name of a library, Gets the path to the 
-#   P^nMPI patcher, Creates a CMake script in the binary
-#   directory which executes the patcher for the given 
-#   library. The result is placed in the P^nMPI library 
-#   directory. The script is added as a install script.
-#   (executed at install time)
-#=========================================================
-macro(pnmpi_mac_patch_lib targetname patcher)
-    #TODO: test whether this works with Windows pathes (spaces and such)
-    #SET (lib ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX}.${version})
-    #Modules shouldn't have prefixes
-    set(libin ${CMAKE_SHARED_MODULE_PREFIX}${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
-    set(libout ${targetname}${CMAKE_SHARED_MODULE_SUFFIX})
-    
-    file(WRITE ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake
-        "message(\"Patching ${libout}\")\n"
-        "execute_process(COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules\n"
-        "   RESULT_VARIABLE result\n"
-        "   OUTPUT_VARIABLE output\n"
-        "   ERROR_VARIABLE output)\n"
-        "if(result)\n"
-        "   message(FATAL_ERROR MKDIR MODULES \${output})\n"
-        "endif()\n"
-        "execute_process(COMMAND ${patcher}\n"
-        "   ${LIBRARY_OUTPUT_PATH}/${libin} ${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules/${libout}\n"
-        "   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/install-scripts\n"
-        "   RESULT_VARIABLE result\n"
-        "   OUTPUT_VARIABLE output\n"
-        "   ERROR_VARIABLE output)\n"
-        "if(result)\n"
-        "   message(FATAL_ERROR PATCHING \${output})\n"
-        "endif()\n"
-        )
-    install(SCRIPT ${PROJECT_BINARY_DIR}/install-scripts/patch-${libout}.cmake)
-endmacro()
 
-#=========================================================
-# Macro
-# Does:
-#   Takes a targetname and a list of source files.
-#   Adds a module with given name and sources, installs 
-#   patches and versions it.
+# add_pnmpi_module(targetname source1 source2 ... sourceN)
 # 
-# language: in C, CXX, FORTRAN
-#=========================================================
-macro(pnmpi_mac_add_module targetname sources language)
-    #Add target and its dependency on the patcher
-    add_library(${targetname} MODULE ${sources})
-    add_dependencies(${targetname} ${TARGET_PATCHER})
-    
-    #For Apple set that undefined symbols should be looked up dynamically
-    #(On linux this is already the default)
-    if(APPLE)
-        set_target_properties(${targetname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    endif()
-       
-     #Add avoid MPICXX header flags for C++                                                                                     
-    if("${language}" STREQUAL "CXX")
-        set(TEMP "")
-        foreach(skip_flag ${MPI_CXX_SKIP_FLAGS})
-            set(TEMP "${TEMP} ${skip_flag}")
-        endforeach()
-        set_target_properties(${targetname} PROPERTIES COMPILE_FLAGS "${TEMP}")
-    endif()
-    
-    #Install it with reasonable file permissions
-    #INSTALL(TARGETS ${targetname}
-    #    PERMISSIONS 
-    #        OWNER_READ OWNER_WRITE OWNER_EXECUTE 
-    #        GROUP_EXECUTE GROUP_READ 
-    #        WORLD_EXECUTE
-    #    RUNTIME DESTINATION bin
-    #    LIBRARY DESTINATION modules
-    #    ARCHIVE DESTINATION modules
-    #    )
-    
-    #Patch it during installation
-    pnmpi_mac_patch_lib(
-        ${targetname}
-        ${PROJECT_BINARY_DIR}/patch/patch)
-endmacro()
+#=============================================================================
+# This function adds a PnMPI module to the build and sets flags so that it
+# is built and patched properly.
+#
+function(add_pnmpi_module targetname)
+  list(LENGTH ARGN num_sources)
+  if (num_sources LESS 1)
+    message(FATAL_ERROR "add_pnmpi_module() called with no source files!")
+  endif()
+
+  # Add target and its dependency on the patcher
+  add_library(${targetname} MODULE ${ARGN})
+  
+  #For Apple set that undefined symbols should be looked up dynamically
+  #(On linux this is already the default)
+  if(APPLE)
+    set_target_properties(${targetname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif()
+
+  # Patch the library in place once it's built so that it can be installed normally,
+  # like any other library.  Also keeps build dir libraries consistent with installed libs.
+  get_target_property(lib ${targetname} LOCATION)
+  set(tmplib ${targetname}-unpatched.so)
+
+  add_custom_command(TARGET ${targetname} POST_BUILD
+    COMMAND mv ${lib} ${tmplib}
+    COMMAND pnmpi-patch ${tmplib} ${lib}
+    COMMAND rm -f ${tmplib}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Patching ${targetname}"
+    VERBATIM)
+endfunction()

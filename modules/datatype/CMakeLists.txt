@@ -5,17 +5,17 @@
 # TODO Martin please add the copyright statment of your choice, as well as 
 #      a reference to the license or license file!
 #
-# @authors Tobias Hilbrich, Martin Schulz
+# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
-#Set names for targets
-set(MODS "datatype" "dtprint")
-
-#Loop over all targets (submods)
-foreach(mod ${MODS})
-    #Use macro to: add target for module, version it, install it, patch it
-    pnmpi_mac_add_module(${mod} "${mod}" "CXX")
-endforeach()
+add_pnmpi_module(datatype datatype.cpp)
+add_pnmpi_module(dtprint dtprint.c)
 
 #Add header to intermediate include dir
 install(FILES datatype.h DESTINATION include)
+install(TARGETS datatype dtprint DESTINATION lib/pnmpi-modules)
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_BINARY_DIR}/src
+  ${MPI_C_INCLUDE_PATH})

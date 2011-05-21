@@ -9,15 +9,16 @@
 # @date 07-07-2009
 
 #modules to build:
-set(MODS "sample1" "sample2" "sample3" "sample4" "sample1f")
+set(MODS sample1 sample2 sample3 sample4 sample1f)
 
 #loop over modules and build them
 foreach(mod ${MODS})
     #Use macro to: add target for module, version it, install it, patch it
-    pnmpi_mac_add_module(${mod} "${mod}.c" "C")
+    add_pnmpi_module(${mod} ${mod}.c)
+    install(TARGETS ${mod} DESTINATION lib/pnmpi-modules)
 endforeach()
 
-#Create special non-patched version of sample1 (as SHARED and not as MODULE)
-#Used as part of the demo
+# Create special non-patched version of sample1 (as SHARED and not as MODULE)
+# Used as part of the demo to show simple preloading of PMPI libraries.
 add_library(sample1-non-patched SHARED sample1.c)
 target_link_libraries(sample1-non-patched ${MPI_C_LIBRARIES})

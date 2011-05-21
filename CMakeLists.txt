@@ -8,7 +8,14 @@
 # @authors Tobias Hilbrich, Martin Schulz
 # @date 2011-05-01
 cmake_minimum_required(VERSION 2.6)
-project(pnmpi C CXX Fortran)
+project(pnmpi C CXX)
+
+# Workaround for this CMake issue: http://public.kitware.com/Bug/view.php?id=9220
+# Ensures that enable_language(Fortran OPTIONAL) works correctly.  Annoying.
+if (DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
+  set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
+endif()
+enable_language(Fortran OPTIONAL)
 
 #Enable this line for debugging
 #SET (CMAKE_VERBOSE_MAKEFILE 1)
@@ -55,11 +62,10 @@ find_package(AWK REQUIRED)
 #     currently hardcoded, should be put into find modules:
 #     * detect python
 #     * detect gawk, tcsh, sort, uniq, sed
-#     * detect BFD precense 
 #     * dl open lib detection
 find_package(MPI)
 set(MPI_CXX_SKIP_FLAGS
-    "-DMPI_NO_CPPBIND" "-DOMPI_SKIP_MPICXX" "-D_MPICC_H" "-DMPICH_SKIP_MPICXX" "-DMPIBULL_SKIP_MPICXX"
+    -DMPI_NO_CPPBIND -DOMPI_SKIP_MPICXX -D_MPICC_H -DMPICH_SKIP_MPICXX -DMPIBULL_SKIP_MPICXX
     CACHE STRING "Default skip-flags used (for SGI, OpenMPI, HP-MPI, MPICH, BULL-MPI)")
 
 # Fortran name mangling option, customizable at cmd line
@@ -102,8 +108,9 @@ set(TARGET_PATCHER      patch)
 add_subdirectory(src)
 add_subdirectory(patch)
 add_subdirectory(modules)
+
 enable_testing() #activates creation of tests
-#add_subdirectory(demo)
+add_subdirectory(demo)
 
 #===================================
 #Other install stuff (which is not handled in the sub-dirs)
@@ -116,4 +123,4 @@ install(DIRECTORY ${INCLUDE_OUTPUT_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX})
 configure_file(
   ${PROJECT_SOURCE_DIR}/pnmpi-config.h.in
   ${PROJECT_BINARY_DIR}/pnmpi-config.h)
-install(FILES ${PROJECT_BINARY_DIR}/include/pnmpi-config.h DESTINATION include)
+install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)

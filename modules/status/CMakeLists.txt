@@ -9,7 +9,13 @@
 # @date 07-07-2009
 
 #Use macro to: add target for module, version it, install it, patch it
-pnmpi_mac_add_module(status "status.c" "C")
+add_pnmpi_module(status status.c)
 
 #Add header to intermediate include dir
 install(FILES status.h DESTINATION include)
+install(TARGETS status DESTINATION lib/pnmpi-modules)
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_BINARY_DIR}/src
+  ${MPI_C_INCLUDE_PATH})

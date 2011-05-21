@@ -8,27 +8,13 @@
 # @authors Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
-#Definitions
-set(WRAPDIR "../../wrapper")
-set(MPISPEC "mpi_pnmpi")
-set(PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
-set(FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
-
 #Use macro to: add target for module, version it, install it, patch it
-pnmpi_mac_add_module(virtual "virtual.c" "C")
-add_custom_target(virtual-prepare ALL)
-add_dependencies(virtual virtual-prepare)
-add_dependencies(virtual-prepare ${TARGET_PATCHER})
+add_pnmpi_module(virtual virtual.c)
+add_wrapped_file(virtual.c virtual.w)
 
-#Invoke generation of the empty.h header 
-## - For details on that see the "wrapper" cmake build script
-add_custom_command(
-    TARGET virtual-prepare PRE_BUILD 
-    COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_CURRENT_SOURCE_DIR}/virtual.w" "-o" "virtual.h"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    COMMENT "Generating module sources for the \"virtual\" module" 
-    VERBATIM
-    )
-    
-#Add the generated header into the include search path
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}) 
+install(TARGETS virtual DESTINATION lib/pnmpi-modules)
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_BINARY_DIR}/src
+  ${MPI_C_INCLUDE_PATH})

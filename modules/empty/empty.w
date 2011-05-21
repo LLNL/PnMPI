@@ -1,4 +1,4 @@
-/*
+/* -*- c++ -*-
 Copyright (c) 2008
 Lawrence Livermore National Security, LLC. 
 
@@ -31,12 +31,9 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-/* automatically generated wrapper code */
+#include <mpi.h>
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{retType}} {{fn_name}}{{argTypeList}}
-{
-  return P{{fn_name}}{{argList}};
-}
-{{endforallfn}}
-
+/* Below code is automatically generated. */
+{{fnall fn_name MPI_Pcontrol}}
+  {{callfn}}
+{{endfnall}}

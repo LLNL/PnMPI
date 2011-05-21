@@ -5,11 +5,18 @@
 # TODO Martin please add the copyright statment of your choice, as well as 
 #      a reference to the license or license file!
 #
-# @authors Tobias Hilbrich, Martin Schulz
+# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
 #Use macro to: add target for module, version it, install it, patch it
-pnmpi_mac_add_module(requests "requests.cpp" "CXX")
+add_pnmpi_module(requests requests.cpp)
 
 #Add header to intermediate include dir
 install(FILES requests.h DESTINATION include)
+install(TARGETS requests DESTINATION lib/pnmpi-modules)
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/modules/status
+  ${PROJECT_BINARY_DIR}/src
+  ${MPI_C_INCLUDE_PATH})

@@ -12,10 +12,10 @@
 #Add the target for the patcher
 set(CMAKE_C_COMPILER gcc)
 
-add_executable(${TARGET_PATCHER} patch.c)
+add_executable(pnmpi-patch patch.c)
 if (BFD_FOUND)
-  target_link_libraries(patch ${BFD_LIBRARIES})
+  target_link_libraries(pnmpi-patch ${BFD_LIBRARIES})
 endif()
-install(TARGETS ${TARGET_PATCHER} RUNTIME DESTINATION bin)
+install(TARGETS pnmpi-patch RUNTIME DESTINATION bin)
 
 include_directories(${CMAKE_BINARY_DIR})

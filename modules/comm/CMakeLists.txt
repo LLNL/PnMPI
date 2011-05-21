@@ -9,16 +9,27 @@
 # @date 07-07-2009
 
 #Set names for targets
-set(PREFIX "commsub")
-set(SUBMOD "print" "empty") 
-# TODO: "checksum" module removed due to incompatibility with OpenMPI
+set(PREFIX commsub)
+set(SUBMODULES print empty)
+# TODO: checksum removed due to incompatibility with OpenMPI
 
 #Loop over all targets (submods)
-foreach(mod ${SUBMOD})
-    #Use macro to: add target for module, version it, install it, patch it
-    pnmpi_mac_add_module(${PREFIX}-${mod} "${PREFIX}-${mod}.cpp;comm.cpp" "CXX")
-    
-    #Add the submodname define as a flag
-    ##TODO Martin, please have a look at the "SUBMODNAME" define, is that what you want ???
+foreach(mod ${SUBMODULES})
+    # Use macro to: add target for module, version it, install it, patch it
+    set(modulename ${PREFIX}-${mod})
+    add_pnmpi_module(${modulename} ${modulename}.cpp comm.cpp)
+
+    #  Add the submodname define as a flag
+    ## TODO: Martin, please have a look at the "SUBMODNAME" define, is that what you want ???
     set_source_files_properties(${PREFIX}-${mod}.cpp COMPILE_FLAGS "-DSUBMODNAME='\"${mod}\"'")
+
+    install(TARGETS ${modulename} DESTINATION lib/pnmpi-modules)
 endforeach()
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/modules/datatype
+  ${PROJECT_SOURCE_DIR}/modules/requests
+  ${PROJECT_SOURCE_DIR}/modules/status
+  ${PROJECT_BINARY_DIR}/src
+  ${MPI_C_INCLUDE_PATH})

@@ -5,30 +5,12 @@
 # TODO Martin please add the copyright statment of your choice, as well as 
 #      a reference to the license or license file!
 #
-# @authors Tobias Hilbrich, Martin Schulz
+# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 07-07-2009
 
-#Definitions
-set(WRAPDIR "../../wrapper")
-set(MPISPEC "mpi_pnmpi")
-set(PROTOFILE "${WRAPDIR}/${MPISPEC}_proto")
-set(FCTFILE   "${WRAPDIR}/${MPISPEC}_fct")
+add_pnmpi_module(empty empty.c)
+add_wrapped_file(empty.c empty.w)
 
-#Use macro to: add target for module, version it, install it, patch it
-pnmpi_mac_add_module(empty "empty.c" "C")
-add_custom_target(empty-prepare ALL)
-add_dependencies(empty empty-prepare)
-add_dependencies(empty-prepare ${TARGET_PATCHER})
+install(TARGETS empty DESTINATION lib/pnmpi-modules)
 
-#Invoke generation of the empty.h header 
-## - For details on that see the "wrapper" cmake build script
-add_custom_command(
-    TARGET empty-prepare PRE_BUILD 
-    COMMAND ${WRAPPERGEN} ARGS "-p" "${PROTOFILE}" "-f" "${FCTFILE}" "-w" "${CMAKE_CURRENT_SOURCE_DIR}/empty.w" "-o" "empty.h"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    COMMENT "Generating module sources for the \"empty\" module" 
-    VERBATIM
-    )
-    
-#Add the generated header into the include search path
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}) 
+include_directories(${MPI_C_INCLUDE_PATH})

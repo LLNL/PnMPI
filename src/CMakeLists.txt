@@ -16,29 +16,20 @@ endif()
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
-  ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
-  ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h
+  # -- Regular sources --
   debug.c
   services.c
   core.c
   wrapper.c
+  # -- Generated sources --
   wrapper_c.c
-  wrapper_f77.c)
+  wrapper_f77.c
+  # Note: Generated headers must be added to enforce dependency.
+  ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
+  ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
 
-# Invoke generation of wrappers as pre build event of wrapper lib target
-function(add_wrapped_file file_name wrapper_name)
-  set(file_path    ${CMAKE_CURRENT_BINARY_DIR}/${file_name})
-  set(wrapper_path ${CMAKE_CURRENT_SOURCE_DIR}/${wrapper_name})
-  add_custom_command(
-    OUTPUT  ${file_path}
-    COMMAND ${CMAKE_SOURCE_DIR}/wrap/wrap.py ARGS ${wrapper_path} -o ${file_path}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    DEPENDS ${wrapper_path}
-    COMMENT "Generating ${file_name} from ${wrapper_name}"
-    VERBATIM)
-  set_source_files_properties(${file_path} PROPERTIES GENERATED TRUE)
-endfunction()
-
+# Add wrapped files to the build.
+include(${CMAKE_SOURCE_DIR}/wrap/WrapConfig.cmake)
 add_wrapped_file(wrapper.h   wrapper.h.w)
 add_wrapped_file(newstack.h  newstack.h.w)
 add_wrapped_file(wrapper_c.c wrapper_c.c.w)
@@ -62,6 +53,9 @@ target_link_libraries(pnmpi
 set_target_properties(pnmpi PROPERTIES 
     VERSION   ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION ${PNMPI_LIB_INTERFACE_VERSION})
+if(APPLE)
+  set_target_properties(pnmpi PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+endif()
 
 # PnMPI static library (same output name as shared lib)
 add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
@@ -84,6 +78,9 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   set_target_properties(pnmpif PROPERTIES 
     VERSION       ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION     ${PNMPI_LIB_INTERFACE_VERSION})
+    if(APPLE)
+      set_target_properties(pnmpif PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif()
 
   # PnMPI fortran static lib
   add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
