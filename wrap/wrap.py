@@ -798,7 +798,7 @@ class TypeApplier:
         len(args) == 2 or syntax_error("Wrong number of args in apply macro.")
         type, macro_name = args
         for arg in self.decl.args:
-            if arg.type == type:
+            if arg.cType() == type:
                 out.write("%s(%s);\n" % (macro_name, arg.name))
 
 def include_decl(scope, decl):
@@ -984,10 +984,10 @@ def filter_macro(out, scope, args, children):
 
 @macro("fn_num")
 def fn_num(out, scope, args, children):
-    val = fn_num.value
-    fn_num.value += 1
+    val = fn_num.val
+    fn_num.val += 1
     return val
-fn_num.value = 0  # init the counter here.
+fn_num.val = 0  # init the counter here.
 
 
 ################################################################################
