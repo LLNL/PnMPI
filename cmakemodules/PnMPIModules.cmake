@@ -28,8 +28,9 @@ function(add_pnmpi_module targetname)
     message(FATAL_ERROR "add_pnmpi_module() called with no source files!")
   endif()
 
-  # Add target and its dependency on the patcher
+  # Add a library for the module, and set it up to omit the 'lib' prefix
   add_library(${targetname} MODULE ${ARGN})
+  set_target_properties(${targetname} PROPERTIES PREFIX "")
   
   #For Apple set that undefined symbols should be looked up dynamically
   #(On linux this is already the default)
