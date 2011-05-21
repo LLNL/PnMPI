@@ -86,6 +86,8 @@ int verbose = 0;
 int copyonly = 0;
 int status = 0;
 
+int num_generic_symbols = 0;
+int num_dynamic_symbols = 0;
 
 /*=======================================================================*/
 /*=======================================================================*/
@@ -1133,7 +1135,7 @@ void copy_file (const char *input_filename, const char *output_filename,
   fd_in=open(input_filename, O_RDONLY);
   fd_out=open(output_filename, O_WRONLY|O_CREAT|O_TRUNC,S_IRWXU);
 
-  printf("In %i Out %i\n",fd_in,fd_out);
+  if (verbose) printf("In %i Out %i\n",fd_in,fd_out);
 
   read(fd_in,&c0,1);
   read(fd_in,&c1,1);
@@ -1150,14 +1152,17 @@ void copy_file (const char *input_filename, const char *output_filename,
           if ((c4=='_') && (c3=='I') && (c2=='P') && (c1=='M') && (c0=='P'))
           {
             c0='X';
-            printf("Found a dynamic symbol\n");
+            if (verbose) printf("Found a dynamic symbol\n");
+            num_dynamic_symbols++;
           }
           if ((c3=='_') && (c2=='I') && (c1=='P') && (c0=='M'))
           {
             c0=prefix0;
             c1=prefix1;
             c2=prefix2;
-            printf("Found generic symbol\n");
+
+            if (verbose) printf("Found generic symbol\n");
+            num_generic_symbols++;
           }
 #if 0
           if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m'))
@@ -1167,7 +1172,7 @@ void copy_file (const char *input_filename, const char *output_filename,
             c2='m';
             c3='p';
             c4='i';
-            printf("Found library name\n");
+            if (verbose) printf("Found library name\n");
           }
 #endif
         }
@@ -1265,6 +1270,9 @@ int main (int argc, char *argv[])
     }      
 
   copy_file (input_filename, output_filename, NULL, NULL);
+
+  printf("Patched %d dynamic symbols.\n", num_dynamic_symbols);
+  printf("Patched %d generic symbols.\n", num_generic_symbols);
 
   return status;
 }
