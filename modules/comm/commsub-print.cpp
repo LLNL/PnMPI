@@ -65,8 +65,8 @@ void SEND_P2P_START(void *buf, int count, MPI_Datatype dt, int node, int tag,
 
   if ((verbosity_level & 0xff)>0)
     {
-      printf("Starting to send %i (%i x DT %i) to %i channel %i/%i\n",
-	     send_cnt,count,dt,node,tag,comm);
+      printf("Starting to send %i (%i x DT %li) to %i channel %i/%li\n",
+             send_cnt,count,(long)dt,node,tag,(long)comm);
     }
   *((int*) ptr)=send_cnt;
   send_cnt++;
@@ -120,8 +120,8 @@ void SEND_P2P_END(void *buf, int count, MPI_Datatype dt, int node, int tag,
 {
   if ((verbosity_level & 0xff)>0)
     {
-      printf("--> Send %i done (%i x DT %i) to %i channel %i/%i\n",
-	     *((int*) ptr),count,dt,node,tag,comm);
+      printf("--> Send %i done (%i x DT %li) to %i channel %i/%li\n",
+             *((int*) ptr),count,(long)dt,node,tag,(long)comm);
     }
 }
 
@@ -130,8 +130,8 @@ void RECV_P2P_START(void *buf, int count, MPI_Datatype dt, int node, int tag,
 {
   if ((verbosity_level & 0xff)>0)
     {
-      printf("Starting to receive %i (%i x DT %i)\n",
-	     recv_cnt,count,dt);
+      printf("Starting to receive %i (%i x DT %li)\n",
+             recv_cnt,count,(long)dt);
     }
   *((int*) ptr)=recv_cnt;
   recv_cnt++;
@@ -154,8 +154,8 @@ void RECV_P2P_END(void *buf, int count, MPI_Datatype dt, int node, int tag,
 
   if ((verbosity_level & 0xff)>0)
     {
-      printf("--> Receive %i done (%i x DT %i) from %i channel %i/%i\n",
-	     *((int*) ptr),count,dt,node,tag,comm);
+      printf("--> Receive %i done (%i x DT %li) from %i channel %i/%li\n",
+             *((int*) ptr),count,(long)dt,node,tag,(long)comm);
     }
 
   if ((verbosity_level & 0xff)>1)

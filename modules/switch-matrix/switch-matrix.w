@@ -84,7 +84,7 @@ int PNMPI_RegistrationPoint()
 int  MPI_Init(int * argc, char *** argv)
 {
   int err;
-  char *inp;
+  const char *inp;
   int handle_comm;
 
   /* query own module */

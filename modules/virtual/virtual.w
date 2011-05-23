@@ -95,7 +95,7 @@ int  MPI_Init(int * argc, char *** argv)
   if (err!=PNMPI_SUCCESS)
     return err;
 
-  err=PNMPI_Service_GetArgument(handle,"jobs",(char**) &jobs);
+  err=PNMPI_Service_GetArgument(handle,"jobs",(const char**) &jobs);
   if (err!=PNMPI_SUCCESS)
     {
       if (err==PNMPI_NOARG)
