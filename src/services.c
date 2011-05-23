@@ -49,7 +49,7 @@ Boston, MA 02111-1307 USA
 /*........................................................*/
 /* Register a module */
 
-int PNMPI_Service_RegisterModule(char *name)
+int PNMPI_Service_RegisterModule(const char *name)
 {
   modules.module[pnmpi_level]->registered=1;
   strncpy(modules.module[pnmpi_level]->username,
@@ -62,7 +62,7 @@ int PNMPI_Service_RegisterModule(char *name)
 /*........................................................*/
 /* Register a service */
 
-int PNMPI_Service_RegisterService(PNMPI_Service_descriptor_t *service)
+int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service)
 {
   module_servlist_p newservice;
 
@@ -80,7 +80,7 @@ int PNMPI_Service_RegisterService(PNMPI_Service_descriptor_t *service)
 /*........................................................*/
 /* Register a service */
 
-int PNMPI_Service_RegisterGlobal(PNMPI_Global_descriptor_t *global)
+int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global)
 {
   module_globlist_p newglobal;
 
@@ -98,7 +98,7 @@ int PNMPI_Service_RegisterGlobal(PNMPI_Global_descriptor_t *global)
 /*........................................................*/
 /* find a registered module using a given user name */
 
-int PNMPI_Service_GetStackByName(char *name, PNMPI_modHandle_t *handle)
+int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle)
 {
   int i;
 
@@ -132,7 +132,7 @@ int PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
 /*........................................................*/
 /* find a registered module using a given user name */
 
-int PNMPI_Service_GetModuleByName(char *name, PNMPI_modHandle_t *handle)
+int PNMPI_Service_GetModuleByName(const char *name, PNMPI_modHandle_t *handle)
 {
   int i;
 
@@ -157,7 +157,7 @@ int PNMPI_Service_GetModuleByName(char *name, PNMPI_modHandle_t *handle)
 /* find a service in a given module and return description */
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, 
-				   char *name, char *sig,
+				   const char *name, const char *sig,
 				   PNMPI_Service_descriptor_t *serv)
 {
   int err;
@@ -190,7 +190,7 @@ int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle,
 /* find a service in a given module and return description */
 
 int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, 
-				  char *name, char sig,
+				  const char *name, const char sig,
 				  PNMPI_Global_descriptor_t *glob)
 {
   int err;
@@ -222,7 +222,7 @@ int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
 /*........................................................*/
 /* query an argument */
 
-int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, char *name, char **val)
+int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name, const char **val)
 {
   module_arg_p a;
 

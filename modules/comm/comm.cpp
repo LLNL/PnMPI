@@ -147,7 +147,7 @@ int MPI_Init(int *argc, char ***argv)
   PNMPI_modHandle_t handle_dt,handle_req,handle_status,handle_comm;
   PNMPI_Service_descriptor_t serv;
   PNMPI_Global_descriptor_t global;
-  char *vlevel_s;
+  const char *vlevel_s;
   char name[1000];
 
   /* query the datatype module */

@@ -123,25 +123,25 @@ extern "C" {
 
 int PNMPI_RegistrationPoint(void);
 
-int PNMPI_Service_RegisterModule(char *name);
-int PNMPI_Service_RegisterService(PNMPI_Service_descriptor_t *service);
-int PNMPI_Service_RegisterGlobal(PNMPI_Global_descriptor_t *global);
+int PNMPI_Service_RegisterModule(const char *name);
+int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
+int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
 
-int PNMPI_Service_GetModuleByName(char *name, PNMPI_modHandle_t *handle);
+int PNMPI_Service_GetModuleByName(const char *name, PNMPI_modHandle_t *handle);
 
 int PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 
-int PNMPI_Service_GetStackByName(char *name, PNMPI_modHandle_t *handle);
+int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle);
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, 
-				   char *name, char *sig,
+				   const char *name, const char *sig,
 				   PNMPI_Service_descriptor_t *serv);
 
 int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, 
-				  char *name, char sig,
+				  const char *name, const char sig,
 				  PNMPI_Global_descriptor_t *serv);
 
-int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, char *name, char **val);
+int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name, const char **val);
 
 
 /*===============================================================*/

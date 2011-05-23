@@ -601,7 +601,7 @@ int PNMPI_RegistrationPoint()
 int MPI_Init(int *argc, char ***argv)
 {
   int defer_err,err;
-  char *clevel_s;
+  const char *clevel_s;
   PNMPI_modHandle_t handle_datatype;
 
   /* are we doing checks at the end? */
@@ -785,17 +785,17 @@ int MPI_Finalize()
 	      first=0;
 
 	      if (i->second->homogeneous) 
-		printf("\tNode %i: %i / %i with usage %i / base type with size %i\n",
+		printf("\tNode %i: %li / %li with usage %i / base type with size %i\n",
 		       dt_rank,
-		       i->second->mpi_dt,
-		       i->second->store_dt,
+		       (long)i->second->mpi_dt,
+		       (long)i->second->store_dt,
 		       i->second->usage,
 		       i->second->homogeneous);
 	      else
-		printf("\tNode %i: %i / %i with usage %i / combined out of %i base types\n",
+		printf("\tNode %i: %li / %li with usage %i / combined out of %i base types\n",
 		       dt_rank,
-		       i->second->mpi_dt,
-		       i->second->store_dt,
+		       (long)i->second->mpi_dt,
+		       (long)i->second->store_dt,
 		       i->second->usage,
 		       i->second->count);
 	    }

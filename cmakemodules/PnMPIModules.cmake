@@ -12,8 +12,8 @@
 # @file PnMPIModules.cmake
 #       Contains helpful macros.
 #
-# @author Tobias Hilbrich
-# @date 16.03.2009
+# @author Todd Gamblin, Tobias Hilbrich
+# @date 22.05.2011
 
 
 # add_pnmpi_module(targetname source1 source2 ... sourceN)

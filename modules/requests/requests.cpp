@@ -259,7 +259,7 @@ int MPI_Init(int *argc, char ***argv)
   PNMPI_Service_descriptor_t serv;
   PNMPI_Global_descriptor_t global;
   PNMPI_modHandle_t handle_req;
-  char *clevel_s;
+  const char *clevel_s;
  
   /* are we doing checks at the end? */
 
