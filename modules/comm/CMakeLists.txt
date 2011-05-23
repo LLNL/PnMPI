@@ -5,8 +5,8 @@
 # TODO Martin please add the copyright statment of your choice, as well as 
 #      a reference to the license or license file!
 #
-# @authors Tobias Hilbrich, Martin Schulz
-# @date 07-07-2009
+# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
+# @date 05-22-2011
 
 #Set names for targets
 set(PREFIX commsub)

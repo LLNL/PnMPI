@@ -4,8 +4,12 @@
 
 P^nMPI Tool Infrastructure, Version 1.4 (git)
 
-Martin Schulz, 2005-2010, LLNL
-schulzm@llnl.gov
+Written by:
+  Martin Schulz     schulzm@llnl.gov
+
+Contributors:
+  Todd Gamblin      tgamblin@llnl.gov
+  Tobias Hilbrich   Tobias.Hilbrich@zih.tu-dresden.de
 
 
 P^nMPI is a dynamic MPI tool infrastructure that builds on top of

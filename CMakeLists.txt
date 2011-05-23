@@ -5,8 +5,8 @@
 # TODO Martin please add the copyright statment of your choice, as well as 
 #      a reference to the license or license file!
 #
-# @authors Tobias Hilbrich, Martin Schulz
-# @date 2011-05-01
+# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
+# @date 05-22-2011
 cmake_minimum_required(VERSION 2.6)
 project(pnmpi C CXX)
 

@@ -6,7 +6,7 @@
 #      a reference to the license or license file!
 #
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
-# @date 07-07-2009
+# @date 05-22-2011
 
 #Use macro to: add target for module, version it, install it, patch it
 add_pnmpi_module(switch-matrix switch-matrix.c)

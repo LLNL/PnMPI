@@ -5,7 +5,7 @@
 # TODO Martin please add the copyright statment of your choice, as well as 
 #      a reference to the license or license file!
 #
-# @authors Tobias Hilbrich, Martin Schulz, Todd Gamblin
+# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 2011-05-01
 
 # Add linkage to adept utils if we have it
