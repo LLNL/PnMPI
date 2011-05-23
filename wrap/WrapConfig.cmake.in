@@ -16,7 +16,7 @@
 # @date 19 May 2011
 
 
-# add_wrapped_file(file_name wrapper_name)
+# add_wrapped_file(file_name wrapper_name
 # 
 # This macro adds a command to generate <file_name> from <wrapper_name> to the
 # build.  Properties on <file_name> are also set so that CMake knows that it
@@ -25,9 +25,10 @@
 function(add_wrapped_file file_name wrapper_name)
   set(file_path    ${CMAKE_CURRENT_BINARY_DIR}/${file_name})
   set(wrapper_path ${CMAKE_CURRENT_SOURCE_DIR}/${wrapper_name})
+  
   add_custom_command(
     OUTPUT  ${file_path}
-    COMMAND ${CMAKE_SOURCE_DIR}/wrap/wrap.py ARGS ${wrapper_path} -o ${file_path}
+    COMMAND @WRAP@ ARGS ${wrapper_path} -o ${file_path}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS ${wrapper_path}
     COMMENT "Generating ${file_name} from ${wrapper_name}"

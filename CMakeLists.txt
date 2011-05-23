@@ -82,7 +82,6 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
   add_definitions(-DDBGLEVEL=0)
 endif()
 
-
 #===================================	
 #Check for adept_utils timers
 #===================================	
@@ -92,19 +91,25 @@ if(AdeptUtils_FOUND)
   add_definitions(-DHAVE_ADEPT_UTILS)
 else()
   message(STATUS "AdeptUtils package not found.  Building without timing.")
+  # Set these for our PnMPIConfig.cmake file.
+  set(AdeptUtils_INCLUDE_PATH AdeptUtils_INCLUDE_PATH-NOTFOUND)
+  set(AdeptUtils_LIBRARIES    AdeptUtils_LIBRARIES-NOTFOUND)
 endif()
 
 
-#===================================
-#Recurse to sub-directories
-#===================================
+#======================================================
+# Set up wrapper generator so this project can use it.
+#======================================================
+set(WRAP ${PROJECT_SOURCE_DIR}/wrap/wrap.py)
+configure_file(
+  ${PROJECT_SOURCE_DIR}/wrap/WrapConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake @ONLY)
+include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
 
-#defines all the targets that exist, used to specify dependencies
-set(TARGET_WRAPPERGEN   wrappergen)
-set(TARGET_EXTRARGS     extrargs)
-set(TARGET_PNMPILIB     pnmpi)
-set(TARGET_PATCHER      patch)
-
+#===================================
+# Recurse to sub-directories
+#===================================
+add_subdirectory(wrap)
 add_subdirectory(src)
 add_subdirectory(patch)
 add_subdirectory(modules)
@@ -118,9 +123,15 @@ add_subdirectory(demo)
 #Install includes (collected and copied during build process)
 install(DIRECTORY ${INCLUDE_OUTPUT_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-
 # Configure a header file with the full build configuration.
 configure_file(
   ${PROJECT_SOURCE_DIR}/pnmpi-config.h.in
   ${PROJECT_BINARY_DIR}/pnmpi-config.h)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
+
+# Install configuration file so that other projects can use PnMPI
+configure_file(
+  ${PROJECT_SOURCE_DIR}/PnMPIConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake DESTINATION lib/cmake/PnMPI)
+install(FILES ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPIModules.cmake DESTINATION lib/cmake/PnMPI)

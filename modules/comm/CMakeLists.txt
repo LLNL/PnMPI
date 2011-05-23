@@ -21,7 +21,7 @@ foreach(mod ${SUBMODULES})
 
     #  Add the submodname define as a flag
     ## TODO: Martin, please have a look at the "SUBMODNAME" define, is that what you want ???
-    set_source_files_properties(${PREFIX}-${mod}.cpp COMPILE_FLAGS "-DSUBMODNAME='\"${mod}\"'")
+    set_source_files_properties(${modulename}.cpp COMPILE_FLAGS "-DSUBMODNAME='\"${mod}\"'")
 
     install(TARGETS ${modulename} DESTINATION lib/pnmpi-modules)
 endforeach()

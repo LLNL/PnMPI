@@ -1,0 +1,32 @@
+# -*- cmake -*-
+# PnMPI configuration
+# 
+#
+set(PnMPI_INSTALL_PREFIX           @CMAKE_INSTALL_PREFIX@)
+set(PnMPI_MODULES_DIR              @CMAKE_INSTALL_PREFIX@/lib/pnmpi-modules)
+set(PnMPI_INCLUDE_DIR              @CMAKE_INSTALL_PREFIX@/include)
+
+set(PnMPI_INCLUDE_PATH             @CMAKE_INSTALL_PREFIX@/include)
+set(PnMPI_LIBRARIES                @CMAKE_INSTALL_PREFIX@/lib/libpnmpi.so)
+set(PnMPI_STATIC_LIBRARIES         @CMAKE_INSTALL_PREFIX@/lib/libpnmpi.a)
+
+# These variables allow client libraries to use the same AdeptUtils as PnMPI
+set(PnMPI_USE_AdeptUtils           @AdeptUtils_FOUND@)
+set(PnMPI_AdeptUtils_INCLUDE_PATH  @AdeptUtils_INCLUDE_PATH@)
+set(PnMPI_AdeptUtils_LIBRARIES     @AdeptUtils_LIBRARIES@)
+
+# These variables allow client libraries to use the same BFD library as PnMPI
+set(PnMPI_USE_BFD                  @BFD_FOUND@)
+set(PnMPI_BFD_INCLUDE_PATH         @BFD_INCLUDE_PATH@)
+set(PnMPI_BFD_LIBRARIES            @BFD_LIBRARIES@)
+set(PnMPI_IBERTY_INCLUDE_PATH      @IBERTY_INCLUDE_PATH@)
+set(PnMPI_IBERTY_LIBRARIES         @IBERTY_LIBRARIES@)
+
+# Allow other projects to use the pnmpi-patch target
+include(${CMAKE_CURRENT_LIST_DIR}/pnmpi-patch.cmake)
+
+# Allow other projects to use the wrap utility
+include(${CMAKE_CURRENT_LIST_DIR}/WrapConfig.cmake)
+
+# Allow other projects to build PnMPI modules
+include(${CMAKE_CURRENT_LIST_DIR}/PnMPIModules.cmake)

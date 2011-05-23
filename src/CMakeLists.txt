@@ -29,7 +29,6 @@ set(PNMPI_LIB_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
 
 # Add wrapped files to the build.
-include(${CMAKE_SOURCE_DIR}/wrap/WrapConfig.cmake)
 add_wrapped_file(wrapper.h   wrapper.h.w)
 add_wrapped_file(newstack.h  newstack.h.w)
 add_wrapped_file(wrapper_c.c wrapper_c.c.w)
@@ -62,7 +61,9 @@ add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
 set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 
 #copy header files to include directory in binary dir
-install(FILES   pnmpi.h pnmpimod.h DESTINATION include)
+install(
+  FILES   pnmpi.h pnmpimod.h ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
+  DESTINATION include)
 install(TARGETS pnmpi_static pnmpi DESTINATION lib)
 
 #
