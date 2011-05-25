@@ -18,6 +18,8 @@ target_link_libraries(simple                        ${MPI_C_LIBRARIES})
 target_link_libraries(simple-pn pnmpi               ${MPI_C_LIBRARIES})
 target_link_libraries(simple-s1 sample1-non-patched ${MPI_C_LIBRARIES}) 
 
+configure_file(.pnmpi-conf ${CMAKE_CURRENT_BINARY_DIR}/.pnmpi-conf COPY_ONLY)
+
 # Fortran (if we have it)
 if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable(fdemo    fdemo.f)
