@@ -60,7 +60,7 @@ extern void *MPIR_ToPointer (int idx);
 
 #include "f77symbols.h"
 
-#ifdef PNMPI_HAVE_FORTRAN
+#ifdef COMPILE_FOR_FORTRAN
 void pmpi_init_(int *ierror); 
 #endif
 
@@ -278,7 +278,7 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
   
   if (NOT_ACTIVATED(MPI_Init_ID))
     {
-#ifdef PNMPI_HAVE_FORTRAN
+#ifdef COMPILE_FOR_FORTRAN
       if (init_was_fortran)
 	pmpi_init_(&returnVal);
       else
@@ -360,7 +360,7 @@ static int PNMPI_Common_MPI_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
 
 #ifndef AIX
 
-#ifdef PNMPI_HAVE_FORTRAN
+#ifdef COMPILE_FOR_FORTRAN
 void mpi_init_(int *ierr)
 {
   /* some code in here is taken from MPICH-1 */
@@ -559,7 +559,7 @@ int NQJ_Init(int * _pnmpi_arg_0, char * * * _pnmpi_arg_1)
   else
     {
       DBGPRINT3("Calling a original MPI in MPI_Init");
-#ifdef PNMPI_HAVE_FORTRAN
+#ifdef COMPILE_FOR_FORTRAN
       if (init_was_fortran)
 	pmpi_init_(&res);
       else
@@ -674,7 +674,7 @@ int NQJ_Finalize(void)
   return res;
 }
 
-#ifdef PNMPI_HAVE_FORTRAN
+#ifdef COMPILE_FOR_FORTRAN
 void mpi_finalize_(int *ierr)
 {
 	*ierr=MPI_Finalize();
