@@ -8,7 +8,10 @@
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 05-22-2011
 
-#Recurse to sub-directories
+# Include module build infrastructure
+include(PnMPIModules)
+
+# Recurse to sub-directories
 add_subdirectory(comm)
 add_subdirectory(datatype)
 add_subdirectory(empty)

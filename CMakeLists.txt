@@ -49,9 +49,6 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   endif()
 endif()
 
-#Add helper stuff
-include(PnMPIModules)
-
 #Find Packages
 find_package(AWK REQUIRED)
 
@@ -60,9 +57,13 @@ find_package(AWK REQUIRED)
 #===================================
 # TODO
 #     currently hardcoded, should be put into find modules:
-#     * detect python
 #     * detect gawk, tcsh, sort, uniq, sed
 #     * dl open lib detection
+find_package(PythonInterp)
+if (NOT PYTHONINTERP_FOUND)
+  message(FATAL_ERROR "PnMPI requires a Python interpreter to build.")
+endif()
+
 find_package(MPI)
 set(MPI_CXX_SKIP_FLAGS
     -DMPI_NO_CPPBIND -DOMPI_SKIP_MPICXX -D_MPICC_H -DMPICH_SKIP_MPICXX -DMPIBULL_SKIP_MPICXX

@@ -64,7 +64,7 @@ set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 install(
   FILES   pnmpi.h pnmpimod.h ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
   DESTINATION include)
-install(TARGETS pnmpi_static pnmpi DESTINATION lib)
+install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 
 #
 # Fortran support (If Fortran was enabled)
@@ -88,8 +88,11 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
 	
   #Install pnmpi core for Fortran with reasonable file permissions
-  install(TARGETS pnmpif pnmpif_static DESTINATION lib)
+  install(TARGETS pnmpif pnmpif_static EXPORT pnmpi-libs DESTINATION lib)
 endif()
+
+# file to export pnmpi-libs
+install(EXPORT pnmpi-libs DESTINATION lib/cmake/PnMPI)
 
 # Extra directories to include from when building.
 include_directories(
