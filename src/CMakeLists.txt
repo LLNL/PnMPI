@@ -79,6 +79,9 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   set_target_properties(pnmpif PROPERTIES 
     VERSION       ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION     ${PNMPI_LIB_INTERFACE_VERSION})
+    if(CMAKE_Fortran_COMPILER_WORKS)
+      set_target_properties(pnmpif PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
+    endif()
     if(APPLE)
       set_target_properties(pnmpif PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
     endif()
