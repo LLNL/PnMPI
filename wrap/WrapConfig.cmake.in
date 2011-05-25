@@ -1,3 +1,4 @@
+# -*- cmake -*-
 # Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
@@ -9,30 +10,54 @@
 # Copyright (c) 2009, ZIH, Technische Universitaet Dresden, Federal Republic of Germany
 # Copyright (c) 2009, LLNL, United States of America
 #
-# @file PnMPIModules.cmake
-#       Contains helpful macros.
+# @file WrapConfig.cmake
+#       Contains macros for using the wrap script in a build environment.
 #
 # @author Todd Gamblin
 # @date 19 May 2011
 
+if (NOT Wrap_CONFIG_LOADED)
+  set(Wrap_CONFIG_LOADED TRUE)
 
-# add_wrapped_file(file_name wrapper_name
-# 
-# This macro adds a command to generate <file_name> from <wrapper_name> to the
-# build.  Properties on <file_name> are also set so that CMake knows that it
-# is generated.
-#
-function(add_wrapped_file file_name wrapper_name)
-  set(file_path    ${CMAKE_CURRENT_BINARY_DIR}/${file_name})
-  set(wrapper_path ${CMAKE_CURRENT_SOURCE_DIR}/${wrapper_name})
-  
-  add_custom_command(
-    OUTPUT  ${file_path}
-    COMMAND @WRAP@ ARGS ${wrapper_path} -o ${file_path}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    DEPENDS ${wrapper_path}
-    COMMENT "Generating ${file_name} from ${wrapper_name}"
-    VERBATIM)
-  set_source_files_properties(${file_path} PROPERTIES GENERATED TRUE)
-endfunction()
+  # This variable allows users to use the wrap.py script directly, if desired.
+  set(Wrap_EXECUTABLE @WRAP@)
 
+  # add_wrapped_file(file_name wrapper_name
+  # 	
+  # This macro adds a command to generate <file_name> from <wrapper_name> to the
+  # build.  Properties on <file_name> are also set so that CMake knows that it
+  # is generated.
+  #
+  function(add_wrapped_file file_name wrapper_name)
+    set(file_path    ${CMAKE_CURRENT_BINARY_DIR}/${file_name})
+    set(wrapper_path ${CMAKE_CURRENT_SOURCE_DIR}/${wrapper_name})
+
+    # Play nice with FindPythonInterp -- use the interpreter if it was found,
+    # otherwise use the script directly.
+    if (PYTHON_EXECUTABLE)
+      set(command ${PYTHON_EXECUTABLE})
+      set(script_arg ${Wrap_EXECUTABLE})
+    else()
+      set(command ${Wrap_EXECUTABLE})
+      set(script_arg "")
+    endif()
+
+    # Add a command to automatically wrap files.
+    add_custom_command(
+      OUTPUT  ${file_path}
+      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} -o ${file_path}
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      DEPENDS ${wrapper_path}
+      COMMENT "Generating ${file_name} from ${wrapper_name}"
+      VERBATIM)
+
+    # Mark target file as generated so the build system knows what to do w/it
+    set_source_files_properties(${file_path} PROPERTIES GENERATED TRUE)
+
+    # Add generated files to list of things to be cleaned for the directory.
+    get_directory_property(cleanfiles ADDITIONAL_MAKE_CLEAN_FILES)
+    list(APPEND cleanfiles ${file_name})
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${cleanfiles}")
+  endfunction()
+
+endif()
