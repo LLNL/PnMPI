@@ -40,14 +40,18 @@ function(add_pnmpi_module targetname)
 
   # Patch the library in place once it's built so that it can be installed normally,
   # like any other library.  Also keeps build dir libraries consistent with installed libs.
-  get_target_property(lib ${targetname} LOCATION)
+  get_target_property(lib   ${targetname} LOCATION)
+  get_target_property(patch pnmpi-patch   LOCATION)
   set(tmplib ${targetname}-unpatched.so)
 
   add_custom_command(TARGET ${targetname} POST_BUILD
-    COMMAND mv ${lib} ${tmplib}
-    COMMAND pnmpi-patch ${tmplib} ${lib}
-    COMMAND rm -f ${tmplib}
+    COMMAND mv       ARGS ${lib} ${tmplib}
+    COMMAND ${patch} ARGS ${tmplib} ${lib}
+    COMMAND rm       ARGS -f ${tmplib}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Patching ${targetname}"
     VERBATIM)
+
+  # Make sure that PnMPI lib and patch tool are built before this module.
+  add_dependencies(${targetname} pnmpi-patch pnmpi)
 endfunction()
