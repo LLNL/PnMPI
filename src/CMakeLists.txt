@@ -41,7 +41,9 @@ add_custom_command(
   COMMENT "Generating Fortran Wrappers"
   VERBATIM)
 set_source_files_properties(wrapper_f77.c f77symbols.h PROPERTIES GENERATED TRUE)
-
+get_directory_property(cleanfiles ADDITIONAL_MAKE_CLEAN_FILES)
+list(APPEND cleanfiles wrapper_f77.c f77symbols.h)
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${cleanfiles}")
 
 # PnMPI shared library
 add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
