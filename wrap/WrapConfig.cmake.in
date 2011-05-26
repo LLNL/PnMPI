@@ -1,4 +1,5 @@
 # -*- cmake -*-
+
 # Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
@@ -42,9 +43,17 @@ if (NOT Wrap_CONFIG_LOADED)
       set(script_arg "")
     endif()
 
+    get_source_file_property(wrap_flags ${wrapper_path} WRAP_FLAGS)
+    if (NOT wrap_flags)
+      if (WRAP_FLAGS)
+        set(wrap_flags "${WRAP_FLAGS}")
+      endif()
+    endif()
+
     # Add a command to automatically wrap files.
     add_custom_command(
       OUTPUT  ${file_path}
+#      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} ${wrap_flags} -o ${file_path}
       COMMAND ${command} ARGS ${script_arg} ${wrapper_path} -o ${file_path}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       DEPENDS ${wrapper_path}
