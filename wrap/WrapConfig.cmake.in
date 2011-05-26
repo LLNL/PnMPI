@@ -23,11 +23,13 @@ if (NOT Wrap_CONFIG_LOADED)
   # This variable allows users to use the wrap.py script directly, if desired.
   set(Wrap_EXECUTABLE @WRAP@)
 
-  # add_wrapped_file(file_name wrapper_name
+  # add_wrapped_file(file_name wrapper_name [flags])
   # 	
   # This macro adds a command to generate <file_name> from <wrapper_name> to the
   # build.  Properties on <file_name> are also set so that CMake knows that it
   # is generated.
+  # 
+  # Optionally, flags may be supplied to pass to the wrapper generator.
   #
   function(add_wrapped_file file_name wrapper_name)
     set(file_path    ${CMAKE_CURRENT_BINARY_DIR}/${file_name})
@@ -43,18 +45,25 @@ if (NOT Wrap_CONFIG_LOADED)
       set(script_arg "")
     endif()
 
-    get_source_file_property(wrap_flags ${wrapper_path} WRAP_FLAGS)
-    if (NOT wrap_flags)
-      if (WRAP_FLAGS)
-        set(wrap_flags "${WRAP_FLAGS}")
+    if (ARGN)
+      # Prefer directly passed in flags.
+      list(GET ARGN 0 wrap_flags)
+    else()
+      # Otherwise, look in the source file properties
+      get_source_file_property(wrap_flags ${wrapper_name} WRAP_FLAGS)
+      if (wrap_flags STREQUAL NOTFOUND)
+        # If no spefific flags, grab them from the WRAP_FLAGS environment variable.
+        set(wrap_flags "")
+        if (NOT WRAP_FLAGS STREQUAL "")
+          set(wrap_flags "${WRAP_FLAGS}")
+        endif()
       endif()
     endif()
 
     # Add a command to automatically wrap files.
     add_custom_command(
       OUTPUT  ${file_path}
-#      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} ${wrap_flags} -o ${file_path}
-      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} -o ${file_path}
+      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} ${wrap_flags} -o ${file_path}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       DEPENDS ${wrapper_path}
       COMMENT "Generating ${file_name} from ${wrapper_name}"
