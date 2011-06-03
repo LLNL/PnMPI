@@ -89,7 +89,7 @@ static void* mydlsym(void *h, char *s)
 
 static int whitespace(char c)
 {
-  if ((c=='\t') || (c==' ') || (c=='\n') || (c==EOF))
+  if ((c=='\t') || (c==' ') || (c=='\n'))
     return 1;
   #ifdef AIX
   if ((int)c==255)
