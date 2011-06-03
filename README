@@ -46,56 +46,63 @@ will need version 2.8.3.
 
 A2) Configure the project
 -------------------------
-Create a new build directory (e.g., named according to the
-platform you are using), cd into it, and run:
+In the simplest case, you can run this in the top-level directory
+of the PnMPI tree:
 
-  cmake \
-    -D CMAKE_INSTALL_PREFIX=<install path> \
-    <path to PnMPI source> 
+   cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/destination
+   make -j8
+   make install
 
-To build a debug build:
+This will configure, build, and install PnMPI to the destination
+specified.  PnMPI supports parallel make with the -j parameter.
 
-  cmake \
-    -DCMAKE_INSTALL_PREFIX=<install path> \
-    -DCMAKE_BUILD_TYPE=Debug \
-    <path to PnMPI source> 
+On more complex machines, such as those with filesystems shared among
+multiple platforms, you will want to separate out your build directories
+for each platform.  CMake makes this easy.
 
-Example on LLNL systems:
+Create a new build directory named according to the platform you
+are using, cd into it, an run cmake there.  For example:
 
-  cd /path/to/pnmpi/source
-  mkdir $SYS_TYPE
-  cd $SYS_TYPE
-  cmake \
-    -DCMAKE_INSTALL_PREFIX=$HOME/opt/pnmpi \
-    -DCMAKE_BUILD_TYPE=Debug \
-    ..
-  
-PnMPI should autdetect your MPI installation and determine
+  cd <pnmpi>
+  mkdir x86_64
+  cd x86_64
+  cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/destination ..
+
+Here, '<pnmpi>' is the top-level directory in the PnMPI tree.  Note
+that when you run CMake this way, you need to supply the path to the
+PnMPI *source* directory as the last parameter.  Here, that's just '..'
+as we are building in a subdirectory of the source directory.  Once
+you run CMake, simply run make and make install as before:
+
+  make -j8
+  make install
+
+The PnMPI build should autdetect your MPI installation and determine
 library and header locations.  If you want to build with a
 particular MPI that is NOT the one autodetected by the build,
-see the documentation in cmakemodules/FindMPI.cmake for
-info on the build options to do this.
+you can supply your particular MPI compiler as a parameter:
 
-A3) Compile the project
------------------------
-Run "make" in the CMake build directory created above.
-PnMPI supports parallel make, so you should be able to use
-'make -j8' or similar to speed up the build.
+  cmake \
+    -D CMAKE_INSTALL_PREFIX=/path/to/install/destination \
+    -D MPI_C_COMPILER=/path/to/my/mpicc \
+    ..
 
-To get a verbose build, use "make VERBOSE=TRUE"
+See the documentation in cmakemodules/FindMPI.cmake for more
+details on MPI build configuration options.
 
+If you have problems, you may want to build PnMPI in debug mode.  You
+can do this by supplying an additional paramter to CMake, e.g.:
 
-A4) Install the project
------------------------
-Run "make install" to install PnMPI to the CMAKE_INSTALL_PREFIX
-you specified initially.
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=/path/to/install/destination \
+    -DCMAKE_BUILD_TYPE=Debug \
+    ..
 
-
-A5) Installed structure
------------------------
-All central components will now be in <CMAKE_INSTALL_PREFIX>,
-the path specified during the project configuration. Roughly,
-the layout of the installation looks like this:
+A3) Installed structure
+--------------------------
+Once you've installed, All your PnMPI files and executables should
+be in <CMAKE_INSTALL_PREFIX>, the path specified during configuration.
+Roughly, the install tree looks like this:
 
 bin/
   pnmpi-patch          Library patching utility
@@ -108,13 +115,13 @@ include/
   pnmpi.h              PnMPI header
   pnmpimod.h           PnMPI module support
 
-This is the install layout.  In the 'demo' folder of
-the build directory, there should also be test programs
-built with PnMPI.  See below for details on running these
-to test your PnMPI installation.
+Test programs are not installed, but In the 'demo' folder of the
+build directory, there should also be test programs built with PnMPI.
+See below for details on running these to test your PnMPI installation.
 
-A6) Environment setup
 
+A4) Environment setup
+-----------------------
 You will need to set one environment variable to run PnMPI:
 
 PNMPI_LIB_PATH should be set to the full path to the lib/pnmpi-modules
@@ -128,7 +135,7 @@ external module builds can find PnMPI configuration files.  See
 Section (C) for more information on building custom modules.
 
 
-A7) RPATH settings
+A5) RPATH settings
 -----------------------
 By default, the build adds the paths of all dependency libraries
 to the rpath of the installed PnMPI library.  This is the preferred
@@ -145,7 +152,7 @@ rpath additions using this option to cmake:
 This will add only the PnMPI installation lib directory to the
 rpath of the PnMPI library.
 
-A8) Adding ADEPT Timing Option
+A6) Adding ADEPT Timing Option
 ------------------------------
 PnMPI can optionally profile itself and record internal timing 
 information. This includes measurements on how frequently
