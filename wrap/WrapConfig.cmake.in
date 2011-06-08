@@ -60,10 +60,16 @@ if (NOT Wrap_CONFIG_LOADED)
       endif()
     endif()
 
+    SET (compiler_to_use "${CMAKE_C_COMPILER}")
+    IF (MPI_C_COMPILER)
+    	    SET (compiler_to_use "${MPI_C_COMPILER}")
+    ENDIF ()
+
     # Add a command to automatically wrap files.
     add_custom_command(
       OUTPUT  ${file_path}
-      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} ${wrap_flags} -o ${file_path}
+      
+      COMMAND ${command} ARGS ${script_arg} ${wrapper_path} -c ${compiler_to_use} ${wrap_flags} -o ${file_path}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       DEPENDS ${wrapper_path}
       COMMENT "Generating ${file_name} from ${wrapper_name}"
