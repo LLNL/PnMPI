@@ -124,15 +124,16 @@ add_subdirectory(demo)
 #Install includes (collected and copied during build process)
 install(DIRECTORY ${INCLUDE_OUTPUT_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-# Configure a header file with the full build configuration.
-configure_file(
-  ${PROJECT_SOURCE_DIR}/pnmpi-config.h.in
-  ${PROJECT_BINARY_DIR}/pnmpi-config.h)
-install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
-
 # Install configuration file so that other projects can use PnMPI
-configure_file(
-  ${PROJECT_SOURCE_DIR}/PnMPIConfig.cmake.in
-  ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake DESTINATION lib/cmake/PnMPI)
-install(FILES ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPIModules.cmake DESTINATION lib/cmake/PnMPI)
+configure_file(${PROJECT_SOURCE_DIR}/PnMPIConfig.cmake.in ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/pnmpi-vars.cmake.in  ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake  @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake 
+              ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake
+              ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPIModules.cmake
+              DESTINATION lib/cmake/PnMPI)
+
+# Configure a header file with the full build configuration.  Include the CMake file
+# first so that the header can include build parameters.
+include(${PROJECT_BINARY_DIR}/pnmpi-vars.cmake)
+configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
