@@ -1,0 +1,38 @@
+# -*- cmake -*-
+# This file contains variables necessary for the PnMPI CMake build.
+#
+
+# Various important directories in the PnMPI installation.
+set(PnMPI_INSTALL_PREFIX           @CMAKE_INSTALL_PREFIX@)
+set(PnMPI_INCLUDE_DIR              @CMAKE_INSTALL_PREFIX@/include)
+set(PnMPI_LIBRARY_DIR              @CMAKE_INSTALL_PREFIX@/lib)
+set(PnMPI_MODULES_DIR              ${PnMPI_LIBRARY_DIR}/pnmpi-modules)
+
+# Include path for PnMPI headers.
+set(PnMPI_INCLUDE_PATH             @CMAKE_INSTALL_PREFIX@/include)
+
+# Basic PnMPI library.  Default for most people.
+set(PnMPI_LIBRARIES                  pnmpi)
+
+# Language-specific PnMPI library targets to link against.
+set(PnMPI_C_LIBRARIES                pnmpi)
+set(PnMPI_C_STATIC_LIBRARIES         pnmpi_static)
+
+set(PnMPI_CXX_LIBRARIES              pnmpi)
+set(PnMPI_CXX_STATIC_LIBRARIES       pnmpi_static)
+
+set(PnMPI_Fortran_LIBRARIES          pnmpif)
+set(PnMPI_Fortran_STATIC_LIBRARIES   pnmpif_static)
+
+# These variables allow client libraries to use the same AdeptUtils as PnMPI
+set(PnMPI_USE_AdeptUtils           @AdeptUtils_FOUND@)
+if (PnMPI_USE_AdeptUtils)
+  find_package(AdeptUtils)
+endif()
+
+# These variables allow client libraries to use the same BFD library as PnMPI
+set(PnMPI_USE_BFD                  @BFD_FOUND@)
+set(PnMPI_BFD_INCLUDE_PATH         @BFD_INCLUDE_PATH@)
+set(PnMPI_BFD_LIBRARIES            @BFD_LIBRARIES@)
+set(PnMPI_IBERTY_INCLUDE_PATH      @IBERTY_INCLUDE_PATH@)
+set(PnMPI_IBERTY_LIBRARIES         @IBERTY_LIBRARIES@)
