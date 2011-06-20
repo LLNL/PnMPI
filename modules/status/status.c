@@ -85,7 +85,7 @@ int PNMPI_RegistrationPoint()
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"add-storage");
-  service.fct=(PNMPI_Service_Fct_t*) PNMPIMOD_Status_RequestStorage;
+  service.fct=(PNMPI_Service_Fct_t) PNMPIMOD_Status_RequestStorage;
   sprintf(service.sig,"i");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)

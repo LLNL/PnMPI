@@ -225,14 +225,14 @@ int PNMPI_RegistrationPoint()
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"add-storage");
-  service.fct=(PNMPI_Service_Fct_t*) PNMPIMOD_Requests_RequestStorage;
+  service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Requests_RequestStorage;
   sprintf(service.sig,"i");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"map-request");
-  service.fct=(PNMPI_Service_Fct_t*) PNMPIMOD_Requests_MapRequest;
+  service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Requests_MapRequest;
   sprintf(service.sig,"r");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)

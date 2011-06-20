@@ -84,14 +84,14 @@ Boston, MA 02111-1307 USA
 
 typedef int PNMPI_modHandle_t;
 
-typedef int (*PNMPI_Service_Fct_t)(void*);
+typedef int (*PNMPI_Service_Fct_t)();
 typedef int (*PNMPI_RegistrationPoint_t)(void);
 
 typedef struct PNMPI_Service_descriptor_d
 {
   char name[PNMPI_SERVICE_NAMELEN];
   char sig[PNMPI_SERVICE_SIGLEN];
-  PNMPI_Service_Fct_t *fct;
+  PNMPI_Service_Fct_t fct;
 } PNMPI_Service_descriptor_t;
 
 typedef union PNMPI_Global_Addr_d

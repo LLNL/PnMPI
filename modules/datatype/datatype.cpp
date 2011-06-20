@@ -239,14 +239,7 @@ void PNMPIMOD_Datatype_nextItem(PNMPIMOD_Datatype_Parameters_t *ref, int *done)
     }
   while ((cont) && (ref->level>=0));
 
-  if (ref->level>=0)
-    {
-      *done=0;
-    }
-  else
-    {
-      *done=1;
-    }
+  if (done) *done = ref->level < 0;
 
 #ifdef DATATABLEDEBUG
   map<MPI_Datatype,PNMPIMOD_Datatype_storage_p>::iterator i;
@@ -328,7 +321,6 @@ void PNMPIMOD_Datatype_getItem(PNMPIMOD_Datatype_Parameters_t *ref,char **buf,MP
 int PNMPIMOD_Datatype_getReference(void *buf, int count, MPI_Datatype dt, PNMPIMOD_Datatype_Parameters_t *ref)
 {
   PNMPIMOD_Datatype_storage_p translated_dt;
-  int done;
 
 #ifdef DATATABLEDEBUG
   map<MPI_Datatype,PNMPIMOD_Datatype_storage_p>::iterator i;
@@ -379,7 +371,8 @@ int PNMPIMOD_Datatype_getReference(void *buf, int count, MPI_Datatype dt, PNMPIM
 
   if (translated_dt->homogeneous==0)
     {
-      PNMPIMOD_Datatype_nextItem(ref,&done);
+      int done;
+      PNMPIMOD_Datatype_nextItem(ref, &done);
     }
   else
     ref->stack[0].b=0;
@@ -571,21 +564,21 @@ int PNMPI_RegistrationPoint()
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"getDatatypeReference");
-  service.fct=(PNMPI_Service_Fct_t*) ((void*) PNMPIMOD_Datatype_getReference);
+  service.fct=(PNMPI_Service_Fct_t)(PNMPIMOD_Datatype_getReference);
   sprintf(service.sig,"pimp");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"delDatatypeReference");
-  service.fct=(PNMPI_Service_Fct_t*) ((void*) PNMPIMOD_Datatype_delReference);
+  service.fct=(PNMPI_Service_Fct_t) (PNMPIMOD_Datatype_delReference);
   sprintf(service.sig,"p");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"getDatatypeSize");
-  service.fct=(PNMPI_Service_Fct_t*) ((void*) PNMPIMOD_Datatype_getSize);
+  service.fct=(PNMPI_Service_Fct_t) (PNMPIMOD_Datatype_getSize);
   sprintf(service.sig,"mp");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)
@@ -673,62 +666,62 @@ int MPI_Init(int *argc, char ***argv)
   ALLOC_DATATYPEBASE(trans,MPI_2DOUBLE_COMPLEX,double,4,1);
 #endif
 
-  typedef struct m_l_d { long a; double b; };
+  struct m_l_d { long a; double b; };
   ALLOC_DATATYPE(trans,2,MPI_LONG_DOUBLE,1);
   trans->list[0].dt=datatypetable[MPI_LONG];
   trans->list[1].dt=datatypetable[MPI_DOUBLE];
   trans->list[1].start=trans->list[0].dt->size;
-  trans->size=sizeof(struct m_l_d);
-  trans->realsize=sizeof(struct m_l_d);
+  trans->size=sizeof(m_l_d);
+  trans->realsize=sizeof(m_l_d);
   DEPTH_DATATYPE(trans);
   trans->list[0].dt->usage++;
   trans->list[1].dt->usage++;
   
-  typedef struct m_f_i { float a; int b; };
+  struct m_f_i { float a; int b; };
   ALLOC_DATATYPE(trans,2,MPI_FLOAT_INT,1);
   trans->list[0].dt=datatypetable[MPI_FLOAT];
   trans->list[1].dt=datatypetable[MPI_INT];
   trans->list[1].start=trans->list[0].dt->size;
-  trans->size=sizeof(struct m_f_i);
-  trans->realsize=sizeof(struct m_f_i);
+  trans->size=sizeof(m_f_i);
+  trans->realsize=sizeof(m_f_i);
   DEPTH_DATATYPE(trans);
   trans->list[0].dt->usage++;
   trans->list[1].dt->usage++;
   
-  typedef struct m_d_i { double a; int b; };
+  struct m_d_i { double a; int b; };
   ALLOC_DATATYPE(trans,2,MPI_DOUBLE_INT,1);
   trans->list[0].dt=datatypetable[MPI_DOUBLE];
   trans->list[1].dt=datatypetable[MPI_INT];
   trans->list[1].start=trans->list[0].dt->size;
-  trans->size=sizeof(struct m_d_i);
-  trans->realsize=sizeof(struct m_d_i);
+  trans->size=sizeof(m_d_i);
+  trans->realsize=sizeof(m_d_i);
   DEPTH_DATATYPE(trans);
   trans->list[0].dt->usage++;
   trans->list[1].dt->usage++;
   
-  typedef struct m_l_i { long a; int b; };
+  struct m_l_i { long a; int b; };
   ALLOC_DATATYPE(trans,2,MPI_LONG_INT,1);
   trans->list[0].dt=datatypetable[MPI_LONG];
   trans->list[1].dt=datatypetable[MPI_INT];
   trans->list[1].start=trans->list[0].dt->size;
-  trans->size=sizeof(struct m_l_i);
-  trans->realsize=sizeof(struct m_l_i);
+  trans->size=sizeof(m_l_i);
+  trans->realsize=sizeof(m_l_i);
   DEPTH_DATATYPE(trans);
   trans->list[0].dt->usage++;
   trans->list[1].dt->usage++;
   
-  typedef struct m_s_i { short a; int b; };
+  struct m_s_i { short a; int b; };
   ALLOC_DATATYPE(trans,2,MPI_SHORT_INT,1);
   trans->list[0].dt=datatypetable[MPI_SHORT];
   trans->list[1].dt=datatypetable[MPI_INT];
   trans->list[1].start=trans->list[0].dt->size;
-  trans->size=sizeof(struct m_s_i);
-  trans->realsize=sizeof(struct m_s_i);
+  trans->size=sizeof(m_s_i);
+  trans->realsize=sizeof(m_s_i);
   DEPTH_DATATYPE(trans);
   trans->list[0].dt->usage++;
   trans->list[1].dt->usage++;
   
-  typedef struct m_l_d_i { long a; double b; int c; };
+  struct m_l_d_i { long a; double b; int c; };
   ALLOC_DATATYPE(trans,3,MPI_LONG_DOUBLE_INT,1);
   trans->list[0].dt=datatypetable[MPI_LONG];
   trans->list[1].dt=datatypetable[MPI_DOUBLE];
@@ -736,8 +729,8 @@ int MPI_Init(int *argc, char ***argv)
   trans->list[2].dt=datatypetable[MPI_INT];
   trans->list[1].start=trans->list[0].dt->size;
   trans->list[1].start+=trans->list[1].dt->size;
-  trans->size=sizeof(struct m_l_d_i);
-  trans->realsize=sizeof(struct m_l_d_i);
+  trans->size=sizeof(m_l_d_i);
+  trans->realsize=sizeof(m_l_d_i);
   DEPTH_DATATYPE(trans);
   trans->list[0].dt->usage++;
   trans->list[1].dt->usage++;
@@ -752,10 +745,10 @@ int MPI_Init(int *argc, char ***argv)
 
 int MPI_Finalize()
 {
-  int err,first;
+  int first;
   map<MPI_Datatype,PNMPIMOD_Datatype_storage_p>::iterator i;
 
-  err=PMPI_Finalize();
+  PMPI_Finalize();
 #ifdef DATATABLEDEBUG
   for (i=datatypetable.begin(); i!=datatypetable.end();  i++)
     {
