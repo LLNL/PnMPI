@@ -14,6 +14,11 @@ if (AdeptUtils_FOUND)
   set(TIMING_LIB AdeptUtilsTiming)
 endif()
 
+# Add wrapped files to the build.
+add_wrapped_file(wrapper.h   wrapper.h.w)
+add_wrapped_file(newstack.h  newstack.h.w)
+add_wrapped_file(wrapper_c.c wrapper_c.c.w)
+
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
   # -- Regular sources --
@@ -27,11 +32,6 @@ set(PNMPI_LIB_SOURCES
   # Note: Generated headers must be added to enforce dependency.
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
-
-# Add wrapped files to the build.
-add_wrapped_file(wrapper.h   wrapper.h.w)
-add_wrapped_file(newstack.h  newstack.h.w)
-add_wrapped_file(wrapper_c.c wrapper_c.c.w)
 
 # Build fortran wrappers here
 add_custom_command(
@@ -78,15 +78,16 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     ${TIMING_LIB}
     ${MPI_Fortran_LIBRARIES}
     -ldl) 
-  set_target_properties(pnmpif PROPERTIES 
-    VERSION       ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-    SOVERSION     ${PNMPI_LIB_INTERFACE_VERSION})
-    if(CMAKE_Fortran_COMPILER_WORKS)
-      set_target_properties(pnmpif PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
-    endif()
-    if(APPLE)
-      set_target_properties(pnmpif PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    endif()
+#  set_target_properties(pnmpif PROPERTIES 
+#    VERSION       ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
+#    SOVERSION     ${PNMPI_LIB_INTERFACE_VERSION})
+
+  if(CMAKE_Fortran_COMPILER_WORKS)
+    set_target_properties(pnmpif PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
+  endif()
+  if(APPLE)
+    set_target_properties(pnmpif PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif()
 
   # PnMPI fortran static lib
   add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})

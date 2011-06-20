@@ -17,9 +17,6 @@ if (DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
 endif()
 enable_language(Fortran OPTIONAL)
 
-#Enable this line for debugging
-#SET (CMAKE_VERBOSE_MAKEFILE 1)
-
 #======================================================================
 # RPATH setup.  Default is to rpath everything.  Set the option to 
 # false if you don't want this behavior.  
