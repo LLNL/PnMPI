@@ -184,11 +184,15 @@ endforeach()
 # (Windows implementations) do not have compiler wrappers, so this approach must be used.
 #
 function (interrogate_mpi_compiler lang try_libs)
-  # if MPI is already in the cache, or if MPI_${lang}_NO_INTERROGATE is set, don't bother with any of this.
-  # MPI_${lang}_NO_INTERROGATE is set when the *regular* compiler is the MPI compiler and we should not
-  # interrogate it.  This happens on machines like the Cray XE6 with modules.  cc, CC, and ftn there are
-  # all MPI compilers, but it's not possible to interrogate them, so we skip this if we've found them.
-  if ((NOT MPI_${lang}_NO_INTERROGATE) AND ((NOT MPI_${lang}_INCLUDE_PATH) OR (NOT MPI_${lang}_LIBRARIES)))
+  # MPI_${lang}_NO_INTERROGATE will be set to a compiler name when the *regular* compiler was
+  # discovered to be the MPI compiler.  This happens on machines like the Cray XE6 that use
+  # modules to set cc, CC, and ftn to the MPI compilers.  If the user force-sets another MPI
+  # compiler, MPI_${lang}_COMPILER won't be equal to MPI_${lang}_NO_INTERROGATE, and we'll
+  # inspect that compiler anew.  This allows users to set new compilers w/o rm'ing cache.
+  string(COMPARE NOTEQUAL "${MPI_${lang}_NO_INTERROGATE}" "${MPI_${lang}_COMPILER}" interrogate)
+
+  # If MPI is set already in the cache, don't bother with interrogating the compiler.
+  if (interrogate AND ((NOT MPI_${lang}_INCLUDE_PATH) OR (NOT MPI_${lang}_LIBRARIES)))
     if (MPI_${lang}_COMPILER)
       # Check whether the -showme:compile option works. This indicates that we have either OpenMPI
       # or a newer version of LAM-MPI, and implies that -showme:link will also work.
@@ -443,7 +447,7 @@ function(try_regular_compiler lang success)
   # last ditch attempt: just try to compile something with the regular compiler
   if (${lang} STREQUAL Fortran)
     set(test_file ${CMAKE_CURRENT_BINARY_DIR}/cmake_mpi_test.f90)
-    file(WRITE ${test_file} 
+    file(WRITE ${test_file}
       "program hello\n"
       "include 'mpif.h'\n"
       "integer ierror\n"
@@ -465,7 +469,7 @@ function(try_regular_compiler lang success)
   endif()
   try_compile(worked ${CMAKE_CURRENT_BINARY_DIR} ${test_file})
   if (worked)
-    set(MPI_${lang}_NO_INTERROGATE TRUE                      CACHE STRING "Whether to interrogate MPI ${lang} compiler" FORCE)
+    set(MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} CACHE STRING "Whether to interrogate MPI ${lang} compiler" FORCE)
     set(MPI_${lang}_COMPILER       ${CMAKE_${lang}_COMPILER} CACHE STRING "MPI ${lang} compiler"                        FORCE)
     set(MPI_${lang}_COMPILE_FLAGS  ""                        CACHE STRING "MPI ${lang} compilation flags"               FORCE)
     set(MPI_${lang}_INCLUDE_PATH   ""                        CACHE STRING "MPI ${lang} include path"                    FORCE)
