@@ -184,8 +184,11 @@ endforeach()
 # (Windows implementations) do not have compiler wrappers, so this approach must be used.
 #
 function (interrogate_mpi_compiler lang try_libs)
-  # if it's already in the cache, don't bother with any of this stuff
-  if ((NOT MPI_${lang}_NO_INTERROGATE) AND (NOT (MPI_${lang}_INCLUDE_PATH) AND MPI_${lang}_LIBRARIES))
+  # if MPI is already in the cache, or if MPI_${lang}_NO_INTERROGATE is set, don't bother with any of this.
+  # MPI_${lang}_NO_INTERROGATE is set when the *regular* compiler is the MPI compiler and we should not
+  # interrogate it.  This happens on machines like the Cray XE6 with modules.  cc, CC, and ftn there are
+  # all MPI compilers, but it's not possible to interrogate them, so we skip this if we've found them.
+  if ((NOT MPI_${lang}_NO_INTERROGATE) AND ((NOT MPI_${lang}_INCLUDE_PATH) OR (NOT MPI_${lang}_LIBRARIES)))
     if (MPI_${lang}_COMPILER)
       # Check whether the -showme:compile option works. This indicates that we have either OpenMPI
       # or a newer version of LAM-MPI, and implies that -showme:link will also work.
@@ -552,9 +555,11 @@ foreach (lang C CXX Fortran)
     endif()
 
     if (regular_compiler_worked)
+      message("here")
       find_package_handle_standard_args(MPI_${lang} DEFAULT_MSG MPI_${lang}_COMPILER)
     else()
-      find_package_handle_standard_args(MPI_${lang} DEFAULT_MSG MPI_${LANG}_LIBRARIES MPI_${lang}_INCLUDE_PATH)
+      message("here")
+      find_package_handle_standard_args(MPI_${lang} DEFAULT_MSG MPI_${lang}_LIBRARIES MPI_${lang}_INCLUDE_PATH)
     endif()
   endif()
 endforeach()
