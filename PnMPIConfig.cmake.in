@@ -1,6 +1,6 @@
 # -*- cmake -*-
 # PnMPI configuration
-# 
+#
 # TODO: extensive documentation.
 # @author Todd Gamblin, tgamblin@llnl.gov
 #
@@ -10,16 +10,18 @@
 #  - pnmpi_static    PnMPI static library
 #  - pnmpif          PnMPI Fortran library
 #  - pnmpif_static   PnMPI static Fortran library
-include(${CMAKE_CURRENT_LIST_DIR}/pnmpi-libs.cmake)
+set(PnMPI_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/lib/cmake/PnMPI)
+
+include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-libs.cmake)
 
 # This includes PnMPI build variables.
-include(${CMAKE_CURRENT_LIST_DIR}/pnmpi-vars.cmake)
+include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-vars.cmake)
 
 # Allow other projects to use the pnmpi-patch target
-include(${CMAKE_CURRENT_LIST_DIR}/pnmpi-patch.cmake)
+include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-patch.cmake)
 
 # Allow other projects to use the wrap utility
-include(${CMAKE_CURRENT_LIST_DIR}/WrapConfig.cmake)
+include(${PnMPI_CMAKE_INCLUDE_DIR}/WrapConfig.cmake)
 
 # Allow other projects to build PnMPI modules
-include(${CMAKE_CURRENT_LIST_DIR}/PnMPIModules.cmake)
+include(${PnMPI_CMAKE_INCLUDE_DIR}/PnMPIModules.cmake)
