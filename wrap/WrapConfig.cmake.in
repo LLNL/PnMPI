@@ -48,7 +48,10 @@ if (NOT Wrap_CONFIG_LOADED)
     # Play nice with FindMPI.  This will deduce the appropriate MPI compiler to use
     # for generating wrappers
     if (MPI_C_INCLUDE_PATH)
-      set(wrap_includes -I ${MPI_C_INCLUDE_PATH})
+      set(wrap_includes "")
+      foreach(include ${MPI_C_INCLUDE_PATH})
+        set(wrap_includes ${wrap_includes} -I ${include})
+      endforeach()
     endif()
     set(wrap_compiler   -c ${CMAKE_C_COMPILER})
     if (MPI_C_COMPILER)
