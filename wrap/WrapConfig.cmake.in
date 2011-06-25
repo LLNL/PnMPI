@@ -73,6 +73,9 @@ if (NOT Wrap_CONFIG_LOADED)
       endif()
     endif()
 
+    # Mark target file as generated so the build system knows what to do w/it
+    set_source_files_properties(${file_path} PROPERTIES GENERATED TRUE)
+
     # Add a command to automatically wrap files.
     add_custom_command(
       OUTPUT  ${file_path}
@@ -82,9 +85,6 @@ if (NOT Wrap_CONFIG_LOADED)
       DEPENDS ${wrapper_path}
       COMMENT "Generating ${file_name} from ${wrapper_name}"
       VERBATIM)
-
-    # Mark target file as generated so the build system knows what to do w/it
-    set_source_files_properties(${file_path} PROPERTIES GENERATED TRUE)
 
     # Add generated files to list of things to be cleaned for the directory.
     get_directory_property(cleanfiles ADDITIONAL_MAKE_CLEAN_FILES)
