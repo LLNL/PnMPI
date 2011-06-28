@@ -1,8 +1,8 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
-# TODO Martin please add the copyright statment of your choice, as well as 
+# TODO Martin please add the copyright statment of your choice, as well as
 #      a reference to the license or license file!
 #
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
@@ -11,8 +11,13 @@
 # Add linkage to adept utils if we have it
 if (AdeptUtils_FOUND)
   include_directories(BEFORE ${AdeptUtils_INCLUDE_PATH})
-  set(TIMING_LIB AdeptUtilsTiming)
+  set(TIMING_LIB adept-timing)
 endif()
+
+# Add wrapped files to the build.
+add_wrapped_file(wrapper.h   wrapper.h.w)
+add_wrapped_file(newstack.h  newstack.h.w)
+add_wrapped_file(wrapper_c.c wrapper_c.c.w)
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
@@ -27,11 +32,6 @@ set(PNMPI_LIB_SOURCES
   # Note: Generated headers must be added to enforce dependency.
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
-
-# Add wrapped files to the build.
-add_wrapped_file(wrapper.h   wrapper.h.w)
-add_wrapped_file(newstack.h  newstack.h.w)
-add_wrapped_file(wrapper_c.c wrapper_c.c.w)
 
 # Build fortran wrappers here
 add_custom_command(
@@ -51,7 +51,7 @@ target_link_libraries(pnmpi
   ${TIMING_LIB}
   ${MPI_C_LIBRARIES}
   -ldl)
-set_target_properties(pnmpi PROPERTIES 
+set_target_properties(pnmpi PROPERTIES
     VERSION   ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION ${PNMPI_LIB_INTERFACE_VERSION})
 if(APPLE)
@@ -74,24 +74,25 @@ install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 if (CMAKE_Fortran_COMPILER_WORKS)
   # PnMPI fortran shared library
   add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
-  target_link_libraries(pnmpif 
+  target_link_libraries(pnmpif
     ${TIMING_LIB}
     ${MPI_Fortran_LIBRARIES}
-    -ldl) 
-  set_target_properties(pnmpif PROPERTIES 
-    VERSION       ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-    SOVERSION     ${PNMPI_LIB_INTERFACE_VERSION})
-    if(CMAKE_Fortran_COMPILER_WORKS)
-      set_target_properties(pnmpif PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
-    endif()
-    if(APPLE)
-      set_target_properties(pnmpif PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    endif()
+    -ldl)
+#  set_target_properties(pnmpif PROPERTIES
+#    VERSION       ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
+#    SOVERSION     ${PNMPI_LIB_INTERFACE_VERSION})
+
+  if(CMAKE_Fortran_COMPILER_WORKS)
+    set_target_properties(pnmpif PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
+  endif()
+  if(APPLE)
+    set_target_properties(pnmpif PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif()
 
   # PnMPI fortran static lib
   add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
-	
+
   #Install pnmpi core for Fortran with reasonable file permissions
   install(TARGETS pnmpif pnmpif_static EXPORT pnmpi-libs DESTINATION lib)
 endif()

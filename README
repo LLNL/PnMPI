@@ -2,7 +2,7 @@
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
-P^nMPI Tool Infrastructure, Version 1.4 (git)
+PnMPI Tool Infrastructure, Version 1.4 (git)
 
 Written by:
   Martin Schulz     schulzm@llnl.gov
@@ -12,7 +12,7 @@ Contributors:
   Tobias Hilbrich   Tobias.Hilbrich@zih.tu-dresden.de
 
 
-P^nMPI is a dynamic MPI tool infrastructure that builds on top of
+PnMPI is a dynamic MPI tool infrastructure that builds on top of
 the standardized PMPI interface. It allows the user to
 - run multiple PMPI tools concurrently
 - activate PMPI tools without relinking by just changing a
@@ -21,203 +21,121 @@ the standardized PMPI interface. It allows the user to
 - write cooperative PMPI tools
 
 The package contains three main components:
-- The P^nMPI core infrastructure
+- The PnMPI core infrastructure
 - An MPI wrapper generation infrastructure
-- Tool modules that can explicitly exploit P^nMPI's capabilities
+- Tool modules that can explicitly exploit PnMPI's capabilities
 
 So far, this software has mainly been tested on Linux clusters with
 RHEL-based OS distributions as well as IBM's BG/P systems. Additionally
-the system ran on IBM AIX systems, but this support has been depricated.
+the system ran on IBM AIX systems, but this support has been deprecated.
 Some preliminary experiments have also included SGI Altix systems and
 Mac OSX 10.6. Ports to other platforms should be straightforward, but 
-this is not extensivelytested. Please contact the author if you run 
-into problems porting P^nMPI or if you successfully deployed P^nMPI 
+this is not extensively tested. Please contact the author if you run 
+into problems porting PnMPI or if you successfully deployed PnMPI
 on a new platform.
 
+A) Building PnMPI
+===============================================================
+PnMPI uses CMake for its build system.
 
-A) Directory Structure
-======================
-
-   - common: Makefile settings
-   - patch: utility to patch shared libraries
-   - wrappergen: MPI wrapper generator (based on MPICH)
-   - wrapper: mpi.h detection and MPI wrappers for P^nMPI
-   - src: actual PNMPI code
-   - modules: P^nMPI modules (source)
-   - lib/$SYS_TYPE: test modules (binaries) and libpnmpi
-   - demo: test codes
-   - include: P^nMPI header files
-
-Remark: lib and include are initially empty and will be populated 
-        during the installation
-
-
-B) How to install it (Standard build using Makefiles)
-=====================================================
-
-The default way to build P^nMPI is using a set of Makefiles
-with a common Makefile for project wide configurations, which
-is located in the "common" directory (more below). In the 
-future, this will be replaced with a cmake based build
-systems, which currently (as of P^nMPI 1.4) exists as a
-beta version (see Section C of this README file).
-
-B1) Prerequisites
------------------
-
-The install procedure uses scripts built on top of tcsh. For it to
-run properly, tcsh must be installed and be available at /bin/tcsh
-or all scripts (ending in .sh) must be adjusted to point to the
-correct location of tcsh.
-
-B2) Environment Variables
--------------------------
-
-   - Set SYS_TYPE to reflect local OS and architecture
-     (it is up to the user to chose an arbitrary, yet unique identifier)
-   - Set PNMPIBASE to the main pnmpi directory
-   - Set PNMPI_LIB_PATH to $PNMPIBASE/lib/$SYS_TYPE
-   - Set PNMPI_INC_PATH to $PNMPIBASE/include
-   - Add PNMPI_LIB_PATH to global LD_LIBRARY_PATH
-
-B3) Adjust make environment
----------------------------
-
-All changes should be made in common/Makefile.common
-
-B4) Compile PNMPI
------------------
-
-run: "make"
-
-This will first compile some utilities (patch and wrappergen),
-then create system specific wrappers (wrapper). After that it
-will create the P^nMPI core system (src) as well as a set
-of modules (modules/*). After this step, all P^nMPI modules
-will be located in $PNMPI_LIB_PATH. Finally, it will create
-a few simple demo programs in the demo directory.
-
-All components can can also be compiled separately (by running
-"make"), as long as the above order is maintained. Also, all
-makefiles support "make clean", to remove compilation results,
-and "make clobber", to remove compilation results, installed
-modules, and source backup files (from emacs).
-
-
-C) How to install it (Experimental Build using CMake)
-=====================================================
-
-Since P^nMPI version 1.4, the software can also be built using
-the cmake build system. This is currently experimental, but it
-is planned to be the default configuration mechanism in future
-versions of P^nMPI.
-
-C1) Install CMake
+A1) Install CMake
 -----------------
 CMake can be downloaded from http://www.cmake.org.
 You will need at least version 2.6, and for BG/P systems you
 will need version 2.8.3. 
 
-C2) Configure the project
+A2) Configure the project
 -------------------------
-Create a new build directory (e.g., named according to the
-platform you are using), cd into it, and run:
+In the simplest case, you can run this in the top-level directory
+of the PnMPI tree:
 
-  cmake \
-    -D CMAKE_INSTALL_PREFIX=<install path> \
-    <path to P^nMPI source> 
+   cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/destination
+   make -j8
+   make install
 
-To build a debug build:
+This will configure, build, and install PnMPI to the destination
+specified.  PnMPI supports parallel make with the -j parameter.
 
-  cmake \
-    -DCMAKE_INSTALL_PREFIX=<install path> \
-    -DCMAKE_BUILD_TYPE=Debug \
-    <path to P^nMPI source> 
+On more complex machines, such as those with filesystems shared among
+multiple platforms, you will want to separate out your build directories
+for each platform.  CMake makes this easy.
 
-Example on LLNL systems:
+Create a new build directory named according to the platform you
+are using, cd into it, an run cmake there.  For example:
 
-  cd /path/to/pnmpi/source
-  mkdir $SYS_TYPE
-  cd $SYS_TYPE
-  cmake \
-    -DCMAKE_INSTALL_PREFIX=$PWD/install \
-    -DCMAKE_BUILD_TYPE=Debug \
-    ..
-  
-If your system has no Fortran compiler you need to manually 
-disable all Fortran features of P^nMPI by adding this option
-to the cmake command line:
+  cd <pnmpi>
+  mkdir x86_64
+  cd x86_64
+  cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/destination ..
 
-  -D PNMPI_ENABLE_FORTRAN=False
+Here, '<pnmpi>' is the top-level directory in the PnMPI tree.  Note
+that when you run CMake this way, you need to supply the path to the
+PnMPI *source* directory as the last parameter.  Here, that's just '..'
+as we are building in a subdirectory of the source directory.  Once
+you run CMake, simply run make and make install as before:
 
-PnMPI should autdetect your MPI installation and determine
+  make -j8
+  make install
+
+The PnMPI build should autdetect your MPI installation and determine
 library and header locations.  If you want to build with a
 particular MPI that is NOT the one autodetected by the build,
-see the documentation in cmakemodules/FindMPI.cmake for
-info on the build options to do this.
+you can supply your particular MPI compiler as a parameter:
+
+  cmake \
+    -D CMAKE_INSTALL_PREFIX=/path/to/install/destination \
+    -D MPI_C_COMPILER=/path/to/my/mpicc \
+    ..
+
+See the documentation in cmakemodules/FindMPI.cmake for more
+details on MPI build configuration options.
+
+If you have problems, you may want to build PnMPI in debug mode.  You
+can do this by supplying an additional paramter to CMake, e.g.:
+
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=/path/to/install/destination \
+    -DCMAKE_BUILD_TYPE=Debug \
+    ..
+
+A3) Installed structure
+--------------------------
+Once you've installed, All your PnMPI files and executables should
+be in <CMAKE_INSTALL_PREFIX>, the path specified during configuration.
+Roughly, the install tree looks like this:
+
+bin/
+  pnmpi-patch          Library patching utility
+  wrap.py              Wrapper generator for making PMPI tools
+lib/
+  libpnmpi[f].[so,a]   PnMPI runtime libraries
+  pnmpi-modules/       System-installed tool modules
+  cmake/               Build files for external modules
+include/
+  pnmpi.h              PnMPI header
+  pnmpimod.h           PnMPI module support
+
+Test programs are not installed, but In the 'demo' folder of the
+build directory, there should also be test programs built with PnMPI.
+See below for details on running these to test your PnMPI installation.
 
 
-C4) Adding ADEPT Timing Option
-------------------------------
-PnMPI can optionally profile itself and record internal timing 
-information. This includes measurements on how frequently
-particular wrappers have been invoked and how long they took.
-
-To enable this option, PnMPI must be configured with additional
-timing routines, which are part of the adept-utils package.
-The package is currently LLNL-internal, but can be distributed
-on request.
-
-If adept utils are installed in a standard system location, CMake
-will autodetect them.  If they are in a custom location, you will
-need to set the AdeptUtils_DIR environment variable to the prefix
-under which adept-utils was installed, e.g.:
-
-  setenv AdeptUtils_DIR /opt/my-custom-adept-utils
-
-This will allow CMake to autodetect the build.  On LC machines,
-you can just use adept-utils via the dotkit:
-
-  use adept-utils
-
-Once PnMPI is compiled with adpet_utils, the additional timing
-statistics can be enabled dynamically (see Section E).
-
-
-C5) Compile the project
+A4) Environment setup
 -----------------------
+You will need to set one environment variable to run PnMPI:
 
-Run "make" in the CMake build directory created above.  Note that
-PnMPI does not currently support parallel make (make -j).
+PNMPI_LIB_PATH should be set to the full path to the lib/pnmpi-modules
+directory in your PnMPI installation directory.  This enables the
+runtime to find its modules.
 
-To get a verbose build, use "make VERBOSE=TRUE"
+Additionally, if you wish to build external modules, you should
+set the PnMPI_DIR environment variable to the full path to your
+PnMPI installation (that is, your CMAKE_INSTALL_PREFIX) so that
+external module builds can find PnMPI configuration files.  See
+Section (C) for more information on building custom modules.
 
-C6) Install the project
------------------------
 
-Run "make install"
-
-C7) Installed structure
------------------------
-All central components will now be in <install path>, the 
-path specified during the project configuration. This 
-includes:
-  - bin: patching utility
-  - lib: P^nMPI library to link against (or to preload)
-  - include: includes to build modules
-  - modules: compiled and ready to use modules
-
-Additionally, the demo codes used below are in the "bin"
-directory of the build directory from which cmake was
-invoked. By default, the demo directory does not contain
-a P^nMPI configuration file. Such a file can be copied
-from the demo directory in the source tree.
-
-So that PnMPI can find its modules, you will need to set
-PNMPI_LIB_PATH to the full path to the lib/pnmpi-modules
-directory in your PnMPI installation.
-
-C8) RPATH settings
+A5) RPATH settings
 -----------------------
 By default, the build adds the paths of all dependency libraries
 to the rpath of the installed PnMPI library.  This is the preferred
@@ -234,81 +152,190 @@ rpath additions using this option to cmake:
 This will add only the PnMPI installation lib directory to the
 rpath of the PnMPI library.
 
+A6) Adding ADEPT Timing Option
+------------------------------
+PnMPI can optionally profile itself and record internal timing 
+information. This includes measurements on how frequently
+particular wrappers have been invoked and how long they took.
+
+To enable this option, PnMPI must be configured with additional
+timing routines, which are part of the adept-utils package.
+The package is currently LLNL-internal, but can be distributed
+on request.
+
+If adept utils is installed in a standard system location, CMake
+will autodetect it.  If they are in a custom location, you will
+need to set the AdeptUtils_DIR environment variable to the prefix
+under which adept-utils was installed, e.g.:
+
+  setenv AdeptUtils_DIR /opt/my-custom-adept-utils
+
+This will allow CMake to autodetect the build.  On LC machines,
+you can just use adept-utils via the dotkit:
+
+  use adept-utils
+
+Once PnMPI is compiled with AdeptUtils, the additional timing
+statistics can be enabled dynamically (see Section E).
+
  
-D) Modules
+B) Modules
 ==========
 
-P^nMPI supports two different kind of tool modules:
-- transparent modules
-- P^nMPI specific modules
+PnMPI supports two different kind of tool modules:
+- Transparent modules
+- PnMPI-specific modules
 
 Among the former are modules that have been created independently of
-P^nMPI and are just based on the PMPI interface. To use a transparent
-module in P^nMPI the user has to perform two steps after creating a
-statically linked version of the tool:
-- convert the tool into a shared library
-- patch the tool using the "patch" utility in "patch"
-  Usage: patch <original tool (in)> <patched tool (out)>
-After that, copy the tool in the $PNMPI_LIB_PATH directory so that
-P^nMPI can pick it up.
+PnMPI and are just based on the PMPI interface. To use a transparent
+module in PnMPI the user has to perform two steps:
+ 1. Build the tool as a shared module (a dlopen-able shared library)
+ 2. Patch the tool using the 'pnmpi-patch' utility, which is incldued
+    with the PnMPI distribution.
 
-The second option is the use of P^nMPI specific modules: these modules
-also rely on the PMPI interface, but explicitly use some of the P^nMPI
-features (i.e., they won't run outside of P^nMPI).  These modules
+Usage: 
+  pnmpi-patch <original tool (in)> <patched tool (out)>
+e.g.:
+  pnmpi-patch my-module.so my-pnmpi-module.so
+
+After that, copy the tool in the $PNMPI_LIB_PATH directory so that
+PnMPI can pick it up.  Note that all of this is handled automatically
+by the CMake build files included with PnMPI.
+
+The second option is the use of PnMPI specific modules: these modules
+also rely on the PMPI interface, but explicitly use some of the PnMPI
+features (i.e., they won't run outside of PnMPI).  These modules
 include the "pnmpimod.h" header file. This file also describes the
 interface that modules can use. In short, the interface offers an
 ability to register a module and after that use a publish/subscribe
-interface to offer/use services in other modules. Note: also P^nMPI
+interface to offer/use services in other modules. Note: also PnMPI
 specific modules have to be patched using the utility described above.
 
-This packages includes a set of modules that can be used both
+This package includes a set of modules that can be used both
 to create other tools using their services and as templates
 for new modules.
 
 The source for all modules is stored in separate directories
 inside the "module" directory. There are:
 
-sample: a set of example modules that show how to wrap send and
-        receive operations. These modules are used in the demo
-        codes described below.
+sample:   a set of example modules that show how to wrap send and
+          receive operations. These modules are used in the demo
+          codes described below.
 
-empty: a transparent module that simply wraps all calls without
-       executing any code. This can be used to test overhead
-       or as a sample for new modules.
+empty:    a transparent module that simply wraps all calls without
+          executing any code. This can be used to test overhead
+          or as a sample for new modules.
 
-status: This P^nMPI specific module offers a service to add
-        extra data to each status object to store additional
-        information.
+status:   This PnMPI specific module offers a service to add
+          extra data to each status object to store additional
+          information.
 
-requests: This P^nMPI specific module offers a service to track
+requests: This PnMPI specific module offers a service to track
           asynchronous communication requests. It relies on the
           status module.
 
-datatype: This P^nMPI specific module tracks all datatype
+datatype: This PnMPI specific module tracks all datatype
           creations and provides an iterator to walk any datatype.
 
-comm: This P^nMPI specific module abstracts all communication in 
-      a few simple callback routines. It can be used to write 
-      quick prototype tools that intercept all communication
-      operations independent of the originating MPI call.
-      This infrastructure can be used by creating submodules: two 
-      such submodules are included: an empty one that can be used 
-      as a template and one that prints every message.
-      Note: this module relies on the status, requests, and 
-      datatype modules. A more detailed description on how to
-      implemented submodules is included in the comm directory
-      as a separate README.
+comm:     This PnMPI specific module abstracts all communication in 
+          a few simple callback routines. It can be used to write 
+          quick prototype tools that intercept all communication
+          operations independent of the originating MPI call.
+          This infrastructure can be used by creating submodules: two 
+          such submodules are included: an empty one that can be used 
+          as a template and one that prints every message.
+          Note: this module relies on the status, requests, and 
+          datatype modules. A more detailed description on how to
+          implemented submodules is included in the comm directory
+          as a separate README.
 
 Note: All modules should be compiled with mpicc or equivalent
 (which includes the MPI header files) and should be linked 
 without linking to the MPI library (to avoid MPI routines
-being linked to multiple times). All example Makefiles that
-are included in this distribution are configured in this way.
+being linked to multiple times).
 
 
-E) Debug Options
+C) Building your own modules with CMake
+=======================================
+PnMPI installs CMake build files with its distribution to allow
+external projects to quickly build MPI tool modules.  The build
+files allow external tools to use PnMPI, the pnmpi-patch utility,
+PnMPI's wrapper generator, and PnMPI's dependency libraries.
+
+To create a new PnMPI module, simply create a new project that looks
+something like this:
+
+my-project/
+  CMakeLists.txt
+  foo.c
+  wrapper.w
+
+Assume that wrapper.w is a wrapper generator input file that will
+generate another file called wrapper.c, which contains MPI interceptor
+functions for the tool library.  foo.c is additional code needed for
+the tool library.  CMakeLists.txt is the CMake build file.  Before
+you build, you will need to set the PnMPI_DIR environment variable:
+
+    setenv PnMPI_DIR /path/to/pnmpi/installation
+
+Unless you have installed PnMPI in a standard system location (/usr,
+/usr/local, etc.), in which case it will be discoveredautomatically.
+
+Your CMakeLists.txt file should start start with something like this:
+
+  project(my-module C)
+  cmake_minimum_required(VERSION 2.8)
+
+  find_package(PnMPI REQUIRED)
+  find_package(MPI REQUIRED)
+
+  add_wrapped_file(wrapper.c wrapper.w)
+  add_pnmpi_module(foo foo.c wrapper.c)
+
+  install(TARGETS foo DESTINATION ${PnMPI_MODULES_DIR})
+
+  include_directories(
+    ${MPI_INCLUDE_PATH}
+    ${CMAKE_CURRENT_SOURCE_DIR})
+
+project() and cmake_minimum_required() are standard.  These tell the build
+the name of the project and what version of CMake it will need.
+
+find_package(PnMPI) will try to find PnMPI in system locations, and if
+it is not found, it will fail because the REQUIRED option has been specified.
+
+find_package(MPI) locates the system MPI installation so that you can use its
+variables in the CMakeLists.txt file.
+
+add_wrapped_file() tells the build that wrapper.c is generated from wrapper.w,
+and it adds rules and dependenciesto the build to automatically run the wrapper
+generator when wrapper.c is needed.
+
+Finally, add_pnmpi_module() function's much like CMake's builtin add_library()
+command, but it ensures that the PnMPI library is built as a loadable module
+and that the library is properly patched.
+
+install() functions just as it does in a standard CMake build, but here we
+install to the PnMPI_MODULES_DIR instead of an install-relative location.
+This variable is set if PnMPI is found by find_package(PnMPI), and it allows
+users to install directly into the system PnMPI installation.
+
+Finally, include_directories() functions as it would in a normal CMake build.
+
+Once you've make your CMakeLists.txt file like this, you can build your
+PnMPI module like so:
+
+  cd my-module
+  mkdir $SYS_TYPE && cd $SYS_TYPE
+  cmake ..
+  make -j8
+  make -j8 install
+
+This should find PnMPI on your system and build your module, assuming that
+you have your environment set up correctly.
+
+D) Debug Options
 ================
-
 The debug build of PnMPI includes debug print options, that can 
 be dynamically enabled. To control it, the environment variable 
 DBGLEVEL can be set to any combination of the following flags:
@@ -326,11 +353,11 @@ node (except for the 0x10 and 0x20, which always only print
 on node 0) by setting the variable DBGNODE to an MPI rank.
 
 
-F) Configuration and Demo codes
+E) Configuration and Demo codes
 ===============================
 
-The P^nMPI distribution includes two demo codes (in C and F77).
-They can be used to experiment with the basic P^nMPI functionalities 
+The PnMPI distribution includes two demo codes (in C and F77).
+They can be used to experiment with the basic PnMPI functionalities 
 and to test the system setup. The following describes the
 C version (the F77 version works similarly):
 
@@ -338,7 +365,7 @@ C version (the F77 version works similarly):
 - The program "simple.c", which sends a message from any task with
   ID>0 to task 0, was compiled into three binaries:
     - simple    (plain MPI code)
-    - simple-pn (linked with P^nMPI)
+    - simple-pn (linked with PnMPI)
     - simple-s1 (plain code linked with sample1.so)
 
 - executing simple will run as usual
@@ -349,10 +376,10 @@ GOT 1
   The unpatched modules are in modules/sample
   Examples: simplest-s1 linked with sample1
 
-- P^nMPI is configured through a configuration file that lists all modules
-  to be load by P^nMPI as well as optional arguments. The name for this
+- PnMPI is configured through a configuration file that lists all modules
+  to be load by PnMPI as well as optional arguments. The name for this
   file can be specified by the environment variable "PNMPI_CONF". If this
-  variable is not set or the file specified can not be found, P^nMPI looks
+  variable is not set or the file specified can not be found, PnMPI looks
   for a file called ".pnmpi_conf" in the current working directory, and
   if not found, in the user's home directory.
 
@@ -367,7 +394,7 @@ module sample4
   (plus some additional lines starting with #, which indicates comments)
 
   This configuration causes these four modules to be loaded
-  in the specified order. P^nMPI will look for the corresponding
+  in the specified order. PnMPI will look for the corresponding
   modules ( .so shared library files) in $PNMPI_LIB_PATH.
 
 - Running simple-pn will load all four modules in the specified 
@@ -424,22 +451,21 @@ some environment variables. Here is an example:
 mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH -cwd $PWD simple-pn
 
 
-G) Using of MPI_Pcontrol
+F) Using of MPI_Pcontrol
 ========================
-
 The MPI standard defines the MPI_Pcontrol, which does not have any
 direct effect (it is implemented as a dummy call inside of MPI), but
 that can be replaced by PMPI to accepts additional information from
 MPI applications (e.g., turn on/off data collection or markers for
 main iterations). The information is used by a PMPI tool linked to
-the application. When it is used with P^nMPI the user must therefore
+the application. When it is used with PnMPI the user must therefore
 decide which tool an MPI_Pcontrol call is directed to.
 
-By default P^nMPI will direct Pcontrol calls to first module in the
+By default PnMPI will direct Pcontrol calls to first module in the
 tool stack only. If this is not the desired effect, users can turn
 on and off which module Pcontrols reach by adding "pcontrol on" and
 "pcontrol off" into the configuration file in a separate line
-following the corresponding module specification. Note that P^nMPI
+following the corresponding module specification. Note that PnMPI
 allows that Pcontrol calls are sent to multiple modules.
 
 In addition, the general behavior of Pcontrols can be specified
@@ -452,7 +478,7 @@ following arguments:
 	pmpi	forward the variable list arguments
 	pnmpi	requires the application to specify a specific
 	        format in the variable argument list known to
-	        P^nMPI (level must be PNMPI_PCONTROL_LEVEL)
+	        PnMPI (level must be PNMPI_PCONTROL_LEVEL)
 	mixed   same as pnmpi, if level==PNMPI_PCONTROL_LEVEL
                 same as pmpi,  if level!=PNMPI_PCONTROL_LEVEL
 	typed  	<tlevel> <type> 
@@ -461,7 +487,7 @@ following arguments:
 		this case, assume that the second argument is
 		of type <type>
 
-The P^nMPI internal format for Pcontrol arguments is as follows:
+The PnMPI internal format for Pcontrol arguments is as follows:
 
 	int level (same semantics as for MPI_Pcontrol itself)
 	int type = PNMPI_PCONTROL_SINGLE or PNMPI_PCONTROL_MULTIPLE 
@@ -478,19 +504,18 @@ Known issues:
 
 Forwarding the variable argument list as done in pmpi and mixed is only 
 implemented in a highly experimental version and disabled by default.
-To enable, compile P^nMPI with the flag EXPERIMENTAL_UNWIND and link
-P^nMPI with the libunwind library. Note that this is not extensively
+To enable, compile PnMPI with the flag EXPERIMENTAL_UNWIND and link
+PnMPI with the libunwind library. Note that this is not extensively
 tested and not portable across platforms.
 
 
 G) References
 =============
-
-More documentation on P^nMPI can be found in the following two
+More documentation on PnMPI can be found in the following two
 published articles:
 
 Martin Schulz and Bronis R. de Supinski
-P^nMPI Tools: A Whole Lot Greater Than the Sum of Their Parts
+PnMPI Tools: A Whole Lot Greater Than the Sum of Their Parts
 Supercomputing 2007
 November 2007, Reno, NV, USA
 Available at: http://sc07.supercomputing.org/schedule/pdf/pap224.pdf
@@ -505,7 +530,6 @@ Available at: http://ieeexplore.ieee.org/iel5/11126/35641/01690620.pdf?isnumber=
 
 H) Contact
 ==========
-
 For more information or in case of questions, please contact
 Martin Schulz at schulzm@llnl.gov.
 

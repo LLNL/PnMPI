@@ -38,6 +38,7 @@ Boston, MA 02111-1307 USA
 #include <unistd.h>
 
 #include "core.h"
+#include "pnmpi-config.h"
 
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
@@ -89,7 +90,7 @@ static void* mydlsym(void *h, char *s)
 
 static int whitespace(char c)
 {
-  if ((c=='\t') || (c==' ') || (c=='\n') || (c==EOF))
+  if ((c=='\t') || (c==' ') || (c=='\n'))
     return 1;
   #ifdef AIX
   if ((int)c==255)
@@ -130,11 +131,16 @@ void pnmpi_PreInit()
   /* locate library */
 
   libdir=getenv("PNMPI_LIB_PATH");
-  if (libdir==NULL)
-    {
-      WARNPRINT("No module library found - not loading any PNMPI modules.");
-      return;
-    }
+  if (libdir==NULL) {
+    // no user libdir; just use the install destination's module path.
+    libdir = PNMPI_MODULES_DIR;
+  } else {
+    // concat the user libdir with the install destination's module path.
+    size_t len = strlen(libdir) + strlen(PNMPI_MODULES_DIR) + 2;
+    const char *old_libdir = libdir;
+    libdir = (char*)malloc(len * sizeof(char));
+    sprintf(libdir, "%s:%s", old_libdir, PNMPI_MODULES_DIR);
+  }
 
   DBGPRINT2("Found library at %s",libdir);
 

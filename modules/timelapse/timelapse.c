@@ -69,7 +69,7 @@ int PNMPI_RegistrationPoint()
     return MPI_ERROR_PNMPI;
 
   sprintf(service.name,"timelapse");
-  service.fct=(PNMPI_Service_Fct_t*) PNMPIMOD_Timelapse_Switch;
+  service.fct=(PNMPI_Service_Fct_t) PNMPIMOD_Timelapse_Switch;
   sprintf(service.sig,"i");
   err=PNMPI_Service_RegisterService(&service);
   if (err!=PNMPI_SUCCESS)
