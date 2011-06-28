@@ -624,6 +624,8 @@ int MPI_Finalize(void)
 	}
 #endif
 
+  err=MPI_Barrier(MPI_COMM_WORLD);
+
 	err=PMPI_Finalize();
 	return err;
 }
