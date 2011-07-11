@@ -9,9 +9,9 @@
 # @date 2011-05-01
 
 # Add linkage to adept utils if we have it
-if (AdeptUtils_FOUND)
-  include_directories(BEFORE ${AdeptUtils_INCLUDE_PATH})
-  set(TIMING_LIB adept-timing)
+if (adept_utils_FOUND)
+  include_directories(BEFORE ${adept_utils_INCLUDE_PATH})
+  set(TIMING_LIB adept_timing)
 endif()
 
 # Add wrapped files to the build.

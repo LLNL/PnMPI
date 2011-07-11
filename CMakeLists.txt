@@ -83,15 +83,15 @@ endif()
 #===================================	
 #Check for adept_utils timers
 #===================================	
-find_package(AdeptUtils QUIET)
-if(AdeptUtils_FOUND)
-  message(STATUS "Found AdeptUtils in ${AdeptUtils_DIR}.")
+find_package(adept_utils QUIET)
+if(adept_utils_FOUND)
+  message(STATUS "Found adept_utils in ${adept_utils_DIR}.")
   add_definitions(-DHAVE_ADEPT_UTILS)
 else()
-  message(STATUS "AdeptUtils package not found.  Building without timing.")
+  message(STATUS "adept_utils package not found.  Building without timing.")
   # Set these for our PnMPIConfig.cmake file.
-  set(AdeptUtils_INCLUDE_PATH AdeptUtils_INCLUDE_PATH-NOTFOUND)
-  set(AdeptUtils_LIBRARIES    AdeptUtils_LIBRARIES-NOTFOUND)
+  set(adept_utils_INCLUDE_PATH adept_utils_INCLUDE_PATH-NOTFOUND)
+  set(adept_utils_LIBRARIES    adept_utils_LIBRARIES-NOTFOUND)
 endif()
 
 

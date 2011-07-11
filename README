@@ -159,23 +159,23 @@ information. This includes measurements on how frequently
 particular wrappers have been invoked and how long they took.
 
 To enable this option, PnMPI must be configured with additional
-timing routines, which are part of the adept-utils package.
+timing routines, which are part of the adept_utils package.
 The package is currently LLNL-internal, but can be distributed
 on request.
 
 If adept utils is installed in a standard system location, CMake
 will autodetect it.  If they are in a custom location, you will
-need to set the AdeptUtils_DIR environment variable to the prefix
-under which adept-utils was installed, e.g.:
+need to set the adept_utils_DIR environment variable to the prefix
+under which adept_utils was installed, e.g.:
 
-  setenv AdeptUtils_DIR /opt/my-custom-adept-utils
+  setenv adept_utils_DIR /opt/my-custom-adept_utils
 
 This will allow CMake to autodetect the build.  On LC machines,
-you can just use adept-utils via the dotkit:
+you can just use adept_utils via the dotkit:
 
-  use adept-utils
+  use adept_utils
 
-Once PnMPI is compiled with AdeptUtils, the additional timing
+Once PnMPI is compiled with adept_utils, the additional timing
 statistics can be enabled dynamically (see Section E).
 
  
