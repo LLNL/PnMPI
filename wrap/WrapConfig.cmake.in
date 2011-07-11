@@ -45,6 +45,14 @@ if (NOT Wrap_CONFIG_LOADED)
       set(script_arg "")
     endif()
 
+    # Backward compatibility for old FindMPIs that did not have MPI_C_INCLUDE_PATH
+    if (NOT MPI_C_INCLUDE_PATH)
+      set(MPI_C_INCLUDE_PATH ${MPI_INCLUDE_PATH})
+    endif()
+    if (NOT MPI_C_COMPILER)
+      set(MPI_C_COMPILER ${MPI_COMPILER})
+    endif()
+
     # Play nice with FindMPI.  This will deduce the appropriate MPI compiler to use
     # for generating wrappers
     if (MPI_C_INCLUDE_PATH)
