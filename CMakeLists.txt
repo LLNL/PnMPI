@@ -127,7 +127,7 @@ configure_file(${PROJECT_SOURCE_DIR}/pnmpi-vars.cmake.in  ${PROJECT_BINARY_DIR}/
 install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake 
               ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake
               ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPIModules.cmake
-              DESTINATION lib/cmake/PnMPI)
+              DESTINATION share/cmake/PnMPI)
 
 # Configure a header file with the full build configuration.  Include the CMake file
 # first so that the header can include build parameters.

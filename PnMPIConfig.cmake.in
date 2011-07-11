@@ -10,7 +10,7 @@
 #  - pnmpi_static    PnMPI static library
 #  - pnmpif          PnMPI Fortran library
 #  - pnmpif_static   PnMPI static Fortran library
-set(PnMPI_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/lib/cmake/PnMPI)
+set(PnMPI_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/share/cmake/PnMPI)
 
 include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-libs.cmake)
 

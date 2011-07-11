@@ -19,6 +19,6 @@ endif()
 install(TARGETS pnmpi-patch EXPORT pnmpi-patch RUNTIME DESTINATION bin)
 
 # Allow patch target to be used by subprojects.
-install(EXPORT pnmpi-patch DESTINATION lib/cmake/PnMPI)
+install(EXPORT pnmpi-patch DESTINATION share/cmake/PnMPI)
 
 include_directories(${CMAKE_BINARY_DIR})

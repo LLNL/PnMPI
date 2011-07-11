@@ -98,7 +98,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
 endif()
 
 # file to export pnmpi-libs
-install(EXPORT pnmpi-libs DESTINATION lib/cmake/PnMPI)
+install(EXPORT pnmpi-libs DESTINATION share/cmake/PnMPI)
 
 # Extra directories to include from when building.
 include_directories(

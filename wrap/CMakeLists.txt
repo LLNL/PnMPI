@@ -17,4 +17,4 @@ set(WRAP ${CMAKE_INSTALL_PREFIX}/bin/wrap.py)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/WrapConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/WrapConfig.cmake @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/WrapConfig.cmake DESTINATION lib/cmake/PnMPI)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/WrapConfig.cmake DESTINATION share/cmake/PnMPI)
