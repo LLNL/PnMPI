@@ -50,11 +50,16 @@ In the simplest case, you can run this in the top-level directory
 of the PnMPI tree:
 
    cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/destination
-   make -j8
+   make
    make install
 
 This will configure, build, and install PnMPI to the destination
 specified.  PnMPI supports parallel make with the -j parameter.
+E.g., for using eight build tasks, use:
+
+   cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/destination
+   make -j8
+   make install
 
 On more complex machines, such as those with filesystems shared among
 multiple platforms, you will want to separate out your build directories
@@ -97,6 +102,10 @@ can do this by supplying an additional paramter to CMake, e.g.:
     -DCMAKE_INSTALL_PREFIX=/path/to/install/destination \
     -DCMAKE_BUILD_TYPE=Debug \
     ..
+	
+The build directory contains a few sample invocations of
+cmake that have been successfully used on LLNL systems.
+
 
 A3) Installed structure
 --------------------------
@@ -114,8 +123,11 @@ lib/
 include/
   pnmpi.h              PnMPI header
   pnmpimod.h           PnMPI module support
+  pnmpi-config.h       CMake generated configuration file
+share/
+  cmake/               CMake files to support tool module builds
 
-Test programs are not installed, but In the 'demo' folder of the
+Test programs are not installed, but in the 'demo' folder of the
 build directory, there should also be test programs built with PnMPI.
 See below for details on running these to test your PnMPI installation.
 
@@ -129,7 +141,7 @@ directory in your PnMPI installation directory.  This enables the
 runtime to find its modules.
 
 Additionally, if you wish to build external modules, you should
-set the PnMPI_DIR environment variable to the full path to your
+set the PNMPI_DIR environment variable to the full path to your
 PnMPI installation (that is, your CMAKE_INSTALL_PREFIX) so that
 external module builds can find PnMPI configuration files.  See
 Section (C) for more information on building custom modules.
@@ -142,7 +154,7 @@ to the rpath of the installed PnMPI library.  This is the preferred
 behavior on LLNL systems, where many packages are installed and
 LD_LIBRARY_PATH usage can become confusing.
 
-If you are installing on a system where you do NOT want dependet
+If you are installing on a system where you do NOT want dependent
 libraries added to your RPATH, e.g. if you expect all of PnMPI's
 dependencies to be found in system paths, then you can build without
 rpath additions using this option to cmake:
