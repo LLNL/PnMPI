@@ -92,6 +92,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   # PnMPI fortran static lib
   add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
+  set_target_properties(pnmpif_static PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
 
   #Install pnmpi core for Fortran with reasonable file permissions
   install(TARGETS pnmpif pnmpif_static EXPORT pnmpi-libs DESTINATION lib)

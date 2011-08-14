@@ -67,9 +67,9 @@ Boston, MA 02111-1307 USA
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// TODO: Include pnmpi-config.h here when the BFD version works.
-// TODO: Right now it doesn't seem to link properly.  Do we need it?
-#ifdef PNMPI_HAVE_BFD
+#include <pnmpi-config.h>
+
+#if PNMPI_HAVE_BFD==TRUE
 #include <bfd.h>
 #include <libiberty.h>
 #endif
@@ -94,7 +94,7 @@ int num_dynamic_symbols = 0;
 /* BFD BASED COPY BASED ON objcopy from the binutils */
 /*=======================================================================*/
 
-#ifdef PNMPI_HAVE_BFD
+#if PNMPI_HAVE_BFD==TRUE
 
 static asymbol **isympp = NULL;	/* Input symbols.  */
 static asymbol **osympp = NULL;	/* Output symbols that survive stripping.  */

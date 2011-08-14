@@ -1059,7 +1059,7 @@ def GenerateSymbolDefs():
         elif f77symbol == 'SYMBOL__':
             f77funct = string.upper(funct) + "__"
         else:
-            f77funct = string.lower(funct)
+            f77funct = string.lower(funct) + "_"
 
         g.write("#define F77_" + string.upper(funct) + " " + f77funct + "\n")
 

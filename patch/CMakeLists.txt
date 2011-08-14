@@ -15,6 +15,7 @@ set(CMAKE_C_COMPILER gcc)
 add_executable(pnmpi-patch patch.c)
 if (BFD_FOUND)
   target_link_libraries(pnmpi-patch ${BFD_LIBRARIES})
+  target_link_libraries(pnmpi-patch ${IBERTY_LIBRARIES})
 endif()
 install(TARGETS pnmpi-patch EXPORT pnmpi-patch RUNTIME DESTINATION bin)
 

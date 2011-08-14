@@ -401,7 +401,7 @@ void mpi_init_(int *ierr)
 
 	if (init_was_fortran==0)
     {
-      *ierr=MPI_SUCCESS;
+      pmpi_init_(ierr);
       return;
     }
 
@@ -495,7 +495,7 @@ int MPI_Init(int *argc, char ***argv)
 #endif
 	
   if (init_was_fortran==1)
-    return MPI_SUCCESS;
+    return PMPI_Init(argc,argv);
 
   init_was_fortran=0;
   
