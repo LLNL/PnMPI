@@ -107,8 +107,52 @@ The build directory contains a few sample invocations of
 cmake that have been successfully used on LLNL systems.
 
 
-A3) Installed structure
---------------------------
+A3) Configuring with/without Fortran
+------------------------------------
+
+By default PnMPI is configured to work with C/C++ and 
+Fortran codes. However, on systems where Fortran is not
+available, the system should autodetect this and not
+build the Fortran libraries and demo codes. It can also
+be manually turned off by adding
+
+    -D ENABLE_FORTRAN=OFF
+
+to the cmake configuration command.
+
+On most systems, the linkage between Fortran calls to
+MPI and the PnMPI interception system should work. On
+some systems, though, it is necessary to explicitly 
+specify the name translation between Fortran and C. The
+following contains addition to the cmake configuration
+command depending on how a Fortran compiler translates
+C names:
+
+	Adding "_" to C name:    -DF77SYMBOL=symbol_
+	Adding "__" to C name:   -DF77SYMBOL=symbol__
+	Not adding a charcacter: -DF77SYMBOL=symbol
+
+The PnMPI distribution contains demo codes for C and
+for Fortran that allow you to test the correct 
+linkage.
+
+
+A4) Configuring for cross-compiled environments
+-----------------------------------------------
+When configuring PnMPI in cross-compiled environments (such
+as Blue Gene/P systems), it is necessary to provide a 
+matching tool chain file. Example files that allow the
+compilation on certain LC machines can be found in the
+cmakemodules directory. For example, to configure PnMPI
+for a BG/P machine with settings matching LC's machines
+and using the GNU compliler suite, add the following to 
+the cmake configuration command:
+
+-D CMAKE_TOOLCHAIN_FILE=../cmakemodules/BlueGeneP-gnu.cmake
+
+
+A5) Installed structure
+-----------------------
 Once you've installed, All your PnMPI files and executables should
 be in <CMAKE_INSTALL_PREFIX>, the path specified during configuration.
 Roughly, the install tree looks like this:
@@ -132,7 +176,7 @@ build directory, there should also be test programs built with PnMPI.
 See below for details on running these to test your PnMPI installation.
 
 
-A4) Environment setup
+A6) Environment setup
 -----------------------
 You will need to set one environment variable to run PnMPI:
 
@@ -147,7 +191,7 @@ external module builds can find PnMPI configuration files.  See
 Section (C) for more information on building custom modules.
 
 
-A5) RPATH settings
+A7) RPATH settings
 -----------------------
 By default, the build adds the paths of all dependency libraries
 to the rpath of the installed PnMPI library.  This is the preferred
@@ -164,7 +208,8 @@ rpath additions using this option to cmake:
 This will add only the PnMPI installation lib directory to the
 rpath of the PnMPI library.
 
-A6) Adding ADEPT Timing Option
+
+A8) Adding ADEPT Timing Option
 ------------------------------
 PnMPI can optionally profile itself and record internal timing 
 information. This includes measurements on how frequently
