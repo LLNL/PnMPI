@@ -1,4 +1,4 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
@@ -29,8 +29,8 @@ So far, this software has mainly been tested on Linux clusters with
 RHEL-based OS distributions as well as IBM's BG/P systems. Additionally
 the system ran on IBM AIX systems, but this support has been deprecated.
 Some preliminary experiments have also included SGI Altix systems and
-Mac OSX 10.6. Ports to other platforms should be straightforward, but 
-this is not extensively tested. Please contact the author if you run 
+Mac OSX 10.6. Ports to other platforms should be straightforward, but
+this is not extensively tested. Please contact the author if you run
 into problems porting PnMPI or if you successfully deployed PnMPI
 on a new platform.
 
@@ -42,7 +42,7 @@ A1) Install CMake
 -----------------
 CMake can be downloaded from http://www.cmake.org.
 You will need at least version 2.6, and for BG/P systems you
-will need version 2.8.3. 
+will need version 2.8.3.
 
 A2) Configure the project
 -------------------------
@@ -102,7 +102,7 @@ can do this by supplying an additional paramter to CMake, e.g.:
     -DCMAKE_INSTALL_PREFIX=/path/to/install/destination \
     -DCMAKE_BUILD_TYPE=Debug \
     ..
-	
+
 The build directory contains a few sample invocations of
 cmake that have been successfully used on LLNL systems.
 
@@ -110,7 +110,7 @@ cmake that have been successfully used on LLNL systems.
 A3) Configuring with/without Fortran
 ------------------------------------
 
-By default PnMPI is configured to work with C/C++ and 
+By default PnMPI is configured to work with C/C++ and
 Fortran codes. However, on systems where Fortran is not
 available, the system should autodetect this and not
 build the Fortran libraries and demo codes. It can also
@@ -122,7 +122,7 @@ to the cmake configuration command.
 
 On most systems, the linkage between Fortran calls to
 MPI and the PnMPI interception system should work. On
-some systems, though, it is necessary to explicitly 
+some systems, though, it is necessary to explicitly
 specify the name translation between Fortran and C. The
 following contains addition to the cmake configuration
 command depending on how a Fortran compiler translates
@@ -133,19 +133,19 @@ C names:
 	Not adding a charcacter: -DF77SYMBOL=symbol
 
 The PnMPI distribution contains demo codes for C and
-for Fortran that allow you to test the correct 
+for Fortran that allow you to test the correct
 linkage.
 
 
 A4) Configuring for cross-compiled environments
 -----------------------------------------------
 When configuring PnMPI in cross-compiled environments (such
-as Blue Gene/P systems), it is necessary to provide a 
+as Blue Gene/P systems), it is necessary to provide a
 matching tool chain file. Example files that allow the
 compilation on certain LC machines can be found in the
 cmakemodules directory. For example, to configure PnMPI
 for a BG/P machine with settings matching LC's machines
-and using the GNU compliler suite, add the following to 
+and using the GNU compliler suite, add the following to
 the cmake configuration command:
 
 -D CMAKE_TOOLCHAIN_FILE=../cmakemodules/BlueGeneP-gnu.cmake
@@ -185,7 +185,7 @@ directory in your PnMPI installation directory.  This enables the
 runtime to find its modules.
 
 Additionally, if you wish to build external modules, you should
-set the PNMPI_DIR environment variable to the full path to your
+set the PnMPI_DIR environment variable to the full path to your
 PnMPI installation (that is, your CMAKE_INSTALL_PREFIX) so that
 external module builds can find PnMPI configuration files.  See
 Section (C) for more information on building custom modules.
@@ -211,7 +211,7 @@ rpath of the PnMPI library.
 
 A8) Adding ADEPT Timing Option
 ------------------------------
-PnMPI can optionally profile itself and record internal timing 
+PnMPI can optionally profile itself and record internal timing
 information. This includes measurements on how frequently
 particular wrappers have been invoked and how long they took.
 
@@ -235,7 +235,7 @@ you can just use adept_utils via the dotkit:
 Once PnMPI is compiled with adept_utils, the additional timing
 statistics can be enabled dynamically (see Section E).
 
- 
+
 B) Modules
 ==========
 
@@ -250,7 +250,7 @@ module in PnMPI the user has to perform two steps:
  2. Patch the tool using the 'pnmpi-patch' utility, which is incldued
     with the PnMPI distribution.
 
-Usage: 
+Usage:
   pnmpi-patch <original tool (in)> <patched tool (out)>
 e.g.:
   pnmpi-patch my-module.so my-pnmpi-module.so
@@ -294,20 +294,20 @@ requests: This PnMPI specific module offers a service to track
 datatype: This PnMPI specific module tracks all datatype
           creations and provides an iterator to walk any datatype.
 
-comm:     This PnMPI specific module abstracts all communication in 
-          a few simple callback routines. It can be used to write 
+comm:     This PnMPI specific module abstracts all communication in
+          a few simple callback routines. It can be used to write
           quick prototype tools that intercept all communication
           operations independent of the originating MPI call.
-          This infrastructure can be used by creating submodules: two 
-          such submodules are included: an empty one that can be used 
+          This infrastructure can be used by creating submodules: two
+          such submodules are included: an empty one that can be used
           as a template and one that prints every message.
-          Note: this module relies on the status, requests, and 
+          Note: this module relies on the status, requests, and
           datatype modules. A more detailed description on how to
           implemented submodules is included in the comm directory
           as a separate README.
 
 Note: All modules should be compiled with mpicc or equivalent
-(which includes the MPI header files) and should be linked 
+(which includes the MPI header files) and should be linked
 without linking to the MPI library (to avoid MPI routines
 being linked to multiple times).
 
@@ -393,8 +393,8 @@ you have your environment set up correctly.
 
 D) Debug Options
 ================
-The debug build of PnMPI includes debug print options, that can 
-be dynamically enabled. To control it, the environment variable 
+The debug build of PnMPI includes debug print options, that can
+be dynamically enabled. To control it, the environment variable
 DBGLEVEL can be set to any combination of the following flags:
 
 0x01 - Trace all entry and exit points for PnMPI
@@ -405,7 +405,7 @@ DBGLEVEL can be set to any combination of the following flags:
 0x20 - Collect and print statistics about module timings
 (only available if compiled with adept_utils - see Section C4)
 
-Additionally, the printouts can be restricted to a single 
+Additionally, the printouts can be restricted to a single
 node (except for the 0x10 and 0x20, which always only print
 on node 0) by setting the variable DBGNODE to an MPI rank.
 
@@ -414,7 +414,7 @@ E) Configuration and Demo codes
 ===============================
 
 The PnMPI distribution includes two demo codes (in C and F77).
-They can be used to experiment with the basic PnMPI functionalities 
+They can be used to experiment with the basic PnMPI functionalities
 and to test the system setup. The following describes the
 C version (the F77 version works similarly):
 
@@ -428,8 +428,8 @@ C version (the F77 version works similarly):
 - executing simple will run as usual
   The program output (for 2 nodes) will be:
 GOT 1
-- by relinking the code, one can use any of the 
-  original (unpatched) modules with this codes. 
+- by relinking the code, one can use any of the
+  original (unpatched) modules with this codes.
   The unpatched modules are in modules/sample
   Examples: simplest-s1 linked with sample1
 
@@ -454,7 +454,7 @@ module sample4
   in the specified order. PnMPI will look for the corresponding
   modules ( .so shared library files) in $PNMPI_LIB_PATH.
 
-- Running simple-pn will load all four modules in the specified 
+- Running simple-pn will load all four modules in the specified
   order and intercept all MPI calls included in these modules:
     - sample1: send and receive
     - sample2: send
@@ -502,7 +502,7 @@ WRAPPER 4: After recv
 WRAPPER 3: After recv
 WRAPPER 1: After recv
 
-When running on a BG/P systems, it is necessary to explicitly export 
+When running on a BG/P systems, it is necessary to explicitly export
 some environment variables. Here is an example:
 
 mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH -cwd $PWD simple-pn
@@ -538,8 +538,8 @@ following arguments:
 	        PnMPI (level must be PNMPI_PCONTROL_LEVEL)
 	mixed   same as pnmpi, if level==PNMPI_PCONTROL_LEVEL
                 same as pmpi,  if level!=PNMPI_PCONTROL_LEVEL
-	typed  	<tlevel> <type> 
-		forward the first argument in any case, the 
+	typed  	<tlevel> <type>
+		forward the first argument in any case, the
  		second only if the level matches <tlevel>. In
 		this case, assume that the second argument is
 		of type <type>
@@ -547,7 +547,7 @@ following arguments:
 The PnMPI internal format for Pcontrol arguments is as follows:
 
 	int level (same semantics as for MPI_Pcontrol itself)
-	int type = PNMPI_PCONTROL_SINGLE or PNMPI_PCONTROL_MULTIPLE 
+	int type = PNMPI_PCONTROL_SINGLE or PNMPI_PCONTROL_MULTIPLE
                    (target one or more modules) |
                    PNMPI_PCONTROL_VARG or PNMPI_PCONTROL_PTR
                    (arguments as vargs or one pointer)
@@ -559,7 +559,7 @@ The PnMPI internal format for Pcontrol arguments is as follows:
 
 Known issues:
 
-Forwarding the variable argument list as done in pmpi and mixed is only 
+Forwarding the variable argument list as done in pmpi and mixed is only
 implemented in a highly experimental version and disabled by default.
 To enable, compile PnMPI with the flag EXPERIMENTAL_UNWIND and link
 PnMPI with the libunwind library. Note that this is not extensively
