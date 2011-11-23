@@ -760,6 +760,7 @@ int MPI_Pcontrol(int level, ... )
 	{
 		for (i=0; i<pnmpi_max_level; i++)
 		{
+      pnmpi_level=i; 
 			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
 				(modules.module[i]->pcontrol))
 			{
@@ -822,6 +823,7 @@ int MPI_Pcontrol(int level, ... )
 		
 		for (i=0; i<pnmpi_max_level; i++)
 		{
+      pnmpi_level=i;
 			if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i]!=NULL) &&
 				(modules.module[i]->pcontrol))
 			{
