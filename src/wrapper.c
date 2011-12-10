@@ -758,6 +758,7 @@ int MPI_Pcontrol(int level, ... )
 	if ((modules.pcontrol == PNMPI_PCONTROL_INT) ||
 		((modules.pcontrol == PNMPI_PCONTROL_TYPED) && (modules.pcontrol_typed_level != level)))
 	{
+    int curr_pnmpi_level=pnmpi_level;
 		for (i=0; i<pnmpi_max_level; i++)
 		{
       pnmpi_level=i; 
@@ -785,6 +786,7 @@ int MPI_Pcontrol(int level, ... )
 				if (ret!=MPI_SUCCESS) return ret;
 			}
 		}
+    pnmpi_level=curr_pnmpi_level;
 #ifdef DBGLEVEL6
 		if (DBGCHECK(DBGLEVEL6))
 			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
@@ -821,6 +823,7 @@ int MPI_Pcontrol(int level, ... )
 		}
 		va_end(va_alist);
 		
+    int curr_pnmpi_level=pnmpi_level;
 		for (i=0; i<pnmpi_max_level; i++)
 		{
       pnmpi_level=i;
@@ -863,6 +866,7 @@ int MPI_Pcontrol(int level, ... )
 				if (ret!=MPI_SUCCESS) return ret;
 			}
 		}
+    pnmpi_level=curr_pnmpi_level;
 #ifdef DBGLEVEL6
 		if (DBGCHECK(DBGLEVEL6))
 			pnmpi_totalstats_timing.MPI_Pcontrol=get_time_ns()-start_timer2;
