@@ -991,7 +991,8 @@ copy_unknown_element:
 	  l->obfd = output_bfd;
 
 	  *ptr = output_bfd;
-	  ptr = &output_bfd->next;
+	  // ptr = &output_bfd->next;
+	  ptr = &output_bfd->link_next;	// new bfd?
 
 	  last_element = this_element;
 
