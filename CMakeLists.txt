@@ -56,7 +56,7 @@ find_package(AWK REQUIRED)
 #     currently hardcoded, should be put into find modules:
 #     * detect gawk, tcsh, sort, uniq, sed
 #     * dl open lib detection
-find_package(PythonInterp)
+find_package(PythonInterp 2.6 REQUIRED)
 if (NOT PYTHONINTERP_FOUND)
   message(FATAL_ERROR "PnMPI requires a Python interpreter to build.")
 endif()
