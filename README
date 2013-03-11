@@ -148,8 +148,11 @@ for a BG/P machine with settings matching LC's machines
 and using the GNU compliler suite, add the following to
 the cmake configuration command:
 
--D CMAKE_TOOLCHAIN_FILE=../cmakemodules/BlueGeneP-gnu.cmake
+-D CMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneP-gnu.cmake
 
+or likewise, for BG/Q:
+
+-D CMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneQ-gnu.cmake
 
 A5) Installed structure
 -----------------------
