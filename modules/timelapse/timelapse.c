@@ -1,41 +1,41 @@
 /*
 Copyright (c) 2008
-Lawrence Livermore National Security, LLC. 
+Lawrence Livermore National Security, LLC.
 
-Produced at the Lawrence Livermore National Laboratory. 
+Produced at the Lawrence Livermore National Laboratory.
 Written by Martin Schulz, schulzm@llnl.gov.
 LLNL-CODE-402774,
 All rights reserved.
 
-This file is part of P^nMPI. 
+This file is part of P^nMPI.
 
-Please also read the file "LICENSE" included in this package for 
+Please also read the file "LICENSE" included in this package for
 Our Notice and GNU Lesser General Public License.
 
-This program is free software; you can redistribute it and/or 
-modify it under the terms of the GNU General Public License 
-(as published by the Free Software Foundation) version 2.1 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+(as published by the Free Software Foundation) version 2.1
 dated February 1999.
 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY 
-OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-terms and conditions of the GNU General Public License for more 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY
+OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+terms and conditions of the GNU General Public License for more
 details.
 
-You should have received a copy of the GNU Lesser General Public 
-License along with this program; if not, write to the 
+You should have received a copy of the GNU Lesser General Public
+License along with this program; if not, write to the
 
-Free Software Foundation, Inc., 
-59 Temple Place, Suite 330, 
+Free Software Foundation, Inc.,
+59 Temple Place, Suite 330,
 Boston, MA 02111-1307 USA
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "timelapse.h"
 #include <mpi.h>
 #include <pnmpimod.h>
-#include "timelapse.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 
 
@@ -45,9 +45,9 @@ Boston, MA 02111-1307 USA
 /*........................................................................*/
 /* Variables */
 
-double _timelapse_correct=0.0;
+double _timelapse_correct = 0.0;
 double _timelapse_off;
-int    _timelapse_status=0;
+int _timelapse_status = 0;
 
 
 /*--------------------------------------------------------------------------*/
@@ -64,18 +64,18 @@ int PNMPI_RegistrationPoint()
 
   /* register this module and its services */
 
-  err=PNMPI_Service_RegisterModule(PNMPI_MODULE_TIMELAPSE);
-  if (err!=PNMPI_SUCCESS)
+  err = PNMPI_Service_RegisterModule(PNMPI_MODULE_TIMELAPSE);
+  if (err != PNMPI_SUCCESS)
     return MPI_ERROR_PNMPI;
 
-  sprintf(service.name,"timelapse");
-  service.fct=(PNMPI_Service_Fct_t) PNMPIMOD_Timelapse_Switch;
-  sprintf(service.sig,"i");
-  err=PNMPI_Service_RegisterService(&service);
-  if (err!=PNMPI_SUCCESS)
+  sprintf(service.name, "timelapse");
+  service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Timelapse_Switch;
+  sprintf(service.sig, "i");
+  err = PNMPI_Service_RegisterService(&service);
+  if (err != PNMPI_SUCCESS)
     return MPI_ERROR_PNMPI;
 
-  _timelapse_off=PMPI_Wtime();
+  _timelapse_off = PMPI_Wtime();
 
   return err;
 }
@@ -88,7 +88,7 @@ int MPI_Init(int *argc, char ***argv)
 {
   int err;
 
-  err=PMPI_Init(argc,argv);
+  err = PMPI_Init(argc, argv);
 
   /* initial state is off */
 
@@ -104,21 +104,21 @@ int MPI_Init(int *argc, char ***argv)
 
 int PNMPIMOD_Timelapse_Switch(int onoff)
 {
-  if (onoff!=_timelapse_status)
+  if (onoff != _timelapse_status)
     {
       if (onoff)
-	{
-	  double diff;
-	  /* turned on now */
-	  diff=PMPI_Wtime_NewStack(PNMPI_MAX_MOD)-_timelapse_off;
-	  _timelapse_correct += diff;
-	}
+        {
+          double diff;
+          /* turned on now */
+          diff = PMPI_Wtime_NewStack(PNMPI_MAX_MOD) - _timelapse_off;
+          _timelapse_correct += diff;
+        }
       else
-	{
-	  /* turned off now */
-	  _timelapse_off = PMPI_Wtime();
-	}
-      _timelapse_status=onoff;
+        {
+          /* turned off now */
+          _timelapse_off = PMPI_Wtime();
+        }
+      _timelapse_status = onoff;
     }
 
   return PNMPI_SUCCESS;
@@ -131,10 +131,7 @@ int PNMPIMOD_Timelapse_Switch(int onoff)
 double MPI_Wtime()
 {
   if (_timelapse_status)
-    return PMPI_Wtime()-_timelapse_correct;
+    return PMPI_Wtime() - _timelapse_correct;
   else
     return _timelapse_off;
 }
-
-
-

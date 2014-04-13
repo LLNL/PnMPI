@@ -1,4 +1,4 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
@@ -8,7 +8,7 @@ Generic Communication Module
 Martin Schulz, 2005-2008, LLNL
 schulzm@llnl.gov
 
-(please see README in the main directory for general 
+(please see README in the main directory for general
 information on P^nMPI)
 
 The communication module abstracts any MPI communication in a small
@@ -97,19 +97,19 @@ During the init routine (and only there!), the user can set the variable
 "pnmpimod_comm_collective_support" to control how the module treats
 collectives. The matching constants are defined in commsub.h and can
 be combined using OR:
-- PNMPIMOD_COMM_KEEPCOLLECTIVE     
+- PNMPIMOD_COMM_KEEPCOLLECTIVE
 	execute the collective callbacks
-- PNMPIMOD_COMM_DISSOLVECOLLECTIVE 
+- PNMPIMOD_COMM_DISSOLVECOLLECTIVE
 	translate collective into matching P2P calls and invoke
 	the matching P2P callbacks (no P2P communication is
         executed, just the callbacks are called)
-- PNMPIMOD_COMM_REPLACECOLLECTIVE 
+- PNMPIMOD_COMM_REPLACECOLLECTIVE
 	do not call the actual collective calls
-	WARNING: this should only be used together with	
+	WARNING: this should only be used together with
 	PNMPIMOD_COMM_DISSOLVECOLLECTIVE and the actual
 	collective functionality must be emulated by the
 	P2P callbacks (in the user code)
-- PNMPIMOD_COMM_IGNOREDATA         
+- PNMPIMOD_COMM_IGNOREDATA
 	when translating collectives into P2P calls, avoid
 	a (potentially costly) translation of the buffer
 	start addresses (should only be used if the P2P

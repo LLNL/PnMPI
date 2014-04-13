@@ -1,10 +1,10 @@
 # -*- cmake -*-
 
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
-# TODO Martin please add the copyright statment of your choice, as well as 
+# TODO Martin please add the copyright statment of your choice, as well as
 #      a reference to the license or license file!
 #
 # This files is partially from the MUST project and bears the follwing copyright.
@@ -24,11 +24,11 @@ if (NOT Wrap_CONFIG_LOADED)
   set(Wrap_EXECUTABLE @WRAP@)
 
   # add_wrapped_file(file_name wrapper_name [flags])
-  # 	
+  #
   # This macro adds a command to generate <file_name> from <wrapper_name> to the
   # build.  Properties on <file_name> are also set so that CMake knows that it
   # is generated.
-  # 
+  #
   # Optionally, flags may be supplied to pass to the wrapper generator.
   #
   function(add_wrapped_file file_name wrapper_name)
@@ -87,7 +87,7 @@ if (NOT Wrap_CONFIG_LOADED)
     # Add a command to automatically wrap files.
     add_custom_command(
       OUTPUT  ${file_path}
-      COMMAND ${command} 
+      COMMAND ${command}
       ARGS    ${script_arg} ${wrap_compiler} ${wrap_includes} ${wrap_flags} ${wrapper_path} -o ${file_path}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       DEPENDS ${wrapper_path}

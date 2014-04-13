@@ -1,33 +1,33 @@
 /*
 Copyright (c) 2008
-Lawrence Livermore National Security, LLC. 
+Lawrence Livermore National Security, LLC.
 
-Produced at the Lawrence Livermore National Laboratory. 
+Produced at the Lawrence Livermore National Laboratory.
 Written by Martin Schulz, schulzm@llnl.gov.
 LLNL-CODE-402774,
 All rights reserved.
 
-This file is part of P^nMPI. 
+This file is part of P^nMPI.
 
-Please also read the file "LICENSE" included in this package for 
+Please also read the file "LICENSE" included in this package for
 Our Notice and GNU Lesser General Public License.
 
-This program is free software; you can redistribute it and/or 
-modify it under the terms of the GNU General Public License 
-(as published by the Free Software Foundation) version 2.1 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+(as published by the Free Software Foundation) version 2.1
 dated February 1999.
 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY 
-OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-terms and conditions of the GNU General Public License for more 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY
+OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+terms and conditions of the GNU General Public License for more
 details.
 
-You should have received a copy of the GNU Lesser General Public 
-License along with this program; if not, write to the 
+You should have received a copy of the GNU Lesser General Public
+License along with this program; if not, write to the
 
-Free Software Foundation, Inc., 
-59 Temple Place, Suite 330, 
+Free Software Foundation, Inc.,
+59 Temple Place, Suite 330,
 Boston, MA 02111-1307 USA
 */
 
@@ -41,29 +41,29 @@ Boston, MA 02111-1307 USA
 #ifndef _PNMPIMOD_HEADER
 #define _PNMPIMOD_HEADER
 
-#include <mpi.h>
 #include "pnmpi.h"
+#include <mpi.h>
 
 
 /*===============================================================*/
 /* Error codes */
 
-#define PNMPI_SUCCESS    0
-#define PNMPI_NOT_INIT  -1
-#define PNMPI_NOMEM     -2
-#define PNMPI_NOMODULE  -3
+#define PNMPI_SUCCESS 0
+#define PNMPI_NOT_INIT -1
+#define PNMPI_NOMEM -2
+#define PNMPI_NOMODULE -3
 #define PNMPI_NOSERVICE -4
-#define PNMPI_NOGLOBAL  -5
+#define PNMPI_NOGLOBAL -5
 #define PNMPI_SIGNATURE -6
-#define PNMPI_NOARG     -7
+#define PNMPI_NOARG -7
 
-#define MPI_ERROR_MEM   MPI_ERR_INTERN
+#define MPI_ERROR_MEM MPI_ERR_INTERN
 #define MPI_ERROR_PNMPI MPI_ERR_INTERN
 
 
 /*===============================================================*/
 /* Services available for cross module communication */
-     
+
 /*------------------------------------------------------------*/
 /* Register modules and services */
 
@@ -133,15 +133,16 @@ int PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 
 int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle);
 
-int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, 
-				   const char *name, const char *sig,
-				   PNMPI_Service_descriptor_t *serv);
+int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
+                                   const char *sig,
+                                   PNMPI_Service_descriptor_t *serv);
 
-int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, 
-				  const char *name, const char sig,
-				  PNMPI_Global_descriptor_t *serv);
+int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, const char *name,
+                                  const char sig,
+                                  PNMPI_Global_descriptor_t *serv);
 
-int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name, const char **val);
+int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
+                              const char **val);
 
 
 /*===============================================================*/
@@ -164,7 +165,7 @@ int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name, const 
    OUT: -
 */
 
-void PNMPI_Service_log(char *format,...);
+void PNMPI_Service_log(char *format, ...);
 
 
 /*===============================================================*/
@@ -184,14 +185,14 @@ void PNMPI_Service_log(char *format,...);
         >0 : module found and lower in the stack (accessible)
    OUT:  0 : successful, location info valid
         -1 : module not found
-*/ 
+*/
 
 
 int PNMPI_Service_QueryModule(char *name, int *locinfo);
 
 
 /*------------------------------------------------------------*/
-/* Load functionality */ 
+/* Load functionality */
 
 
 /*===============================================================*/

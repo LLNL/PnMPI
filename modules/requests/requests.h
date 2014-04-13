@@ -22,12 +22,12 @@
 /*..........................................................*/
 /* Type constants */
 
-#define PNMPIMOD_REQUESTS_SEND  0x01
+#define PNMPIMOD_REQUESTS_SEND 0x01
 #define PNMPIMOD_REQUESTS_BSEND 0x03
 #define PNMPIMOD_REQUESTS_RSEND 0x05
 #define PNMPIMOD_REQUESTS_SSEND 0x07
-#define PNMPIMOD_REQUESTS_RECV  0x00
-#define PNMPIMOD_REQUESTS_NULL  0xFF
+#define PNMPIMOD_REQUESTS_RECV 0x00
+#define PNMPIMOD_REQUESTS_NULL 0xFF
 
 
 /*..........................................................*/
@@ -56,22 +56,29 @@ typedef long MyReq_t;
 /*..........................................................*/
 /* Access macros */
 
-#define REQ_STORAGE(request,fct,offset,type,val) \
-{\
-  PNMPIMOD_Requests_Parameters_t* _store;\
-  _store=fct(request);\
-  (*((type*) (&(_store->data[offset]))))=val;\
-}
+#define REQ_STORAGE(request, fct, offset, type, val) \
+  {                                                  \
+    PNMPIMOD_Requests_Parameters_t *_store;          \
+    _store = fct(request);                           \
+    (*((type *)(&(_store->data[offset])))) = val;    \
+  }
 
-#define REQ_ENVELOPE(request,fct,_env) \
-{\
-  _env=fct(request);\
-}
+#define REQ_ENVELOPE(request, fct, _env) \
+  {                                      \
+    _env = fct(request);                 \
+  }
 
-#define REQ_FROM_STATUS(status,offset) REQ_FROM_STATUSARRAY(status,offset,0,1,0)
-#define INFO_FROM_STATUS(status,offset,type) INFO_FROM_STATUSARRAY(status,offset,0,type,1,0)
-#define REQ_FROM_STATUSARRAY(status,offset,totext,count,num) STATUS_STORAGE_ARRAY(status,offset,totext,PNMPIMOD_Requests_Parameters_t,count,num)
-#define INFO_FROM_STATUSARRAY(status,offset,totext,type,count,num) STATUS_STORAGE_ARRAY(status,offset+sizeof(PNMPIMOD_Requests_Parameters_t),totext,type,count,num)
+#define REQ_FROM_STATUS(status, offset) \
+  REQ_FROM_STATUSARRAY(status, offset, 0, 1, 0)
+#define INFO_FROM_STATUS(status, offset, type) \
+  INFO_FROM_STATUSARRAY(status, offset, 0, type, 1, 0)
+#define REQ_FROM_STATUSARRAY(status, offset, totext, count, num)               \
+  STATUS_STORAGE_ARRAY(status, offset, totext, PNMPIMOD_Requests_Parameters_t, \
+                       count, num)
+#define INFO_FROM_STATUSARRAY(status, offset, totext, type, count, num) \
+  STATUS_STORAGE_ARRAY(status,                                          \
+                       offset + sizeof(PNMPIMOD_Requests_Parameters_t), \
+                       totext, type, count, num)
 
 
 /*..........................................................*/
@@ -82,14 +89,15 @@ typedef long MyReq_t;
    IN:  size = number of bytes requested
                (if 0, just storage of standard parameters
    OUT: >=0: offset of new storage relative to request pointer
-         <0: error message 
+         <0: error message
 */
 
 typedef int (*PNMPIMOD_Requests_RequestStorage_t)(int);
 int PNMPIMOD_Requests_RequestStorage(int size);
 
-typedef PNMPIMOD_Requests_Parameters_t* (*PNMPIMOD_Requests_MapRequest_t)(MPI_Request);
-PNMPIMOD_Requests_Parameters_t* PNMPIMOD_Requests_MapRequest(MPI_Request req);
+typedef PNMPIMOD_Requests_Parameters_t *(*PNMPIMOD_Requests_MapRequest_t)(
+  MPI_Request);
+PNMPIMOD_Requests_Parameters_t *PNMPIMOD_Requests_MapRequest(MPI_Request req);
 
 
 #endif /* _PNMPI_MOD_REQUESTS */
