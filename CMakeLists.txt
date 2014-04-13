@@ -1,8 +1,8 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC. 
+# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
 # Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
 # All rights reserved - please read information in "LICENCSE"
 
-# TODO Martin please add the copyright statment of your choice, as well as 
+# TODO Martin please add the copyright statment of your choice, as well as
 #      a reference to the license or license file!
 #
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
@@ -18,8 +18,8 @@ endif()
 enable_language(Fortran OPTIONAL)
 
 #======================================================================
-# RPATH setup.  Default is to rpath everything.  Set the option to 
-# false if you don't want this behavior.  
+# RPATH setup.  Default is to rpath everything.  Set the option to
+# false if you don't want this behavior.
 #======================================================================
 option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." TRUE)
 
@@ -68,21 +68,21 @@ set(MPI_CXX_SKIP_FLAGS
 
 # Fortran name mangling option, customizable at cmd line
 # TODO: detect fortran name mangling, e.g.: F77SYMBOL = symbol_
-option(F77SYMBOL "Name demangling scheme." symbol_) 
+option(F77SYMBOL "Name demangling scheme." symbol_)
 
 # BFD is used by the patch utility.
 find_package(BFD)
 
-#===================================	
-# Ennable PnMPI internal debugging 
-#===================================	
+#===================================
+# Ennable PnMPI internal debugging
+#===================================
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   add_definitions(-DDBGLEVEL=0)
 endif()
 
-#===================================	
+#===================================
 #Check for adept_utils timers
-#===================================	
+#===================================
 find_package(adept_utils QUIET)
 if(adept_utils_FOUND)
   message(STATUS "Found adept_utils in ${adept_utils_DIR}.")
@@ -124,7 +124,7 @@ install(DIRECTORY ${INCLUDE_OUTPUT_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX})
 # Install configuration file so that other projects can use PnMPI
 configure_file(${PROJECT_SOURCE_DIR}/PnMPIConfig.cmake.in ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-vars.cmake.in  ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake  @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake 
+install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
               ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake
               ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPIModules.cmake
               DESTINATION share/cmake/PnMPI)

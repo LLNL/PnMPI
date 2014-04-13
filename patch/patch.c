@@ -1,33 +1,33 @@
 /*
 Copyright (c) 2008
-Lawrence Livermore National Security, LLC. 
+Lawrence Livermore National Security, LLC.
 
-Produced at the Lawrence Livermore National Laboratory. 
+Produced at the Lawrence Livermore National Laboratory.
 Written by Martin Schulz, schulzm@llnl.gov.
 LLNL-CODE-402774,
 All rights reserved.
 
-This file is part of P^nMPI. 
+This file is part of P^nMPI.
 
-Please also read the file "LICENSE" included in this package for 
+Please also read the file "LICENSE" included in this package for
 Our Notice and GNU Lesser General Public License.
 
-This program is free software; you can redistribute it and/or 
-modify it under the terms of the GNU General Public License 
-(as published by the Free Software Foundation) version 2.1 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+(as published by the Free Software Foundation) version 2.1
 dated February 1999.
 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY 
-OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-terms and conditions of the GNU General Public License for more 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY
+OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+terms and conditions of the GNU General Public License for more
 details.
 
-You should have received a copy of the GNU Lesser General Public 
-License along with this program; if not, write to the 
+You should have received a copy of the GNU Lesser General Public
+License along with this program; if not, write to the
 
-Free Software Foundation, Inc., 
-59 Temple Place, Suite 330, 
+Free Software Foundation, Inc.,
+59 Temple Place, Suite 330,
 Boston, MA 02111-1307 USA
 */
 
@@ -55,6 +55,7 @@ Boston, MA 02111-1307 USA
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -86,8 +87,8 @@ int verbose = 0;
 int copyonly = 0;
 int status = 0;
 
-int num_generic_symbols = 0;
-int num_dynamic_symbols = 0;
+size_t num_generic_symbols = 0;
+size_t num_dynamic_symbols = 0;
 
 /*=======================================================================*/
 /*=======================================================================*/
@@ -136,11 +137,11 @@ void hook_dynstab(char *mem, bfd_size_type size)
   c0=' ';
   c1=' ';
   c2=' ';
-  
-  if (verbose) 
-    { 
+
+  if (verbose)
+    {
       printf("BEFORE:\n");
-      for(i=0;i<size;i++) 
+      for(i=0;i<size;i++)
 	{
 	  if (((int) mem[i])>=32)
 	    {
@@ -154,7 +155,7 @@ void hook_dynstab(char *mem, bfd_size_type size)
       printf("\n\n");
     }
 
-  for(i=0;i<size;i++) 
+  for(i=0;i<size;i++)
     {
       c3=mem[i];
       if (!copyonly)
@@ -169,11 +170,11 @@ void hook_dynstab(char *mem, bfd_size_type size)
       c1=c2;
       c2=c3;
     }
-  
+
   if (verbose)
     {
       printf("BEFORE:\n");
-      for(i=0;i<size;i++) 
+      for(i=0;i<size;i++)
 	{
 	  if (((int) mem[i])>=32)
 	    {
@@ -265,7 +266,7 @@ const char *bfd_get_archive_filename (bfd *abfd)
   size_t needed;
 
   assert (abfd != NULL);
-  
+
   if (!abfd->my_archive)
     return bfd_get_filename (abfd);
 
@@ -339,7 +340,7 @@ char *make_tempname (char *filename)
 
 
 
-int get_file_size (const char * file_name)
+off_t get_file_size (const char * file_name)
 {
   struct stat statbuf;
 
@@ -586,7 +587,7 @@ copy_section (bfd *ibfd, sec_ptr isection, void *obfdarg)
       if (verbose)
 	printf("Copying Section: %s\n",osection->name);
 
-      if (!strcmp(osection->name, DYNSTAB)) 
+      if (!strcmp(osection->name, DYNSTAB))
 	hook_dynstab(memhunk,size);
 
       /* PNMPI PATCHING FOR DYNAMIC SYMBOLS ENDS HERE */
@@ -807,10 +808,10 @@ bfd_boolean copy_object (bfd *ibfd, bfd *obfd)
 
   /*-----------------------------------------------*/
   /* PNMPI PATCHING FOR STATIC SYMBOLS STARTS HERE */
-  
+
   if (verbose)
     printf("Patching static symbol table");
-  
+
   for(i=0;i<symcount;i++)
     {
       if (strncmp(osympp[i]->name,"MPI_",4)==0)
@@ -823,7 +824,7 @@ bfd_boolean copy_object (bfd *ibfd, bfd *obfd)
 	  *p=prefix1;
 	  p=(char*) &(osympp[i]->name[2]);
 	  *p=prefix2;
-	}       
+	}
 
       if (strncmp(osympp[i]->name,"PMPI_",5)==0)
 	{
@@ -837,9 +838,9 @@ bfd_boolean copy_object (bfd *ibfd, bfd *obfd)
 	  *p=prefix1;
 	  p=(char*) &(osympp[i]->name[3]);
 	  *p=prefix2;
-	}       
+	}
     }
-  
+
   /* PNMPI PATCHING FOR STATIC SYMBOLS ENDS HERE */
   /*---------------------------------------------*/
 
@@ -854,7 +855,7 @@ bfd_boolean copy_object (bfd *ibfd, bfd *obfd)
      from the input BFD to the output BFD.  This is done last to
      permit the routine to look at the filtered symbol table, which is
      important for the ECOFF code at least.  */
-  
+
   if (! bfd_copy_private_bfd_data (ibfd, obfd))
     {
       non_fatal ("%s: error copying private BFD data: %s",
@@ -1033,7 +1034,7 @@ void copy_file (const char *input_filename, const char *output_filename,
   char **obj_matching;
   char **core_matching;
 
-  if (get_file_size (input_filename) < 1)
+  if (get_file_size(input_filename) < 1)
     {
       non_fatal ("error: the input file '%s' is empty", input_filename);
       status = 1;
@@ -1114,7 +1115,7 @@ void copy_file (const char *input_filename, const char *output_filename,
 	}
 
       status = 1;
-      
+
       FATAL_ERROR("Can only work on libraries or objects");
     }
 }
@@ -1244,7 +1245,7 @@ int main (int argc, char *argv[])
   argvindex=argc-efargc;
 
   if ((efargc!=3) && (efargc!=4))
-  {    
+  {
     printf("Usage: patch [-v] [-c] <in-tool> <out-tool> [<prefix>]\n");
     exit(1);
   }
@@ -1268,7 +1269,7 @@ int main (int argc, char *argv[])
       prefix0='M';
       prefix1='P';
       prefix2='I';
-    }      
+    }
 
   copy_file (input_filename, output_filename, NULL, NULL);
 
