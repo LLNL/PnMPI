@@ -150,6 +150,17 @@ extern int _print_node;
 
 #else /* i.e. COMP!=GNU */
 
+void dbg_statusprint1(char *format, ...);
+void dbg_statusprintn(char *format, ...);
+void dbg_warning(char *format, ...);
+void dbg_assert(int cnd, char *format, ...);
+void dbg_debugprint1(char *format, ...);
+void dbg_debugprint2(char *format, ...);
+void dbg_debugprint3(char *format, ...);
+void dbg_debugprint4(char *format, ...);
+void dbg_debugprint5(char *format, ...);
+void dbg_debugprint6(char *format, ...);
+
 #ifdef NOSTATUS
 #define STATUSPRINT1 dbg_statusprint1
 #define STATUSPRINTN dbg_statusprintn
@@ -208,6 +219,7 @@ extern int _dbg_cur_node;
       _dbg_cur_node = strtol(dbgnode, NULL, 0);   \
   }
 #else /* ifdef DBGLEVEL */
+#define DBGCHECK(level) (0)
 #define DBGLATEINIT()
 #define DBGEARLYINIT()
 #endif
