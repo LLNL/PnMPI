@@ -50,9 +50,12 @@ modules_t modules;
 
 static void *mydlopen(char *s, char *path, int f)
 {
-  void *ret;
+  // reset error message
+  void *ret = NULL;
   char *pathdup, *start, *end;
   module_name_t mod;
+
+  dlerror();
 
   pathdup = strdup(path);
   start = pathdup;
@@ -66,7 +69,17 @@ static void *mydlopen(char *s, char *path, int f)
         }
 
       sprintf(mod, "%s/%s", start, s);
-      ret = dlopen(mod, f);
+
+      if (access(mod, R_OK) != -1)
+        {
+          ret = dlopen(mod, f);
+          break;
+        }
+      else if (access(mod, F_OK) != -1)
+        {
+          WARNPRINT("Can't load module %s at %s, no reading permissions", s,
+                    mod);
+        }
 
       start = end;
     }
@@ -76,7 +89,7 @@ static void *mydlopen(char *s, char *path, int f)
     {
       DBGPRINT2("Loading module %s\n", mod);
     }
-
+  free(pathdup);
   return ret;
 }
 
@@ -220,6 +233,9 @@ void pnmpi_PreInit()
         {
           DBGPRINT2("Open file via local directory - %s", filename);
         }
+
+      if (confdir)
+        free(confdir);
     }
 
 
@@ -410,6 +426,9 @@ void pnmpi_PreInit()
                   modules.module[modules.num]->registered = 0;
                   modules.module[modules.num]->services = NULL;
                   modules.module[modules.num]->username[0] = (char)0;
+                  modules.module[modules.num]->args =
+                    NULL; /*For "stack" type modules we have to set it here,
+                             some debug print at the end uses the pointer*/
                   modules.num++;
                 }
             }
@@ -470,8 +489,18 @@ void pnmpi_PreInit()
                     mydlopen(modname, libdir, RTLD_LAZY);
                   if (modules.module[modules.num]->handle == NULL)
                     {
-                      WARNPRINT("Can't load module %s (Error %s)", modname,
-                                dlerror());
+                      const char *dlerr = dlerror();
+                      if (dlerr == NULL)
+                        {
+                          WARNPRINT("Can't load module %s (File not found in "
+                                    "PNMPI_LIB_PATH)",
+                                    modname);
+                        }
+                      else
+                        {
+                          WARNPRINT("Can't load module %s (Error %s)", modname,
+                                    dlerr);
+                        }
                     }
                   else
                     {
@@ -629,6 +658,11 @@ void pnmpi_PreInit()
         } /* while eof */
     }     /* if file open */
 
+  /*Free what we allocated*/
+  if (libdir != PNMPI_MODULES_DIR)
+    free(libdir);
+  if (conffile)
+    fclose(conffile);
 
   /*
    * Call the module registration point functions
