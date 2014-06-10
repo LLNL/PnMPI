@@ -35,7 +35,7 @@ Boston, MA 02111-1307 USA
 
 #include "core.h"
 
-{{forallfn fn_name MPI_Pcontrol MPI_Init MPI_Finalize}}
+{{forallfn fn_name MPI_Pcontrol MPI_Init MPI_Init_thread MPI_Finalize}}
 {{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}})
 {
   {{ret_type}} res;

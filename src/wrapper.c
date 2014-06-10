@@ -112,19 +112,19 @@ void pnmpi_int_print_countstats()
       pnmpi_functions_statscount_t *collect_max, *collect_min, *collect_sum;
 
 
-      err = MPI_Barrier(MPI_COMM_WORLD);
+      err = PMPI_Barrier(MPI_COMM_WORLD);
       if (err != MPI_SUCCESS)
         {
           DBGPRINT5("MPI Operation failed while writing statistics");
           return;
         }
-      err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+      err = PMPI_Comm_rank(MPI_COMM_WORLD, &rank);
       if (err != MPI_SUCCESS)
         {
           DBGPRINT5("MPI Operation failed while writing statistics");
           return;
         }
-      err = MPI_Comm_size(MPI_COMM_WORLD, &size);
+      err = PMPI_Comm_size(MPI_COMM_WORLD, &size);
       if (err != MPI_SUCCESS)
         {
           DBGPRINT5("MPI Operation failed while writing statistics");
@@ -163,22 +163,22 @@ void pnmpi_int_print_countstats()
 
       for (i = 0; i < modules.num; i++)
         {
-          err = MPI_Reduce(&(modules.module[i]->statscount), &(collect_min[i]),
-                           num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
+          err = PMPI_Reduce(&(modules.module[i]->statscount), &(collect_min[i]),
+                            num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
           if (err != MPI_SUCCESS)
             {
               DBGPRINT5("MPI Operation failed while writing statistics");
               return;
             }
-          err = MPI_Reduce(&(modules.module[i]->statscount), &(collect_max[i]),
-                           num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
+          err = PMPI_Reduce(&(modules.module[i]->statscount), &(collect_max[i]),
+                            num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
           if (err != MPI_SUCCESS)
             {
               DBGPRINT5("MPI Operation failed while writing statistics");
               return;
             }
-          err = MPI_Reduce(&(modules.module[i]->statscount), &(collect_sum[i]),
-                           num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+          err = PMPI_Reduce(&(modules.module[i]->statscount), &(collect_sum[i]),
+                            num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
           if (err != MPI_SUCCESS)
             {
               DBGPRINT5("MPI Operation failed while writing statistics");
@@ -186,22 +186,22 @@ void pnmpi_int_print_countstats()
             }
         }
 
-      err = MPI_Reduce(&(pnmpi_totalstats_count), &(collect_min[modules.num]),
-                       num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
+      err = PMPI_Reduce(&(pnmpi_totalstats_count), &(collect_min[modules.num]),
+                        num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
       if (err != MPI_SUCCESS)
         {
           DBGPRINT5("MPI Operation failed while writing statistics");
           return;
         }
-      err = MPI_Reduce(&(pnmpi_totalstats_count), &(collect_max[modules.num]),
-                       num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
+      err = PMPI_Reduce(&(pnmpi_totalstats_count), &(collect_max[modules.num]),
+                        num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
       if (err != MPI_SUCCESS)
         {
           DBGPRINT5("MPI Operation failed while writing statistics");
           return;
         }
-      err = MPI_Reduce(&(pnmpi_totalstats_count), &(collect_sum[modules.num]),
-                       num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+      err = PMPI_Reduce(&(pnmpi_totalstats_count), &(collect_sum[modules.num]),
+                        num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
       if (err != MPI_SUCCESS)
         {
           DBGPRINT5("MPI Operation failed while writing statistics");
@@ -257,7 +257,7 @@ void pnmpi_int_print_countstats()
           fclose(out);
         }
 
-      MPI_Barrier(MPI_COMM_WORLD);
+      PMPI_Barrier(MPI_COMM_WORLD);
     }
 }
 
@@ -587,6 +587,343 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   pnmpi_level = start_level;
   return res;
 }
+
+/*-------------------------------------------------------------------*/
+/* MPI_Init_thread */
+#ifdef HAVE_MPI_INIT_THREAD_C
+static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
+                                        int required, int *provided)
+{
+  int returnVal;
+  if (required > PNMPI_MAX_THREADED)
+    required = PNMPI_MAX_THREADED;
+
+  pnmpi_PreInit(); /* this will never fail */
+
+  if (NOT_ACTIVATED(MPI_Init_thread_ID))
+    {
+#ifdef COMPILE_FOR_FORTRAN
+#ifdef HAVE_MPI_INIT_THREAD_Fortran
+      if (init_was_fortran)
+        pmpi_init_thread_(&required, provided, &returnVal);
+      else
+#endif /*HAVE_MPI_INIT_THREAD_Fortran*/
+#endif
+        returnVal =
+          PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+    }
+  else
+    returnVal =
+      Internal_XMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+
+  if (returnVal != MPI_SUCCESS)
+    return returnVal;
+
+  PRINTINIT();
+  DBGLATEINIT();
+  STATUSINIT();
+  DBGPRINT1("Leaving Init");
+
+  if (getenv("PNMPI_BE_SILENT") == NULL)
+    {
+      STATUSPRINT1("");
+      STATUSPRINT1("\t\t  ---------------------------");
+      STATUSPRINT1("\t\t | P^N-MPI Interface         |");
+      STATUSPRINT1("\t\t | Martin Schulz, 2005, LLNL |");
+      STATUSPRINT1("\t\t  ---------------------------");
+      STATUSPRINT1("");
+
+      {
+        int i;
+        module_servlist_p serv;
+        module_globlist_p glob;
+        module_arg_t *args;
+
+        STATUSPRINT1("Number of modules: %i", modules.num);
+        STATUSPRINT1("Pcontrol Setting:  %i", modules.pcontrol);
+        STATUSPRINT1("");
+        for (i = 0; i < modules.num; i++)
+          {
+            if (modules.module[i]->registered)
+              {
+                STATUSPRINT1("Module %s: registered as %s (Pctrl %i)",
+                             modules.module[i]->name,
+                             modules.module[i]->username,
+                             modules.module[i]->pcontrol);
+              }
+            else
+              {
+                if (modules.module[i]->stack_delimiter)
+                  {
+                    STATUSPRINT1("Stack %s: not registered",
+                                 modules.module[i]->name);
+                  }
+                else
+                  {
+                    STATUSPRINT1("Module %s: not registered (Pctrl %i)",
+                                 modules.module[i]->name,
+                                 modules.module[i]->pcontrol);
+                  }
+              }
+
+            for (args = modules.module[i]->args; args != NULL;
+                 args = args->next)
+              {
+                STATUSPRINT1("\tArgument: %s = %s", args->name, args->value);
+              }
+
+            for (serv = modules.module[i]->services; serv != NULL;
+                 serv = serv->next)
+              {
+                STATUSPRINT1("\tService: %s (%s)", serv->desc.name,
+                             serv->desc.sig);
+              }
+
+            for (glob = modules.module[i]->globals; glob != NULL;
+                 glob = glob->next)
+              {
+                STATUSPRINT1("\tGlobal: %s (%c)", glob->desc.name,
+                             glob->desc.sig);
+              }
+          }
+        STATUSPRINT1("");
+      }
+    }
+
+  return returnVal;
+}
+#endif /*HAVE_MPI_INIT_THREAD_C*/
+#ifndef AIX
+
+#ifdef COMPILE_FOR_FORTRAN
+#ifdef HAVE_MPI_INIT_THREAD_Fortran
+void mpi_init_thread_(int *required, int *provided, int *ierr)
+{
+  /* some code in here is taken from MPICH-1 */
+
+  int argc;
+  char **argv;
+
+#ifdef DBGLEVEL6
+  timing_t start_timer;
+#endif
+
+#ifdef DBGLEVEL6 /* additional timing statistics */
+  if (DBGCHECK(DBGLEVEL6))
+    {
+      pnmpi_overall_timing = get_time_ns();
+    }
+#endif
+
+#if 0
+  int i, argsize = 1024;
+  char *p;
+  /*  int  argcSave;           Save the argument count */
+  char **argvSave;         /* Save the pointer to the argument vector */
+#endif
+
+  DBGEARLYINIT();
+
+  DBGPRINT3("Entering Old Fortran MPI_Init_thread at base level");
+
+#ifdef DBGLEVEL5
+  if (DBGCHECK(DBGLEVEL5))
+    pnmpi_totalstats_count.MPI_Init_thread++;
+#endif
+#ifdef DBGLEVEL6
+  if (DBGCHECK(DBGLEVEL6))
+    start_timer = get_time_ns();
+#endif
+
+  if (init_was_fortran == 0)
+    {
+      pmpi_init_thread_(required, provided, ierr);
+      return;
+    }
+
+  init_was_fortran = 1;
+
+#if 0
+  /* argcSave    = */ argc = iargc_() + 1;
+  argvSave    = argv = (char **) malloc( argc * sizeof(char *) );
+
+  if (!argv)
+    {
+      WARNPRINT("Can't allocate memory for argv table - exiting");
+      exit(1);
+    }
+
+    for (i=0; i<argc; i++)
+      {
+        argvSave[i] = argv[i] = (char *)malloc( argsize + 1 );
+        if (!argv[i])
+      {
+        WARNPRINT("Can't allocate memory for argv[%i] - exiting",i);
+        exit(1);
+      }
+        getarg_( &i, argv[i], argsize );
+
+        /* Trim trailing blanks */
+        p = argv[i] + argsize - 1;
+        while (p > argv[i])
+      {
+            if (*p != ' ')
+          {
+                p[1] = '\0';
+                break;
+          }
+            p--;
+      }
+      }
+
+#ifdef DBGLEVEL
+    DBGPRINT4("ARGUMENT COUNT IS %i\n",argc);
+    for (i=0; i<argc; i++)
+      {
+    DBGPRINT4("ARGUMENT %i IS %s",i,argv[i]);
+      }
+#endif /* DBGLEVEL */
+
+  *ierr=PNMPI_Common_MPI_Init_thread(&argc,&argv);
+#endif
+
+  argc = 0;
+  argv = NULL;
+
+  *ierr = PNMPI_Common_MPI_Init_thread(&argc, &argv, *required, provided);
+
+#ifdef DBGLEVEL6
+  if (DBGCHECK(DBGLEVEL6))
+    pnmpi_totalstats_timing.MPI_Init_thread = get_time_ns() - start_timer;
+#endif
+
+  return;
+}
+#endif /*HAVE_MPI_INIT_THREAD_Fortran*/
+#endif
+#endif
+
+#ifdef HAVE_MPI_INIT_THREAD_C
+int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+{
+  int err;
+#ifdef DBGLEVEL6
+  timing_t start_timer;
+#endif
+
+#ifdef DBGLEVEL6 /* additional timing statistics */
+  if (DBGCHECK(DBGLEVEL6))
+    {
+      pnmpi_overall_timing = get_time_ns();
+    }
+#endif
+
+  DBGEARLYINIT();
+
+  DBGPRINT3("Entering Old MPI_Init_thread at base level");
+
+#ifdef DBGLEVEL5
+  if (DBGCHECK(DBGLEVEL5))
+    pnmpi_totalstats_count.MPI_Init_thread++;
+#endif
+#ifdef DBGLEVEL6
+  if (DBGCHECK(DBGLEVEL6))
+    start_timer = get_time_ns();
+#endif
+
+  if (init_was_fortran == 1)
+    return PMPI_Init_thread(argc, argv, required, provided);
+
+  init_was_fortran = 0;
+
+  err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
+
+#ifdef DBGLEVEL6
+  if (DBGCHECK(DBGLEVEL6))
+    pnmpi_totalstats_timing.MPI_Init_thread = get_time_ns() - start_timer;
+#endif
+
+  return err;
+}
+#endif /*HAVE_MPI_INIT_THREAD_C*/
+
+#ifdef HAVE_MPI_INIT_THREAD_C
+int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
+                    int *_provided)
+{
+  int res;
+  int start_level;
+
+  start_level = pnmpi_level;
+
+  if (IS_ACTIVATED(MPI_Init_thread_ID))
+    {
+      while ((pnmpi_level < pnmpi_max_level) &&
+             (modules.module[pnmpi_level]->stack_delimiter == 0))
+        {
+          if (pnmpi_function_ptrs.pnmpi_int_MPI_Init_thread[pnmpi_level] !=
+              NULL)
+            {
+#ifdef DBGLEVEL6
+              timing_t start_timer;
+#endif
+
+              DBGPRINT3(
+                "Calling a wrapper in MPI_Init_thread at level %i FROM %px",
+                pnmpi_level, &(Internal_XMPI_Init_thread));
+#ifdef DBGLEVEL5
+              if (DBGCHECK(DBGLEVEL5))
+                modules.module[pnmpi_level]->statscount.MPI_Init_thread++;
+#endif
+#ifdef DBGLEVEL6
+              if (DBGCHECK(DBGLEVEL6))
+                start_timer = get_time_ns();
+#endif
+              res =
+                (pnmpi_function_ptrs.pnmpi_int_MPI_Init_thread)[pnmpi_level](
+                  _pnmpi_arg_0, _pnmpi_arg_1, _required, _provided);
+#ifdef DBGLEVEL6
+              if (DBGCHECK(DBGLEVEL6))
+                modules.module[pnmpi_level]->statstiming.MPI_Init_thread +=
+                  get_time_ns() - start_timer;
+#endif
+              DBGPRINT3("Done with wrapper in MPI_Init_thread at level %i - "
+                        "reseting to %i",
+                        pnmpi_level, start_level);
+              pnmpi_level = start_level;
+              return res;
+            }
+          pnmpi_level++;
+        }
+    }
+
+  if (pnmpi_init_done)
+    {
+      DBGPRINT3("Duplicated: calling a original MPI in MPI_Init_thread");
+      res = MPI_SUCCESS;
+    }
+  else
+    {
+      DBGPRINT3("Calling a original MPI in MPI_Init_thread");
+#ifdef COMPILE_FOR_FORTRAN
+#ifdef HAVE_MPI_INIT_THREAD_Fortran
+      if (init_was_fortran)
+        pmpi_init_thread_(&_required, _provided, &res);
+      else
+#endif /*HAVE_MPI_INIT_THREAD_Fortran*/
+#endif
+        res =
+          PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, _required, _provided);
+      pnmpi_init_done = 1;
+    }
+  DBGPRINT3("Done with original MPI in MPI_Init_thread");
+  pnmpi_level = start_level;
+  return res;
+}
+#endif /*HAVE_MPI_INIT_THREAD_C*/
+
+/*-------------------------------------------------------------------*/
+/* MPI_Finalize */
 
 int MPI_Finalize(void)
 {
