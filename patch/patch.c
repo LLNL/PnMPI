@@ -70,7 +70,7 @@ Boston, MA 02111-1307 USA
 
 #include <pnmpi-config.h>
 
-#if PNMPI_HAVE_BFD == TRUE
+#ifdef PNMPI_HAVE_BFD
 #include <bfd.h>
 #include <libiberty.h>
 #endif
@@ -95,7 +95,7 @@ size_t num_dynamic_symbols = 0;
 /* BFD BASED COPY BASED ON objcopy from the binutils */
 /*=======================================================================*/
 
-#if PNMPI_HAVE_BFD == TRUE
+#ifdef PNMPI_HAVE_BFD
 
 static asymbol **isympp = NULL; /* Input symbols.  */
 static asymbol **osympp = NULL; /* Output symbols that survive stripping.  */
