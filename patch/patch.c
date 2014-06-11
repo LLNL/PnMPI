@@ -164,7 +164,9 @@ void hook_dynstab(char *mem, bfd_size_type size)
           if ((c3 == 'I') && (c2 == 'P') && (c1 == 'M') && (c0 == 'P'))
             {
               mem[i - 3] = 'X';
-              printf("Found dynamic PNMPI symbol\n");
+              if (verbose)
+                printf("Found dynamic PNMPI symbol\n");
+              num_dynamic_symbols++;
             }
         }
       c0 = c1;
@@ -791,7 +793,8 @@ bfd_boolean copy_object(bfd *ibfd, bfd *obfd)
     {
       if (strncmp(osympp[i]->name, "MPI_", 4) == 0)
         {
-          printf("Found Static PMPI Symbol: %s\n", osympp[i]->name);
+          if (verbose)
+            printf("Found Static MPI Symbol: %s\n", osympp[i]->name);
 
           p = (char *)&(osympp[i]->name[0]);
           *p = prefix0;
@@ -803,7 +806,9 @@ bfd_boolean copy_object(bfd *ibfd, bfd *obfd)
 
       if (strncmp(osympp[i]->name, "PMPI_", 5) == 0)
         {
-          printf("Found Static PMPI Symbol: %s\n", osympp[i]->name);
+          if (verbose)
+            printf("Found Static PMPI Symbol: %s\n", osympp[i]->name);
+          num_generic_symbols++;
 
           p = (char *)&(osympp[i]->name[0]);
           *p = 'X';
@@ -962,8 +967,11 @@ void copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
           l->obfd = output_bfd;
 
           *ptr = output_bfd;
-          // ptr = &output_bfd->next;
-          ptr = &output_bfd->link_next; // new bfd?
+#ifdef PNMPI_NEW_BFD_API
+          ptr = &output_bfd->archive_next;
+#else  /*PNMPI_NEW_BFD_API*/
+          ptr = &output_bfd->next;
+#endif /*PNMPI_NEW_BFD_API*/
 
           last_element = this_element;
 
@@ -1099,72 +1107,99 @@ void copy_file(const char *input_filename, const char *output_filename,
 void copy_file(const char *input_filename, const char *output_filename,
                const char *input_target, const char *output_target)
 {
+#define BUFFERSIZE 4096
+#define COMPLENGTH 4
   int res, fd_in, fd_out;
-  char c1, c2, c3, c0, c4;
-  char cOld = 'a';
+  //   char c1,c2,c3,c0,c4;
+  //   char cOld = 'a';
+  char *buffer, *c, *w, *r;
+  int i;
+
+  buffer = malloc(sizeof(char) * (BUFFERSIZE + COMPLENGTH));
+  c = w = r = buffer;
 
   fd_in = open(input_filename, O_RDONLY);
-  fd_out = open(output_filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+  fd_out = open(output_filename, O_WRONLY | O_CREAT | O_TRUNC,
+                S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
   if (verbose)
     printf("In %i Out %i\n", fd_in, fd_out);
 
-  read(fd_in, &c0, 1);
-  read(fd_in, &c1, 1);
-  read(fd_in, &c2, 1);
-  read(fd_in, &c3, 1);
-
-  do
+  res = read(fd_in, r, BUFFERSIZE + -COMPLENGTH) - COMPLENGTH;
+  r = buffer + COMPLENGTH;
+  if (prefix0 != 'M' && prefix1 != 'P' && prefix2 != 'I')
     {
-      res = read(fd_in, &c4, 1);
-      if (!copyonly)
+      do
         {
-          if (res == 1)
+          if (!copyonly)
             {
-              if ((c4 == '_') && (c3 == 'I') && (c2 == 'P') && (c1 == 'M') &&
-                  (c0 == 'P'))
+              if (res > 0)
                 {
-                  c0 = 'X';
-                  if (verbose)
-                    printf("Found a dynamic symbol\n");
-                  num_dynamic_symbols++;
-                }
-              if ((c3 == '_') && (c2 == 'I') && (c1 == 'P') && (c0 == 'M'))
-                {
-                  c0 = prefix0;
-                  c1 = prefix1;
-                  c2 = prefix2;
+                  for (i = 0; i < res; i++)
+                    {
+                      if ((c[4] == '_') && (c[3] == 'I') && (c[2] == 'P') &&
+                          (c[1] == 'M') && (c[0] == 'P'))
+                        {
+                          c[0] = 'X';
+                          if (verbose)
+                            printf("Found a dynamic symbol\n");
+                          num_dynamic_symbols++;
+                        }
+                      if ((c[3] == '_') && (c[2] == 'I') && (c[1] == 'P') &&
+                          (c[0] == 'M'))
+                        {
+                          c[0] = prefix0;
+                          c[1] = prefix1;
+                          c[2] = prefix2;
 
-                  if (verbose)
-                    printf("Found generic symbol\n");
-                  num_generic_symbols++;
+                          if (verbose)
+                            printf("Found generic symbol\n");
+                          num_generic_symbols++;
+                        }
+                      c++;
+                    }
                 }
-#if 0
-          if ((c4=='r') && (c3=='_') && (c2=='i') && (c1=='p') && (c0=='m'))
-          {
-            c0='p';
-            c1='n';
-            c2='m';
-            c3='p';
-            c4='i';
-            if (verbose) printf("Found library name\n");
-          }
-#endif
             }
-          write(fd_out, &c0, 1);
-
-          c0 = c1;
-          c1 = c2;
-          c2 = c3;
-          c3 = c4;
+          c = w;
+          write(fd_out, w, res);
+          for (i = 0; i < COMPLENGTH; i++)
+            buffer[i] = buffer[res + i];
+          res = read(fd_in, r, res);
         }
+      while (res > 0);
     }
-  while (res == 1);
+  else
+    {
+      do
+        {
+          if (!copyonly)
+            {
+              if (res > 0)
+                {
+                  for (i = 0; i < res; i++)
+                    {
+                      if ((c[4] == '_') && (c[3] == 'I') && (c[2] == 'P') &&
+                          (c[1] == 'M') && (c[0] == 'P'))
+                        {
+                          c[0] = 'X';
+                          if (verbose)
+                            printf("Found a dynamic symbol\n");
+                          num_dynamic_symbols++;
+                        }
+                      c++;
+                    }
+                }
+            }
+          c = w;
+          write(fd_out, w, res);
+          for (i = 0; i < COMPLENGTH; i++)
+            buffer[i] = buffer[res + i];
+          res = read(fd_in, r, res);
+        }
+      while (res > 0);
+    }
 
-  write(fd_out, &c1, 1);
-  write(fd_out, &c2, 1);
-  write(fd_out, &c3, 1);
-  write(fd_out, &c4, 1);
+  write(fd_out, buffer, COMPLENGTH);
 
   close(fd_in);
   close(fd_out);
