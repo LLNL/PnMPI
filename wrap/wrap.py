@@ -516,7 +516,7 @@ def enumerate_mpi_declarations(mpicc, includes):
                 line += " " + mpi_h.next().strip()
 
             # Split args up by commas so we can parse them independently
-            arg_string = re.search(fn_name + "\s*\((.*)\)", line).group(1)
+            arg_string = re.search(fn_name + "\s*\(([^)]*)\)", line).group(1)
             arg_list = map(lambda s: s.strip(), arg_string.split(","))
 
             # Handle functions that take no args specially
