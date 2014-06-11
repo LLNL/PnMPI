@@ -27,7 +27,7 @@ set(PNMPI_LIB_SOURCES
   core.c
   wrapper.c
   # -- Generated sources --
-  wrapper_c.c
+  ${CMAKE_CURRENT_BINARY_DIR}/wrapper_c.c
   wrapper_f77.c
   # Note: Generated headers must be added to enforce dependency.
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
