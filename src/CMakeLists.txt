@@ -36,7 +36,7 @@ set(PNMPI_LIB_SOURCES
 # Build fortran wrappers here
 add_custom_command(
   OUTPUT wrapper_f77.c f77symbols.h
-  COMMAND eval ARGS "python ${CMAKE_SOURCE_DIR}/wrap/makefortran.py --xlate --f77symbol ${F77SYMBOL} ${CMAKE_SOURCE_DIR}/wrap/mpi-f77.txt"
+  COMMAND eval ARGS "${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/wrap/makefortran.py --xlate --f77symbol ${F77SYMBOL} ${CMAKE_SOURCE_DIR}/wrap/mpi-f77.txt"
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Generating Fortran Wrappers"
   VERBATIM)
