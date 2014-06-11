@@ -10,16 +10,23 @@
 
 
 #Add the target for the patcher
-set(CMAKE_C_COMPILER gcc)
+SET (PATCHER_FRONTEND_COMPILER "" CACHE FILEPATH "If this is a frontend/backend build use the backend compiler as CMake compilers and specify a frontend compiler here to create a frontend-operating version of the PnMPI patcher.")
 
-add_executable(pnmpi-patch patch.c)
-if (BFD_FOUND)
-  target_link_libraries(pnmpi-patch ${BFD_LIBRARIES})
-  target_link_libraries(pnmpi-patch ${IBERTY_LIBRARIES})
+SET (targetName pnmpi-patch)
+if (PATCHER_FRONTEND_COMPILER)
+   SET (targetName backend-pnmpi-patch)
 endif()
-install(TARGETS pnmpi-patch EXPORT pnmpi-patch RUNTIME DESTINATION bin)
+
+add_executable(${targetName} patch.c)
+if (BFD_FOUND)
+  target_link_libraries(${targetName} ${BFD_LIBRARIES})
+  target_link_libraries(${targetName} ${IBERTY_LIBRARIES})
+endif()
+install(TARGETS ${targetName} EXPORT ${targetName} RUNTIME DESTINATION bin)
 
 # Allow patch target to be used by subprojects.
-install(EXPORT pnmpi-patch DESTINATION share/cmake/PnMPI)
+install(EXPORT ${targetName} DESTINATION share/cmake/PnMPI)
 
 include_directories(${CMAKE_BINARY_DIR})
+
+add_subdirectory(frontend)
