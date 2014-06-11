@@ -125,6 +125,20 @@ _EXTERN_C_ void PMPI_INIT(MPI_Fint *ierr);
 _EXTERN_C_ void pmpi_init_(MPI_Fint *ierr);
 _EXTERN_C_ void pmpi_init__(MPI_Fint *ierr);
 
+#ifdef PIC
+/* For shared libraries, declare these weak and figure out which one was linked
+   based on which init wrapper was called.  See mpi_init wrappers.  */
+#pragma weak pmpi_init_thread
+#pragma weak PMPI_INIT_THREAD
+#pragma weak pmpi_init_thread_
+#pragma weak pmpi_init_thread__
+#endif /* PIC */
+
+_EXTERN_C_ void pmpi_init_thread(MPI_Fint *required, MPI_Fint *provided, MPI_Fint *ierr);
+_EXTERN_C_ void PMPI_INIT_THREAD(MPI_Fint *required, MPI_Fint *provided, MPI_Fint *ierr);
+_EXTERN_C_ void pmpi_init_thread_(MPI_Fint *required, MPI_Fint *provided, MPI_Fint *ierr);
+_EXTERN_C_ void pmpi_init_thread__(MPI_Fint *required, MPI_Fint *provided, MPI_Fint *ierr);
+
 '''
 
 # Default modifiers for generated bindings
