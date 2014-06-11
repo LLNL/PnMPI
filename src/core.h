@@ -169,6 +169,48 @@ extern pnmpi_functions_t pnmpi_function_ptrs;
 #define TOTAL_STATS_6(fn)
 #endif
 
+/*This can be removed at a later point in time, it allows convenient bugfixing
+ * for a broken mpi.h of MVAPICH1 (Sierra at LLNL, April 2014, by Tobias)*/
+#ifdef PNMPI_MVAPICH1FIX
+int PMPI_Type_create_indexed_block(int, int, int *, MPI_Datatype,
+                                   MPI_Datatype *);
+int PMPI_Finalized(int *);
+#endif /*PNMPI_MVAPICH1FIX*/
+
+// Helper to check for RTLDNEXT Availability
+/**
+ * Rational on RTLDNEXT usage:
+ * If a module has a dependency to the MPI libs (which makes sense as it uses
+ * MPI symbols),
+ * a call to dlsym on this module will either return the modules own MPI wrapper
+ * for the call (if present) or
+ * the MPI call implementation in the MPI library. In our
+ * INITIALIZE_FUNCTION_STACK macro however,
+ * we are only interested in MPI calls within the module (i.e. wrappers), not
+ * any symbols of the original
+ * MPI library (i.e. implementations). With that, modules must not have MPI
+ * dependencies, which sometimes makes
+ * your live a bit harder. So we provide a mechanism that uses RTLD_NEXT to
+ * check what
+ * the symbol of a respective call is in the MPI lib, with that we can check
+ * whether a dlsym
+ * call on a module returned a wrapper function or just a function in the MPI
+ * lib, if the later
+ * happens we do not mark the module as having a wrapper for this function.
+ *
+ * Note: RTLD_NEXT is unfortunately not available everywhere, thats why we use
+ * the templates below.
+ */
+#ifdef RTLD_NEXT
+#define RTLDNEXT_RETRIEVAL(r_type, routine) \
+  r_type __tmp_function_ptr = (r_type)mydlsym(RTLD_NEXT, routine);
+#define RTLDNEXT_CHECK(stack) \
+  pnmpi_function_ptrs.stack[__i] != __tmp_function_ptr
+#else
+#define RTLDNEXT_RETRIEVAL(r_type, routine)
+#define RTLDNEXT_CHECK(stack) 1
+#endif
+
 // actual stack initialization macro
 #define INITIALIZE_FUNCTION_STACK(routine, routine_id, r_type, stack, mods, \
                                   mpiroutine)                               \
@@ -191,9 +233,17 @@ extern pnmpi_functions_t pnmpi_function_ptrs;
           continue;                                                         \
         pnmpi_function_ptrs.stack[__i] =                                    \
           (r_type)mydlsym(mods.module[__i]->handle, routine);               \
-        if (pnmpi_function_ptrs.stack[__i] != NULL)                         \
+        RTLDNEXT_RETRIEVAL(r_type, routine)                                 \
+        if (pnmpi_function_ptrs.stack[__i] != NULL &&                       \
+            pnmpi_function_ptrs.stack[__i] != (r_type)P##mpiroutine &&      \
+            RTLDNEXT_CHECK(stack))                                          \
           {                                                                 \
             SET_ACTIVATED(routine_id);                                      \
+          }                                                                 \
+        else                                                                \
+          {                                                                 \
+            pnmpi_function_ptrs.stack[__i] =                                \
+              NULL; /*needed to make RTLD_NEXT check work*/                 \
           }                                                                 \
         DBGPRINT2("Symbol for routine %s in module %s: value %px", routine, \
                   mods.module[__i]->name, pnmpi_function_ptrs.stack[__i]);  \

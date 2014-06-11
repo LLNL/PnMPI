@@ -71,13 +71,15 @@ Boston, MA 02111-1307 USA
 /* Constants */
 
 #define PNMPI_SERVICE_NAMELEN 30
-#define PNMPI_MODULE_FILENAMELEN 256
+#define PNMPI_MODULE_FILENAMELEN 512
 #define PNMPI_SERVICE_SIGLEN 20
-#define PNMPI_MODULE_USERNAMELEN 100
+#define PNMPI_MODULE_USERNAMELEN 256
 
 #define PNMPI_REGISTRATION_POINT "PNMPI_RegistrationPoint"
 
 #define PNMPI_MAX_MOD 100000
+
+#define PNMPI_MODHANDLE_NULL -1
 
 /*.......................................................*/
 /* Types */
