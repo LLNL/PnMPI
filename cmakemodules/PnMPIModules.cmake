@@ -53,3 +53,131 @@ function(add_pnmpi_module targetname)
   # Make sure that PnMPI lib and patch tool are built before this module.
   add_dependencies(${targetname} pnmpi-patch pnmpi)
 endfunction()
+
+####################################################
+## Macro featureTestMpi
+##
+## Creates a feature test with an MPI program.
+####################################################
+MACRO (
+    featureTestMpi
+        source # The source file name of the MPI program to test, must be in the folder cmakemodules/FeatureTests
+        language # one of: C, CXX, Fortran
+        successVar # Name of a variable to set to true iff the test was successful, will be set as a CACHE variable
+        )
+    IF (NOT DEFINED ${successVar})
+        #Organize the temporary src directory, copy source there
+        SET (binDir "${CMAKE_CURRENT_BINARY_DIR}/${source}/BUILD")
+        SET (srcDir "${CMAKE_CURRENT_BINARY_DIR}/${source}")
+        CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmakemodules/FeatureTests/${source}" "${srcDir}/${source}" COPYONLY)
+
+        IF (MPI_${language}_COMPILER)
+           FILE(WRITE "${srcDir}/CMakeLists.txt"
+               "PROJECT (test ${language})\n"
+               "cmake_minimum_required(VERSION 2.6)\n"
+               "set(CMAKE_${language}_COMPILER \"${MPI_${language}_COMPILER}\")\n"
+               "add_definitions(${skipPrepare})\n"
+               "add_executable(test \"${source}\")\n"
+            )
+        ELSE ()
+           SET (TEMP_INCS "")
+           FOREACH (INC_PATH ${MPI_${language}_INCLUDE_PATH})
+               SET (TEMP_INCS "${TEMP_INCS} \"${INC_PATH}\"")
+           ENDFOREACH ()
+
+           #Create CMakeLists.txt
+           FILE(WRITE "${srcDir}/CMakeLists.txt"
+               "PROJECT (test ${language})\n"
+               "cmake_minimum_required(VERSION 2.6)\n"
+               "set(CMAKE_C_COMPILER \"${C_compiler_to_use}\")\n"
+               "set(CMAKE_CXX_COMPILER \"${CXX_compiler_to_use}\")\n"
+               "set(CMAKE_Fortran_COMPILER \"${Fortran_compiler_to_use}\")\n"
+               "add_definitions(${skipPrepare})\n"
+               "if (NOT \"${MPI_${language}_INCLUDE_PATH}\" STREQUAL \"\")\n"
+               "    include_directories(${TEMP_INCS})\n"
+               "endif (NOT \"${MPI_${language}_INCLUDE_PATH}\" STREQUAL \"\")\n"
+               "add_executable(test \"${source}\")\n"
+               "target_link_libraries(test ${MPI_${language}_LIBRARIES})\n"
+            )
+        ENDIF ()
+
+        #If MPI include directories are a list, we need to concatenate it and add quotes to handle potential space characters correctly
+
+        #Try compile and preserve the result in a cached variable
+        try_compile(${successVar} "${binDir}" "${srcDir}"
+                        test
+                        OUTPUT_VARIABLE output)
+
+        SET (${successVar} ${${successVar}} CACHE INTERNAL "Result of feature testing ${source}")
+
+        IF (GTI_VERBOSE)
+            MESSAGE ("${output}")
+        ENDIF (GTI_VERBOSE)
+
+        #Add status
+        SET (successStatus "success")
+        IF (NOT ${successVar})
+            SET (successStatus "failed")
+        ENDIF (NOT ${successVar})
+
+        MESSAGE (STATUS "Checking for ${source} ... ${successStatus}")
+    ENDIF (NOT DEFINED ${successVar})
+ENDMACRO (featureTestMpi)
+
+# Macro featureTest
+#
+#=============================================================================
+# Creates a feature test with an non-MPI program.
+MACRO (
+    featureTest
+        source # The source file name of the MPI program to test, must be in the folder cmakemodules/FeatureTests
+        language # one of: C, CXX, Fortran
+        successVar # Name of a variable to set to true iff the test was successful, will be set as a CACHE variable
+        )
+    IF (NOT DEFINED ${successVar})
+        #Organize the temporary src directory, copy source there
+        SET (binDir "${CMAKE_CURRENT_BINARY_DIR}/${source}/BUILD")
+        SET (srcDir "${CMAKE_CURRENT_BINARY_DIR}/${source}")
+        CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmakemodules/FeatureTests/${source}" "${srcDir}/${source}" COPYONLY)
+
+        #Create CMakeLists.txt
+        FILE(WRITE "${srcDir}/CMakeLists.txt"
+            "PROJECT (test ${language})\n"
+            "cmake_minimum_required(VERSION 2.6)\n"
+            "add_executable(test \"${source}\")\n"
+            )
+
+        #Try compile and preserve the result in a cached variable
+        try_compile(${successVar} "${binDir}" "${srcDir}"
+                        test
+                        OUTPUT_VARIABLE output)
+
+        SET (${successVar} ${${successVar}} CACHE INTERNAL "Result of feature testing ${source}")
+
+        #Add status
+        SET (successStatus "success")
+        IF (NOT ${successVar})
+            SET (successStatus "failed")
+        ENDIF (NOT ${successVar})
+
+        MESSAGE (STATUS "Checking for ${source} ... ${successStatus}")
+    ENDIF (NOT DEFINED ${successVar})
+ENDMACRO (featureTest)
+
+# Macro liblistToDependList
+#
+#=============================================================================
+# Creates a list of dependent libraries for a given list of libraries; This dependency list should be used
+# as dependency for shared libraries. This macro removes all static libraries from the input list.
+MACRO (
+    liblistToDependList
+        libListVar
+        dependListVar
+        )
+    set(${dependListVar} "")
+    foreach(lib ${${libListVar}})
+        if (NOT lib MATCHES "[.]a$$$")
+            set(${dependListVar} ${${dependListVar}} "${lib}")
+        endif ()
+    endforeach(lib)
+ENDMACRO (liblistToDependList)

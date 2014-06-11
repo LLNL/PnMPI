@@ -46,6 +46,9 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   endif()
 endif()
 
+#Include our macros
+INCLUDE (PnMPIModules)
+
 #Find Packages
 find_package(AWK REQUIRED)
 
@@ -68,10 +71,13 @@ set(MPI_CXX_SKIP_FLAGS
 
 # Fortran name mangling option, customizable at cmd line
 # TODO: detect fortran name mangling, e.g.: F77SYMBOL = symbol_
-option(F77SYMBOL "Name demangling scheme." symbol_)
+set(F77SYMBOL symbol_ CACHE STRING "Name demangling scheme.")
 
 # BFD is used by the patch utility.
 find_package(BFD)
+
+#Run feature tests
+INCLUDE (FeatureTests)
 
 #===================================
 # Ennable PnMPI internal debugging
@@ -112,8 +118,11 @@ add_subdirectory(src)
 add_subdirectory(patch)
 add_subdirectory(modules)
 
-enable_testing() #activates creation of tests
-add_subdirectory(demo)
+option(ENABLE_TESTS "Selects whether tests are built." FALSE)
+if(ENABLE_TESTS)
+    enable_testing() #activates creation of tests
+    add_subdirectory(demo)
+endif(ENABLE_TESTS)
 
 #===================================
 #Other install stuff (which is not handled in the sub-dirs)

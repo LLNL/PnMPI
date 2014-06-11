@@ -11,6 +11,9 @@ set(PnMPI_MODULES_DIR              ${PnMPI_LIBRARY_DIR}/pnmpi-modules)
 # Include path for PnMPI headers.
 set(PnMPI_INCLUDE_PATH             @CMAKE_INSTALL_PREFIX@/include)
 
+# PnMPI version
+set(PNMPI_VERSION                  "@PNMPI_VERSION@")
+
 # Basic PnMPI library.  Default for most people.
 set(PnMPI_LIBRARIES                  pnmpi)
 

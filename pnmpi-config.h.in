@@ -41,7 +41,10 @@ Boston, MA 02111-1307 USA
 #define PNMPI_HAVE_ADEPT_UTILS @adept_utils_FOUND@
 
 /* Built with BFD support. */
-#define PNMPI_HAVE_BFD @BFD_FOUND@
+#cmakedefine PNMPI_HAVE_BFD 1
+
+/* Built with new BFD API. */
+#cmakedefine PNMPI_NEW_BFD_API 1
 
 /* Locations of PnMPI directories in the install tree */
 #define PNMPI_INSTALL_PREFIX       "@PnMPI_INSTALL_PREFIX@"
@@ -54,5 +57,32 @@ Boston, MA 02111-1307 USA
 #define PNMPI_MINOR_VERSION @PNMPI_MINOR_VERSION@
 #define PNMPI_PATCH_VERSION @PNMPI_PATCH_VERSION@
 #define PNMPI_VERSION       "@PNMPI_VERSION@"
+
+/* define the array size of fortran MPI_Status, TODO: replace with call to fortran snippet  */
+#define PNMPI_F_STATUS_SIZE 6
+
+/* Define if mpi.h has MPI_Status_c2f() and MPI_Status_f2c() */
+#cmakedefine HAVE_MPI_STATUS_C2F 1
+
+/* Define if mpi.h has MPI_STATUS_IGNORE */
+#cmakedefine HAVE_MPI_STATUS_IGNORE 1
+
+/* Define if mpi.h has MPI_STATUSES_IGNORE */
+#cmakedefine HAVE_MPI_STATUSES_IGNORE 1
+
+/* Define if mpi.h has MPI_F_STATUS_IGNORE */
+#cmakedefine HAVE_MPI_F_STATUS_IGNORE 1
+
+/* Define if mpi.h has MPI_F_STATUSES_IGNORE */
+#cmakedefine HAVE_MPI_F_STATUSES_IGNORE 1
+
+/* Define if mpi.h has working MPI_Init_thread (Fortran)*/
+#cmakedefine HAVE_MPI_INIT_THREAD_Fortran 1
+
+/* Define if mpi.h has working MPI_Init_thread (C)*/
+#cmakedefine HAVE_MPI_INIT_THREAD_C 1
+
+/* Define if pthreads are available */
+#cmakedefine PNMPI_HAVE_PTHREADS 1
 
 #endif // PNMPI_CONFIG_H
