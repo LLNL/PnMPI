@@ -307,63 +307,71 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   STATUSINIT();
   DBGPRINT1("Leaving Init");
 
-  STATUSPRINT1("");
-  STATUSPRINT1("\t\t  ---------------------------");
-  STATUSPRINT1("\t\t | P^N-MPI Interface         |");
-  STATUSPRINT1("\t\t | Martin Schulz, 2005, LLNL |");
-  STATUSPRINT1("\t\t  ---------------------------");
-  STATUSPRINT1("");
+  if (getenv("PNMPI_BE_SILENT") == NULL)
+    {
+      STATUSPRINT1("");
+      STATUSPRINT1("\t\t  ---------------------------");
+      STATUSPRINT1("\t\t | P^N-MPI Interface         |");
+      STATUSPRINT1("\t\t | Martin Schulz, 2005, LLNL |");
+      STATUSPRINT1("\t\t  ---------------------------");
+      STATUSPRINT1("");
 
-  {
-    int i;
-    module_servlist_p serv;
-    module_globlist_p glob;
-    module_arg_t *args;
-
-    STATUSPRINT1("Number of modules: %i", modules.num);
-    STATUSPRINT1("Pcontrol Setting:  %i", modules.pcontrol);
-    STATUSPRINT1("");
-    for (i = 0; i < modules.num; i++)
       {
-        if (modules.module[i]->registered)
+        int i;
+        module_servlist_p serv;
+        module_globlist_p glob;
+        module_arg_t *args;
+
+        STATUSPRINT1("Number of modules: %i", modules.num);
+        STATUSPRINT1("Pcontrol Setting:  %i", modules.pcontrol);
+        STATUSPRINT1("");
+        for (i = 0; i < modules.num; i++)
           {
-            STATUSPRINT1("Module %s: registered as %s (Pctrl %i)",
-                         modules.module[i]->name, modules.module[i]->username,
-                         modules.module[i]->pcontrol);
-          }
-        else
-          {
-            if (modules.module[i]->stack_delimiter)
+            if (modules.module[i]->registered)
               {
-                STATUSPRINT1("Stack %s: not registered",
-                             modules.module[i]->name);
+                STATUSPRINT1("Module %s: registered as %s (Pctrl %i)",
+                             modules.module[i]->name,
+                             modules.module[i]->username,
+                             modules.module[i]->pcontrol);
               }
             else
               {
-                STATUSPRINT1("Module %s: not registered (Pctrl %i)",
-                             modules.module[i]->name,
-                             modules.module[i]->pcontrol);
+                if (modules.module[i]->stack_delimiter)
+                  {
+                    STATUSPRINT1("Stack %s: not registered",
+                                 modules.module[i]->name);
+                  }
+                else
+                  {
+                    STATUSPRINT1("Module %s: not registered (Pctrl %i)",
+                                 modules.module[i]->name,
+                                 modules.module[i]->pcontrol);
+                  }
+              }
+
+            for (args = modules.module[i]->args; args != NULL;
+                 args = args->next)
+              {
+                STATUSPRINT1("\tArgument: %s = %s", args->name, args->value);
+              }
+
+            for (serv = modules.module[i]->services; serv != NULL;
+                 serv = serv->next)
+              {
+                STATUSPRINT1("\tService: %s (%s)", serv->desc.name,
+                             serv->desc.sig);
+              }
+
+            for (glob = modules.module[i]->globals; glob != NULL;
+                 glob = glob->next)
+              {
+                STATUSPRINT1("\tGlobal: %s (%c)", glob->desc.name,
+                             glob->desc.sig);
               }
           }
-
-        for (args = modules.module[i]->args; args != NULL; args = args->next)
-          {
-            STATUSPRINT1("\tArgument: %s = %s", args->name, args->value);
-          }
-
-        for (serv = modules.module[i]->services; serv != NULL;
-             serv = serv->next)
-          {
-            STATUSPRINT1("\tService: %s (%s)", serv->desc.name, serv->desc.sig);
-          }
-
-        for (glob = modules.module[i]->globals; glob != NULL; glob = glob->next)
-          {
-            STATUSPRINT1("\tGlobal: %s (%c)", glob->desc.name, glob->desc.sig);
-          }
+        STATUSPRINT1("");
       }
-    STATUSPRINT1("");
-  }
+    }
 
   return returnVal;
 }
@@ -431,30 +439,30 @@ void mpi_init_(int *ierr)
       {
         argvSave[i] = argv[i] = (char *)malloc( argsize + 1 );
         if (!argv[i])
-	  {
-	    WARNPRINT("Can't allocate memory for argv[%i] - exiting",i);
-	    exit(1);
-	  }
+      {
+        WARNPRINT("Can't allocate memory for argv[%i] - exiting",i);
+        exit(1);
+      }
         getarg_( &i, argv[i], argsize );
 
         /* Trim trailing blanks */
         p = argv[i] + argsize - 1;
         while (p > argv[i])
-	  {
+      {
             if (*p != ' ')
-	      {
+          {
                 p[1] = '\0';
                 break;
-	      }
+          }
             p--;
-	  }
+      }
       }
 
 #ifdef DBGLEVEL
     DBGPRINT4("ARGUMENT COUNT IS %i\n",argc);
     for (i=0; i<argc; i++)
       {
-	DBGPRINT4("ARGUMENT %i IS %s",i,argv[i]);
+    DBGPRINT4("ARGUMENT %i IS %s",i,argv[i]);
       }
 #endif /* DBGLEVEL */
 
