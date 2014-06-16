@@ -121,8 +121,19 @@ typedef struct modules_d
 
 extern modules_t modules;
 
-extern int pnmpi_level;
+// extern int pnmpi_level;
+extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
+                               calls, right now we only use it for MPI_X calls
+                               that are triggered be MPI_Finalize (as these
+                               really hurt as we shut down our tools already in
+                               that case).*/
 extern int pnmpi_max_level;
+
+/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
+#ifdef PNMPI_ENABLE_THREAD_SAFETY
+extern pthread_mutex_t pnmpi_level_lock;
+#endif /*PNMPI_ENABLE_THREAD_SAFETY*/
+/* jfm Modification (ELP AP THREAD SAFETY) END */
 
 void pnmpi_PreInit(void);
 

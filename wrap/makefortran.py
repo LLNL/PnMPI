@@ -1294,7 +1294,7 @@ extern void ''' + 'F77_' + string.upper(funct)
 
     olist.append('#ifdef ' + funct + '_ID\n')
     olist.append('\n' + 'if (NOT_ACTIVATED(' + funct
-                 + '_ID))\n' + '{\n' + '  rc=P'
+                 + '_ID) || pnmpi_mpi_level > 0)\n' + '{\n' + '  rc=P'
                  + funct + '( ')
 
     argname = ''

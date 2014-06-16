@@ -40,11 +40,140 @@ Boston, MA 02111-1307 USA
 #include "core.h"
 #include "pnmpi-config.h"
 
+/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
+#ifdef PNMPI_ENABLE_THREAD_SAFETY
+#include <pthread.h>
+#endif
+/* jfm Modification (ELP AP THREAD SAFETY) END */
+
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
 
-int pnmpi_level;
+int pnmpi_mpi_level = 0;
 int pnmpi_max_level;
+
+/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
+#ifdef PNMPI_ENABLE_THREAD_SAFETY
+pthread_mutex_t pnmpi_level_lock;
+pthread_key_t pnmpi_level_key;
+
+#ifdef __GNUC__
+__attribute__((constructor)) void initialize_pnmpi_threaded()
+#else
+void _init()
+#endif
+{
+  // Create a thread local storage for pnmpi_level (default value is NULL)
+  if (pthread_key_create(&pnmpi_level_key, NULL))
+    {
+      printf("ERROR: TLS initialization failed\n");
+      exit(1);
+    }
+  pthread_mutex_init(&pnmpi_level_lock, NULL);
+
+  // Do PnMPI Pre Initialization
+  pnmpi_PreInit();
+}
+
+#ifdef __GNUC__
+__attribute__((destructor)) void finalize_pnmpi_threaded()
+#else
+void _fini()
+#endif
+{
+  pthread_mutex_destroy(&pnmpi_level_lock);
+}
+
+inline int set_pnmpi_level(int value)
+{
+  pthread_setspecific(pnmpi_level_key, (void *)(long)value);
+  return value;
+}
+
+// pnmpi_level++
+inline int inc_pnmpi_level()
+{
+  int value = (int)(unsigned long)pthread_getspecific(pnmpi_level_key) + 1;
+  pthread_setspecific(pnmpi_level_key, (void *)(long)value);
+  return value;
+}
+
+// pnmpi_level--
+inline int dec_pnmpi_level()
+{
+  int value = (int)(unsigned long)pthread_getspecific(pnmpi_level_key) - 1;
+  pthread_setspecific(pnmpi_level_key, (void *)(long)value);
+  return value;
+}
+
+inline int get_pnmpi_level()
+{
+  return (int)((unsigned long)pthread_getspecific(pnmpi_level_key));
+}
+
+inline int get_pnmpi_mpi_level()
+{
+  int value;
+  pthread_mutex_lock(&pnmpi_level_lock);
+  value = pnmpi_mpi_level;
+  pthread_mutex_unlock(&pnmpi_level_lock);
+  return value;
+}
+
+inline void inc_pnmpi_mpi_level()
+{
+  pthread_mutex_lock(&pnmpi_level_lock);
+  pnmpi_mpi_level++;
+  pthread_mutex_unlock(&pnmpi_level_lock);
+}
+
+inline void dec_pnmpi_mpi_level()
+{
+  pthread_mutex_lock(&pnmpi_level_lock);
+  pnmpi_mpi_level--;
+  pthread_mutex_unlock(&pnmpi_level_lock);
+}
+
+#else  /*PNMPI_ENABLE_THREAD_SAFETY*/
+// build w/o thread safety enabled
+int __pnmpi_level;
+inline int set_pnmpi_level(int value)
+{
+  __pnmpi_level = value;
+  return value;
+}
+
+inline void inc_pnmpi_mpi_level()
+{
+  pnmpi_mpi_level++;
+}
+
+inline void dec_pnmpi_mpi_level()
+{
+  pnmpi_mpi_level--;
+}
+
+inline int get_pnmpi_level()
+{
+  return __pnmpi_level;
+}
+
+inline int inc_pnmpi_level()
+{
+  return ++__pnmpi_level;
+}
+
+inline int dec_pnmpi_level()
+{
+  return --__pnmpi_level;
+}
+
+inline int get_pnmpi_mpi_level()
+{
+  return pnmpi_mpi_level;
+}
+#endif /*PNMPI_ENABLE_THREAD_SAFETY*/
+/* jfm Modification (ELP AP THREAD SAFETY) END */
 
 modules_t modules;
 
@@ -126,10 +255,9 @@ void pnmpi_PreInit()
   int cmdargc, comment, i;
 
   PNMPI_RegistrationPoint_t regPoint;
-
   /* setup vars */
 
-  pnmpi_level = 0;
+  set_pnmpi_level(0);
   pnmpi_max_level = 0;
 
 
@@ -517,7 +645,7 @@ void pnmpi_PreInit()
 
                       /* PNMPI_RegistrationPoint will be called later */
 
-                      pnmpi_level = modules.num;
+                      set_pnmpi_level(modules.num);
                       modules.num++;
                     }
                 }
@@ -684,7 +812,7 @@ void pnmpi_PreInit()
             /* check if this module has a RegistrationPoint and if yes, all it
              */
 
-            pnmpi_level = i;
+            set_pnmpi_level(i);
             err = regPoint();
             if (err != PNMPI_SUCCESS)
               {
@@ -743,5 +871,5 @@ void pnmpi_PreInit()
 
   /* fix variables */
   pnmpi_max_level = modules.num;
-  pnmpi_level = 0;
+  set_pnmpi_level(0);
 }

@@ -85,4 +85,8 @@ Boston, MA 02111-1307 USA
 /* Define if pthreads are available */
 #cmakedefine PNMPI_HAVE_PTHREADS 1
 
+/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
+#cmakedefine PNMPI_ENABLE_THREAD_SAFETY 1
+/* jfm Modification (ELP AP THREAD SAFETY) END */
+
 #endif // PNMPI_CONFIG_H
