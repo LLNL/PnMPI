@@ -25,10 +25,16 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable(fdemo    fdemo.f)
   add_executable(fdemo-pn fdemo.f)
   add_executable(fdemo-s1 fdemo.f)
+  add_executable(f90demo    fdemo.f90)
+  add_executable(f90demo-pn fdemo.f90)
+  add_executable(f90demo-s1 fdemo.f90)
 
   target_link_libraries(fdemo                        ${MPI_Fortran_LIBRARIES})
   target_link_libraries(fdemo-pn pnmpif              ${MPI_Fortran_LIBRARIES})
   target_link_libraries(fdemo-s1 sample1-non-patched ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(f90demo                        ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(f90demo-pn pnmpif              ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(f90demo-s1 sample1-non-patched ${MPI_Fortran_LIBRARIES})
 endif()
 
 # Add C tests
@@ -55,6 +61,17 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$DYLD_LIBRARY_PATH
     -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
     -np 2 ${EXECUTABLE_OUTPUT_PATH}/fdemo-pn)
+
+  add_test(f90demo    ${MPIEXEC} -np 2 ${EXECUTABLE_OUTPUT_PATH}/f90demo)
+  add_test(f90demo-s1 ${MPIEXEC} -np 2 ${EXECUTABLE_OUTPUT_PATH}/f90demo-s1)
+  add_test(
+    f90demo-pn
+    ${MPIEXEC}
+    -x PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/modules
+    -x LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$LD_LIBRARY_PATH
+    -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$DYLD_LIBRARY_PATH
+    -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
+    -np 2 ${EXECUTABLE_OUTPUT_PATH}/f90demo-pn)
 endif()
 
 include_directories(
