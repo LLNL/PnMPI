@@ -26,4 +26,5 @@ target_link_libraries(sample1-non-patched ${MPI_C_LIBRARIES})
 include_directories(
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_BINARY_DIR}/src
+  ${PROJECT_BINARY_DIR}
   ${MPI_C_INCLUDE_PATH})
