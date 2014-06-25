@@ -94,8 +94,7 @@ formal_re = re.compile(
 f_wrap_suffix = "_fortran_wrapper"
 
 # Initial includes and defines for wrapper files.
-wrapper_includes = '''
-#include <mpi.h>
+wrapper_includes = '''#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 
