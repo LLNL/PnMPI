@@ -17,7 +17,7 @@ set(SUBMODULES print empty)
 foreach(mod ${SUBMODULES})
     # Use macro to: add target for module, version it, install it, patch it
     set(modulename ${PREFIX}-${mod})
-    add_pnmpi_module(${modulename} ${modulename}.cpp comm.cpp)
+    add_pnmpi_module(${modulename} ${modulename}.cpp comm.c)
 
     #  Add the submodname define as a flag
     ## TODO: Martin, please have a look at the "SUBMODNAME" define, is that what you want ???
@@ -27,9 +27,11 @@ foreach(mod ${SUBMODULES})
 endforeach()
 
 include_directories(
+  ${PROJECT_BINARY_DIR}/
+  ${PROJECT_BINARY_DIR}/src
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/modules/datatype
   ${PROJECT_SOURCE_DIR}/modules/requests
   ${PROJECT_SOURCE_DIR}/modules/status
-  ${PROJECT_BINARY_DIR}/src
   ${MPI_C_INCLUDE_PATH})
+

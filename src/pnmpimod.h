@@ -41,9 +41,9 @@ Boston, MA 02111-1307 USA
 #ifndef _PNMPIMOD_HEADER
 #define _PNMPIMOD_HEADER
 
+#include "pnmpi-config.h"
 #include "pnmpi.h"
 #include <mpi.h>
-
 
 /*===============================================================*/
 /* Error codes */

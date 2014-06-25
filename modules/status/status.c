@@ -169,14 +169,24 @@ int PNMPIMOD_Status_RequestStorage(int size)
 /*........................................................................*/
 /* Evaluate Status */
 
-int MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count)
+int MPI_Get_count(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  MPI_Status *status,
+  MPI_Datatype datatype, int *count)
 {
   int err;
   err = PMPI_Get_count(status, datatype, count);
   return err;
 }
 
-int MPI_Get_elements(MPI_Status *status, MPI_Datatype datatype, int *count)
+int MPI_Get_elements(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  MPI_Status *status,
+  MPI_Datatype datatype, int *count)
 {
   int err;
   err = PMPI_Get_elements(status, datatype, count);
@@ -216,10 +226,14 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
 /*........................................................................*/
 /* Send/Recv */
 
-int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest,
-                 int sendtag, void *recvbuf, int recvcount,
-                 MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm,
-                 MPI_Status *status)
+int MPI_Sendrecv(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf,
+  int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm,
+  MPI_Status *status)
 {
   int err;
   ALLOCATE_STATUS(newstatus, 1)

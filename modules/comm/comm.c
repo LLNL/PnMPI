@@ -1,10 +1,10 @@
+//#include <iostream>
+//#include <map>
 #include <assert.h>
-#include <iostream>
-#include <map>
-
-using namespace std;
+// using namespace std;
 
 #include <mpi.h>
+#include <pnmpi-config.h>
 #include <pnmpimod.h>
 
 #include "commsub.h"
@@ -55,17 +55,29 @@ void COMM_ALL_FINALIZE()
 {
 }
 
-void SEND_P2P_START(void *buf, int count, MPI_Datatype dt, int node, int tag,
+void SEND_P2P_START(
+#ifdef HAVE_MPI3_CONST_ARGS
+    const
+#endif // HAVE_MPI3_CONST_ARGS
+    void *buf, int count, MPI_Datatype dt, int node, int tag,
 		    MPI_Comm comm, void **ptr, int type)
 {
 }
 
-void SEND_P2P_ASYNC_MID1(void *buf, int count, MPI_Datatype dt, int node, int tag,
+void SEND_P2P_ASYNC_MID1(
+#ifdef HAVE_MPI3_CONST_ARGS
+    const
+#endif // HAVE_MPI3_CONST_ARGS
+    void *buf, int count, MPI_Datatype dt, int node, int tag,
 			 MPI_Comm comm, void **ptr, int type)
 {
 }
 
-void SEND_P2P_END(void *buf, int count, MPI_Datatype dt, int node, int tag,
+void SEND_P2P_END(
+#ifdef HAVE_MPI3_CONST_ARGS
+    const
+#endif // HAVE_MPI3_CONST_ARGS
+    void *buf, int count, MPI_Datatype dt, int node, int tag,
 		  MPI_Comm comm, int err, void **ptr, void **midptr, int type)
 {
 }
@@ -163,7 +175,7 @@ int MPI_Init(int *argc, char ***argv)
     return err;
 
   err = PNMPI_Service_GetServiceByName(handle_dt, "getDatatypeReference",
-                                       "pimp", &serv);
+                                       "Pimp", &serv);
   if (err != PNMPI_SUCCESS)
     return err;
   dt_get = (PNMPIMOD_Datatype_getReference_t)((void *)serv.fct);
@@ -273,8 +285,12 @@ int MPI_Finalize(void)
 /*........................................................................*/
 /* Sync Sends */
 
-int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-             MPI_Comm comm)
+int MPI_Send(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -286,8 +302,12 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
   return err;
 }
 
-int MPI_Bsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-              MPI_Comm comm)
+int MPI_Bsend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -299,8 +319,12 @@ int MPI_Bsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
   return err;
 }
 
-int MPI_Rsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-              MPI_Comm comm)
+int MPI_Rsend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -312,8 +336,12 @@ int MPI_Rsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
   return err;
 }
 
-int MPI_Ssend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-              MPI_Comm comm)
+int MPI_Ssend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -329,8 +357,13 @@ int MPI_Ssend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
 /*........................................................................*/
 /* Async Sends */
 
-int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-              MPI_Comm comm, MPI_Request *request)
+int MPI_Isend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
+  MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -343,8 +376,13 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
   return err;
 }
 
-int MPI_Ibsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-               MPI_Comm comm, MPI_Request *request)
+int MPI_Ibsend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
+  MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -357,8 +395,13 @@ int MPI_Ibsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
   return err;
 }
 
-int MPI_Irsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-               MPI_Comm comm, MPI_Request *request)
+int MPI_Irsend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
+  MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -371,8 +414,13 @@ int MPI_Irsend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
   return err;
 }
 
-int MPI_Issend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-               MPI_Comm comm, MPI_Request *request)
+int MPI_Issend(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *buf,
+  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
+  MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -425,10 +473,14 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
 /*........................................................................*/
 /* Send/Recv */
 
-int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest,
-                 int sendtag, void *recvbuf, int recvcount,
-                 MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm,
-                 MPI_Status *status)
+int MPI_Sendrecv(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf,
+  int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm,
+  MPI_Status *status)
 {
   int err;
   void *sptr = NULL, *rptr = NULL;
@@ -980,9 +1032,13 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
 /*........................................................................*/
 /* Scatter */
 
-int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
-                MPI_Comm comm)
+int MPI_Scatter(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
+  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1100,9 +1156,21 @@ int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 /*........................................................................*/
 /* Scatterv */
 
-int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
-                 MPI_Datatype sendtype, void *recvbuf, int recvcount,
-                 MPI_Datatype recvtype, int root, MPI_Comm comm)
+int MPI_Scatterv(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *sendcounts,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *displs,
+  MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype,
+  int root, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1219,9 +1287,13 @@ int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
 /*........................................................................*/
 /* Gather */
 
-int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-               void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
-               MPI_Comm comm)
+int MPI_Gather(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
+  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1339,9 +1411,21 @@ int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 /*........................................................................*/
 /* Gatherv */
 
-int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                void *recvbuf, int *recvcounts, int *displs,
-                MPI_Datatype recvtype, int root, MPI_Comm comm)
+int MPI_Gatherv(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, void *recvbuf,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *recvcounts,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *displs,
+  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1467,9 +1551,13 @@ int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 /*........................................................................*/
 /* Allgather */
 
-int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                  MPI_Comm comm)
+int MPI_Allgather(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
+  MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1597,9 +1685,21 @@ int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 /*........................................................................*/
 /* Allgatherv */
 
-int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                   void *recvbuf, int *recvcounts, int *displs,
-                   MPI_Datatype recvtype, MPI_Comm comm)
+int MPI_Allgatherv(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, void *recvbuf,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *recvcounts,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *displs,
+  MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1726,9 +1826,13 @@ int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 /*........................................................................*/
 /* Alltoall */
 
-int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                 void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                 MPI_Comm comm)
+int MPI_Alltoall(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
+  MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1851,10 +1955,31 @@ int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
 /*........................................................................*/
 /* alltoallv */
-
-int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *sdispls,
-                  MPI_Datatype sendtype, void *recvbuf, int *recvcounts,
-                  int *rdispls, MPI_Datatype recvtype, MPI_Comm comm)
+// MPI_Alltoallv(const void *, const int *, const int *, MPI_Datatype={int},
+// void *, const int *, const int *, MPI_Datatype={int}, MPI_Comm={int}
+int MPI_Alltoallv(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *sendcounts,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *sdispls,
+  MPI_Datatype sendtype, void *recvbuf,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *recvcounts,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *rdispls,
+  MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1980,8 +2105,13 @@ int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *sdispls,
 /*........................................................................*/
 /* Reduce */
 
-int MPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-               MPI_Op op, int root, MPI_Comm comm)
+int MPI_Reduce(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+  MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2065,8 +2195,12 @@ int MPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 /*........................................................................*/
 /* allreduce */
 
-int MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
-                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Allreduce(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2153,8 +2287,17 @@ int MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
 /*........................................................................*/
 /* reduce/scatter */
 
-int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
-                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Reduce_scatter(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  void *recvbuf,
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  int *recvcounts,
+  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2298,8 +2441,12 @@ int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
 /*........................................................................*/
 /* scan */
 
-int MPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-             MPI_Op op, MPI_Comm comm)
+int MPI_Scan(
+#ifdef HAVE_MPI3_CONST_ARGS
+  const
+#endif // HAVE_MPI3_CONST_ARGS
+  void *sendbuf,
+  void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int err;
   void *cptr;

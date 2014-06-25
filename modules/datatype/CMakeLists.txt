@@ -18,4 +18,5 @@ install(TARGETS datatype dtprint DESTINATION lib/pnmpi-modules)
 include_directories(
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_BINARY_DIR}/src
+  ${PROJECT_BINARY_DIR}
   ${MPI_C_INCLUDE_PATH})
