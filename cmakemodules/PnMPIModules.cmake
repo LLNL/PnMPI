@@ -59,6 +59,7 @@ endfunction()
 ##
 ## Creates a feature test with an MPI program.
 ####################################################
+
 MACRO (
     featureTestMpi
         source # The source file name of the MPI program to test, must be in the folder cmakemodules/FeatureTests
@@ -71,9 +72,14 @@ MACRO (
         SET (srcDir "${CMAKE_CURRENT_BINARY_DIR}/${source}")
         CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmakemodules/FeatureTests/${source}" "${srcDir}/${source}" COPYONLY)
 
+	set(HALT_ON_WARN "-Werror")
+	IF (CMAKE_${language}_COMPILER MATCHES "xl")
+		set(HALT_ON_WARN "-qhalt=w")
+	ENDIF()
         IF (MPI_${language}_COMPILER)
            FILE(WRITE "${srcDir}/CMakeLists.txt"
                "PROJECT (test ${language})\n"
+	       "set(CMAKE_${language}_FLAGS \"${HALT_ON_WARN}\")\n"
                "cmake_minimum_required(VERSION 2.6)\n"
                "set(CMAKE_${language}_COMPILER \"${MPI_${language}_COMPILER}\")\n"
                "add_definitions(${skipPrepare})\n"
@@ -89,6 +95,7 @@ MACRO (
            FILE(WRITE "${srcDir}/CMakeLists.txt"
                "PROJECT (test ${language})\n"
                "cmake_minimum_required(VERSION 2.6)\n"
+	       "set(CMAKE_${language}_FLAGS \"${HALT_ON_WARN}\")\n"
                "set(CMAKE_C_COMPILER \"${C_compiler_to_use}\")\n"
                "set(CMAKE_CXX_COMPILER \"${CXX_compiler_to_use}\")\n"
                "set(CMAKE_Fortran_COMPILER \"${Fortran_compiler_to_use}\")\n"

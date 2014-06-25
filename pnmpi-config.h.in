@@ -82,6 +82,9 @@ Boston, MA 02111-1307 USA
 /* Define if mpi.h has working MPI_Init_thread (C)*/
 #cmakedefine HAVE_MPI_INIT_THREAD_C 1
 
+/* Define if mpi.h has MPI3 const arguments */
+#cmakedefine HAVE_MPI3_CONST_ARGS 1
+
 /* Define if pthreads are available */
 #cmakedefine PNMPI_HAVE_PTHREADS 1
 

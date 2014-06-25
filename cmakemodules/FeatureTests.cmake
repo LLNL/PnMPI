@@ -26,6 +26,10 @@ IF (CMAKE_Fortran_COMPILER_WORKS)
   featureTestMpi ( "ft_mpi_init_thread.f" Fortran HAVE_MPI_INIT_THREAD_Fortran)
 ENDIF (CMAKE_Fortran_COMPILER_WORKS)
 
+# MPI3 defines some args constant
+featureTestMpi ("ft_mpi3_const_args.c" C HAVE_MPI3_CONST_ARGS)
+
+
 # handle convert macros may be present
 ##@TODO we also have feature tests for the other handles, we just didn't have the time to
 ##handle them correctly in the existing stuff, so right now just what we use

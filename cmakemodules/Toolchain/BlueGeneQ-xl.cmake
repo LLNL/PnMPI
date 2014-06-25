@@ -24,3 +24,6 @@ find_program(MPI_COMPILER NAMES mpixlc mpxlc
   /usr/local/bin
   /usr/bin
   /bgsys/drivers/ppcfloor/comm/gcc/bin)
+
+SET(MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." FORCE)
+SET(MPIEXEC_EXTRA_FLAG "-ppdebug" CACHE STRING "Extraflag used to give the debug queue for srun" FORCE)
