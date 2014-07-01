@@ -65,6 +65,12 @@
 
 #define CONFNAME ".pnmpi-conf"
 
+#ifdef NO_EXTERN_INLINE
+#define EXTERN_INLINE inline
+#else
+#define EXTERN_INLINE extern inline
+#endif
+
 typedef char module_name_t[PNMPI_MODULE_FILENAMELEN];
 
 typedef struct module_servlist_d *module_servlist_p;
@@ -267,14 +273,14 @@ int PMPI_Finalized(int *);
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
-inline int set_pnmpi_level(int value)
+EXTERN_INLINE int set_pnmpi_level(int value)
 {
   pthread_setspecific(pnmpi_level_key, (void *)(long)value);
   return value;
 }
 
 // pnmpi_level++
-inline int inc_pnmpi_level()
+EXTERN_INLINE int inc_pnmpi_level()
 {
   int value = (int)(unsigned long)pthread_getspecific(pnmpi_level_key) + 1;
   pthread_setspecific(pnmpi_level_key, (void *)(long)value);
@@ -282,19 +288,19 @@ inline int inc_pnmpi_level()
 }
 
 // pnmpi_level--
-inline int dec_pnmpi_level()
+EXTERN_INLINE int dec_pnmpi_level()
 {
   int value = (int)(unsigned long)pthread_getspecific(pnmpi_level_key) - 1;
   pthread_setspecific(pnmpi_level_key, (void *)(long)value);
   return value;
 }
 
-inline int get_pnmpi_level()
+EXTERN_INLINE int get_pnmpi_level()
 {
   return (int)((unsigned long)pthread_getspecific(pnmpi_level_key));
 }
 
-inline int get_pnmpi_mpi_level()
+EXTERN_INLINE int get_pnmpi_mpi_level()
 {
   int value;
   pthread_mutex_lock(&pnmpi_level_lock);
@@ -303,14 +309,14 @@ inline int get_pnmpi_mpi_level()
   return value;
 }
 
-inline void inc_pnmpi_mpi_level()
+EXTERN_INLINE void inc_pnmpi_mpi_level()
 {
   pthread_mutex_lock(&pnmpi_level_lock);
   pnmpi_mpi_level++;
   pthread_mutex_unlock(&pnmpi_level_lock);
 }
 
-inline void dec_pnmpi_mpi_level()
+EXTERN_INLINE void dec_pnmpi_mpi_level()
 {
   pthread_mutex_lock(&pnmpi_level_lock);
   pnmpi_mpi_level--;
@@ -320,38 +326,38 @@ inline void dec_pnmpi_mpi_level()
 #else  /*PNMPI_ENABLE_THREAD_SAFETY*/
 // build w/o thread safety enabled
 int __pnmpi_level;
-inline int set_pnmpi_level(int value)
+EXTERN_INLINE int set_pnmpi_level(int value)
 {
   __pnmpi_level = value;
   return value;
 }
 
-inline void inc_pnmpi_mpi_level()
+EXTERN_INLINE void inc_pnmpi_mpi_level()
 {
   pnmpi_mpi_level++;
 }
 
-inline void dec_pnmpi_mpi_level()
+EXTERN_INLINE void dec_pnmpi_mpi_level()
 {
   pnmpi_mpi_level--;
 }
 
-inline int get_pnmpi_level()
+EXTERN_INLINE int get_pnmpi_level()
 {
   return __pnmpi_level;
 }
 
-inline int inc_pnmpi_level()
+EXTERN_INLINE int inc_pnmpi_level()
 {
   return ++__pnmpi_level;
 }
 
-inline int dec_pnmpi_level()
+EXTERN_INLINE int dec_pnmpi_level()
 {
   return --__pnmpi_level;
 }
 
-inline int get_pnmpi_mpi_level()
+EXTERN_INLINE int get_pnmpi_mpi_level()
 {
   return pnmpi_mpi_level;
 }

@@ -37,7 +37,10 @@ Boston, MA 02111-1307 USA
 #include <string.h>
 #include <unistd.h>
 
+#define NO_EXTERN_INLINE
 #include "core.h"
+#undef NO_EXTERN_INLINE
+
 #include "pnmpi-config.h"
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
