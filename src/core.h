@@ -45,6 +45,14 @@
 #include "debug.h"
 #include "wrapper.h"
 
+/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
+#ifdef PNMPI_ENABLE_THREAD_SAFETY
+#include <pthread.h>
+pthread_mutex_t pnmpi_level_lock;
+pthread_key_t pnmpi_level_key;
+#endif
+/* jfm Modification (ELP AP THREAD SAFETY) END */
+
 /* Private Interface for PNMPI */
 
 #define NUM_MPI_CALLS 300

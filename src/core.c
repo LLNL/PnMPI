@@ -43,12 +43,6 @@ Boston, MA 02111-1307 USA
 
 #include "pnmpi-config.h"
 
-/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
-#include <pthread.h>
-#endif
-/* jfm Modification (ELP AP THREAD SAFETY) END */
-
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
 
@@ -57,8 +51,6 @@ int pnmpi_max_level;
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
-pthread_mutex_t pnmpi_level_lock;
-pthread_key_t pnmpi_level_key;
 
 #ifdef __GNUC__
 __attribute__((constructor)) void initialize_pnmpi_threaded()
