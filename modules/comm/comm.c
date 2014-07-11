@@ -1,7 +1,4 @@
-//#include <iostream>
-//#include <map>
 #include <assert.h>
-// using namespace std;
 
 #include <mpi.h>
 #include <pnmpi-config.h>
