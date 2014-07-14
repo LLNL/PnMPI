@@ -88,6 +88,14 @@ Boston, MA 02111-1307 USA
 /* Define if pthreads are available */
 #cmakedefine PNMPI_HAVE_PTHREADS 1
 
+/* Define if pthreads are available */
+#cmakedefine HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK 1
+
+#ifndef HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK
+#define PNMPI_MVAPICH1FIX 1
+#endif
+
+
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #cmakedefine PNMPI_ENABLE_THREAD_SAFETY 1
 /* jfm Modification (ELP AP THREAD SAFETY) END */

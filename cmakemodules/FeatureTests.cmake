@@ -29,6 +29,7 @@ ENDIF (CMAKE_Fortran_COMPILER_WORKS)
 # MPI3 defines some args constant
 featureTestMpi ("ft_mpi3_const_args.c" C HAVE_MPI3_CONST_ARGS)
 
+featureTestMpi ("ft_pmpi_type_create_indexed_block.c" C HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK)
 
 # handle convert macros may be present
 ##@TODO we also have feature tests for the other handles, we just didn't have the time to
