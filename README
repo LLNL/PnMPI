@@ -88,8 +88,8 @@ particular MPI that is NOT the one autodetected by the build,
 you can supply your particular MPI compiler as a parameter:
 
   cmake \
-    -D CMAKE_INSTALL_PREFIX=/path/to/install/destination \
-    -D MPI_C_COMPILER=/path/to/my/mpicc \
+    -DCMAKE_INSTALL_PREFIX=/path/to/install/destination \
+    -DMPI_C_COMPILER=/path/to/my/mpicc \
     ..
 
 See the documentation in cmakemodules/FindMPI.cmake for more
@@ -116,7 +116,7 @@ available, the system should autodetect this and not
 build the Fortran libraries and demo codes. It can also
 be manually turned off by adding
 
-    -D ENABLE_FORTRAN=OFF
+    -DENABLE_FORTRAN=OFF
 
 to the cmake configuration command.
 
@@ -137,6 +137,19 @@ for Fortran that allow you to test the correct
 linkage.
 
 
+A3a) Configuring with/without Testing, PnMPI-modules
+
+By default PnMPI is configured to build all built-in
+modules and demo/test programs. If the build of these
+fails they can be switched off by adding
+
+    -DENABLE_DEMO=OFF
+resp.
+    -DENABLE_MODULES=OFF
+
+to the cmake configuration command.
+
+
 A4) Configuring for cross-compiled environments
 -----------------------------------------------
 When configuring PnMPI in cross-compiled environments (such
@@ -148,11 +161,12 @@ for a BG/P machine with settings matching LC's machines
 and using the GNU compliler suite, add the following to
 the cmake configuration command:
 
--D CMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneP-gnu.cmake
+-DCMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneP-gnu.cmake
 
 or likewise, for BG/Q:
 
--D CMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneQ-gnu.cmake
+-DCMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneQ-gnu.cmake
+
 
 A5) Installed structure
 -----------------------
@@ -193,6 +207,9 @@ PnMPI installation (that is, your CMAKE_INSTALL_PREFIX) so that
 external module builds can find PnMPI configuration files.  See
 Section (C) for more information on building custom modules.
 
+After setting up, for benchmark purposes PNMPI_BE_SILENT should be
+set, so PnMPI stops producing output.
+
 
 A7) RPATH settings
 -----------------------
@@ -206,7 +223,7 @@ libraries added to your RPATH, e.g. if you expect all of PnMPI's
 dependencies to be found in system paths, then you can build without
 rpath additions using this option to cmake:
 
-  -D CMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE
+  -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE
 
 This will add only the PnMPI installation lib directory to the
 rpath of the PnMPI library.

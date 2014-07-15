@@ -116,13 +116,20 @@ include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
 add_subdirectory(wrap)
 add_subdirectory(src)
 add_subdirectory(patch)
-add_subdirectory(modules)
 
-option(ENABLE_TESTS "Selects whether tests are built." FALSE)
-if(ENABLE_TESTS)
-    enable_testing() #activates creation of tests
+option(ENABLE_MODULES "Selects whether PnMPI modules are built." TRUE)
+if(ENABLE_MODULES)
+    add_subdirectory(modules)
+endif(ENABLE_MODULES)
+
+option(ENABLE_DEMO "Selects whether demo biraries are built." TRUE)
+if(ENABLE_DEMO)
+    if(ENABLE_MODULES)
+	# only if demo and modules get built
+        enable_testing() #activates creation of tests
+    endif(ENABLE_MODULES)
     add_subdirectory(demo)
-endif(ENABLE_TESTS)
+endif(ENABLE_DEMO)
 
 #===================================
 #Other install stuff (which is not handled in the sub-dirs)
