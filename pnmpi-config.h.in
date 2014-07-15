@@ -59,7 +59,13 @@ Boston, MA 02111-1307 USA
 #define PNMPI_VERSION       "@PNMPI_VERSION@"
 
 /* define the array size of fortran MPI_Status, TODO: replace with call to fortran snippet  */
-#define PNMPI_F_STATUS_SIZE 6
+#ifdef MPI_STATUS_SIZE
+  /* many mpi implementations provide the value in C. The standard states "Fortran only" */
+  #define PNMPI_F_STATUS_SIZE MPI_STATUS_SIZE
+#else
+  /* here some fortran code should be called to get the actual value */
+  #define PNMPI_F_STATUS_SIZE 6
+#endif
 
 /* Define if mpi.h has MPI_Status_c2f() and MPI_Status_f2c() */
 #cmakedefine HAVE_MPI_STATUS_C2F 1
