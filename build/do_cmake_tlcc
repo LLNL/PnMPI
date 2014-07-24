@@ -3,4 +3,5 @@
 cmake \
     -D CMAKE_INSTALL_PREFIX=$LOCAL/pnmpi \
     -D CMAKE_BUILD_TYPE=Debug \
+    -D CMAKE_CXX_FLAGS="-g -Wall -Werror" \
     ..

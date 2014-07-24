@@ -11,7 +11,7 @@
 # Add linkage to adept utils if we have it
 if (adept_utils_FOUND)
   include_directories(BEFORE ${adept_utils_INCLUDE_PATH})
-  set(TIMING_LIB adept_timing)
+  set(TIMING_LIB adept_timing adept_cutils)
 endif()
 
 # Add wrapped files to the build.

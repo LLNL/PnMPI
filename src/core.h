@@ -106,7 +106,8 @@ typedef struct module_arg_d
 typedef struct module_def_d *module_def_p;
 typedef struct module_def_d
 {
-  char name[PNMPI_MODULE_FILENAMELEN];
+  module_name_t name;
+  module_name_t path;
   char username[PNMPI_MODULE_USERNAMELEN];
   int registered;
   void *handle;
@@ -173,7 +174,7 @@ extern pnmpi_functions_t pnmpi_function_ptrs;
 #ifdef DBGLEVEL5
 #define MODULE_STATS_5(mods, fn) \
   if (DBGCHECK(DBGLEVEL5))       \
-    mods.module[__i]->statscount.fn = 0;
+    mods.module[i]->statscount.fn = 0;
 #define TOTAL_STATS_5(fn)  \
   if (DBGCHECK(DBGLEVEL5)) \
     pnmpi_totalstats_count.fn = 0;
@@ -185,7 +186,7 @@ extern pnmpi_functions_t pnmpi_function_ptrs;
 #ifdef DBGLEVEL6
 #define MODULE_STATS_6(mods, fn) \
   if (DBGCHECK(DBGLEVEL6))       \
-    mods.module[__i]->statstiming.fn = 0;
+    mods.module[i]->statstiming.fn = 0;
 #define TOTAL_STATS_6(fn)  \
   if (DBGCHECK(DBGLEVEL6)) \
     pnmpi_totalstats_timing.fn = 0;
@@ -240,7 +241,7 @@ int PMPI_Finalized(int *);
 #define INITIALIZE_FUNCTION_STACK(routine, routine_id, r_type, stack, mods, \
                                   mpiroutine)                               \
   {                                                                         \
-    int __i;                                                                \
+    int i;                                                                  \
     DBGPRINT2("Initialize stack for %s\n", routine);                        \
     if (pnmpi_function_ptrs.stack == NULL)                                  \
       {                                                                     \
@@ -252,26 +253,23 @@ int PMPI_Finalized(int *);
         WARNPRINT("Can't allocate stack for (%i) - exiting", routine_id);   \
         exit(1);                                                            \
       }                                                                     \
-    for (__i = 0; __i < mods.num; __i++)                                    \
+    for (i = 0; i < mods.num; i++)                                          \
       {                                                                     \
-        if (mods.module[__i]->stack_delimiter)                              \
+        if (mods.module[i]->stack_delimiter)                                \
           continue;                                                         \
-        pnmpi_function_ptrs.stack[__i] =                                    \
-          (r_type)mydlsym(mods.module[__i]->handle, routine);               \
-        RTLDNEXT_RETRIEVAL(r_type, routine)                                 \
-        if (pnmpi_function_ptrs.stack[__i] != NULL &&                       \
-            pnmpi_function_ptrs.stack[__i] != (r_type)P##mpiroutine &&      \
-            RTLDNEXT_CHECK(stack))                                          \
+        pnmpi_function_ptrs.stack[i] =                                      \
+          (r_type)find_symbol(mods.module[i], routine);                     \
+        if (pnmpi_function_ptrs.stack[i] != NULL)                           \
           {                                                                 \
             SET_ACTIVATED(routine_id);                                      \
           }                                                                 \
         else                                                                \
           {                                                                 \
-            pnmpi_function_ptrs.stack[__i] =                                \
+            pnmpi_function_ptrs.stack[i] =                                  \
               NULL; /*needed to make RTLD_NEXT check work*/                 \
           }                                                                 \
         DBGPRINT2("Symbol for routine %s in module %s: value %px", routine, \
-                  mods.module[__i]->name, pnmpi_function_ptrs.stack[__i]);  \
+                  mods.module[i]->name, pnmpi_function_ptrs.stack[i]);      \
         MODULE_STATS_5(mods, mpiroutine);                                   \
         MODULE_STATS_6(mods, mpiroutine);                                   \
       }                                                                     \
