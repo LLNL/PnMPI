@@ -1,34 +1,34 @@
 /*
-Copyright (c) 2008
-Lawrence Livermore National Security, LLC.
+  Copyright (c) 2008
+  Lawrence Livermore National Security, LLC.
 
-Produced at the Lawrence Livermore National Laboratory.
-Written by Martin Schulz, schulzm@llnl.gov.
-LLNL-CODE-402774,
-All rights reserved.
+  Produced at the Lawrence Livermore National Laboratory.
+  Written by Martin Schulz, schulzm@llnl.gov.
+  LLNL-CODE-402774,
+  All rights reserved.
 
-This file is part of P^nMPI.
+  This file is part of P^nMPI.
 
-Please also read the file "LICENSE" included in this package for
-Our Notice and GNU Lesser General Public License.
+  Please also read the file "LICENSE" included in this package for
+  Our Notice and GNU Lesser General Public License.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-(as published by the Free Software Foundation) version 2.1
-dated February 1999.
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  (as published by the Free Software Foundation) version 2.1
+  dated February 1999.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY
-OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-terms and conditions of the GNU General Public License for more
-details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY
+  OF MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  terms and conditions of the GNU General Public License for more
+  details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this program; if not, write to the
+  You should have received a copy of the GNU Lesser General Public
+  License along with this program; if not, write to the
 
-Free Software Foundation, Inc.,
-59 Temple Place, Suite 330,
-Boston, MA 02111-1307 USA
+  Free Software Foundation, Inc.,
+  59 Temple Place, Suite 330,
+  Boston, MA 02111-1307 USA
 */
 
 #include <dlfcn.h>
@@ -42,6 +42,10 @@ Boston, MA 02111-1307 USA
 #undef NO_EXTERN_INLINE
 
 #include "pnmpi-config.h"
+
+#ifdef HAVE_ADEPT_UTILS
+#include "link_utils.h"
+#endif // HAVE_ADEPT_UTILS
 
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
@@ -84,56 +88,109 @@ void _fini()
 
 modules_t modules;
 
-static void *mydlopen(char *s, char *path, int f)
+// array of paths to directories to search for libraries in.
+typedef char **path_array_t;
+
+// This parses a :-separated path into strings for each component, and returns
+// a null-terminated array of those strings.
+static path_array_t parse_path(const char *path)
 {
-  // reset error message
-  void *ret = NULL;
-  char *pathdup, *start, *end;
-  module_name_t mod;
+  char *pathdup = strdup(path);
+  char *start, *end;
+  int pos, path_size;
+  path_array_t path_array;
 
-  dlerror();
+  // start with one element plus null terminator
+  path_size = 2;
+  for (start = pathdup; *start; start++)
+    {
+      if (*start == ':')
+        {
+          path_size++;
+        }
+    }
+  path_array = (path_array_t)malloc(path_size * sizeof(char *));
 
-  pathdup = strdup(path);
   start = pathdup;
+  pos = 0;
   do
     {
       end = strchr(start, ':');
-      if (end != NULL)
-        {
-          *end = (char)0;
-          end++;
-        }
+      if (end)
+        *end = '\0';
 
-      sprintf(mod, "%s/%s", start, s);
-
-      if (access(mod, R_OK) != -1)
-        {
-          ret = dlopen(mod, f);
-          break;
-        }
-      else if (access(mod, F_OK) != -1)
-        {
-          WARNPRINT("Can't load module %s at %s, no reading permissions", s,
-                    mod);
-        }
-
-      start = end;
+      path_array[pos] = strdup(start);
+      pos++;
+      start = end + 1;
     }
-  while ((end != NULL) && (ret == NULL));
+  while (end);
 
-  if (ret != NULL)
-    {
-      DBGPRINT2("Loading module %s\n", mod);
-    }
-  free(pathdup);
-  return ret;
+  path_array[pos] = NULL;
+  return path_array;
 }
 
-static void *mydlsym(void *h, char *s)
+static void free_path(path_array_t path_array)
 {
-  void *ret;
-  ret = dlsym(h, s);
-  return ret;
+  if (!path_array)
+    return;
+
+  path_array_t cur = path_array;
+  while (*cur)
+    {
+      free(*cur);
+      cur++;
+    }
+  free(path_array);
+}
+
+
+// This finds a module in a particular library path, given by an array of
+// directories
+// to search in order.
+static int find_module(const char *lib_name, path_array_t library_path,
+                       void **handle, char *mod_path)
+{
+  path_array_t path;
+  module_name_t location;
+
+  if (!library_path)
+    {
+      DBGPRINT2("ERROR: no module path defined\n", lib_name);
+      *handle = NULL;
+      return 1;
+    }
+
+  for (path = library_path; *path; path++)
+    {
+      snprintf(location, PNMPI_MODULE_FILENAMELEN, "%s/%s", *path, lib_name);
+      *handle = dlopen(location, RTLD_LAZY);
+      if (handle)
+        {
+          DBGPRINT2("Loading module %s\n", *lib_name);
+          strcpy(mod_path, location);
+          return 0;
+        }
+    }
+  return 1;
+}
+
+
+static void *find_symbol(const module_def_p module, const char *symbol_name)
+{
+  struct link_map *module_lmap = get_module_by_full_path(module->path);
+  void *symbol = dlsym(module->handle, symbol_name);
+
+#ifdef HAVE_ADEPT_UTILS
+  struct link_map *symbol_lmap = get_module_for_address(symbol);
+  if (symbol_lmap != module_lmap)
+    {
+      DBGPRINT2("WARNING: Ignoring symbol %s found in '%s' while loading '%s'.",
+                symbol_name, symbol_lmap->l_name, module_lmap->l_name);
+      return NULL;
+    }
+#endif // HAVE_ADEPT_UTILS
+
+  return symbol;
 }
 
 
@@ -153,7 +210,8 @@ static int whitespace(char c)
 
 void pnmpi_PreInit()
 {
-  char *libdir, *confdir;
+  path_array_t library_path;
+  char *lib_path_string, *confdir;
   module_name_t filename, modname;
   FILE *conffile = NULL;
   char line[MAX_LINE], c, lastc;
@@ -167,7 +225,6 @@ void pnmpi_PreInit()
   set_pnmpi_level(0);
   pnmpi_max_level = 0;
 
-
   /* set global defaults */
   /* none at this moment */
 
@@ -178,22 +235,24 @@ void pnmpi_PreInit()
 
   /* locate library */
 
-  libdir = getenv("PNMPI_LIB_PATH");
-  if (libdir == NULL)
+  lib_path_string = getenv("PNMPI_LIB_PATH");
+  if (lib_path_string == NULL)
     {
-      // no user libdir; just use the install destination's module path.
-      libdir = PNMPI_MODULES_DIR;
+      // no user lib_path_string; just use the install destination's module
+      // path.
+      lib_path_string = PNMPI_MODULES_DIR;
     }
   else
     {
-      // concat the user libdir with the install destination's module path.
-      size_t len = strlen(libdir) + strlen(PNMPI_MODULES_DIR) + 2;
-      const char *old_libdir = libdir;
-      libdir = (char *)malloc(len * sizeof(char));
-      sprintf(libdir, "%s:%s", old_libdir, PNMPI_MODULES_DIR);
+      // concat the user lib_path_string with the install destination's module
+      // path.
+      size_t len = strlen(lib_path_string) + strlen(PNMPI_MODULES_DIR) + 2;
+      const char *old_lib_path_string = lib_path_string;
+      lib_path_string = (char *)malloc(len * sizeof(char));
+      sprintf(lib_path_string, "%s:%s", old_lib_path_string, PNMPI_MODULES_DIR);
     }
-
-  DBGPRINT2("Found library at %s", libdir);
+  library_path = parse_path(lib_path_string);
+  DBGPRINT2("Library path is: %s", lib_path_string);
 
   /* locate and open file */
 
@@ -268,9 +327,6 @@ void pnmpi_PreInit()
         {
           DBGPRINT2("Open file via local directory - %s", filename);
         }
-
-      if (confdir)
-        free(confdir);
     }
 
 
@@ -461,9 +517,6 @@ void pnmpi_PreInit()
                   modules.module[modules.num]->registered = 0;
                   modules.module[modules.num]->services = NULL;
                   modules.module[modules.num]->username[0] = (char)0;
-                  modules.module[modules.num]->args =
-                    NULL; /*For "stack" type modules we have to set it here,
-                             some debug print at the end uses the pointer*/
                   modules.num++;
                 }
             }
@@ -516,31 +569,25 @@ void pnmpi_PreInit()
                   /* The first module gets the pcontrol by default */
 
                   if (modules.num == 0)
-                    modules.module[modules.num]->pcontrol = 1;
+                    {
+                      modules.module[modules.num]->pcontrol = 1;
+                    }
                   else
-                    modules.module[modules.num]->pcontrol = 0;
+                    {
+                      modules.module[modules.num]->pcontrol = 0;
+                    }
 
-                  modules.module[modules.num]->handle =
-                    mydlopen(modname, libdir, RTLD_LAZY);
+                  find_module(modname, library_path,
+                              &modules.module[modules.num]->handle,
+                              modules.module[modules.num]->path);
                   if (modules.module[modules.num]->handle == NULL)
                     {
-                      const char *dlerr = dlerror();
-                      if (dlerr == NULL)
-                        {
-                          WARNPRINT("Can't load module %s (File not found in "
-                                    "PNMPI_LIB_PATH)",
-                                    modname);
-                        }
-                      else
-                        {
-                          WARNPRINT("Can't load module %s (Error %s)", modname,
-                                    dlerr);
-                        }
+                      WARNPRINT("Can't load module %s (Error %s)", modname,
+                                dlerror());
                     }
                   else
                     {
                       /* we could open the module - hence we are good to go */
-
                       DBGPRINT2("dlopen successful");
 
                       modules.module[modules.num]->stack_delimiter = 0;
@@ -694,8 +741,6 @@ void pnmpi_PreInit()
     }     /* if file open */
 
   /*Free what we allocated*/
-  if (libdir != PNMPI_MODULES_DIR)
-    free(libdir);
   if (conffile)
     fclose(conffile);
 
@@ -712,8 +757,8 @@ void pnmpi_PreInit()
         if (modules.module[i]->stack_delimiter)
           continue;
 
-        regPoint = (PNMPI_RegistrationPoint_t)dlsym(modules.module[i]->handle,
-                                                    PNMPI_REGISTRATION_POINT);
+        regPoint = (PNMPI_RegistrationPoint_t)find_symbol(
+          modules.module[i], PNMPI_REGISTRATION_POINT);
         if (regPoint != 0)
           {
             /* check if this module has a RegistrationPoint and if yes, all it
@@ -775,6 +820,8 @@ void pnmpi_PreInit()
       }
   }
 #endif
+
+  free_path(library_path);
 
   /* fix variables */
   pnmpi_max_level = modules.num;
