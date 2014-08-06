@@ -1441,7 +1441,7 @@ extern void ''' + 'F77_' + string.upper(funct)
                             + countVar + '; i++) { \n')
                     xlateCode.append('         ' + xlateFuncType
                             + '(&(c_' + xlateVarName + '[i]),&('
-                            + xlateVarName + '[i]));\n')
+                            + xlateVarName + '[i*PNMPI_F_STATUS_SIZE]));\n')
                     xlateCode.append('''   }
 }
 ''')
@@ -1601,7 +1601,7 @@ void char_p_c2f(const char* cstr, char* fstr, int len)
   int i;
 
   strncpy(fstr, cstr, len);
-  for (i = strlen(cstr); i < len; ++i) {
+  for (i = strnlen(cstr, len); i < len; ++i) {
     fstr[i] = ' ';
   }
 }

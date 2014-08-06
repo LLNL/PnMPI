@@ -840,7 +840,7 @@ def all_but(fn_list):
     """Return a list of all mpi functions except those in fn_list"""
     all_mpi = set(mpi_functions.keys())
     diff = all_mpi - set(fn_list)
-    return [x for x in diff]
+    return sorted([x for x in diff])
 
 @macro("foreachfn", has_body=True)
 def foreachfn(out, scope, args, children):
