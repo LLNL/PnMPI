@@ -1,0 +1,7 @@
+[submodule "externals/adept-utils"]
+	path = externals/adept-utils
+	url = ssh://git@cz-stash.llnl.gov:7999/scale/adept-utils.git
+[submodule "externals/wrap"]
+	path = externals/wrap
+	url = ssh://git@cz-stash.llnl.gov:7999/scale/wrap.git
+	branch = cmake-config
