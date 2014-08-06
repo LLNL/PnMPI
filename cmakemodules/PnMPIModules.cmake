@@ -113,6 +113,8 @@ MACRO (
         #Try compile and preserve the result in a cached variable
         try_compile(${successVar} "${binDir}" "${srcDir}"
                         test
+	#  CMAKE_MODULE_PATH is needed to find the provided Toolchain/Platform files
+			CMAKE_FLAGS "-DCMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'"
                         OUTPUT_VARIABLE output)
 
         SET (${successVar} ${${successVar}} CACHE INTERNAL "Result of feature testing ${source}")
@@ -157,6 +159,8 @@ MACRO (
         #Try compile and preserve the result in a cached variable
         try_compile(${successVar} "${binDir}" "${srcDir}"
                         test
+	#  CMAKE_MODULE_PATH is needed to find the provided Toolchain/Platform files
+			CMAKE_FLAGS "-DCMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'"
                         OUTPUT_VARIABLE output)
 
         SET (${successVar} ${${successVar}} CACHE INTERNAL "Result of feature testing ${source}")
