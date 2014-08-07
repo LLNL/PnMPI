@@ -52,7 +52,7 @@ if (BFD_FOUND)
     featureTest("ft_bfd_new_api.c" "C" "PNMPI_NEW_BFD_API")
 endif ()
 
-SET(PNMPI_ENABLE_THREAD_SAFETY OFF CACHE BOOL "Pthreads found and thread safety selected")
+#SET(PNMPI_ENABLE_THREAD_SAFETY OFF CACHE BOOL "Pthreads found and thread safety selected")
 
 option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." FALSE)
 if(ENABLE_THREAD_SAFETY)
