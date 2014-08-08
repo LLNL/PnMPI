@@ -38,7 +38,7 @@ Boston, MA 02111-1307 USA
 #define PNMPI_HAVE_FORTRAN @CMAKE_Fortran_COMPILER_WORKS@
 
 /* Built with Adept Utils. */
-#define PNMPI_HAVE_ADEPT_UTILS @adept_utils_FOUND@
+#define PNMPI_HAVE_ADEPT_UTILS @PnMPI_USE_adept_utils@
 
 /* Built with BFD support. */
 #cmakedefine PNMPI_HAVE_BFD 1
@@ -48,9 +48,9 @@ Boston, MA 02111-1307 USA
 
 /* Locations of PnMPI directories in the install tree */
 #define PNMPI_INSTALL_PREFIX       "@PnMPI_INSTALL_PREFIX@"
-#define PNMPI_INCLUDE_DIR          "@PnMPI_INCLUDE_DIR@"
-#define PNMPI_LIBRARY_DIR          "@PnMPI_LIBRARY_DIR@"
-#define PNMPI_MODULES_DIR          "@PnMPI_MODULES_DIR@"
+#define PNMPI_INCLUDE_DIR          "@PnMPI_INSTALL_PREFIX@/include"
+#define PNMPI_LIBRARY_DIR          "@PnMPI_INSTALL_PREFIX@/lib"
+#define PNMPI_MODULES_DIR          "@PnMPI_INSTALL_PREFIX@/lib/pnmpi-modules"
 
 /* PnMPI version information -- numerical and a version string. */
 #define PNMPI_MAJOR_VERSION @PNMPI_MAJOR_VERSION@

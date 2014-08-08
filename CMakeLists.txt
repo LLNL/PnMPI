@@ -101,6 +101,7 @@ if(adept-utils_BINARY_DIR)
                 ${adept-utils_INSTALL_DIR}/include
     CACHE INTERNAL "adept-utils: Include Directories" FORCE)
   set(PnMPI_USE_adept_utils TRUE)
+  set(adept_utils_DIR ${adept-utils_BINARY_DIR})
 else(adept-utils_BINARY_DIR)
   find_package(adept_utils QUIET)
   if(adept_utils_FOUND)
@@ -161,6 +162,6 @@ install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
 
 # Configure a header file with the full build configuration.  Include the CMake file
 # first so that the header can include build parameters.
-include(${PROJECT_BINARY_DIR}/pnmpi-vars.cmake)
+# include(${PROJECT_BINARY_DIR}/pnmpi-vars.cmake)
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
