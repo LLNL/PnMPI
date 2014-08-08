@@ -28,10 +28,10 @@ set(PnMPI_Fortran_LIBRARIES          pnmpif)
 set(PnMPI_Fortran_STATIC_LIBRARIES   pnmpif_static)
 
 # These variables allow client libraries to use the same adept_utils as PnMPI
-set(PnMPI_USE_adept_utils           @adept_utils_FOUND@)
-if (PnMPI_USE_adept_utils)
-  find_package(adept_utils)
-endif()
+set(PnMPI_USE_adept_utils           @PnMPI_USE_adept_utils@)
+#if (PnMPI_USE_adept_utils)
+#  find_package(adept_utils)
+#endif()
 
 # These variables allow client libraries to use the same BFD library as PnMPI
 set(PnMPI_USE_BFD                  @BFD_FOUND@)

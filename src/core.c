@@ -177,10 +177,10 @@ static int find_module(const char *lib_name, path_array_t library_path,
 
 static void *find_symbol(const module_def_p module, const char *symbol_name)
 {
-  struct link_map *module_lmap = get_module_by_full_path(module->path);
   void *symbol = dlsym(module->handle, symbol_name);
 
 #ifdef HAVE_ADEPT_UTILS
+  struct link_map *module_lmap = get_module_by_full_path(module->path);
   struct link_map *symbol_lmap = get_module_for_address(symbol);
   if (symbol_lmap != module_lmap)
     {

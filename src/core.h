@@ -259,7 +259,10 @@ int PMPI_Finalized(int *);
           continue;                                                         \
         pnmpi_function_ptrs.stack[i] =                                      \
           (r_type)find_symbol(mods.module[i], routine);                     \
-        if (pnmpi_function_ptrs.stack[i] != NULL)                           \
+        RTLDNEXT_RETRIEVAL(r_type, routine)                                 \
+        if (pnmpi_function_ptrs.stack[i] != NULL &&                         \
+            pnmpi_function_ptrs.stack[i] != (r_type)P##mpiroutine &&        \
+            RTLDNEXT_CHECK(stack))                                          \
           {                                                                 \
             SET_ACTIVATED(routine_id);                                      \
           }                                                                 \

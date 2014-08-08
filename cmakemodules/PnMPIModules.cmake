@@ -153,6 +153,7 @@ MACRO (
         FILE(WRITE "${srcDir}/CMakeLists.txt"
             "PROJECT (test ${language})\n"
             "cmake_minimum_required(VERSION 2.6)\n"
+            "${EXTRA_INCLUDE_FILES}"
             "add_executable(test \"${source}\")\n"
             )
 
