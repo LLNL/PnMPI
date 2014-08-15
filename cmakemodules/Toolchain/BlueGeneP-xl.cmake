@@ -4,6 +4,8 @@ set(CMAKE_SYSTEM_NAME BlueGeneP-dynamic)
 # Set search paths to prefer local, admin-installed wrappers for the BG backend compilers
 set(BGP_XL_COMPILER_SEARCH_PATHS /usr/local/bin /usr/bin)
 
+find_program(PATCHER_FRONTEND_COMPILER gcc ${BGP_XL_COMPILER_SEARCH_PATHS})
+
 # GNU C Compilers
 find_program(CMAKE_C_COMPILER       bgxlc    ${BGP_XL_COMPILER_SEARCH_PATHS} /opt/ibmcmp/vac/bg/9.0/bin)
 find_program(CMAKE_CXX_COMPILER     bgxlC    ${BGP_XL_COMPILER_SEARCH_PATHS} /opt/ibmcmp/vacpp/bg/9.0/bin)
