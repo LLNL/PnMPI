@@ -1,2 +1,2 @@
 ADD_SUBDIRECTORY (adept-utils)
-#ADD_SUBDIRECTORY (wrap)
+ADD_SUBDIRECTORY (wrap)
