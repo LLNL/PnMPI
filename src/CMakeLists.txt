@@ -17,7 +17,8 @@ endif()
 # Add wrapped files to the build.
 add_wrapped_file(wrapper.h   wrapper.h.w)
 add_wrapped_file(newstack.h  newstack.h.w)
-add_wrapped_file(wrapper_c.c wrapper_c.c.w)
+add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
+# add_wrapped_file(wrapper_f.c wrapper_c.c.w "-f")
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
@@ -26,9 +27,10 @@ set(PNMPI_LIB_SOURCES
   services.c
   core.c
   wrapper.c
+  ${wrap_SOURCE_DIR}/getStatusSize.f
   # -- Generated sources --
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper_c.c
-  wrapper_f77.c
+#   wrapper_f77.c
   # Note: Generated headers must be added to enforce dependency.
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
