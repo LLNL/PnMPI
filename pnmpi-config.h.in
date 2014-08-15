@@ -47,10 +47,10 @@ Boston, MA 02111-1307 USA
 #cmakedefine PNMPI_NEW_BFD_API 1
 
 /* Locations of PnMPI directories in the install tree */
-#define PNMPI_INSTALL_PREFIX       "@PnMPI_INSTALL_PREFIX@"
-#define PNMPI_INCLUDE_DIR          "@PnMPI_INSTALL_PREFIX@/include"
-#define PNMPI_LIBRARY_DIR          "@PnMPI_INSTALL_PREFIX@/lib"
-#define PNMPI_MODULES_DIR          "@PnMPI_INSTALL_PREFIX@/lib/pnmpi-modules"
+#define PNMPI_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
+#define PNMPI_INCLUDE_DIR          "@CMAKE_INSTALL_PREFIX@/include"
+#define PNMPI_LIBRARY_DIR          "@CMAKE_INSTALL_PREFIX@/lib"
+#define PNMPI_MODULES_DIR          "@CMAKE_INSTALL_PREFIX@/lib/pnmpi-modules"
 
 /* PnMPI version information -- numerical and a version string. */
 #define PNMPI_MAJOR_VERSION @PNMPI_MAJOR_VERSION@
