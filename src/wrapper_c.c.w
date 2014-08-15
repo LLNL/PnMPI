@@ -83,8 +83,7 @@ Boston, MA 02111-1307 USA
 {{endforallfn}}
 
 
-{{forallfn fn_name MPI_Init MPI_Init_thread MPI_Pcontrol MPI_Finalize}}
-{{ret_type}} {{fn_name}}({{formals}})
+{{fnall fn_name MPI_Init MPI_Init_thread MPI_Pcontrol MPI_Finalize MPI_Wtick MPI_Wtime}}
 {
   DBGPRINT3("Entering Old {{fn_name}} at base level - Location = %px",&({{fn_name}}));
 
@@ -94,27 +93,25 @@ Boston, MA 02111-1307 USA
   }
   else
     {
-	int err;
-	#ifdef DBGLEVEL6
-	timing_t start_timer;
-	#endif
+        #ifdef DBGLEVEL6
+        timing_t start_timer;
+        #endif
     #ifdef DBGLEVEL5
     if (DBGCHECK(DBGLEVEL5))
-	  pnmpi_totalstats_count.{{fn_name}}++;
-	#endif
-	#ifdef DBGLEVEL6
+          pnmpi_totalstats_count.{{fn_name}}++;
+        #endif
+        #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
       start_timer=get_time_ns();
-	#endif
-    err=Internal_X{{fn_name}}({{args}});
-	#ifdef DBGLEVEL6
+        #endif
+    {{ret_val}}=Internal_X{{fn_name}}({{args}});
+        #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
       pnmpi_totalstats_timing.{{fn_name}}=get_time_ns()-start_timer;
-	#endif
-	return err;
-	}
+        #endif
+        }
 }
-{{endforallfn}}
+{{endfnall}}
 
 
 {{forallfn fn_name MPI_Pcontrol}}
