@@ -119,16 +119,19 @@ endif(adept-utils_BINARY_DIR)
 #======================================================
 # Set up wrapper generator so this project can use it.
 #======================================================
-set(WRAP ${PROJECT_SOURCE_DIR}/wrap/wrap.py)
+set(WRAP ${PROJECT_SOURCE_DIR}/externals/wrap/wrap.py)
 configure_file(
-  ${PROJECT_SOURCE_DIR}/wrap/WrapConfig.cmake.in
-  ${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake @ONLY)
-include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
+#  ${PROJECT_SOURCE_DIR}/wrap/WrapConfig.cmake.in
+#  ${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake @ONLY)
+#include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
+  ${PROJECT_SOURCE_DIR}/externals/wrap/wrap-config.cmake.in
+  ${PROJECT_BINARY_DIR}/externals/wrap/wrap-config.cmake @ONLY)
+include(${PROJECT_BINARY_DIR}/externals/wrap/wrap-config.cmake)
 
 #===================================
 # Recurse to sub-directories
 #===================================
-add_subdirectory(wrap)
+#add_subdirectory(wrap)
 add_subdirectory(src)
 add_subdirectory(patch)
 
@@ -163,5 +166,6 @@ install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
 # Configure a header file with the full build configuration.  Include the CMake file
 # first so that the header can include build parameters.
 # include(${PROJECT_BINARY_DIR}/pnmpi-vars.cmake)
+SET(PnMPI_INSTALL_PREFIX )
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
