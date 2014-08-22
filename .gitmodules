@@ -1,7 +1,9 @@
 [submodule "externals/adept-utils"]
 	path = externals/adept-utils
-	url = ssh://git@cz-stash.llnl.gov:7999/scale/adept-utils.git
+        url = https://github.com/scalability-llnl/adept-utils.git
+#	url = ssh://git@cz-stash.llnl.gov:7999/scale/adept-utils.git
 [submodule "externals/wrap"]
 	path = externals/wrap
-	url = ssh://git@cz-stash.llnl.gov:7999/scale/wrap.git
-	branch = fortran-fixes
+	url = https://github.com/scalability-llnl/wrap.git
+#	url = ssh://git@cz-stash.llnl.gov:7999/scale/wrap.git
+#	branch = fortran-fixes
