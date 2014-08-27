@@ -87,7 +87,15 @@ Boston, MA 02111-1307 USA
 {
   DBGPRINT3("Entering Old {{fn_name}} at base level - Location = %px",&({{fn_name}}));
 
-  if (NOT_ACTIVATED({{fn_name}}_ID) || get_pnmpi_mpi_level() > 0)
+  if (NOT_ACTIVATED({{fn_name}}_ID))
+  { // in case we have no registered function of this type and we call PMPI directly, a subsequent call from the mpi library starts at level1
+    int start_level=get_pnmpi_level();
+    set_pnmpi_level( pnmpi_max_level );
+    {{ret_type}} ret = P{{fn_name}}({{args}});
+    set_pnmpi_level( start_level );
+    return ret;
+  }
+  else if (get_pnmpi_mpi_level() > 0)
   {
     return P{{fn_name}}({{args}});
   }
