@@ -58,8 +58,6 @@ timing_t pnmpi_overall_timing;
 
 extern void *MPIR_ToPointer(int idx);
 
-#include "f77symbols.h"
-
 #ifdef COMPILE_FOR_FORTRAN
 void pmpi_init_(int *ierror);
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
