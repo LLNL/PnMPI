@@ -125,8 +125,8 @@ configure_file(
 #  ${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake @ONLY)
 #include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
   ${PROJECT_SOURCE_DIR}/externals/wrap/wrap-config.cmake.in
-  ${PROJECT_BINARY_DIR}/externals/wrap/wrap-config.cmake @ONLY)
-include(${PROJECT_BINARY_DIR}/externals/wrap/wrap-config.cmake)
+  ${PROJECT_BINARY_DIR}/wrap-config.cmake @ONLY)
+include(${PROJECT_BINARY_DIR}/wrap-config.cmake)
 
 #===================================
 # Recurse to sub-directories

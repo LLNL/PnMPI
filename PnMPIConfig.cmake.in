@@ -11,6 +11,7 @@
 #  - pnmpif          PnMPI Fortran library
 #  - pnmpif_static   PnMPI static Fortran library
 set(PnMPI_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/share/cmake/PnMPI)
+set(wrap_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/share/cmake/wrap)
 
 include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-libs.cmake)
 
@@ -21,7 +22,7 @@ include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-vars.cmake)
 include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-patch.cmake)
 
 # Allow other projects to use the wrap utility
-include(${PnMPI_CMAKE_INCLUDE_DIR}/WrapConfig.cmake)
+include(${wrap_CMAKE_INCLUDE_DIR}/wrap-config.cmake)
 
 # Allow other projects to build PnMPI modules
 include(${PnMPI_CMAKE_INCLUDE_DIR}/PnMPIModules.cmake)
