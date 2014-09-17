@@ -88,47 +88,6 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 #===================================
-#Check for adept_utils timers
-#===================================
-
-if(adept-utils_BINARY_DIR)
-  message(STATUS "Found adept_utils as submodule.")
-  set(adept-utils_INCLUDE_DIRS
-                ${adept-utils_SOURCE_DIR}/utils
-                ${adept-utils_SOURCE_DIR}/cutils
-                ${adept-utils_SOURCE_DIR}/timing
-                ${adept-utils_BINARY_DIR}
-                ${adept-utils_INSTALL_DIR}/include
-    CACHE INTERNAL "adept-utils: Include Directories" FORCE)
-  set(PnMPI_USE_adept_utils TRUE)
-  set(adept_utils_DIR ${adept-utils_BINARY_DIR})
-else(adept-utils_BINARY_DIR)
-  find_package(adept_utils QUIET)
-  if(adept_utils_FOUND)
-    message(STATUS "Found adept_utils in ${adept_utils_DIR}.")
-    add_definitions(-DHAVE_ADEPT_UTILS)
-    set(PnMPI_USE_adept_utils TRUE)
-  else()
-    message(STATUS "adept_utils package not found.  Building without timing.")
-    # Set these for our PnMPIConfig.cmake file.
-    set(adept_utils_INCLUDE_PATH adept_utils_INCLUDE_PATH-NOTFOUND)
-    set(adept_utils_LIBRARIES    adept_utils_LIBRARIES-NOTFOUND)
-  endif()
-endif(adept-utils_BINARY_DIR)
-
-#======================================================
-# Set up wrapper generator so this project can use it.
-#======================================================
-set(WRAP ${PROJECT_SOURCE_DIR}/externals/wrap/wrap.py)
-configure_file(
-#  ${PROJECT_SOURCE_DIR}/wrap/WrapConfig.cmake.in
-#  ${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake @ONLY)
-#include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
-  ${PROJECT_SOURCE_DIR}/externals/wrap/wrap-config.cmake.in
-  ${PROJECT_BINARY_DIR}/wrap-config.cmake @ONLY)
-include(${PROJECT_BINARY_DIR}/wrap-config.cmake)
-
-#===================================
 # Recurse to sub-directories
 #===================================
 #add_subdirectory(wrap)

@@ -27,7 +27,7 @@ set(PNMPI_LIB_SOURCES
   services.c
   core.c
   wrapper.c
-  ${wrap_SOURCE_DIR}/getStatusSize.f
+  ${Wrap_EXTRA_SOURCE}
   # -- Generated sources --
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper_c.c
 #   wrapper_f77.c
