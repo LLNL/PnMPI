@@ -1,16 +1,14 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
-# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
-# All rights reserved - please read information in "LICENCSE"
+PnMPI Tool Infrastructure
+========================================
 
-PnMPI Tool Infrastructure, Version 1.4 (git)
+Version 1.4
 
-Written by:
-  Martin Schulz     schulzm@llnl.gov
+by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774
 
-Contributors:
+### Contributors
   Todd Gamblin      tgamblin@llnl.gov
   Tobias Hilbrich   Tobias.Hilbrich@zih.tu-dresden.de
-
+  Joachim Protze    protze@itc.rwth-aachen.de
 
 PnMPI is a dynamic MPI tool infrastructure that builds on top of
 the standardized PMPI interface. It allows the user to
@@ -610,3 +608,8 @@ H) Contact
 For more information or in case of questions, please contact
 Martin Schulz at schulzm@llnl.gov.
 
+
+Copyright
+===========
+Copyright (c) 2008-2014, Lawrence Livermore National Security, LLC.
+All rights reserved - please read information in "LICENCSE"
