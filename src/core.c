@@ -837,4 +837,30 @@ void pnmpi_PreInit()
   /* fix variables */
   pnmpi_max_level = modules.num;
   set_pnmpi_level(0);
+
+#ifdef PNMPI_ENABLE_THREAD_SAFETY
+  // Notify all modules that we are done initializing PnMPI
+  for (i = 0; i < modules.num; i++)
+    {
+      // continue for stacks (they have no reg point)
+      if (modules.module[i]->stack_delimiter)
+        continue;
+
+      regPoint = (PNMPI_RegistrationPoint_t)find_symbol(
+        modules.module[i]->handle, PNMPI_INITCOMPLETE_POINT);
+      if (regPoint != 0)
+        {
+          /* check if this module has a RegistrationPoint and if yes, all it */
+
+          set_pnmpi_level(i);
+          err = regPoint();
+          if (err != PNMPI_SUCCESS)
+            {
+              WARNPRINT("Error registering module %s (Error %i)", modname, err);
+            }
+        }
+    } /*for modules*/
+  set_pnmpi_level(0);
+
+#endif
 }
