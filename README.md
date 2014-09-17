@@ -6,22 +6,24 @@ Version 1.4
 by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774
 
 ### Contributors
-  Todd Gamblin      tgamblin@llnl.gov
-  Tobias Hilbrich   Tobias.Hilbrich@zih.tu-dresden.de
-  Joachim Protze    protze@itc.rwth-aachen.de
+ * Todd Gamblin      tgamblin@llnl.gov
+ * Tobias Hilbrich   Tobias.Hilbrich@zih.tu-dresden.de
+ * Joachim Protze    protze@itc.rwth-aachen.de
 
 PnMPI is a dynamic MPI tool infrastructure that builds on top of
 the standardized PMPI interface. It allows the user to
-- run multiple PMPI tools concurrently
-- activate PMPI tools without relinking by just changing a
-  configuration file
-- multiplex toolsets during a single run
-- write cooperative PMPI tools
+
+ * run multiple PMPI tools concurrently
+ * activate PMPI tools without relinking by just changing a
+   configuration file
+ * multiplex toolsets during a single run
+ * write cooperative PMPI tools
 
 The package contains three main components:
-- The PnMPI core infrastructure
-- An MPI wrapper generation infrastructure
-- Tool modules that can explicitly exploit PnMPI's capabilities
+
+ * The PnMPI core infrastructure
+ * An MPI wrapper generation infrastructure
+ * Tool modules that can explicitly exploit PnMPI's capabilities
 
 So far, this software has mainly been tested on Linux clusters with
 RHEL-based OS distributions as well as IBM's BG/P systems. Additionally
@@ -445,9 +447,9 @@ C version (the F77 version works similarly):
 1. change into the "demo" directory
 2. The program "simple.c", which sends a message from any task with
   ID>0 to task 0, was compiled into three binaries:
-    - simple    (plain MPI code)
-    - simple-pn (linked with PnMPI)
-    - simple-s1 (plain code linked with sample1.so)
+    * simple    (plain MPI code)
+    * simple-pn (linked with PnMPI)
+    * simple-s1 (plain code linked with sample1.so)
 
 3. executing simple will run as usual
   The program output (for 2 nodes) will be:
@@ -482,10 +484,10 @@ C version (the F77 version works similarly):
 
 6. Running simple-pn will load all four modules in the specified
    order and intercept all MPI calls included in these modules:
-    - sample1: send and receive
-    - sample2: send
-    - sample3: receive
-    - sample4: send and receive
+    * sample1: send and receive
+    * sample2: send
+    * sample3: receive
+    * sample4: send and receive
   The program output (for 2 nodes) will be:
 
           0:
