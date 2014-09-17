@@ -152,6 +152,7 @@ static int find_module(const char *lib_name, path_array_t library_path,
 {
   path_array_t path;
   module_name_t location;
+  dlerror();
 
   if (!library_path)
     {
@@ -163,14 +164,25 @@ static int find_module(const char *lib_name, path_array_t library_path,
   for (path = library_path; *path; path++)
     {
       snprintf(location, PNMPI_MODULE_FILENAMELEN, "%s/%s", *path, lib_name);
-      *handle = dlopen(location, RTLD_LAZY);
-      if (handle)
+      if (access(location, R_OK) != -1)
         {
-          DBGPRINT2("Loading module %s\n", *lib_name);
-          strcpy(mod_path, location);
-          return 0;
+          *handle = dlopen(location, RTLD_LAZY);
+          if (handle)
+            {
+              DBGPRINT2("Loading module %s\n", *lib_name);
+              strcpy(mod_path, location);
+              return 0;
+            }
+          WARNPRINT("Loading error for module %s in %s ( Error %s )", lib_name,
+                    *path, dlerror());
+        }
+      else if (access(location, F_OK) != -1)
+        {
+          WARNPRINT("Can't load module %s at %s, no reading permissions",
+                    lib_name, *path);
         }
     }
+  WARNPRINT("Can't find module %s in PNMPI_LIB_PATH", lib_name);
   return 1;
 }
 
@@ -582,8 +594,7 @@ void pnmpi_PreInit()
                               modules.module[modules.num]->path);
                   if (modules.module[modules.num]->handle == NULL)
                     {
-                      WARNPRINT("Can't load module %s (Error %s)", modname,
-                                dlerror());
+                      WARNPRINT("Can't load module %s at all!", modname);
                     }
                   else
                     {
