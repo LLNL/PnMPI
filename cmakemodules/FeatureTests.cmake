@@ -63,3 +63,5 @@ if(ENABLE_THREAD_SAFETY)
         MESSAGE(FATAL_ERROR "Enabling thread-safety failed, no pthread support found on this system")
     ENDIF(PNMPI_HAVE_PTHREADS)
 endif(ENABLE_THREAD_SAFETY)
+
+featureTest("ft_gnuc.c" C PNMPI_HAVE_GNUC)
