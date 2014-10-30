@@ -83,7 +83,7 @@ MACRO (
                "cmake_minimum_required(VERSION 2.6)\n"
                "set(CMAKE_${language}_COMPILER \"${MPI_${language}_COMPILER}\")\n"
                "add_definitions(${skipPrepare})\n"
-               "add_executable(test \"${source}\")\n"
+               "add_executable(test-mpi \"${source}\")\n"
             )
         ELSE ()
            SET (TEMP_INCS "")
@@ -103,8 +103,8 @@ MACRO (
                "if (NOT \"${MPI_${language}_INCLUDE_PATH}\" STREQUAL \"\")\n"
                "    include_directories(${TEMP_INCS})\n"
                "endif (NOT \"${MPI_${language}_INCLUDE_PATH}\" STREQUAL \"\")\n"
-               "add_executable(test \"${source}\")\n"
-               "target_link_libraries(test ${MPI_${language}_LIBRARIES})\n"
+               "add_executable(test-mpi \"${source}\")\n"
+               "target_link_libraries(test-mpi ${MPI_${language}_LIBRARIES})\n"
             )
         ENDIF ()
 
@@ -154,7 +154,7 @@ MACRO (
             "PROJECT (test ${language})\n"
             "cmake_minimum_required(VERSION 2.6)\n"
             "${EXTRA_INCLUDE_FILES}"
-            "add_executable(test \"${source}\")\n"
+            "add_executable(test-mpi \"${source}\")\n"
             )
 
         #Try compile and preserve the result in a cached variable
