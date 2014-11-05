@@ -20,8 +20,12 @@ enable_language(Fortran OPTIONAL)
 #===================================
 #Policies
 #===================================
-cmake_policy(SET CMP0026 OLD) ## <- Requires porting at some point
-cmake_policy(SET CMP0042 OLD) ## <- RPath on MacOSX thing
+if(POLICY CMP0026)
+    cmake_policy(SET CMP0026 OLD) ## <- Requires porting at some point
+endif ()
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 OLD) ## <- RPath on MacOSX thing
+endif ()
 
 #======================================================================
 # RPATH setup.  Default is to rpath everything.  Set the option to
