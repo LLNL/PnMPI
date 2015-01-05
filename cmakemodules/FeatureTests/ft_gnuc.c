@@ -1,6 +1,6 @@
 int main(int argc, char **argv)
 {
-#ifndef _GNUC_
+#if !defined(_GNUC_) && !defined(__GNUC__)
 #pragma error No GNUC extensions available
 #error No GNUC extensions available
 #endif
