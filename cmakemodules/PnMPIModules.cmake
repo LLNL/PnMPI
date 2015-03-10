@@ -78,12 +78,12 @@ MACRO (
 	ENDIF()
         IF (MPI_${language}_COMPILER)
            FILE(WRITE "${srcDir}/CMakeLists.txt"
-               "PROJECT (test ${language})\n"
+               "PROJECT (featuretest ${language})\n"
 	       "set(CMAKE_${language}_FLAGS \"${HALT_ON_WARN}\")\n"
                "cmake_minimum_required(VERSION 2.6)\n"
                "set(CMAKE_${language}_COMPILER \"${MPI_${language}_COMPILER}\")\n"
                "add_definitions(${skipPrepare})\n"
-               "add_executable(test-mpi \"${source}\")\n"
+               "add_executable(featuretest-mpi \"${source}\")\n"
             )
         ELSE ()
            SET (TEMP_INCS "")
@@ -93,7 +93,7 @@ MACRO (
 
            #Create CMakeLists.txt
            FILE(WRITE "${srcDir}/CMakeLists.txt"
-               "PROJECT (test ${language})\n"
+               "PROJECT (featuretest ${language})\n"
                "cmake_minimum_required(VERSION 2.6)\n"
 	       "set(CMAKE_${language}_FLAGS \"${HALT_ON_WARN}\")\n"
                "set(CMAKE_C_COMPILER \"${C_compiler_to_use}\")\n"
@@ -103,8 +103,8 @@ MACRO (
                "if (NOT \"${MPI_${language}_INCLUDE_PATH}\" STREQUAL \"\")\n"
                "    include_directories(${TEMP_INCS})\n"
                "endif (NOT \"${MPI_${language}_INCLUDE_PATH}\" STREQUAL \"\")\n"
-               "add_executable(test-mpi \"${source}\")\n"
-               "target_link_libraries(test-mpi ${MPI_${language}_LIBRARIES})\n"
+               "add_executable(featuretest-mpi \"${source}\")\n"
+               "target_link_libraries(featuretest-mpi ${MPI_${language}_LIBRARIES})\n"
             )
         ENDIF ()
 
@@ -112,7 +112,7 @@ MACRO (
 
         #Try compile and preserve the result in a cached variable
         try_compile(${successVar} "${binDir}" "${srcDir}"
-                        test
+                        featuretest
 	#  CMAKE_MODULE_PATH is needed to find the provided Toolchain/Platform files
 			CMAKE_FLAGS "-DCMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'"
                         OUTPUT_VARIABLE output)
@@ -151,15 +151,15 @@ MACRO (
 
         #Create CMakeLists.txt
         FILE(WRITE "${srcDir}/CMakeLists.txt"
-            "PROJECT (test ${language})\n"
+            "PROJECT (featuretest ${language})\n"
             "cmake_minimum_required(VERSION 2.6)\n"
             "${EXTRA_INCLUDE_FILES}"
-            "add_executable(test-mpi \"${source}\")\n"
+            "add_executable(featuretest-mpi \"${source}\")\n"
             )
 
         #Try compile and preserve the result in a cached variable
         try_compile(${successVar} "${binDir}" "${srcDir}"
-                        test
+                        featuretest
 	#  CMAKE_MODULE_PATH is needed to find the provided Toolchain/Platform files
 			CMAKE_FLAGS "-DCMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'"
                         OUTPUT_VARIABLE output)
