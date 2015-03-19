@@ -35,4 +35,5 @@ Boston, MA 02111-1307 USA
 {{retType}} P{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
 {{endforallfn}}
 
+int PNMPI_Change_Stack_Explicit( PNMPI_modHandle_t stack );
 
