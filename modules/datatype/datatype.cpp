@@ -31,11 +31,11 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
+#include <mpi.h>
 #include <iostream>
 #include <map>
 #include <stdlib.h>
 
-#include <mpi.h>
 #include <pnmpimod.h>
 #include "datatype.h"
 
