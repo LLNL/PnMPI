@@ -31,6 +31,7 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
+#include <mpi.h>
 #include <iostream>
 #include <map>
 #include <assert.h>
@@ -39,7 +40,6 @@ Boston, MA 02111-1307 USA
 
 using namespace std;
 
-#include <mpi.h>
 #include <pnmpimod.h>
 
 #include "commsub.h"
