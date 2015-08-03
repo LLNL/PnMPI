@@ -52,9 +52,9 @@ if (BFD_FOUND)
     featureTest("ft_bfd_new_api.c" "C" "PNMPI_NEW_BFD_API")
 endif ()
 
-SET(PNMPI_ENABLE_THREAD_SAFETY OFF CACHE BOOL "Pthreads found and thread safety selected")
+#SET(PNMPI_ENABLE_THREAD_SAFETY OFF CACHE BOOL "Pthreads found and thread safety selected")
 
-option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." FALSE)
+option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." TRUE)
 if(ENABLE_THREAD_SAFETY)
     featureTest("ft_pthreads.c" C PNMPI_HAVE_PTHREADS)
     IF(PNMPI_HAVE_PTHREADS)
@@ -63,3 +63,5 @@ if(ENABLE_THREAD_SAFETY)
         MESSAGE(FATAL_ERROR "Enabling thread-safety failed, no pthread support found on this system")
     ENDIF(PNMPI_HAVE_PTHREADS)
 endif(ENABLE_THREAD_SAFETY)
+
+featureTest("ft_gnuc.c" C PNMPI_HAVE_GNUC)

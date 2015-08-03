@@ -864,3 +864,14 @@ void pnmpi_PreInit()
 
 #endif
 }
+
+// This function is exposed via newstack.h to be called
+// by GTI if it needs to adjust the stack on a thread e.g.
+// which serves as a tool-thread (on it's own layer of stack)
+// it will return the previous stack layer
+int PNMPI_Change_Stack_Explicit(PNMPI_modHandle_t stack)
+{
+  int previous = get_pnmpi_level();
+  set_pnmpi_level((int)stack);
+  return previous;
+}
