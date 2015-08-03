@@ -18,7 +18,6 @@ endif()
 add_wrapped_file(wrapper.h   wrapper.h.w)
 add_wrapped_file(newstack.h  newstack.h.w)
 add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
-# add_wrapped_file(wrapper_f.c wrapper_c.c.w "-f")
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
@@ -34,18 +33,6 @@ set(PNMPI_LIB_SOURCES
   # Note: Generated headers must be added to enforce dependency.
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
-
-# Build fortran wrappers here
-add_custom_command(
-  OUTPUT wrapper_f77.c f77symbols.h
-  COMMAND eval ARGS "${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/wrap/makefortran.py --xlate --f77symbol ${F77SYMBOL} ${CMAKE_SOURCE_DIR}/wrap/mpi-f77.txt"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Generating Fortran Wrappers"
-  VERBATIM)
-set_source_files_properties(wrapper_f77.c f77symbols.h PROPERTIES GENERATED TRUE)
-get_directory_property(cleanfiles ADDITIONAL_MAKE_CLEAN_FILES)
-list(APPEND cleanfiles wrapper_f77.c f77symbols.h)
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${cleanfiles}")
 
 # PnMPI shared library
 add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})

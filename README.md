@@ -1,14 +1,15 @@
 PnMPI Tool Infrastructure
 ========================================
 
-Version 1.4
+Version 1.6
 
 by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774
 
 ### Contributors
- * Todd Gamblin      tgamblin@llnl.gov
- * Tobias Hilbrich   Tobias.Hilbrich@zih.tu-dresden.de
- * Joachim Protze    protze@itc.rwth-aachen.de
+ * Todd Gamblin        tgamblin@llnl.gov
+ * Tobias Hilbrich     Tobias.Hilbrich@zih.tu-dresden.de
+ * Joachim Protze      protze@itc.rwth-aachen.de
+ * Felix Muenchhalfen  muenchhalfen@itc.rwth-aachen.de
 
 PnMPI is a dynamic MPI tool infrastructure that builds on top of
 the standardized PMPI interface. It allows the user to

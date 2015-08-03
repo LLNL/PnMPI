@@ -38,7 +38,7 @@ option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." TRUE)
 #===================================
 # Version info
 set(PNMPI_MAJOR_VERSION 1)
-set(PNMPI_MINOR_VERSION 4)
+set(PNMPI_MINOR_VERSION 6)
 set(PNMPI_PATCH_VERSION 0)
 set(PNMPI_VERSION ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION})
 
