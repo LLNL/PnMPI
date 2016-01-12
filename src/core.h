@@ -76,7 +76,7 @@ pthread_key_t pnmpi_level_key;
 #ifdef NO_EXTERN_INLINE
 #define EXTERN_INLINE inline
 #else
-#define EXTERN_INLINE extern inline
+#define EXTERN_INLINE static inline
 #endif
 
 typedef char module_name_t[PNMPI_MODULE_FILENAMELEN];
