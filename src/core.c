@@ -37,10 +37,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define NO_EXTERN_INLINE
 #include "core.h"
-#undef NO_EXTERN_INLINE
-
 #include "pnmpi-config.h"
 
 #ifdef HAVE_ADEPT_UTILS
