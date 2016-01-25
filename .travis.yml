@@ -20,7 +20,7 @@ before_install:
 
 script:
   - mkdir build2 && cd build2
-  - cmake .. -DENABLE_COVERAGE=On && make && make test
+  - cmake .. -DENABLE_COVERAGE=On && make && ctest --output-on-failure
   - make gcov
 
 after_success:
