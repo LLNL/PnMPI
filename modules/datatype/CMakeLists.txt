@@ -11,6 +11,9 @@
 add_pnmpi_module(datatype datatype.cpp)
 add_pnmpi_module(dtprint dtprint.c)
 
+add_coverage(datatype)
+add_coverage(dtprint)
+
 #Add header to intermediate include dir
 install(FILES datatype.h DESTINATION include)
 install(TARGETS datatype dtprint DESTINATION lib/pnmpi-modules)

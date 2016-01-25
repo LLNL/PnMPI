@@ -10,6 +10,7 @@
 
 #Use macro to: add target for module, version it, install it, patch it
 add_pnmpi_module(timelapse timelapse.c)
+add_coverage(timelapse)
 
 #Add header to intermediate include dir
 install(FILES timelapse.h DESTINATION include)

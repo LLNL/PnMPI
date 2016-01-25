@@ -15,6 +15,7 @@ set(MODS sample1 sample2 sample3 sample4 sample1f)
 foreach(mod ${MODS})
     #Use macro to: add target for module, version it, install it, patch it
     add_pnmpi_module(${mod} ${mod}.c)
+    add_coverage(${mod})
     install(TARGETS ${mod} DESTINATION lib/pnmpi-modules)
 endforeach()
 

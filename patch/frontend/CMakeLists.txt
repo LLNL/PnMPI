@@ -19,6 +19,7 @@ if (PATCHER_FRONTEND_COMPILER)
    set(DPNMPI_HAVE_BFD False)
 
    add_executable(pnmpi-patch ../patch.c)
+   add_coverage(pnmpi-patch)
    install(TARGETS pnmpi-patch EXPORT pnmpi-patch RUNTIME DESTINATION bin)
 
    # Allow patch target to be used by subprojects.

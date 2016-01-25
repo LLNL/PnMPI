@@ -7,3 +7,6 @@
 	url = https://github.com/scalability-llnl/wrap.git
 #	url = ssh://git@cz-stash.llnl.gov:7999/scale/wrap.git
 #	branch = fortran-fixes
+[submodule "externals/CMake-codecov"]
+	path = externals/CMake-codecov
+	url = git://github.com/RWTH-HPC/CMake-codecov.git

@@ -18,6 +18,7 @@ if (PATCHER_FRONTEND_COMPILER)
 endif()
 
 add_executable(${targetName} patch.c)
+add_coverage(${targetName})
 if (BFD_FOUND)
   target_link_libraries(${targetName} ${BFD_LIBRARIES})
   target_link_libraries(${targetName} ${IBERTY_LIBRARIES})

@@ -14,6 +14,14 @@ addons:
       - openmpi-bin
       - binutils-dev
 
+before_install:
+  - pip install --user codecov
+
+
 script:
   - mkdir build2 && cd build2
-  - cmake .. && make && make test
+  - cmake .. -DENABLE_COVERAGE=On && make && make test
+  - make gcov
+
+after_success:
+  - codecov
