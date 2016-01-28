@@ -50,7 +50,8 @@ set(PNMPI_LIB_INTERFACE_VERSION "1")
 set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/cmakemodules"
   "${CMAKE_SOURCE_DIR}/externals/CMake-codecov/cmake"
-  ${CMAKE_MODULE_PATH})
+  ${CMAKE_MODULE_PATH}
+  "${CMAKE_SOURCE_DIR}/cmakemodules/legacy")
 
 # Sensible defaults for the install prefix on Win32.  CMake defaults to /usr/local on UNIX.
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
