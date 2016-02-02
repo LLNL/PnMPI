@@ -1203,6 +1203,8 @@ void copy_file(const char *input_filename, const char *output_filename,
 
   write(fd_out, buffer, COMPLENGTH);
 
+  free(buffer);
+
   close(fd_in);
   close(fd_out);
 }
