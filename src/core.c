@@ -844,7 +844,7 @@ void pnmpi_PreInit()
         continue;
 
       regPoint = (PNMPI_RegistrationPoint_t)find_symbol(
-        modules.module[i]->handle, PNMPI_INITCOMPLETE_POINT);
+        modules.module[i], PNMPI_INITCOMPLETE_POINT);
       if (regPoint != 0)
         {
           /* check if this module has a RegistrationPoint and if yes, all it */
