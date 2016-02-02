@@ -23,5 +23,5 @@ script:
   - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
 
 after_success:
-  - make gcov
+  - make -k gcov
   - codecov
