@@ -14,6 +14,9 @@ add_executable(simple    simple.c)
 add_executable(simple-pn simple.c)
 add_executable(simple-s1 simple.c)
 
+add_coverage(simple-pn)
+add_coverage(simple-s1)
+
 target_link_libraries(simple                        ${MPI_C_LIBRARIES})
 target_link_libraries(simple-pn pnmpi               ${MPI_C_LIBRARIES})
 target_link_libraries(simple-s1 sample1-non-patched ${MPI_C_LIBRARIES})
