@@ -36,6 +36,7 @@ set(PNMPI_LIB_SOURCES
 
 # PnMPI shared library
 add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
+add_coverage(pnmpi)
 target_link_libraries(pnmpi
   ${TIMING_LIB}
   ${MPI_C_LIBRARIES}
