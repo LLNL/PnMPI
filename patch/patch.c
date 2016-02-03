@@ -1285,8 +1285,8 @@ int main(int argc, char *argv[])
 
   copy_file(input_filename, output_filename, NULL, NULL);
 
-  printf("Patched %d dynamic symbols.\n", num_dynamic_symbols);
-  printf("Patched %d generic symbols.\n", num_generic_symbols);
+  printf("Patched %zu dynamic symbols.\n", num_dynamic_symbols);
+  printf("Patched %zu generic symbols.\n", num_generic_symbols);
 
   return status;
 }

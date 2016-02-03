@@ -153,7 +153,7 @@ static int find_module(const char *lib_name, path_array_t library_path,
 
   if (!library_path)
     {
-      DBGPRINT2("ERROR: no module path defined\n", lib_name);
+      DBGPRINT2("ERROR: no module path defined\n");
       *handle = NULL;
       return 1;
     }
@@ -166,7 +166,7 @@ static int find_module(const char *lib_name, path_array_t library_path,
           *handle = dlopen(location, RTLD_LAZY);
           if (handle)
             {
-              DBGPRINT2("Loading module %s\n", *lib_name);
+              DBGPRINT2("Loading module %s\n", lib_name);
               strcpy(mod_path, location);
               return 0;
             }
