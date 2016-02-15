@@ -224,7 +224,7 @@ int PMPI_Finalized(int *);
  */
 #ifdef RTLD_NEXT
 #define RTLDNEXT_RETRIEVAL(r_type, routine) \
-  r_type __tmp_function_ptr = (r_type)mydlsym(RTLD_NEXT, routine);
+  r_type __tmp_function_ptr = (r_type)dlsym(RTLD_NEXT, routine);
 #define RTLDNEXT_CHECK(stack) pnmpi_function_ptrs.stack[i] != __tmp_function_ptr
 #else
 #define RTLDNEXT_RETRIEVAL(r_type, routine)
