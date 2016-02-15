@@ -3,6 +3,10 @@ compiler:
   - gcc
   - clang
 
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     sources:
@@ -16,6 +20,8 @@ addons:
 
 before_install:
   - pip install --user codecov
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update --quiet ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openmpi; fi
 
 
 script:
