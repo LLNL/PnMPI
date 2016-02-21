@@ -31,6 +31,9 @@
   Boston, MA 02111-1307 USA
 */
 
+#ifndef PNMPI_CORE_H
+#define PNMPI_CORE_H
+
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -366,3 +369,5 @@ static inline int get_pnmpi_mpi_level()
 }
 #endif /*PNMPI_ENABLE_THREAD_SAFETY*/
 /* jfm Modification (ELP AP THREAD SAFETY) END */
+
+#endif

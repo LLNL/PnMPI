@@ -21,17 +21,11 @@ add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
-  # -- Regular sources --
   debug.c
   services.c
   core.c
   wrapper.c
-  ${Wrap_EXTRA_SOURCE}
-  # -- Generated sources --
-  # Do NOT use the generated files directly, they would be generated multiple
-  # times.
-  # https://samthursfield.wordpress.com/2015/11/21/cmake-dependencies-between-targets-and-files-and-custom-commands/#custom-commands-and-parallel-make
-  wrapper_c_includer.c)
+  ${Wrap_EXTRA_SOURCE})
 
 
 add_custom_target(generate DEPENDS
