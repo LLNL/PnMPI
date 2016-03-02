@@ -141,6 +141,7 @@ extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
                                really hurt as we shut down our tools already in
                                that case).*/
 extern int pnmpi_max_level;
+extern int pnmpi_initialization_complete;
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
