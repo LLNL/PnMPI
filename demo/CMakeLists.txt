@@ -14,6 +14,7 @@ add_executable(simple    simple.c)
 add_executable(simple-pn simple.c)
 add_executable(simple-s1 simple.c)
 
+add_coverage(simple)
 add_coverage(simple-pn)
 add_coverage(simple-s1)
 
