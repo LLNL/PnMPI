@@ -19,15 +19,14 @@ addons:
       - binutils-dev
 
 before_install:
-  - pip install --user codecov
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update --quiet ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openmpi; fi
 
 
 script:
-  - mkdir build2 && cd build2
+  - mkdir travis && cd travis
   - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
 
 after_success:
   - make -k gcov
-  - codecov
+  - bash <(curl -s https://codecov.io/bash) -X gcov
