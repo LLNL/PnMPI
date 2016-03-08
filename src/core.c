@@ -49,6 +49,7 @@ pnmpi_functions_t pnmpi_function_ptrs;
 
 int pnmpi_mpi_level = 0;
 int pnmpi_max_level;
+int pnmpi_initialization_complete;
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
@@ -233,6 +234,7 @@ void pnmpi_PreInit()
 
   set_pnmpi_level(0);
   pnmpi_max_level = 0;
+  pnmpi_initialization_complete = 0;
 
   /* set global defaults */
   /* none at this moment */

@@ -21,21 +21,21 @@ add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
-  # -- Regular sources --
   debug.c
   services.c
   core.c
   wrapper.c
-  ${Wrap_EXTRA_SOURCE}
-  # -- Generated sources --
+  ${Wrap_EXTRA_SOURCE})
+
+
+add_custom_target(generate DEPENDS
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper_c.c
-#   wrapper_f77.c
-  # Note: Generated headers must be added to enforce dependency.
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
 
 # PnMPI shared library
 add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
+add_dependencies(pnmpi generate)
 add_coverage(pnmpi)
 target_link_libraries(pnmpi
   ${TIMING_LIB}
@@ -70,6 +70,7 @@ set_target_properties(pnmpi PROPERTIES
 
 # PnMPI static library (same output name as shared lib)
 add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
+add_dependencies(pnmpi_static generate)
 set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 
 #copy header files to include directory in binary dir
@@ -84,6 +85,7 @@ install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 if (CMAKE_Fortran_COMPILER_WORKS)
   # PnMPI fortran shared library
   add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
+  add_dependencies(pnmpif generate)
   target_link_libraries(pnmpif
     ${TIMING_LIB}
     ${MPI_Fortran_LIBRARIES}
@@ -119,6 +121,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
 
   # PnMPI fortran static lib
   add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
+  add_dependencies(pnmpif_static generate)
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
   set_target_properties(pnmpif_static PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
 

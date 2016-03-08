@@ -307,6 +307,9 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   if (returnVal != MPI_SUCCESS)
     return returnVal;
 
+  // Mpi is initialized now
+  pnmpi_initialization_complete = 1;
+
   PRINTINIT();
   DBGLATEINIT();
   STATUSINIT();
@@ -1608,3 +1611,5 @@ double mpi_wtime_(void)
 
 /*-------------------------------------------------------------------*/
 /* The End. */
+
+#include "wrapper_c.c"

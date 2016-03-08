@@ -43,7 +43,7 @@ Boston, MA 02111-1307 USA
 
   pnmpi_level=start_level=get_pnmpi_level();
 
-  if (IS_ACTIVATED({{fn_name}}_ID) && (get_pnmpi_mpi_level() == 0))
+  if (IS_ACTIVATED({{fn_name}}_ID) && (get_pnmpi_mpi_level() == 0) && (pnmpi_initialization_complete > 0))
     {
        while ((pnmpi_level<pnmpi_max_level) && (modules.module[pnmpi_level]->stack_delimiter==0))
         {
