@@ -40,6 +40,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable(f90demo-s1 fdemo.f90)
 
   foreach (TARGET fdemo fdemo-pn fdemo-s1 f90demo f90demo-pn f90demo-s1)
+    add_coverage(${TARGET})
     sanitize_address(${TARGET})
     target_link_libraries(${TARGET} ${MPI_Fortran_LIBRARIES})
   endforeach ()
