@@ -25,7 +25,7 @@ before_install:
 
 script:
   - mkdir travis && cd travis
-  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On -DSANITIZE_ADDRESS=On && make install && ctest --output-on-failure
 
 after_success:
   - make -k gcov

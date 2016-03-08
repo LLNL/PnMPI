@@ -8,6 +8,9 @@
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 2011-05-01
 
+find_package(ASan)
+
+
 # Add linkage to adept utils if we have it
 if (PnMPI_USE_adept_utils)
   include_directories(BEFORE ${adept_utils_INCLUDE_PATH} ${adept-utils_INCLUDE_DIRS})
@@ -37,6 +40,7 @@ add_custom_target(generate DEPENDS
 add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
 add_dependencies(pnmpi generate)
 add_coverage(pnmpi)
+sanitize_address(pnmpi)
 target_link_libraries(pnmpi
   ${TIMING_LIB}
   ${MPI_C_LIBRARIES}
@@ -85,6 +89,7 @@ install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 if (CMAKE_Fortran_COMPILER_WORKS)
   # PnMPI fortran shared library
   add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
+  sanitize_address(pnmpif)
   add_dependencies(pnmpif generate)
   target_link_libraries(pnmpif
     ${TIMING_LIB}

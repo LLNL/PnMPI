@@ -10,3 +10,6 @@
 [submodule "externals/CMake-codecov"]
 	path = externals/CMake-codecov
 	url = git://github.com/RWTH-HPC/CMake-codecov.git
+[submodule "externals/CMake-sanitizers"]
+	path = externals/CMake-sanitizers
+	url = git://github.com/arsenm/sanitizers-cmake.git

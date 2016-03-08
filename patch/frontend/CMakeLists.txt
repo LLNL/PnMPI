@@ -20,6 +20,7 @@ if (PATCHER_FRONTEND_COMPILER)
 
    add_executable(pnmpi-patch ../patch.c)
    add_coverage(pnmpi-patch)
+   sanitize_address(pnmpi-patch)
    install(TARGETS pnmpi-patch EXPORT pnmpi-patch RUNTIME DESTINATION bin)
 
    # Allow patch target to be used by subprojects.
