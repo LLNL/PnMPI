@@ -20,7 +20,7 @@ addons:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update --quiet ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openmpi; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc openmpi; fi
 
 
 script:
