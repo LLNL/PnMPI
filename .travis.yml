@@ -23,6 +23,13 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi
+    - os: osx
+      compiler: gcc-5
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
 
 
 addons:
