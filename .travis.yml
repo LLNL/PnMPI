@@ -1,11 +1,29 @@
 language: c
-compiler:
-  - gcc
-  - clang
 
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      sudo: false
+    - os: linux
+      compiler: clang
+      sudo: false
+
+    - os: osx
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      compiler: clang
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+
 
 addons:
   apt:
@@ -17,10 +35,6 @@ addons:
       - libopenmpi-dev
       - openmpi-bin
       - binutils-dev
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update --quiet ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc openmpi; fi
 
 
 script:
