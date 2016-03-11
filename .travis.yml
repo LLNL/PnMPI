@@ -9,6 +9,15 @@ matrix:
       compiler: clang
       sudo: false
 
+    - os: linux
+      dist: trusty
+      sudo: required
+      compiler: gcc
+    - os: linux
+      dist: trusty
+      sudo: required
+      compiler: clang
+
     - os: osx
       compiler: gcc
       before_install:
