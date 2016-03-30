@@ -28,6 +28,8 @@ set(PNMPI_LIB_SOURCES
   services.c
   core.c
   wrapper.c
+  mpize.c
+  read_cmdline.c
   ${Wrap_EXTRA_SOURCE})
 
 

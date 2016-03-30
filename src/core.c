@@ -70,6 +70,8 @@ void _init()
 
   // Do PnMPI Pre Initialization
   pnmpi_PreInit();
+
+  pnmpi_mpize();
 }
 
 #ifdef __GNUC__
