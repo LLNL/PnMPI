@@ -96,8 +96,8 @@ void read_cmdline(int *argc, char ***argv)
     }
 }
 #elif defined(__APPLE__)
-extern "C" int *_NSGetArgc(void);
-extern "C" char ***_NSGetArgv(void);
+extern int *_NSGetArgc(void);
+extern char ***_NSGetArgv(void);
 void read_cmdline(int *argc, char ***argv)
 {
   *argc = *(_NSGetArgc());
