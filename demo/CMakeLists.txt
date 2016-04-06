@@ -18,9 +18,9 @@ add_coverage(simple)
 add_coverage(simple-pn)
 add_coverage(simple-s1)
 
-sanitize_address(simple)
-sanitize_address(simple-pn)
-sanitize_address(simple-s1)
+add_sanitizers(simple)
+add_sanitizers(simple-pn)
+add_sanitizers(simple-s1)
 
 target_link_libraries(simple                        ${MPI_C_LIBRARIES})
 target_link_libraries(simple-pn pnmpi               ${MPI_C_LIBRARIES})
@@ -41,7 +41,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
 
   foreach (TARGET fdemo fdemo-pn fdemo-s1 f90demo f90demo-pn f90demo-s1)
     add_coverage(${TARGET})
-    sanitize_address(${TARGET})
+    add_sanitizers(${TARGET})
     target_link_libraries(${TARGET} ${MPI_Fortran_LIBRARIES})
   endforeach ()
 

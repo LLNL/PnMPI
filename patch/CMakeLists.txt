@@ -8,7 +8,7 @@
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 05-22-2011
 
-find_package(ASan)
+find_package(Sanitizers)
 
 #Add the target for the patcher
 SET (PATCHER_FRONTEND_COMPILER "" CACHE FILEPATH "If this is a frontend/backend build use the backend compiler as CMake compilers and specify a frontend compiler here to create a frontend-operating version of the PnMPI patcher.")
@@ -20,7 +20,7 @@ endif()
 
 add_executable(${targetName} patch.c)
 add_coverage(${targetName})
-sanitize_address(${targetName})
+add_sanitizers(${targetName})
 if (BFD_FOUND)
   target_link_libraries(${targetName} ${BFD_LIBRARIES})
   target_link_libraries(${targetName} ${IBERTY_LIBRARIES})
