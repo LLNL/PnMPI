@@ -302,17 +302,17 @@ static inline int get_pnmpi_level()
 
 static inline int get_pnmpi_mpi_level()
 {
-  return __sync_add_and_fetch(&pnmpi_mpi_level, 0);
+  return pnmpi_mpi_level;
 }
 
 static inline int inc_pnmpi_mpi_level()
 {
-  return __sync_add_and_fetch(&pnmpi_mpi_level, 1);
+  return ++pnmpi_mpi_level;
 }
 
 static inline int dec_pnmpi_mpi_level()
 {
-  return __sync_sub_and_fetch(&pnmpi_mpi_level, 1);
+  return --pnmpi_mpi_level;
 }
 
 #else  /*PNMPI_ENABLE_THREAD_SAFETY*/

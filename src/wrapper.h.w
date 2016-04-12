@@ -43,14 +43,7 @@ double mpi_wtime_(void);
 {{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
 {{endforallfn}}
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} X{{fn_name}}({{formals}});
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
+#include "xmpi.h"
 
 {{forallfn fn_name}}
 #define {{fn_name}}_ID {{fn_num}}
