@@ -66,7 +66,6 @@ void _init()
       printf("ERROR: TLS initialization failed\n");
       exit(1);
     }
-  pthread_mutex_init(&pnmpi_level_lock, NULL);
 
   // Do PnMPI Pre Initialization
   pnmpi_PreInit();
@@ -78,7 +77,6 @@ __attribute__((destructor)) void finalize_pnmpi_threaded()
 void _fini()
 #endif
 {
-  pthread_mutex_destroy(&pnmpi_level_lock);
 }
 
 #endif /*PNMPI_ENABLE_THREAD_SAFETY*/

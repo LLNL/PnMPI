@@ -51,7 +51,6 @@
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
 #include <pthread.h>
-pthread_mutex_t pnmpi_level_lock;
 pthread_key_t pnmpi_level_key;
 #endif
 /* jfm Modification (ELP AP THREAD SAFETY) END */
@@ -142,12 +141,6 @@ extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
                                that case).*/
 extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;
-
-/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
-extern pthread_mutex_t pnmpi_level_lock;
-#endif /*PNMPI_ENABLE_THREAD_SAFETY*/
-/* jfm Modification (ELP AP THREAD SAFETY) END */
 
 void pnmpi_PreInit(void);
 
@@ -309,25 +302,17 @@ static inline int get_pnmpi_level()
 
 static inline int get_pnmpi_mpi_level()
 {
-  int value;
-  pthread_mutex_lock(&pnmpi_level_lock);
-  value = pnmpi_mpi_level;
-  pthread_mutex_unlock(&pnmpi_level_lock);
-  return value;
+  return __sync_add_and_fetch(&pnmpi_mpi_level, 0);
 }
 
-static inline void inc_pnmpi_mpi_level()
+static inline int inc_pnmpi_mpi_level()
 {
-  pthread_mutex_lock(&pnmpi_level_lock);
-  pnmpi_mpi_level++;
-  pthread_mutex_unlock(&pnmpi_level_lock);
+  return __sync_add_and_fetch(&pnmpi_mpi_level, 1);
 }
 
-static inline void dec_pnmpi_mpi_level()
+static inline int dec_pnmpi_mpi_level()
 {
-  pthread_mutex_lock(&pnmpi_level_lock);
-  pnmpi_mpi_level--;
-  pthread_mutex_unlock(&pnmpi_level_lock);
+  return __sync_sub_and_fetch(&pnmpi_mpi_level, 1);
 }
 
 #else  /*PNMPI_ENABLE_THREAD_SAFETY*/
@@ -339,14 +324,14 @@ static inline int set_pnmpi_level(int value)
   return value;
 }
 
-static inline void inc_pnmpi_mpi_level()
+static inline int inc_pnmpi_mpi_level()
 {
-  pnmpi_mpi_level++;
+  return pnmpi_mpi_level++;
 }
 
-static inline void dec_pnmpi_mpi_level()
+static inline int dec_pnmpi_mpi_level()
 {
-  pnmpi_mpi_level--;
+  return pnmpi_mpi_level--;
 }
 
 static inline int get_pnmpi_level()
