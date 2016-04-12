@@ -142,6 +142,8 @@ extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
                                that case).*/
 extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;
+extern int pnmpi_init_was_fortran;
+extern int pnmpi_init_done;
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY

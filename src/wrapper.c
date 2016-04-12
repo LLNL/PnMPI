@@ -65,8 +65,6 @@ void pmpi_init_thread_(int *ierror, int *required, int *provided);
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
 #endif
 
-static int init_was_fortran = -1;
-
 
 /*-------------------------------------------------------------------*/
 /* Statistics output for Debuglevel 5 */
@@ -295,7 +293,7 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   if (NOT_ACTIVATED(MPI_Init_ID))
     {
 #ifdef COMPILE_FOR_FORTRAN
-      if (init_was_fortran)
+      if (pnmpi_init_was_fortran)
         pmpi_init_(&returnVal);
       else
 #endif
@@ -426,13 +424,13 @@ void mpi_init_(int *ierr)
     start_timer = get_time_ns();
 #endif
 
-  if (init_was_fortran == 0)
+  if (pnmpi_init_was_fortran == 0)
     {
       pmpi_init_(ierr);
       return;
     }
 
-  init_was_fortran = 1;
+  pnmpi_init_was_fortran = 1;
 
 #if 0
   /* argcSave    = */ argc = iargc_() + 1;
@@ -521,10 +519,10 @@ int MPI_Init(int *argc, char ***argv)
     start_timer = get_time_ns();
 #endif
 
-  if (init_was_fortran == 1)
+  if (pnmpi_init_was_fortran == 1)
     return PMPI_Init(argc, argv);
 
-  init_was_fortran = 0;
+  pnmpi_init_was_fortran = 0;
 
   err = PNMPI_Common_MPI_Init(argc, argv);
 
@@ -535,9 +533,6 @@ int MPI_Init(int *argc, char ***argv)
 
   return err;
 }
-
-
-static int pnmpi_init_done = 0;
 
 int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 {
@@ -594,7 +589,7 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
     {
       DBGPRINT3("Calling a original MPI in MPI_Init");
 #ifdef COMPILE_FOR_FORTRAN
-      if (init_was_fortran)
+      if (pnmpi_init_was_fortran)
         pmpi_init_(&res);
       else
 #endif
@@ -626,7 +621,7 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
     {
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-      if (init_was_fortran)
+      if (pnmpi_init_was_fortran)
         pmpi_init_thread_(&required, provided, &returnVal);
       else
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
@@ -758,13 +753,13 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
     start_timer = get_time_ns();
 #endif
 
-  if (init_was_fortran == 0)
+  if (pnmpi_init_was_fortran == 0)
     {
       pmpi_init_thread_(required, provided, ierr);
       return;
     }
 
-  init_was_fortran = 1;
+  pnmpi_init_was_fortran = 1;
 
 #if 0
   /* argcSave    = */ argc = iargc_() + 1;
@@ -854,10 +849,10 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
     start_timer = get_time_ns();
 #endif
 
-  if (init_was_fortran == 1)
+  if (pnmpi_init_was_fortran == 1)
     return PMPI_Init_thread(argc, argv, required, provided);
 
-  init_was_fortran = 0;
+  pnmpi_init_was_fortran = 0;
 
   err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
 
@@ -931,7 +926,7 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
       DBGPRINT3("Calling a original MPI in MPI_Init_thread");
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-      if (init_was_fortran)
+      if (pnmpi_init_was_fortran)
         pmpi_init_thread_(&_required, _provided, &res);
       else
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
