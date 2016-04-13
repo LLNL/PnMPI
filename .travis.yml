@@ -121,6 +121,63 @@ matrix:
         - export CC=clang; export CXX=clang++
 
     - os: osx
+      osx_image: beta-xcode6.1
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: beta-xcode6.2
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: beta-xcode6.3
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: xcode6.4
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: xcode7
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: xcode7.1
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: xcode7.2
+      compiler: gcc
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install openmpi
+    - os: osx
+      osx_image: xcode7.3
       compiler: gcc
       before_install:
         - brew update --quiet >& /dev/null
@@ -133,13 +190,6 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - export CC=gcc-5; export CXX=g++-5
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
-    - os: osx
-      compiler: clang
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi
 
@@ -163,4 +213,3 @@ script:
 after_success:
   - make -k gcov
   - bash <(curl -s https://codecov.io/bash) -X gcov
-
