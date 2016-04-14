@@ -173,6 +173,9 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew install openmpi cmake
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -181,6 +184,9 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       compiler: gcc-5
       before_install:
