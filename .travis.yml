@@ -158,7 +158,6 @@ matrix:
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
         - brew install openmpi cmake
     - os: osx
       osx_image: xcode7.1
@@ -166,7 +165,6 @@ matrix:
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
         - brew install openmpi cmake
     - os: osx
       osx_image: xcode7.2
@@ -174,7 +172,6 @@ matrix:
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
         - brew install openmpi cmake
     - os: osx
       osx_image: xcode7.3
