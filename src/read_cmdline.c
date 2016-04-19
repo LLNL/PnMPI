@@ -75,12 +75,11 @@ void read_cmdline(int *argc, char ***argv)
     }
 
   char *curstr = buffer;
-  char *nextstr = strchr(curstr, '\0');
 
   len = 30;
   *argv = (char **)malloc(sizeof(char *) * len);
   *argc = 0;
-  while (nextstr && (nextstr - buffer) < readBytes)
+  while (curstr && (curstr - buffer) < readBytes)
     {
       if (*argc > len)
         {
@@ -91,9 +90,9 @@ void read_cmdline(int *argc, char ***argv)
           len *= 2;
         }
       (*argv)[(*argc)++] = curstr;
-      curstr = nextstr + 1;
-      nextstr = strchr(curstr, '\0');
+      curstr = strchr(curstr, '\0') + 1;
     }
+  (*argv)[(*argc)] = NULL;
 }
 #elif defined(__APPLE__)
 extern int *_NSGetArgc(void);
