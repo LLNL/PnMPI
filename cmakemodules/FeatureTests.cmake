@@ -11,15 +11,18 @@
 # @author Mathias Korepkat, Tobias Hilbrich
 # @date 25.11.2011
 
+include(CheckMPIFunctionExists)
+include(CheckMPISymbolExists)
+
 ###Run all feature tests that influence config.h
 #MPI-2 constants
-featureTestMpi ("ft_mpi_status_ignore.c" C HAVE_MPI_STATUS_IGNORE)
-featureTestMpi ("ft_mpi_statuses_ignore.c" C HAVE_MPI_STATUSES_IGNORE)
-featureTestMpi ("ft_mpi_f_status_ignore.c" C HAVE_MPI_F_STATUS_IGNORE)
-featureTestMpi ("ft_mpi_f_statuses_ignore.c" C HAVE_MPI_F_STATUSES_IGNORE)
+check_mpi_symbol_exists(MPI_STATUS_IGNORE HAVE_MPI_STATUS_IGNORE)
+check_mpi_symbol_exists(MPI_STATUSES_IGNORE HAVE_MPI_STATUSES_IGNORE)
+check_mpi_symbol_exists(MPI_F_STATUS_IGNORE HAVE_MPI_F_STATUS_IGNORE)
+check_mpi_symbol_exists(MPI_F_STATUSES_IGNORE HAVE_MPI_F_STATUSES_IGNORE)
 
 #MPI 2 Functionality
-featureTestMpi ("ft_mpi_init_thread.c" C HAVE_MPI_INIT_THREAD_C)
+check_mpi_function_exists(MPI_Init_thread HAVE_MPI_INIT_THREAD_C)
 
 #MPI Fortran things
 IF (CMAKE_Fortran_COMPILER_WORKS)
@@ -29,7 +32,8 @@ ENDIF (CMAKE_Fortran_COMPILER_WORKS)
 # MPI3 defines some args constant
 featureTestMpi ("ft_mpi3_const_args.c" C HAVE_MPI3_CONST_ARGS)
 
-featureTestMpi ("ft_pmpi_type_create_indexed_block.c" C HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK)
+check_mpi_function_exists(MPI_Type_create_indexed_block
+  HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK)
 
 # handle convert macros may be present
 ##@TODO we also have feature tests for the other handles, we just didn't have the time to
@@ -38,13 +42,17 @@ featureTestMpi ("ft_pmpi_type_create_indexed_block.c" C HAVE_PMPI_TYPE_CREATE_IN
 ##CPP (but nor for C); with that we see the issue there and do not use them for this MPI,
 ##which is a good choice
 SET (HandleConvertMacros
-    MPI_STATUS_C2F
+    MPI_Status
     CACHE INTERNAL "All the handle convert macros"
 )
 
 FOREACH (type ${HandleConvertMacros})
-    STRING (TOLOWER ${type} type_lower)
-    featureTestMpi ( "ft_${type_lower}2c.cpp" CXX HAVE_${type})
+  string(TOUPPER "HAVE_${type}" variable)
+
+  check_mpi_function_exists(${type}_f2c "${variable}_F2C")
+  if (${${variable}_F2C})
+    check_mpi_function_exists(${type}_c2f "${variable}_C2F")
+  endif ()
 ENDFOREACH (type)
 
 if (BFD_FOUND)
