@@ -43,6 +43,7 @@ Boston, MA 02111-1307 USA
 
 #include "pnmpi-config.h"
 #include "pnmpi.h"
+#include "xmpi.h"
 #include <mpi.h>
 
 /*===============================================================*/
