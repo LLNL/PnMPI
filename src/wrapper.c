@@ -954,7 +954,7 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
 
 int MPI_Finalize(void)
 {
-  int err;
+  int err = MPI_ERR_UNKNOWN;
 #ifdef DBGLEVEL6
   timing_t start_timer;
 #endif
