@@ -298,6 +298,8 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
       else
 #endif
         returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
+
+      pnmpi_init_done = 1;
     }
   else
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
@@ -628,6 +630,8 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 #endif
         returnVal =
           PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+
+      pnmpi_init_done = 1;
     }
   else
     returnVal =
