@@ -11,6 +11,8 @@
 # @author Mathias Korepkat, Tobias Hilbrich
 # @date 25.11.2011
 
+include(CheckFortranMPIFunctionExists)
+include(CheckMPIConstCorrectness)
 include(CheckMPIFunctionExists)
 include(CheckMPISymbolExists)
 
@@ -26,11 +28,12 @@ check_mpi_function_exists(MPI_Init_thread HAVE_MPI_INIT_THREAD_C)
 
 #MPI Fortran things
 IF (CMAKE_Fortran_COMPILER_WORKS)
-  featureTestMpi ( "ft_mpi_init_thread.f" Fortran HAVE_MPI_INIT_THREAD_Fortran)
+  check_fortran_mpi_function_exists(MPI_INIT_THREAD
+    HAVE_MPI_INIT_THREAD_Fortran)
 ENDIF (CMAKE_Fortran_COMPILER_WORKS)
 
 # MPI3 defines some args constant
-featureTestMpi ("ft_mpi3_const_args.c" C HAVE_MPI3_CONST_ARGS)
+check_mpi_const_correctness(HAVE_MPI3_CONST_ARGS)
 
 check_mpi_function_exists(MPI_Type_create_indexed_block
   HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK)
