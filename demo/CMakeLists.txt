@@ -39,16 +39,16 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable(f90demo-pn fdemo.f90)
   add_executable(f90demo-s1 fdemo.f90)
 
+  target_link_libraries(fdemo-pn pnmpif)
+  target_link_libraries(fdemo-s1 sample1-non-patched)
+  target_link_libraries(f90demo-pn pnmpif)
+  target_link_libraries(f90demo-s1 sample1-non-patched)
+
   foreach (TARGET fdemo fdemo-pn fdemo-s1 f90demo f90demo-pn f90demo-s1)
     add_coverage(${TARGET})
     add_sanitizers(${TARGET})
     target_link_libraries(${TARGET} ${MPI_Fortran_LIBRARIES})
   endforeach ()
-
-  target_link_libraries(fdemo-pn pnmpif)
-  target_link_libraries(fdemo-s1 sample1-non-patched)
-  target_link_libraries(f90demo-pn pnmpif)
-  target_link_libraries(f90demo-s1 sample1-non-patched)
 endif()
 
 set(npflag "-np")

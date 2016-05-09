@@ -63,6 +63,17 @@
 # a library for Check*CompilerFlag.cmake modules. It's content may change in
 # any way between releases.
 
+# Try to include a recent version provided by the CMake installation. If no
+# Module is available, use this file as fallback.
+include("${CMAKE_ROOT}/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake"
+  OPTIONAL RESULT_VARIABLE INCLUDED)
+if (INCLUDED)
+  return()
+else ()
+  message(STATUS "Using legacy CMakeCheckCompilerFlagCommonPatterns.cmake")
+endif ()
+
+
 macro (CHECK_COMPILER_FLAG_COMMON_PATTERNS _VAR)
    set(${_VAR}
      FAIL_REGEX "[Uu]nrecogni[sz]ed .*option"               # GNU, NAG

@@ -562,6 +562,9 @@ void pnmpi_PreInit()
                 }
               else
                 {
+                  module_def_t empty_module = { { 0 } };
+                  *(modules.module[modules.num]) = empty_module;
+
                   /* now we have space and can store the information */
 
                   DBGPRINT2("Found module %i: %s", modules.num + 1, cmdargv[1]);

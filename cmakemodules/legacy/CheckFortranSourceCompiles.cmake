@@ -80,6 +80,17 @@
 #
 # * Kitware, Inc.
 
+# Try to include a recent version provided by the CMake installation. If no
+# Module is available, use this file as fallback.
+include("${CMAKE_ROOT}/Modules/CheckFortranSourceCompiles.cmake"
+  OPTIONAL RESULT_VARIABLE INCLUDED)
+if (INCLUDED)
+  return()
+else ()
+  message(STATUS "Using legacy CheckFortranSourceCompiles.cmake")
+endif ()
+
+
 macro(CHECK_Fortran_SOURCE_COMPILES SOURCE VAR)
   if(NOT DEFINED "${VAR}")
     set(_FAIL_REGEX)
