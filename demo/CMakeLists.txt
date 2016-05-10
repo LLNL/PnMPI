@@ -45,6 +45,11 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   target_link_libraries(f90demo-s1 sample1-non-patched)
 
   foreach (TARGET fdemo fdemo-pn fdemo-s1 f90demo f90demo-pn f90demo-s1)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      set_target_properties(${TARGET} PROPERTIES
+        LINK_FLAGS "-Wl,--no-as-needed")
+    endif()
+
     add_coverage(${TARGET})
     add_sanitizers(${TARGET})
     target_link_libraries(${TARGET} ${MPI_Fortran_LIBRARIES})
