@@ -127,7 +127,7 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
+        - brew install openmpi argp-standalone
     - os: osx
       osx_image: beta-xcode6.2
       compiler: gcc
@@ -135,7 +135,7 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
+        - brew install openmpi argp-standalone
     - os: osx
       osx_image: beta-xcode6.3
       compiler: gcc
@@ -143,7 +143,7 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
+        - brew install openmpi argp-standalone
     - os: osx
       osx_image: xcode6.4
       compiler: gcc
@@ -151,28 +151,28 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
+        - brew install openmpi argp-standalone
     - os: osx
       osx_image: xcode7
       compiler: gcc
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - brew install openmpi cmake
+        - brew install openmpi cmake argp-standalone
     - os: osx
       osx_image: xcode7.1
       compiler: gcc
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - brew install openmpi cmake
+        - brew install openmpi cmake argp-standalone
     - os: osx
       osx_image: xcode7.2
       compiler: gcc
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - brew install openmpi cmake
+        - brew install openmpi cmake argp-standalone
       script:
         - mkdir travis && cd travis
         - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
@@ -183,7 +183,7 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
+        - brew install openmpi argp-standalone
       script:
         - mkdir travis && cd travis
         - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
@@ -194,7 +194,7 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - export CC=gcc-5; export CXX=g++-5
         - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi
+        - brew install openmpi argp-standalone
 
 
 addons:

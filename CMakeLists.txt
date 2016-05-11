@@ -58,6 +58,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/externals/CMake-codecov/cmake"
   "${CMAKE_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
   "${CMAKE_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
+  "${CMAKE_SOURCE_DIR}/externals/CMake-argp/cmake"
   ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmakemodules/legacy")
 
