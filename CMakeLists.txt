@@ -154,5 +154,12 @@ configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnm
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
 
 
+option(ENABLE_TESTS "Selects whether tests are built." false)
+if (ENABLE_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif (ENABLE_TESTS)
+
+
 # evaluate coverage data
 coverage_evaluate()

@@ -175,7 +175,7 @@ matrix:
         - brew install openmpi cmake argp-standalone
       script:
         - mkdir travis && cd travis
-        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -186,7 +186,7 @@ matrix:
         - brew install openmpi argp-standalone
       script:
         - mkdir travis && cd travis
-        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       compiler: gcc-5
       before_install:
@@ -211,7 +211,7 @@ addons:
 
 script:
   - mkdir travis && cd travis
-  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On -DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On && make install && ctest --output-on-failure
+  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On -DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On && make install && ctest --output-on-failure
 
 after_success:
   - make -k gcov
