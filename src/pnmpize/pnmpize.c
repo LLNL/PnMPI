@@ -38,15 +38,6 @@
 #include "pnmpi-config.h"
 
 
-/** \brief Struct to store PnMPI options in.
- */
-struct arguments
-{
-  bool silent;        //< True, if PnMPI should suppress any output.
-  const char *config; //< Path to an optional configuration file.
-};
-
-
 /* Configure argp.
  *
  * Argp is used to parse command line options. It handles the most common
@@ -77,6 +68,39 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state);
 static struct argp argp = { options, &parse_arguments, args_doc, doc };
 
 
+/** \brief Set environment variable \p name to \p value or append to it.
+ *
+ * \details This function will set environment variable \p name to \p value. If
+ *  \p name is already present in the environment, \p value will be appended to
+ *  it, separated by a colon.
+ *
+ *
+ * \param name Name of the environment variable.
+ * \param value Value to be set or appended.
+ *
+ * \return This function returns the return value of setenv. See the setenv
+ *  manual for more information about it.
+ */
+static int appendenv(const char *name, const char *value)
+{
+  char *temp = getenv(name);
+
+  /* If variable name is not present in environment, set it as new variable in
+   * the environment and reutrn the return value. */
+  if (temp == NULL)
+    return setenv(name, value, 0);
+
+  /* Allocate a new buffer and save the current and new value concatenated and
+   * separated by colon into it. Overwrite the current environment variable with
+   * the value from buffer. */
+  size_t len = strlen(temp) + strlen(value);
+  char buffer[len + 2];
+  snprintf(buffer, len + 2, "%s:%s", temp, value);
+
+  return setenv(name, buffer, 1);
+}
+
+
 /** \brief Argument parser for argp.
  *
  * \info See argp parser documentation for detailed information about the
@@ -84,16 +108,12 @@ static struct argp argp = { options, &parse_arguments, args_doc, doc };
  */
 static error_t parse_arguments(int key, char *arg, struct argp_state *state)
 {
-  /* Get the input argument from argp_parse. It is a pointer to the arguments
-   * struct to store any parsed arguments into. */
-  struct arguments *arguments = state->input;
-
   switch (key)
     {
-    case 'c': arguments->config = arg; break;
+    case 'c': setenv("PNMPI_CONF", arg, 1); break;
     case 'q':
     case 's':
-      arguments->silent = true;
+      setenv("PNMPI_BE_SILENT", "1", 1);
       break;
 
     /* If we have parsed all options, iterate through all non-options in argv.
@@ -112,57 +132,26 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
 }
 
 
-static int appendenv(const char *name, const char *value)
-{
-  char *temp = getenv(name);
-  if (temp == NULL)
-    return setenv(name, value, 0);
-
-  size_t len_temp = strlen(temp);
-  size_t len_value = strlen(value);
-
-  char buffer[len_temp + len_value + 2];
-
-  strcpy(buffer, temp);
-  strcat(buffer, ":");
-  strcat(buffer, value);
-
-  return setenv(name, buffer, 1);
-}
-
-
 int main(int argc, char **argv)
 {
-  struct arguments options;
-
-  /* Set default options. */
-  options.silent = false;
-  options.config = NULL;
-
-
   /* Parse our arguments: Options will be parsed until the first non-option is
-   * found. Arguments will be stored in arguments struct options. If there are
-   * no additional non-options in our arguments, argp_parse will print the usage
-   * message and exit immediatly. The index of the first non-option will be
-   * stored in ind. */
+   * found. Parsed arguments will manipulate the current environment to initial-
+   * ize it for use with P^nMPI. If there are no additional non-options in our
+   * arguments, argp_parse will print the usage message and exit immediatly, no
+   * extra evaluation is required here. The index of the first non-option will
+   * be stored in ind. */
   int ind;
-  argp_parse(&argp, argc, argv, ARGP_IN_ORDER, &ind, &options);
+  argp_parse(&argp, argc, argv, ARGP_IN_ORDER, &ind, NULL);
 
-
-  /* Prepare the environment for PnMPI. The following environment variables will
-   * be set before the urility is executed:
-   *
-   *  - PNMPI_BE_SILENT=1 if options.silent is true.
-   */
-  if (options.silent)
-    setenv("PNMPI_BE_SILENT", "1", 1);
-  if (options.config != NULL)
-    setenv("PNMPI_CONF", options.config, 1);
-
-  appendenv("PNMPI_LIB_PATH", PNMPI_MODULES_DIR);
+  /* Append libpnmpif to LD_PRELOAD for preloading the MPI functions of the exe-
+   * cuted utility. */
   appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/libpnmpif.so");
 
-  execvp(argv[ind], argv + ind);
-  fprintf(stderr, "error: %s\n", strerror(errno));
-  return EXIT_FAILURE;
+  /* Execute the utility. If the utility could be started, pnmpize will exit
+   * here. In any other case, the following error processing will be called. */
+  if (execvp(argv[ind], argv + ind) < 0)
+    {
+      fprintf(stderr, "Could not execute %s: %s\n", argv[ind], strerror(errno));
+      return EXIT_FAILURE;
+    }
 }
