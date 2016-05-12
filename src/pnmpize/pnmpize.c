@@ -143,9 +143,19 @@ int main(int argc, char **argv)
   int ind;
   argp_parse(&argp, argc, argv, ARGP_IN_ORDER, &ind, NULL);
 
-  /* Append libpnmpif to LD_PRELOAD for preloading the MPI functions of the exe-
-   * cuted utility. */
+#ifdef __APPLE__
+  /* For apple systems, add libpnmpif to DYLD_INSERT_LIBRARIES, the apple ver-
+   * sion of LD_PRELOAD. DYLD_FORCE_FLAT_NAMESPACE has to be set, to get all
+   * symbols in the same namespace. Otherwise P^nMPI and libmpi won't see each
+   * other and no preloading will happen. */
+  appendenv("DYLD_INSERT_LIBRARIES", PNMPI_LIBRARY_DIR "/libpnmpif.dylib");
+  setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
+
+#else
+  /* For other systems (Linux and other UNIX platforms), add libpnmpif to
+   * LD_PRELOAD to load P^nMPI in front of libmpi. */
   appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/libpnmpif.so");
+#endif
 
   /* Execute the utility. If the utility could be started, pnmpize will exit
    * here. In any other case, the following error processing will be called. */
