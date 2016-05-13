@@ -31,24 +31,21 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-#ifndef PNMPI_NEWSTACK_H
-#define PNMPI_NEWSTACK_H
+/* automatically generated wrapper header */
+
+#ifndef PNMPI_XMPI_H
+#define PNMPI_XMPI_H
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
 
 {{forallfn fn_name MPI_Pcontrol}}
-{{retType}} P{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
+{{ret_type}} X{{fn_name}}({{formals}});
 {{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-int PNMPI_Change_Stack_Explicit( PNMPI_modHandle_t stack );
 
 #ifdef  __cplusplus
 }
 #endif
+
 #endif

@@ -76,6 +76,16 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+# Try to include a recent version provided by the CMake installation. If no
+# Module is available, use this file as fallback.
+include("${CMAKE_ROOT}/Modules/FindMPI.cmake" OPTIONAL RESULT_VARIABLE INCLUDED)
+if (INCLUDED)
+  return()
+else ()
+  message(STATUS "Using legacy FindMPI.cmake")
+endif ()
+
+
 # include this to handle the QUIETLY and REQUIRED arguments
 include(FindPackageHandleStandardArgs)
 include(GetPrerequisites)

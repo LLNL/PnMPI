@@ -13,3 +13,6 @@
 [submodule "externals/CMake-sanitizers"]
 	path = externals/CMake-sanitizers
 	url = git://github.com/arsenm/sanitizers-cmake.git
+[submodule "externals/CMake-MPIhelper"]
+	path = externals/CMake-MPIhelper
+	url = git://github.com/RWTH-HPC/CMake-MPIhelper.git

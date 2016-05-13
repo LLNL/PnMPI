@@ -18,9 +18,9 @@ add_coverage(simple)
 add_coverage(simple-pn)
 add_coverage(simple-s1)
 
-sanitize_address(simple)
-sanitize_address(simple-pn)
-sanitize_address(simple-s1)
+add_sanitizers(simple)
+add_sanitizers(simple-pn)
+add_sanitizers(simple-s1)
 
 target_link_libraries(simple                        ${MPI_C_LIBRARIES})
 target_link_libraries(simple-pn pnmpi               ${MPI_C_LIBRARIES})
@@ -39,16 +39,21 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable(f90demo-pn fdemo.f90)
   add_executable(f90demo-s1 fdemo.f90)
 
-  foreach (TARGET fdemo fdemo-pn fdemo-s1 f90demo f90demo-pn f90demo-s1)
-    add_coverage(${TARGET})
-    sanitize_address(${TARGET})
-    target_link_libraries(${TARGET} ${MPI_Fortran_LIBRARIES})
-  endforeach ()
-
   target_link_libraries(fdemo-pn pnmpif)
   target_link_libraries(fdemo-s1 sample1-non-patched)
   target_link_libraries(f90demo-pn pnmpif)
   target_link_libraries(f90demo-s1 sample1-non-patched)
+
+  foreach (TARGET fdemo fdemo-pn fdemo-s1 f90demo f90demo-pn f90demo-s1)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      set_target_properties(${TARGET} PROPERTIES
+        LINK_FLAGS "-Wl,--no-as-needed")
+    endif()
+
+    add_coverage(${TARGET})
+    add_sanitizers(${TARGET})
+    target_link_libraries(${TARGET} ${MPI_Fortran_LIBRARIES})
+  endforeach ()
 endif()
 
 set(npflag "-np")

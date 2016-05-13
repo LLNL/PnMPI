@@ -8,7 +8,7 @@
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 2011-05-01
 
-find_package(ASan)
+find_package(Sanitizers)
 
 
 # Add linkage to adept utils if we have it
@@ -20,6 +20,7 @@ endif()
 # Add wrapped files to the build.
 add_wrapped_file(wrapper.h   wrapper.h.w)
 add_wrapped_file(newstack.h  newstack.h.w)
+add_wrapped_file(xmpi.h      xmpi.h.w)
 add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
 
 # Sources for the PnMPI libraries used by all libraries.
@@ -36,13 +37,14 @@ set(PNMPI_LIB_SOURCES
 add_custom_target(generate DEPENDS
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper_c.c
   ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
+  ${CMAKE_CURRENT_BINARY_DIR}/xmpi.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
 
 # PnMPI shared library
 add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
 add_dependencies(pnmpi generate)
 add_coverage(pnmpi)
-sanitize_address(pnmpi)
+add_sanitizers(pnmpi)
 target_link_libraries(pnmpi
   ${TIMING_LIB}
   ${MPI_C_LIBRARIES}
@@ -82,6 +84,7 @@ set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 #copy header files to include directory in binary dir
 install(
   FILES   pnmpi.h pnmpimod.h ${CMAKE_CURRENT_BINARY_DIR}/newstack.h
+    ${CMAKE_CURRENT_BINARY_DIR}/xmpi.h
   DESTINATION include)
 install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 
@@ -92,7 +95,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   # PnMPI fortran shared library
   add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
   add_coverage(pnmpif)
-  sanitize_address(pnmpif)
+  add_sanitizers(pnmpif)
   add_dependencies(pnmpif generate)
   target_link_libraries(pnmpif
     ${TIMING_LIB}

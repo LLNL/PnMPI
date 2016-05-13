@@ -1,11 +1,28 @@
+#.rst:
+# CheckFortranFunctionExists
+# --------------------------
+#
+# macro which checks if the Fortran function exists
+#
+# CHECK_FORTRAN_FUNCTION_EXISTS(FUNCTION VARIABLE)
+#
+# ::
+#
+#   FUNCTION - the name of the Fortran function
+#   VARIABLE - variable to store the result
+#              Will be created as an internal cache variable.
+#
+#
+#
+# The following variables may be set before calling this macro to modify
+# the way the check is run:
+#
+# ::
+#
+#   CMAKE_REQUIRED_LIBRARIES = list of libraries to link
+
 #=============================================================================
-# CMake - Cross Platform Makefile Generator
-#
-# Copyright 2006-2011 Kitware, Inc.
-#
-# Copyright 2006 Alexander Neundorf <neundorf@kde.org>
-# Copyright 2011 Matthias Kretz <kretz@kde.org>
-# Copyright 2013 Rolf Eike Beer <eike@sf-mail.de>
+# Copyright 2007-2009 Kitware, Inc.
 #
 # All rights reserved.
 #
@@ -59,42 +76,43 @@
 #
 # * Kitware, Inc.
 
-# Do NOT include this module directly into any of your code. It is meant as
-# a library for Check*CompilerFlag.cmake modules. It's content may change in
-# any way between releases.
-
-# Try to include a recent version provided by the CMake installation. If no
-# Module is available, use this file as fallback.
-include("${CMAKE_ROOT}/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake"
-  OPTIONAL RESULT_VARIABLE INCLUDED)
-if (INCLUDED)
-  return()
-else ()
-  message(STATUS "Using legacy CMakeCheckCompilerFlagCommonPatterns.cmake")
-endif ()
-
-
-macro (CHECK_COMPILER_FLAG_COMMON_PATTERNS _VAR)
-   set(${_VAR}
-     FAIL_REGEX "[Uu]nrecogni[sz]ed .*option"               # GNU, NAG
-     FAIL_REGEX "unknown .*option"                          # Clang
-     FAIL_REGEX "optimization flag .* not supported"        # Clang
-     FAIL_REGEX "ignoring unknown option"                   # MSVC, Intel
-     FAIL_REGEX "warning D9002"                             # MSVC, any lang
-     FAIL_REGEX "option.*not supported"                     # Intel
-     FAIL_REGEX "invalid argument .*option"                 # Intel
-     FAIL_REGEX "ignoring option .*argument required"       # Intel
-     FAIL_REGEX "ignoring option .*argument is of wrong type" # Intel
-     FAIL_REGEX "[Uu]nknown option"                         # HP
-     FAIL_REGEX "[Ww]arning: [Oo]ption"                     # SunPro
-     FAIL_REGEX "command option .* is not recognized"       # XL
-     FAIL_REGEX "command option .* contains an incorrect subargument" # XL
-     FAIL_REGEX "not supported in this configuration. ignored"       # AIX
-     FAIL_REGEX "File with unknown suffix passed to linker" # PGI
-     FAIL_REGEX "[Uu]nknown switch"                         # PGI
-     FAIL_REGEX "WARNING: unknown flag:"                    # Open64
-     FAIL_REGEX "Incorrect command line option:"            # Borland
-     FAIL_REGEX "Warning: illegal option"                   # SunStudio 12
-     FAIL_REGEX "[Ww]arning: Invalid suboption"             # Fujitsu
-   )
-endmacro ()
+macro(CHECK_FORTRAN_FUNCTION_EXISTS FUNCTION VARIABLE)
+  if(NOT DEFINED ${VARIABLE})
+    message(STATUS "Looking for Fortran ${FUNCTION}")
+    if(CMAKE_REQUIRED_LIBRARIES)
+      set(CHECK_FUNCTION_EXISTS_ADD_LIBRARIES
+        LINK_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
+    else()
+      set(CHECK_FUNCTION_EXISTS_ADD_LIBRARIES)
+    endif()
+    file(WRITE
+    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/testFortranCompiler.f
+    "
+      program TESTFortran
+      external ${FUNCTION}
+      call ${FUNCTION}()
+      end program TESTFortran
+    "
+    )
+    try_compile(${VARIABLE}
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/testFortranCompiler.f
+    ${CHECK_FUNCTION_EXISTS_ADD_LIBRARIES}
+    OUTPUT_VARIABLE OUTPUT
+    )
+#    message(STATUS "${OUTPUT}")
+    if(${VARIABLE})
+      set(${VARIABLE} 1 CACHE INTERNAL "Have Fortran function ${FUNCTION}")
+      message(STATUS "Looking for Fortran ${FUNCTION} - found")
+      file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
+        "Determining if the Fortran ${FUNCTION} exists passed with the following output:\n"
+        "${OUTPUT}\n\n")
+    else()
+      message(STATUS "Looking for Fortran ${FUNCTION} - not found")
+      set(${VARIABLE} "" CACHE INTERNAL "Have Fortran function ${FUNCTION}")
+      file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
+        "Determining if the Fortran ${FUNCTION} exists failed with the following output:\n"
+        "${OUTPUT}\n\n")
+    endif()
+  endif()
+endmacro()

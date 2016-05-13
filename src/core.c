@@ -68,7 +68,6 @@ void _init()
       printf("ERROR: TLS initialization failed\n");
       exit(1);
     }
-  pthread_mutex_init(&pnmpi_level_lock, NULL);
 
   // Do PnMPI Pre Initialization
   pnmpi_PreInit();
@@ -82,7 +81,6 @@ __attribute__((destructor)) void finalize_pnmpi_threaded()
 void _fini()
 #endif
 {
-  pthread_mutex_destroy(&pnmpi_level_lock);
 }
 
 #endif /*PNMPI_ENABLE_THREAD_SAFETY*/
@@ -128,6 +126,7 @@ static path_array_t parse_path(const char *path)
   while (end);
 
   path_array[pos] = NULL;
+  free(pathdup);
   return path_array;
 }
 
@@ -291,6 +290,7 @@ void pnmpi_PreInit()
               WARNPRINT("Can't open configuration file %s (Error %i) - not "
                         "loading any PNMPI modules.",
                         confdir, error);
+              free_path(library_path);
               return;
             }
         }
@@ -322,10 +322,12 @@ void pnmpi_PreInit()
         {
           WARNPRINT(
             "Can't find local directory - not loading any PNMPI modules.");
+          free_path(library_path);
           return;
         }
 
       sprintf(filename, "%s/%s", confdir, CONFNAME);
+      free(confdir);
       conffile = fopen(filename, "r");
       if (conffile == NULL)
         {
@@ -335,6 +337,7 @@ void pnmpi_PreInit()
               WARNPRINT("Can't open configuration file %s (Error %i) - not "
                         "loading any PNMPI modules.",
                         filename, error);
+              free_path(library_path);
               return;
             }
         }
@@ -354,6 +357,7 @@ void pnmpi_PreInit()
         {
           WARNPRINT(
             "Can't find local directory - not loading any PNMPI modules.");
+          free_path(library_path);
           return;
         }
 
@@ -367,12 +371,14 @@ void pnmpi_PreInit()
               WARNPRINT("Can't open configuration file %s (Error %i) - not "
                         "loading any PNMPI modules.",
                         filename, error);
+              free_path(library_path);
               return;
             }
           else
             {
               /* WARNPRINT("Can't find any configuration file - not loading any
                * PNMPI modules."); */
+              free_path(library_path);
               return;
             }
         }
@@ -568,6 +574,9 @@ void pnmpi_PreInit()
                 }
               else
                 {
+                  module_def_t empty_module = { { 0 } };
+                  *(modules.module[modules.num]) = empty_module;
+
                   /* now we have space and can store the information */
 
                   DBGPRINT2("Found module %i: %s", modules.num + 1, cmdargv[1]);
