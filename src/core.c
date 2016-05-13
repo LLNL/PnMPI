@@ -122,6 +122,7 @@ static path_array_t parse_path(const char *path)
   while (end);
 
   path_array[pos] = NULL;
+  free(pathdup);
   return path_array;
 }
 
@@ -285,6 +286,7 @@ void pnmpi_PreInit()
               WARNPRINT("Can't open configuration file %s (Error %i) - not "
                         "loading any PNMPI modules.",
                         confdir, error);
+              free_path(library_path);
               return;
             }
         }
@@ -316,10 +318,12 @@ void pnmpi_PreInit()
         {
           WARNPRINT(
             "Can't find local directory - not loading any PNMPI modules.");
+          free_path(library_path);
           return;
         }
 
       sprintf(filename, "%s/%s", confdir, CONFNAME);
+      free(confdir);
       conffile = fopen(filename, "r");
       if (conffile == NULL)
         {
@@ -329,6 +333,7 @@ void pnmpi_PreInit()
               WARNPRINT("Can't open configuration file %s (Error %i) - not "
                         "loading any PNMPI modules.",
                         filename, error);
+              free_path(library_path);
               return;
             }
         }
@@ -348,6 +353,7 @@ void pnmpi_PreInit()
         {
           WARNPRINT(
             "Can't find local directory - not loading any PNMPI modules.");
+          free_path(library_path);
           return;
         }
 
@@ -361,12 +367,14 @@ void pnmpi_PreInit()
               WARNPRINT("Can't open configuration file %s (Error %i) - not "
                         "loading any PNMPI modules.",
                         filename, error);
+              free_path(library_path);
               return;
             }
           else
             {
               /* WARNPRINT("Can't find any configuration file - not loading any
                * PNMPI modules."); */
+              free_path(library_path);
               return;
             }
         }
