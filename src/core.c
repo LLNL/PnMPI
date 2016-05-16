@@ -37,6 +37,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "app_hooks.h"
 #include "core.h"
 #include "pnmpi-config.h"
 
@@ -72,7 +73,7 @@ void _init()
   // Do PnMPI Pre Initialization
   pnmpi_PreInit();
 
-  pnmpi_mpize();
+  pnmpi_app_startup();
 }
 
 #ifdef __GNUC__
@@ -81,6 +82,7 @@ __attribute__((destructor)) void finalize_pnmpi_threaded()
 void _fini()
 #endif
 {
+  pnmpi_app_shutdown();
 }
 
 #endif /*PNMPI_ENABLE_THREAD_SAFETY*/

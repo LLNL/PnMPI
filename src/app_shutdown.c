@@ -31,19 +31,38 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
+#include "app_hooks.h"
+
 #include "core.h"
 
 
-void pnmpi_mpize()
-{
-  int mpize = (getenv("PNMPI_MPIZE") != NULL) ? 1 : 0;
-  if (mpize)
-    {
-      int required = MPI_THREAD_MULTIPLE, provided;
-      int argc;
-      char **argv;
-      read_cmdline(&argc, &argv);
+#ifdef COMPILE_FOR_FORTRAN
+void pmpi_finalize_(int *ierr);
+#endif
 
-      MPI_Init_thread(&argc, &argv, required, &provided);
+
+void pnmpi_app_shutdown()
+{
+  /* There are two conditions to execute this function:
+   *
+   * 1. PnMPI must have been initialized before. If PnMPI (and MPI) have not
+   *    been initalized, nothing can be shutdown.
+   * 2. app_shutdown must be enabled, otherwise MPI was shutdown before in the
+   *    MPI_Finalize wrapper. */
+  if (!pnmpi_init_done)
+    return;
+
+
+// app_shutdown();
+
+
+#ifdef COMPILE_FOR_FORTRAN
+  if (pnmpi_init_was_fortran)
+    {
+      int res;
+      pmpi_finalize_(&res);
     }
+  else
+#endif
+    PMPI_Finalize();
 }

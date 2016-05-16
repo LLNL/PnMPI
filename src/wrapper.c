@@ -292,14 +292,23 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 
   if (NOT_ACTIVATED(MPI_Init_ID))
     {
-#ifdef COMPILE_FOR_FORTRAN
-      if (pnmpi_init_was_fortran)
-        pmpi_init_(&returnVal);
+      /* If app_startup is activated, MPI was initialized before in _init. A
+       * second call of MPI_Init is not allowed. */
+      if (pnmpi_init_done)
+        {
+          returnVal = MPI_SUCCESS;
+        }
       else
+        {
+#ifdef COMPILE_FOR_FORTRAN
+          if (pnmpi_init_was_fortran)
+            pmpi_init_(&returnVal);
+          else
 #endif
-        returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
+            returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
 
-      pnmpi_init_done = 1;
+          pnmpi_init_done = 1;
+        }
     }
   else
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
@@ -621,17 +630,26 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
   if (NOT_ACTIVATED(MPI_Init_thread_ID))
     {
+      /* If app_startup is activated, MPI was initialized before in _init. A
+       * second call of MPI_Init_thread is not allowed. */
+      if (pnmpi_init_done)
+        {
+          returnVal = MPI_SUCCESS;
+        }
+      else
+        {
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-      if (pnmpi_init_was_fortran)
-        pmpi_init_thread_(&required, provided, &returnVal);
-      else
+          if (pnmpi_init_was_fortran)
+            pmpi_init_thread_(&required, provided, &returnVal);
+          else
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
 #endif
-        returnVal =
-          PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+            returnVal =
+              PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
 
-      pnmpi_init_done = 1;
+          pnmpi_init_done = 1;
+        }
     }
   else
     returnVal =
@@ -1003,6 +1021,12 @@ int MPI_Finalize(void)
       pnmpi_int_print_timingstats();
     }
 #endif
+
+  /* If the app_shutdown hook is provided by any module, do NOT call the
+   * original MPI_Finalize function, because it will be called in _fini after
+   * calling the app_shutdown handler. */
+  if (1)
+    return err;
 
   err = PMPI_Barrier(MPI_COMM_WORLD);
 

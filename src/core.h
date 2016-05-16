@@ -273,9 +273,6 @@ int PMPI_Finalized(int *);
     TOTAL_STATS_6(mpiroutine);                                              \
   }
 
-void read_cmdline(int *argc, char ***argv);
-void pnmpi_mpize();
-
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
 static inline int set_pnmpi_level(int value)

@@ -25,11 +25,12 @@ add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
+  app_startup.c
+  app_shutdown.c
   debug.c
   services.c
   core.c
   wrapper.c
-  mpize.c
   read_cmdline.c
   ${Wrap_EXTRA_SOURCE})
 
