@@ -38,6 +38,17 @@
 #include "pnmpi-config.h"
 
 
+/* Define the P^nMPI library to use for preloading. If Fortran is supported, the
+ * Fortran PnMPI will be used, thus it covers C and Fortran. In any other case
+ * the C library will be used, so Fortran binaries can't be executed with
+ * preloaded P^nMPI. */
+#ifdef PNMPI_HAVE_FORTRAN
+#define PNMPI_LIBRARY_NAME "libpnmpif"
+#else
+#define PNMPI_LIBRARY_NAME "libpnmpi"
+#endif
+
+
 /* Configure argp.
  *
  * Argp is used to parse command line options. It handles the most common
@@ -148,13 +159,14 @@ int main(int argc, char **argv)
    * sion of LD_PRELOAD. DYLD_FORCE_FLAT_NAMESPACE has to be set, to get all
    * symbols in the same namespace. Otherwise P^nMPI and libmpi won't see each
    * other and no preloading will happen. */
-  appendenv("DYLD_INSERT_LIBRARIES", PNMPI_LIBRARY_DIR "/libpnmpif.dylib");
+  appendenv("DYLD_INSERT_LIBRARIES",
+            PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".dylib");
   setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
 
 #else
   /* For other systems (Linux and other UNIX platforms), add libpnmpif to
    * LD_PRELOAD to load P^nMPI in front of libmpi. */
-  appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/libpnmpif.so");
+  appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".so");
 #endif
 
   /* Execute the utility. If the utility could be started, pnmpize will exit
