@@ -197,6 +197,19 @@ matrix:
         - brew install openmpi
 
 
+    - os: osx
+      compiler: clang
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install mpich
+      env:
+        - MPICH
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+
 addons:
   apt:
     sources:
