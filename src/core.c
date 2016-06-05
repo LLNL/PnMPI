@@ -190,7 +190,7 @@ static int find_module(const char *lib_name, path_array_t library_path,
 }
 
 
-static void *find_symbol(const module_def_p module, const char *symbol_name)
+void *find_symbol(const module_def_p module, const char *symbol_name)
 {
   void *symbol = dlsym(module->handle, symbol_name);
 
@@ -773,36 +773,7 @@ void pnmpi_PreInit()
    * Call the module registration point functions
    * (done now as to load arguments first)
    */
-  {
-    int i;
-
-    for (i = 0; i < modules.num; i++)
-      {
-        // continue for stacks (they have no reg point)
-        if (modules.module[i]->stack_delimiter)
-          continue;
-
-        regPoint = (PNMPI_RegistrationPoint_t)find_symbol(
-          modules.module[i], PNMPI_REGISTRATION_POINT);
-        if (regPoint != 0)
-          {
-            /* check if this module has a RegistrationPoint and if yes, all it
-             */
-
-            set_pnmpi_level(i);
-            err = regPoint();
-            if (err != PNMPI_SUCCESS)
-              {
-                WARNPRINT("Error registering module %s (Error %i)", modname,
-                          err);
-              }
-          }
-        else
-          {
-            DBGPRINT2("Module %s has no registration point", modname);
-          }
-      } /*for modules*/
-  }     /*call PNMPI_REGISTRATION_POINT*/
+  pnmpi_call_hook(PNMPI_REGISTRATION_POINT);
 
 /* if we are debugging, print the parsed information */
 
@@ -854,28 +825,7 @@ void pnmpi_PreInit()
 
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
   // Notify all modules that we are done initializing PnMPI
-  for (i = 0; i < modules.num; i++)
-    {
-      // continue for stacks (they have no reg point)
-      if (modules.module[i]->stack_delimiter)
-        continue;
-
-      regPoint = (PNMPI_RegistrationPoint_t)find_symbol(
-        modules.module[i], PNMPI_INITCOMPLETE_POINT);
-      if (regPoint != 0)
-        {
-          /* check if this module has a RegistrationPoint and if yes, all it */
-
-          set_pnmpi_level(i);
-          err = regPoint();
-          if (err != PNMPI_SUCCESS)
-            {
-              WARNPRINT("Error registering module %s (Error %i)", modname, err);
-            }
-        }
-    } /*for modules*/
-  set_pnmpi_level(0);
-
+  pnmpi_call_hook(PNMPI_INITCOMPLETE_POINT);
 #endif
 }
 

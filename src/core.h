@@ -161,6 +161,10 @@ extern pnmpi_functions_t pnmpi_function_ptrs;
 #define SET_ACTIVATED(id) pnmpi_activated[CELL_INDEX(id)] |= CELL_BMASK(id)
 #define NOT_ACTIVATED(id) (!IS_ACTIVATED(id))
 
+void *find_symbol(const module_def_p module, const char *symbol_name);
+int pnmpi_hook_activated(const char *hook);
+void pnmpi_call_hook(const char *hook);
+
 // Statistics collection for stack initialization
 // TODO: Does all the initialization really need to live in macros?  Does it
 // need to happen

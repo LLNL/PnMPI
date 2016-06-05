@@ -33,6 +33,8 @@ set(PNMPI_LIB_SOURCES
   wrapper.c
   read_cmdline.c
   get_mpi_interface.c
+  call_hook.c
+  hook_activated.c
   ${Wrap_EXTRA_SOURCE})
 
 

@@ -40,6 +40,14 @@ Boston, MA 02111-1307 USA
 
 void pnmpi_app_startup()
 {
+  /* If no module provides the app_startup hook, we can skip this function. */
+  if (!pnmpi_hook_activated("app_startup"))
+    return;
+
+
+  /* Before executing the app_startup hook, we have to initialize the MPI
+   * environment, so it may be used by the hooks. */
+
   int required = MPI_THREAD_MULTIPLE, provided;
 
   if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
@@ -60,5 +68,5 @@ void pnmpi_app_startup()
   pnmpi_init_done = 1;
 
 
-  // app_startup();
+  pnmpi_call_hook("app_startup");
 }

@@ -49,11 +49,11 @@ void pnmpi_app_shutdown()
    *    been initalized, nothing can be shutdown.
    * 2. app_shutdown must be enabled, otherwise MPI was shutdown before in the
    *    MPI_Finalize wrapper. */
-  if (!pnmpi_init_done)
+  if (!pnmpi_init_done || !pnmpi_hook_activated("app_shutdown"))
     return;
 
 
-// app_shutdown();
+  pnmpi_call_hook("app_shutdown");
 
 
 #ifdef COMPILE_FOR_FORTRAN
