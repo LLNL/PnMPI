@@ -41,13 +41,24 @@ Boston, MA 02111-1307 USA
 void pnmpi_app_startup()
 {
   int required = MPI_THREAD_MULTIPLE, provided;
-  int argc;
-  char **argv;
-  read_cmdline(&argc, &argv);
 
-  PMPI_Init_thread(&argc, &argv, required, &provided);
+  if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
+    {
+      int argc;
+      char **argv;
+      read_cmdline(&argc, &argv);
+
+      pnmpi_init_was_fortran = 0;
+      PMPI_Init_thread(&argc, &argv, required, &provided);
+    }
+  else
+    {
+      int err;
+      pnmpi_init_was_fortran = 1;
+      pmpi_init_thread_(&required, &provided, &err);
+    }
   pnmpi_init_done = 1;
-  pnmpi_init_was_fortran = 0;
+
 
   // app_startup();
 }

@@ -32,6 +32,7 @@ set(PNMPI_LIB_SOURCES
   core.c
   wrapper.c
   read_cmdline.c
+  get_mpi_interface.c
   ${Wrap_EXTRA_SOURCE})
 
 

@@ -35,9 +35,18 @@ Boston, MA 02111-1307 USA
 #define PNMPI_APP_HOOKS_H
 
 
+/** \brief Type of MPI interface to be used by the application.
+ */
+typedef enum pnmpi_mpi_interface {
+  PNMPI_INTERFACE_C,      ///< Application uses the C MPI interface.
+  PNMPI_INTERFACE_Fortran ///< Application uses the Fortran MPI interface.
+} pnmpi_mpi_interface;
+
+
 void read_cmdline(int *argc, char ***argv);
 void pnmpi_app_startup();
 void pnmpi_app_shutdown();
+pnmpi_mpi_interface pnmpi_get_mpi_interface();
 
 
 #endif
