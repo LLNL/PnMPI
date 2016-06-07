@@ -53,6 +53,7 @@ int pnmpi_max_level;
 int pnmpi_initialization_complete;
 int pnmpi_init_was_fortran = -1;
 int pnmpi_init_done = 0;
+int pnmpi_finalize_done = 0;
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
