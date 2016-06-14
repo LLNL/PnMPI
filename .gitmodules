@@ -16,3 +16,6 @@
 [submodule "externals/CMake-MPIhelper"]
 	path = externals/CMake-MPIhelper
 	url = git://github.com/RWTH-HPC/CMake-MPIhelper.git
+[submodule "externals/CMake-argp"]
+	path = externals/CMake-argp
+	url = git://github.com/alehaa/CMake-argp.git

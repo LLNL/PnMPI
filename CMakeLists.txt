@@ -58,6 +58,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/externals/CMake-codecov/cmake"
   "${CMAKE_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
   "${CMAKE_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
+  "${CMAKE_SOURCE_DIR}/externals/CMake-argp/cmake"
   ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmakemodules/legacy")
 
@@ -151,6 +152,13 @@ install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
 SET(PnMPI_INSTALL_PREFIX )
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
+
+
+option(ENABLE_TESTS "Selects whether tests are built." false)
+if (ENABLE_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif (ENABLE_TESTS)
 
 
 # evaluate coverage data

@@ -64,49 +64,65 @@ if(NOT DEFINED MPIEXEC_EXTRA_FLAG)
   set(MPIEXEC_NUMPROC_FLAG "")
 endif()
 
-set(ASAN_ENV "")
-if (SANITIZE_ADDRESS)
-    set(ASAN_ENV -x ASAN_OPTIONS=\"detect_leaks=0\")
-endif ()
+
+function(set_sanitizer_env testname)
+  if (SANITIZE_ADDRESS)
+    set_tests_properties(${testname} PROPERTIES
+      ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0")
+  endif ()
+endfunction()
+
+function(set_pnmpi_env testname)
+  get_test_property(${testname} ENVIRONMENT TEMP)
+  if (TEMP STREQUAL "TEMP-NOTFOUND")
+    set(TEMP "")
+  endif ()
+
+  list(APPEND TEMP
+    "PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules"
+    "PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake"
+  )
+
+  set_tests_properties(${testname} PROPERTIES ENVIRONMENT "${TEMP}")
+endfunction()
+
 
 # Add C tests
-add_test(simple ${MPIEXEC} ${npflag} 2 ${ASAN_ENV} ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/simple)
-add_test(simple-s1 ${MPIEXEC} ${npflag} 2 ${ASAN_ENV} ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/simple-s1)
+add_test(simple ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/simple)
+add_test(simple-s1 ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/simple-s1)
 add_test(
   simple-pn
   ${MPIEXEC}
-  ${ASAN_ENV}
-  -x PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules
-  -x LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
-  -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$DYLD_LIBRARY_PATH
-  -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
   ${npflag} 2 ${EXECUTABLE_OUTPUT_PATH}/simple-pn)
+
+foreach (TARGET simple simple-s1 simple-pn)
+  set_sanitizer_env(${TARGET})
+endforeach ()
+set_pnmpi_env(simple-pn)
+
 
 #Add Fortran tests
 if (CMAKE_Fortran_COMPILER_WORKS)
-  add_test(fdemo    ${MPIEXEC} ${npflag} 2 ${ASAN_ENV} ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/fdemo)
-  add_test(fdemo-s1 ${MPIEXEC} ${npflag} 2 ${ASAN_ENV} ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/fdemo-s1)
+  add_test(fdemo    ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/fdemo)
+  add_test(fdemo-s1 ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/fdemo-s1)
   add_test(
     fdemo-pn
     ${MPIEXEC}
-    ${ASAN_ENV}
-    -x PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules
-    -x LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
-    -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$DYLD_LIBRARY_PATH
-    -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
     ${npflag} 2 ${EXECUTABLE_OUTPUT_PATH}/fdemo-pn)
 
-  add_test(f90demo    ${MPIEXEC} ${npflag} 2 ${ASAN_ENV} ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/f90demo)
-  add_test(f90demo-s1 ${MPIEXEC} ${npflag} 2 ${ASAN_ENV} ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/f90demo-s1)
+  add_test(f90demo    ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/f90demo)
+  add_test(f90demo-s1 ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/f90demo-s1)
   add_test(
     f90demo-pn
     ${MPIEXEC}
-    ${ASAN_ENV}
-    -x PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules
-    -x LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
-    -x DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$DYLD_LIBRARY_PATH
-    -x PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake
     ${npflag} 2 ${EXECUTABLE_OUTPUT_PATH}/f90demo-pn)
+
+
+  foreach (TARGET fdemo fdemo-s1 fdemo-pn f90demo f90demo-s1 f90demo-pn)
+    set_sanitizer_env(${TARGET})
+  endforeach ()
+  set_pnmpi_env(fdemo-pn)
+  set_pnmpi_env(f90demo-pn)
 endif()
 
 include_directories(
