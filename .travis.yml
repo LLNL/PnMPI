@@ -188,13 +188,26 @@ matrix:
         - mkdir travis && cd travis
         - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
-      compiler: gcc-5
+      compiler: gcc-6
       before_install:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
-        - export CC=gcc-5; export CXX=g++-5
+        - export CC=gcc-6; export CXX=g++-6
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi argp-standalone
+
+    - os: osx
+      compiler: clang
+      before_install:
+        - brew update --quiet >& /dev/null
+        - brew outdated gcc || brew upgrade gcc
+        - brew outdated cmake || brew upgrade cmake
+        - brew install mpich argp-standalone
+      env:
+        - MPICH
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
 
 
 addons:
