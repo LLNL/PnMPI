@@ -28,11 +28,12 @@
 # LLNL-CODE-402774
 
 find_package(Sanitizers)
+find_package(MPI REQUIRED)
 
 
 # Helper function to add a new test case.
 function (pnmpi_test NAME PASS_EXPRESSION COMMAND)
-  # remove ${TARGET} from ${ARGV} to use ${ARGV} as ${COMMAND}
+  # Remove ${NAME} from ${ARGV} to use ${ARGV} as ${COMMAND}.
   list(REMOVE_AT ARGV 0 1)
 
   # Add test case with optional pass regular expression.
@@ -54,7 +55,10 @@ endfunction ()
 # checks, if AddressSanitizer is enabled, because some MPI librarys have memory
 # leaks.
 function (pnmpi_mpi_test NAME PASS_EXPRESSION COMMAND)
-  pnmpi_test(${ARGV})
+  # Remove ${NAME} from ${ARGV} to use ${ARGV} as ${COMMAND}.
+  list(REMOVE_AT ARGV 0 1)
+  pnmpi_test("${NAME}" "${PASS_EXPRESSION}" ${ARGV})
+
   if (SANITIZE_ADDRESS)
     set_tests_properties(${NAME} PROPERTIES
       ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0")
@@ -70,6 +74,26 @@ endfunction ()
 add_executable("test-nompi" test-nompi.c)
 add_coverage(test-nompi)
 add_sanitizers(test-nompi)
+
+# The following target may be used to check general MPI functionality. It uses
+# the common MPI functions MPI_Init, MPI_Finalize, MPI_Send and MPI_Recv and may
+# be used with at least 2 ranks.
+add_executable("test-mpi-c" test-mpi.c)
+target_include_directories(test-mpi-c PRIVATE ${MPI_Fortran_INCLUDE_PATH})
+target_link_libraries(test-mpi-c ${MPI_Fortran_LIBRARIES})
+add_coverage(test-mpi-c)
+add_sanitizers(test-mpi-c)
+
+# The following target may be used to check general MPI functionality with
+# Fortran code. It uses the common MPI functions MPI_Init, MPI_Finalize,
+# MPI_Send and MPI_Recv and may be used with at least 2 ranks.
+if (CMAKE_Fortran_COMPILER_WORKS)
+  add_executable("test-mpi-f" test-mpi.f)
+  target_include_directories(test-mpi-f PRIVATE ${MPI_C_INCLUDE_PATH})
+  target_link_libraries(test-mpi-f ${MPI_Fortran_LIBRARIES})
+  add_coverage(test-mpi-f)
+  add_sanitizers(test-mpi-f)
+endif ()
 
 
 # Recurse into subdirectories.

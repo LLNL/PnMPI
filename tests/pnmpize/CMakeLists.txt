@@ -30,21 +30,90 @@
 find_package(Sanitizers)
 
 
-# Store the path of PnMPIze in a variable. If AddressSanitizer is enabled,
-# prepend the asan-wrapper, so that P^nMPI can be sanitized.
-set(PNMPIZE_BIN $<TARGET_FILE:pnmpize>)
-if (SANITIZE_ADDRESS)
-  set(PNMPIZE_BIN ${ASan_WRAPPER} ${PNMPIZE_BIN})
-endif ()
+# Helper function to add a new PnMPIze test case.
+function (pnmpi_pnmpize_test NAME)
+  # Parse options.
+  set(oneValueArgs NUMPROCS PASS_EXPRESSION)
+  set(multiValueArgs PNMPIZE_ARGS COMMAND)
+  cmake_parse_arguments("OPT" "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+
+  # If AddressSanitizer is enabled, we have to use the asan wrapper, because
+  # PnMPIze uses preloading.
+  set(SANITIZE_WRAPPER "")
+  if (SANITIZE_ADDRESS)
+    set(SANITIZE_WRAPPER ${ASan_WRAPPER})
+  endif ()
+
+
+  # Handle non-MPI tests
+  if ((NOT OPT_NUMPROCS) OR (OPT_NUMPROCS EQUAL 0))
+    pnmpi_test("${NAME}" "${OPT_PASS_EXPRESSION}" ${SANITIZE_WRAPPER}
+      $<TARGET_FILE:pnmpize> ${OPT_PNMPIZE_ARGS} ${OPT_COMMAND})
+
+  # Handle MPI tests.
+  else ()
+    pnmpi_mpi_test("${NAME}" "${OPT_PASS_EXPRESSION}"
+      ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${OPT_NUMPROCS}
+      ${SANITIZE_WRAPPER} $<TARGET_FILE:pnmpize> ${OPT_PNMPIZE_ARGS}
+      ${OPT_COMMAND})
+  endif ()
+endfunction ()
+
+
 
 
 # The following test should not check the whole functionality of PnMPIze, but
 # should check, if PnMPIze is able to execute a application. A second purpose
 # for this test is to check, if PnMPIze (or PnMPI) has memory leaks, what can't
 # be checked with MPI applications due memory leaks in some MPI libraries.
-pnmpi_test(pnmpize_basic "" ${PNMPIZE_BIN} $<TARGET_FILE:test-nompi>)
+pnmpi_pnmpize_test(pnmpize_basic
+  COMMAND $<TARGET_FILE:test-nompi>)
 
-# The following test checks, if pnmpize starts PnMPI. If PnMPI header is not
+# The following test should not check the whole functionality of PnMPIze, but
+# should check, if PnMPIze is able to execute a application after PnMPIze was
+# invoked via mpiexec.
+pnmpi_pnmpize_test(pnmpize_basic_mpiexec
+  NUMPROCS 1
+  COMMAND $<TARGET_FILE:test-nompi>)
+
+# The following test checks, if PnMPIze starts PnMPI. If PnMPI header is not
 # found in stdout, the test will fail.
-pnmpi_mpi_test(pnmpize_preload_pnmpi "Number of modules:"
-  ${PNMPIZE_BIN} $<TARGET_FILE:simple>)
+pnmpi_pnmpize_test(pnmpize_preload_pnmpi
+  NUMPROCS 1
+  PASS_EXPRESSION "Number of modules:"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# The following test checks, if PnMPIze is able to pass a configuration file to
+# PnMPI. The sample module will be used for this check and should the output
+# "WRAPPER 1: Before send" to stdout.
+pnmpi_pnmpize_test(pnmpize_set_config
+  NUMPROCS 2
+  PASS_EXPRESSION "WRAPPER 1: Before send"
+  PNMPIZE_ARGS -c "${CMAKE_CURRENT_SOURCE_DIR}/mod-sample.conf"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+
+# Check Fortran functionality.
+#
+# If Fortran is not supported by PnMPI, return this script now to ignore the
+# fortran checks.
+if (NOT CMAKE_Fortran_COMPILER_WORKS)
+  return()
+endif ()
+
+# The following test checks, if PnMPIze starts PnMPI. If PnMPI header is not
+# found in stdout, the test will fail.
+pnmpi_pnmpize_test(pnmpize_fortran_preload_pnmpi
+  NUMPROCS 2
+  PASS_EXPRESSION "Number of modules:"
+  COMMAND $<TARGET_FILE:test-mpi-f>)
+
+# The following test checks, if PnMPIze is able to pass a configuration file to
+# PnMPI. The sample module will be used for this check and should the output
+# "WRAPPER 1: Before send" to stdout.
+pnmpi_pnmpize_test(pnmpize_fortran_set_config
+  NUMPROCS 2
+  PASS_EXPRESSION "WRAPPER 1: Before send"
+  PNMPIZE_ARGS -c "${CMAKE_CURRENT_SOURCE_DIR}/mod-sample.conf"
+  COMMAND $<TARGET_FILE:test-mpi-f>)
