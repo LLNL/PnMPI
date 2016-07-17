@@ -1026,7 +1026,7 @@ int MPI_Finalize(void)
    * original MPI_Finalize function, because it will be called in _fini after
    * calling the app_shutdown handler. */
   if (pnmpi_hook_activated("app_shutdown") && !pnmpi_finalize_done)
-    return err;
+    return MPI_SUCCESS;
 
   err = PMPI_Barrier(MPI_COMM_WORLD);
 
