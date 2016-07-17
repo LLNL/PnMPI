@@ -32,21 +32,25 @@ find_package(MPI REQUIRED)
 
 
 # Helper function to add a new test case.
-function (pnmpi_test NAME PASS_EXPRESSION COMMAND)
-  # Remove ${NAME} from ${ARGV} to use ${ARGV} as ${COMMAND}.
-  list(REMOVE_AT ARGV 0 1)
+function (pnmpi_test NAME)
+  # Parse options.
+  set(oneValueArgs PASS_EXPRESSION FAIL_EXPRESSION)
+  set(multiValueArgs COMMAND)
+  cmake_parse_arguments("OPT" "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  # Add test case with optional pass regular expression.
-  add_test(NAME ${NAME} COMMAND ${ARGV})
-  if (PASS_EXPRESSION)
+  # Add test case with optional pass or fail regular expression.
+  add_test(NAME ${NAME} COMMAND ${OPT_COMMAND})
+  if (OPT_PASS_EXPRESSION)
     set_tests_properties(${NAME} PROPERTIES PASS_REGULAR_EXPRESSION
-      "${PASS_EXPRESSION}")
-  endif ()
+      "${OPT_PASS_EXPRESSION}")
+  else ()
+    if (NOT OPT_FAIL_EXPRESSION)
+      set(OPT_FAIL_EXPRESSION "Error;ERROR;Failed")
+    endif ()
 
-  # If PASS_EXPRESSION is set, the following FAIL_REGULAR_EXPRESSION will have
-  # no effect.
-  set_tests_properties(${NAME} PROPERTIES FAIL_REGULAR_EXPRESSION
-    "Error;ERROR;Failed")
+    set_tests_properties(${NAME} PROPERTIES FAIL_REGULAR_EXPRESSION
+      "${OPT_FAIL_EXPRESSION}")
+  endif ()
 endfunction ()
 
 
@@ -54,11 +58,11 @@ endfunction ()
 # function, this function additionaly sets an ENV variable to disable leak
 # checks, if AddressSanitizer is enabled, because some MPI librarys have memory
 # leaks.
-function (pnmpi_mpi_test NAME PASS_EXPRESSION COMMAND)
-  # Remove ${NAME} from ${ARGV} to use ${ARGV} as ${COMMAND}.
-  list(REMOVE_AT ARGV 0 1)
-  pnmpi_test("${NAME}" "${PASS_EXPRESSION}" ${ARGV})
+function (pnmpi_mpi_test NAME)
+  # Add a new test case.
+  pnmpi_test(${ARGV})
 
+  # If AddressSanitizer is enabled, disable leak sanitizer.
   if (SANITIZE_ADDRESS)
     set_tests_properties(${NAME} PROPERTIES
       ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0")
@@ -88,13 +92,14 @@ add_sanitizers(test-mpi-c)
 # Fortran code. It uses the common MPI functions MPI_Init, MPI_Finalize,
 # MPI_Send and MPI_Recv and may be used with at least 2 ranks.
 if (CMAKE_Fortran_COMPILER_WORKS)
-  add_executable("test-mpi-f" test-mpi.f)
-  target_include_directories(test-mpi-f PRIVATE ${MPI_C_INCLUDE_PATH})
-  target_link_libraries(test-mpi-f ${MPI_Fortran_LIBRARIES})
-  add_coverage(test-mpi-f)
-  add_sanitizers(test-mpi-f)
+  add_executable("test-mpi-fortran" test-mpi.f)
+  target_include_directories(test-mpi-fortran PRIVATE ${MPI_C_INCLUDE_PATH})
+  target_link_libraries(test-mpi-fortran ${MPI_Fortran_LIBRARIES})
+  add_coverage(test-mpi-fortran)
+  add_sanitizers(test-mpi-fortran)
 endif ()
 
 
 # Recurse into subdirectories.
 add_subdirectory(pnmpize)
+add_subdirectory(pnmpi)
