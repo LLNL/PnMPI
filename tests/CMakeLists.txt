@@ -79,8 +79,8 @@ add_sanitizers(test-nompi)
 # the common MPI functions MPI_Init, MPI_Finalize, MPI_Send and MPI_Recv and may
 # be used with at least 2 ranks.
 add_executable("test-mpi-c" test-mpi.c)
-target_include_directories(test-mpi-c PRIVATE ${MPI_Fortran_INCLUDE_PATH})
-target_link_libraries(test-mpi-c ${MPI_Fortran_LIBRARIES})
+target_include_directories(test-mpi-c PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(test-mpi-c ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-c)
 add_sanitizers(test-mpi-c)
 
@@ -89,7 +89,7 @@ add_sanitizers(test-mpi-c)
 # MPI_Send and MPI_Recv and may be used with at least 2 ranks.
 if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable("test-mpi-f" test-mpi.f)
-  target_include_directories(test-mpi-f PRIVATE ${MPI_C_INCLUDE_PATH})
+  target_include_directories(test-mpi-f PRIVATE ${MPI_Fortran_INCLUDE_PATH})
   target_link_libraries(test-mpi-f ${MPI_Fortran_LIBRARIES})
   add_coverage(test-mpi-f)
   add_sanitizers(test-mpi-f)
