@@ -13,6 +13,7 @@ include(PnMPIModules)
 
 # Recurse to sub-directories
 add_subdirectory(comm)
+add_subdirectory(counter)
 add_subdirectory(datatype)
 add_subdirectory(empty)
 add_subdirectory(requests)
