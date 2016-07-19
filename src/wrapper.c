@@ -399,6 +399,18 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 #ifdef COMPILE_FOR_FORTRAN
 void mpi_init_(int *ierr)
 {
+  /* If MPI was already initialized (by app_startup), then do not start it
+   * again, as this this forbidden by the MPI standard.
+   *
+   * TODO: This is only a temporary fix. The better fix will be to fix the
+   * pnmpi_get_mpi_interface function.
+   */
+  if (pnmpi_init_done)
+    {
+      *ierr = MPI_SUCCESS;
+      return;
+    }
+
   /* some code in here is taken from MPICH-1 */
 
   int argc;
@@ -742,6 +754,18 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
 void mpi_init_thread_(int *required, int *provided, int *ierr)
 {
+  /* If MPI was already initialized (by app_startup), then do not start it
+   * again, as this this forbidden by the MPI standard.
+   *
+   * TODO: This is only a temporary fix. The better fix will be to fix the
+   * pnmpi_get_mpi_interface function.
+   */
+  if (pnmpi_init_done)
+    {
+      *ierr = MPI_SUCCESS;
+      return;
+    }
+
   /* some code in here is taken from MPICH-1 */
 
   int argc;
