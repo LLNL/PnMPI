@@ -171,7 +171,7 @@ static int find_module(const char *lib_name, path_array_t library_path,
       if (access(location, R_OK) != -1)
         {
           *handle = dlopen(location, RTLD_LAZY);
-          if (handle)
+          if (*handle)
             {
               DBGPRINT2("Loading module %s\n", lib_name);
               strcpy(mod_path, location);

@@ -28,11 +28,17 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>
+#include <stdio.h>  // fprintf, printf
+#include <stdlib.h> // EXIT_* macros
 
 
 int main(int argc, char **argv)
 {
   printf("Hello World!\n");
-  return 0;
+
+  /* In standard C the following return is not required, but in some situations
+   * older versions of mpiexec report the job aborted, so the test case will
+   * fail, even if it succeed. Returning EXIT_SUCCESS avoids this false error
+   * message. */
+  return EXIT_SUCCESS;
 }

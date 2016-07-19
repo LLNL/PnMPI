@@ -1030,6 +1030,15 @@ int MPI_Finalize(void)
 
   err = PMPI_Barrier(MPI_COMM_WORLD);
 
+  /* It would be better to distinguish between C and Fortran at this point, so
+   * if we've called a C PMPI_Init, PMPI_Finalize would be used and for Fortran
+   * pmpi_finalize_. We won't do this here, because for a long time there was a
+   * bug in OpenMPI that let pmpi_finalize_ calls redirect to MPI_Finalize,
+   * which is wrapped by PnMPI and will result in an endless recursion.
+   *
+   * The bug may be avoided with a complex set of guard variables arround the
+   * finalize calls, but until now we didn't got any errors with simply calling
+   * the MPI C finalize here. */
   inc_pnmpi_mpi_level();
   err = PMPI_Finalize();
   dec_pnmpi_mpi_level();

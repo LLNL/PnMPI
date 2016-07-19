@@ -78,25 +78,31 @@ endfunction ()
 add_executable("test-nompi" test-nompi.c)
 add_coverage(test-nompi)
 add_sanitizers(test-nompi)
+pnmpi_test("binary_nompi" COMMAND $<TARGET_FILE:test-nompi>)
 
 # The following target may be used to check general MPI functionality. It uses
 # the common MPI functions MPI_Init, MPI_Finalize, MPI_Send and MPI_Recv and may
 # be used with at least 2 ranks.
 add_executable("test-mpi-c" test-mpi.c)
-target_include_directories(test-mpi-c PRIVATE ${MPI_Fortran_INCLUDE_PATH})
-target_link_libraries(test-mpi-c ${MPI_Fortran_LIBRARIES})
+target_include_directories(test-mpi-c PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(test-mpi-c ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-c)
 add_sanitizers(test-mpi-c)
+pnmpi_mpi_test("binary_mpi_c" COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+  $<TARGET_FILE:test-mpi-c>)
 
 # The following target may be used to check general MPI functionality with
 # Fortran code. It uses the common MPI functions MPI_Init, MPI_Finalize,
 # MPI_Send and MPI_Recv and may be used with at least 2 ranks.
 if (CMAKE_Fortran_COMPILER_WORKS)
   add_executable("test-mpi-fortran" test-mpi.f)
-  target_include_directories(test-mpi-fortran PRIVATE ${MPI_C_INCLUDE_PATH})
+  target_include_directories(test-mpi-fortran PRIVATE
+    ${MPI_Fortran_INCLUDE_PATH})
   target_link_libraries(test-mpi-fortran ${MPI_Fortran_LIBRARIES})
   add_coverage(test-mpi-fortran)
   add_sanitizers(test-mpi-fortran)
+  pnmpi_mpi_test("binary_mpi_fortran" COMMAND
+    ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2 $<TARGET_FILE:test-mpi-fortran>)
 endif ()
 
 

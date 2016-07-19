@@ -33,7 +33,7 @@
  * in combination with PnMPI. */
 
 #include <stdio.h>  // fprintf, printf
-#include <stdlib.h> // EXIT_FAILURE
+#include <stdlib.h> // EXIT_* macros
 
 #include <mpi.h>
 
@@ -94,4 +94,11 @@ int main(int argc, char **argv)
   /* Finalize MPI. */
   if ((err = MPI_Finalize()) != MPI_SUCCESS)
     print_err("MPI_Finalize");
+
+
+  /* In standard C the following return is not required, but in some situations
+   * older versions of mpiexec report the job aborted, so the test case will
+   * fail, even if it succeed. Returning EXIT_SUCCESS avoids this false error
+   * message. */
+  return EXIT_SUCCESS;
 }
