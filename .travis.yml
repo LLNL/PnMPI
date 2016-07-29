@@ -128,6 +128,9 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi argp-standalone
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: beta-xcode6.2
       compiler: gcc
@@ -136,6 +139,9 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi argp-standalone
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: beta-xcode6.3
       compiler: gcc
@@ -144,6 +150,9 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi argp-standalone
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: xcode6.4
       compiler: gcc
@@ -152,6 +161,9 @@ matrix:
         - brew outdated gcc || brew upgrade gcc
         - brew outdated cmake || brew upgrade cmake
         - brew install openmpi argp-standalone
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: xcode7
       compiler: gcc
@@ -159,6 +171,9 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew install openmpi cmake argp-standalone
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: xcode7.1
       compiler: gcc
@@ -166,6 +181,9 @@ matrix:
         - brew update --quiet >& /dev/null
         - brew outdated gcc || brew upgrade gcc
         - brew install openmpi cmake argp-standalone
+      script:
+        - mkdir travis && cd travis
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
     - os: osx
       osx_image: xcode7.2
       compiler: gcc
