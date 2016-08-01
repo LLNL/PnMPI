@@ -40,6 +40,7 @@ Boston, MA 02111-1307 USA
 
 #include <mpi.h>
 
+#include "app_hooks.h"
 #include "core.h"
 #include "pnmpi-config.h"
 
@@ -633,6 +634,11 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
   int returnVal;
   if (required > PNMPI_MAX_THREADED)
     required = PNMPI_MAX_THREADED;
+
+  /* If app_startup is activated, we've initialized MPI before. Restore the
+   * provided value, MPI_Init_thread gave us in the constructor. */
+  if (pnmpi_hook_activated("app_startup"))
+    *provided = pnmpi_mpi_thread_level_provided;
 
   inc_pnmpi_mpi_level();
 #ifndef PNMPI_ENABLE_THREAD_SAFETY

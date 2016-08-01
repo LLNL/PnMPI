@@ -43,6 +43,15 @@ typedef enum pnmpi_mpi_interface {
 } pnmpi_mpi_interface;
 
 
+/** \brief Cache for 'provided' return value of PMPI_Init_thread.
+ *
+ * \details PMPI_Init_thread returns the provided MPI threading level. The value
+ *  will be stored in this variable, to pass it to the application in later
+ *  calls to \ref MPI_Init_thread.
+ */
+extern int pnmpi_mpi_thread_level_provided;
+
+
 void read_cmdline(int *argc, char ***argv);
 void pnmpi_app_startup();
 void pnmpi_app_shutdown();

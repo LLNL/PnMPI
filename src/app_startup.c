@@ -38,6 +38,9 @@ Boston, MA 02111-1307 USA
 #include "core.h"
 
 
+int pnmpi_mpi_thread_level_provided;
+
+
 void pnmpi_app_startup()
 {
   /* If no module provides the app_startup hook, we can skip this function. */
@@ -48,7 +51,7 @@ void pnmpi_app_startup()
   /* Before executing the app_startup hook, we have to initialize the MPI
    * environment, so it may be used by the hooks. */
 
-  int required = MPI_THREAD_MULTIPLE, provided;
+  int required = MPI_THREAD_MULTIPLE;
 
   if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
     {
@@ -57,13 +60,14 @@ void pnmpi_app_startup()
       read_cmdline(&argc, &argv);
 
       pnmpi_init_was_fortran = 0;
-      PMPI_Init_thread(&argc, &argv, required, &provided);
+      PMPI_Init_thread(&argc, &argv, required,
+                       &pnmpi_mpi_thread_level_provided);
     }
   else
     {
       int err;
       pnmpi_init_was_fortran = 1;
-      pmpi_init_thread_(&required, &provided, &err);
+      pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
     }
   pnmpi_init_done = 1;
 
