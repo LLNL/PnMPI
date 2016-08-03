@@ -11,10 +11,25 @@
 # @author Mathias Korepkat, Tobias Hilbrich
 # @date 25.11.2011
 
+include(CheckCSourceCompiles)
 include(CheckFortranMPIFunctionExists)
+include(CheckFunctionExists)
 include(CheckMPIConstCorrectness)
 include(CheckMPIFunctionExists)
 include(CheckMPISymbolExists)
+include(CheckSymbolExists)
+
+
+# \brief Helper maco to execute a feature test.
+#
+# \param file Source file (will be searched in cmakemodules/FeatureTests)
+# \param var Variable where the feature test result will be stored in
+#
+macro(featureTest file var)
+  file(READ "${CMAKE_SOURCE_DIR}/cmakemodules/FeatureTests/${file}" SOURCE)
+  check_c_source_compiles("${SOURCE}" ${var})
+endmacro()
+
 
 ###Run all feature tests that influence config.h
 #MPI-2 constants
@@ -59,15 +74,18 @@ FOREACH (type ${HandleConvertMacros})
 ENDFOREACH (type)
 
 if (BFD_FOUND)
-    featureTest("ft_bfd_old_api.c" "C" "PNMPI_OLD_BFD_API")
-    featureTest("ft_bfd_new_api.c" "C" "PNMPI_NEW_BFD_API")
+  featureTest("ft_bfd_old_api.c" PNMPI_OLD_BFD_API)
+  featureTest("ft_bfd_new_api.c" PNMPI_NEW_BFD_API)
 endif ()
 
 #SET(PNMPI_ENABLE_THREAD_SAFETY OFF CACHE BOOL "Pthreads found and thread safety selected")
 
 option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." TRUE)
 if(ENABLE_THREAD_SAFETY)
-    featureTest("ft_pthreads.c" C PNMPI_HAVE_PTHREADS)
+  set(CMAKE_REQUIRED_LIBRARIES "pthread")
+  check_function_exists("pthread_key_create" PNMPI_HAVE_PTHREADS)
+  unset(CMAKE_REQUIRED_LIBRARIES)
+
     IF(PNMPI_HAVE_PTHREADS)
         SET(PNMPI_ENABLE_THREAD_SAFETY ON)
     ELSE(PNMPI_HAVE_PTHREADS)
@@ -75,4 +93,12 @@ if(ENABLE_THREAD_SAFETY)
     ENDIF(PNMPI_HAVE_PTHREADS)
 endif(ENABLE_THREAD_SAFETY)
 
-featureTest("ft_gnuc.c" C PNMPI_HAVE_GNUC)
+
+check_symbol_exists("__GNUC__" "" HAVE_GNUC)
+if (NOT HAVE_GNUC)
+  check_symbol_exists("_GNUC_" "" HAVE_GNUC2)
+endif ()
+
+if (HAVE_GNUC OR HAVE_GNUC2)
+  set(PNMPI_HAVE_GNUC true CACHE INTERNAL "GNUC compatible compiler found.")
+endif ()

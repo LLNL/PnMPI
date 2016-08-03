@@ -54,49 +54,6 @@ function(add_pnmpi_module targetname)
   add_dependencies(${targetname} pnmpi-patch pnmpi)
 endfunction()
 
-# Macro featureTest
-#
-#=============================================================================
-# Creates a feature test with an non-MPI program.
-MACRO (
-    featureTest
-        source # The source file name of the MPI program to test, must be in the folder cmakemodules/FeatureTests
-        language # one of: C, CXX, Fortran
-        successVar # Name of a variable to set to true iff the test was successful, will be set as a CACHE variable
-        )
-    IF (NOT DEFINED ${successVar})
-        #Organize the temporary src directory, copy source there
-        SET (binDir "${CMAKE_CURRENT_BINARY_DIR}/${source}/BUILD")
-        SET (srcDir "${CMAKE_CURRENT_BINARY_DIR}/${source}")
-        CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmakemodules/FeatureTests/${source}" "${srcDir}/${source}" COPYONLY)
-
-        #Create CMakeLists.txt
-        FILE(WRITE "${srcDir}/CMakeLists.txt"
-            "PROJECT (featuretest ${language})\n"
-            "cmake_minimum_required(VERSION 2.6)\n"
-            "${EXTRA_INCLUDE_FILES}"
-            "add_executable(featuretest-mpi \"${source}\")\n"
-            )
-
-        #Try compile and preserve the result in a cached variable
-        try_compile(${successVar} "${binDir}" "${srcDir}"
-                        featuretest
-	#  CMAKE_MODULE_PATH is needed to find the provided Toolchain/Platform files
-			CMAKE_FLAGS "-DCMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'"
-                        OUTPUT_VARIABLE output)
-
-        SET (${successVar} ${${successVar}} CACHE INTERNAL "Result of feature testing ${source}")
-
-        #Add status
-        SET (successStatus "success")
-        IF (NOT ${successVar})
-            SET (successStatus "failed")
-        ENDIF (NOT ${successVar})
-
-        MESSAGE (STATUS "Checking for ${source} ... ${successStatus}")
-    ENDIF (NOT DEFINED ${successVar})
-ENDMACRO (featureTest)
-
 # Macro liblistToDependList
 #
 #=============================================================================
