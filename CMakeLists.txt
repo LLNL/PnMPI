@@ -42,15 +42,6 @@ option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." TRUE)
 #===================================
 # Basic initialization
 #===================================
-# Version info
-set(PNMPI_MAJOR_VERSION 1)
-set(PNMPI_MINOR_VERSION 6)
-set(PNMPI_PATCH_VERSION 0)
-set(PNMPI_VERSION ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION})
-
-# Set version of the P^nMPI interface (used to determine incompatibility with P^nMPI lib)
-# TODO: is this just for services?  The basic interface is going to be MPI no matter what.
-set(PNMPI_LIB_INTERFACE_VERSION "1")
 
 # Set the module search path to include local modules.
 set(CMAKE_MODULE_PATH
@@ -59,8 +50,37 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
   "${CMAKE_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
   "${CMAKE_SOURCE_DIR}/externals/CMake-argp/cmake"
+  "${CMAKE_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
   ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmakemodules/legacy")
+
+
+# Get the version info from git.
+if (EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  find_package(GitInfo REQUIRED)
+  git_wc_info(${PROJECT_SOURCE_DIR} GIT)
+
+# If git is not available (e.g. this git was packed as .tar.gz), try to read the
+# version-info from a hidden file in the root directory. This file should not be
+# versioned, but added at packaging time.
+elseif (EXISTS "${PROJECT_SOURCE_DIR}/.version")
+  file(READ "${PROJECT_SOURCE_DIR}/.version" GIT_WC_LATEST_TAG_LONG)
+
+# If no version could be gathered by git or the version file, print a warning,
+# so the user has to define a version in the backup version file.
+else ()
+  message(FATAL_ERROR "No PnMPI version provided by .version file")
+endif ()
+
+set(PNMPI_VERSION ${GIT_WC_LATEST_TAG_LONG} CACHE STRING "PnMPI version")
+if (GIT_WC_LATEST_TAG_LONG MATCHES "^([^0-9]*)([0-9]+)[.]([0-9]+)-([0-9]+)")
+  set(PNMPI_MAJOR_VERSION ${CMAKE_MATCH_2} CACHE STRING "")
+  set(PNMPI_MINOR_VERSION ${CMAKE_MATCH_3} CACHE STRING "")
+  set(PNMPI_PATCH_VERSION ${CMAKE_MATCH_4} CACHE STRING "")
+else ()
+  message(FATAL_ERROR "Invalid version info: '${GIT_WC_LATEST_TAG_LONG}'.")
+endif ()
+
 
 # Sensible defaults for the install prefix on Win32.  CMake defaults to /usr/local on UNIX.
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

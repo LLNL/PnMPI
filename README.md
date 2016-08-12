@@ -1,8 +1,6 @@
 PnMPI Tool Infrastructure
 ========================================
 
-Version 1.6
-
 by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774
 
 ### Contributors

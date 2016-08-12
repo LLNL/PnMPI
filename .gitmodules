@@ -19,3 +19,6 @@
 [submodule "externals/CMake-argp"]
 	path = externals/CMake-argp
 	url = git://github.com/alehaa/CMake-argp.git
+[submodule "externals/CMake-gitinfo"]
+	path = externals/CMake-gitinfo
+	url = git://github.com/RWTH-HPC/CMake-gitinfo.git
