@@ -107,7 +107,7 @@ endif()
 #===================================
 # Recurse to sub-directories
 #===================================
-#add_subdirectory(wrap)
+add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(patch)
 
