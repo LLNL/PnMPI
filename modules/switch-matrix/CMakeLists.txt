@@ -15,7 +15,7 @@ add_wrapped_file(switch-matrix.c switch-matrix.w)
 install(TARGETS switch-matrix DESTINATION lib/pnmpi-modules)
 
 include_directories(
-  ${PROJECT_SOURCE_DIR}/src
-  ${PROJECT_BINARY_DIR}/src
+  ${PROJECT_SOURCE_DIR}/src/pnmpi
+  ${PROJECT_BINARY_DIR}/src/pnmpi
   ${PROJECT_BINARY_DIR}
   ${MPI_C_INCLUDE_PATH})

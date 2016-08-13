@@ -30,7 +30,7 @@
 find_package(argp REQUIRED)
 
 
-include_directories(${CMAKE_BINARY_PATH})
+include_directories(${CMAKE_BINARY_DIR})
 
 add_executable(pnmpize pnmpize.c)
 add_coverage(pnmpize)

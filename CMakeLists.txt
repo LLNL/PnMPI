@@ -109,7 +109,6 @@ endif()
 #===================================
 add_subdirectory(doc)
 add_subdirectory(src)
-add_subdirectory(patch)
 
 option(ENABLE_MODULES "Selects whether PnMPI modules are built." TRUE)
 if(ENABLE_MODULES)
