@@ -73,9 +73,6 @@ endif()
 INCLUDE (PnMPIModules)
 find_package(codecov)
 
-#Find Packages
-find_package(AWK REQUIRED)
-
 #===================================
 #System inspection
 #===================================
@@ -92,10 +89,6 @@ find_package(MPI)
 set(MPI_CXX_SKIP_FLAGS
     -DMPI_NO_CPPBIND -DOMPI_SKIP_MPICXX -D_MPICC_H -DMPICH_SKIP_MPICXX -DMPIBULL_SKIP_MPICXX
     CACHE STRING "Default skip-flags used (for SGI, OpenMPI, HP-MPI, MPICH, BULL-MPI)")
-
-# Fortran name mangling option, customizable at cmd line
-# TODO: detect fortran name mangling, e.g.: F77SYMBOL = symbol_
-set(F77SYMBOL symbol_ CACHE STRING "Name demangling scheme.")
 
 # BFD is used by the patch utility.
 find_package(BFD)

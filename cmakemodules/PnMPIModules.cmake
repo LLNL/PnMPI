@@ -53,21 +53,3 @@ function(add_pnmpi_module targetname)
   # Make sure that PnMPI lib and patch tool are built before this module.
   add_dependencies(${targetname} pnmpi-patch pnmpi)
 endfunction()
-
-# Macro liblistToDependList
-#
-#=============================================================================
-# Creates a list of dependent libraries for a given list of libraries; This dependency list should be used
-# as dependency for shared libraries. This macro removes all static libraries from the input list.
-MACRO (
-    liblistToDependList
-        libListVar
-        dependListVar
-        )
-    set(${dependListVar} "")
-    foreach(lib ${${libListVar}})
-        if (NOT lib MATCHES "[.]a$$$")
-            set(${dependListVar} ${${dependListVar}} "${lib}")
-        endif ()
-    endforeach(lib)
-ENDMACRO (liblistToDependList)

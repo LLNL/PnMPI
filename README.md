@@ -121,18 +121,6 @@ be manually turned off by adding
 
 to the cmake configuration command.
 
-On most systems, the linkage between Fortran calls to
-MPI and the PnMPI interception system should work. On
-some systems, though, it is necessary to explicitly
-specify the name translation between Fortran and C. The
-following contains addition to the cmake configuration
-command depending on how a Fortran compiler translates
-C names:
-
-  * Adding "_" to C name:    `-DF77SYMBOL=symbol_`
-  * Adding "__" to C name:   `-DF77SYMBOL=symbol__`
-  * Not adding a charcacter: `-DF77SYMBOL=symbol`
-
 The PnMPI distribution contains demo codes for C and
 for Fortran that allow you to test the correct
 linkage.
