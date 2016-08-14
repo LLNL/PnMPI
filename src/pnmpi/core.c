@@ -32,6 +32,7 @@
 */
 
 #include <alloca.h>
+#include <ctype.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -201,18 +202,6 @@ static void *find_symbol(const module_def_p module, const char *symbol_name)
 #endif // HAVE_ADEPT_UTILS
 
   return symbol;
-}
-
-
-static int whitespace(char c)
-{
-  if ((c == '\t') || (c == ' ') || (c == '\n'))
-    return 1;
-#ifdef AIX
-  if ((int)c == 255)
-    return 1;
-#endif
-  return 0;
 }
 
 
@@ -415,9 +404,9 @@ void pnmpi_PreInit()
                     }
                   else
                     {
-                      if ((!(whitespace(c))) || (!(whitespace(lastc))))
+                      if ((!(isspace(c))) || (!(isspace(lastc))))
                         {
-                          if (whitespace(c))
+                          if (isspace(c))
                             line[pos] = ' ';
                           else
                             line[pos] = c;
@@ -430,7 +419,7 @@ void pnmpi_PreInit()
 
           if (pos > 0)
             {
-              if (whitespace(line[pos - 1]))
+              if (isspace(line[pos - 1]))
                 pos--;
             }
 

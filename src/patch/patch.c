@@ -75,11 +75,7 @@ Boston, MA 02111-1307 USA
 #include <libiberty.h>
 #endif
 
-#ifdef AIX
-#define DYNSTAB ".loader"
-#else
 #define DYNSTAB ".dynstr"
-#endif
 
 char prefix0, prefix1, prefix2;
 

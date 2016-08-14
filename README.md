@@ -28,8 +28,7 @@ The package contains two main components:
  * Tool modules that can explicitly exploit PnMPI's capabilities
 
 So far, this software has mainly been tested on Linux clusters with
-RHEL-based OS distributions as well as IBM's BG/P systems. Additionally
-the system ran on IBM AIX systems, but this support has been deprecated.
+RHEL-based OS distributions as well as IBM's BG/P systems.
 Some preliminary experiments have also included SGI Altix systems and
 Mac OSX 10.6. Ports to other platforms should be straightforward, but
 this is not extensively tested. Please contact the author if you run
