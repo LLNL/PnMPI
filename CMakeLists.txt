@@ -82,13 +82,6 @@ else ()
 endif ()
 
 
-# Sensible defaults for the install prefix on Win32.  CMake defaults to /usr/local on UNIX.
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  if (WIN32)
-    set(CMAKE_INSTALL_PREFIX "$ENV{PROGRAMFILES}/pnmpi" CACHE PATH "CMAKE_INSTALL_PREFIX" FORCE)
-  endif()
-endif()
-
 #Include our macros
 INCLUDE (PnMPIModules)
 find_package(codecov)
