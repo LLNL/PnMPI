@@ -31,6 +31,7 @@
   Boston, MA 02111-1307 USA
 */
 
+#include <alloca.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -258,7 +259,7 @@ void pnmpi_PreInit()
       // path.
       size_t len = strlen(lib_path_string) + strlen(PNMPI_MODULES_DIR) + 2;
       const char *old_lib_path_string = lib_path_string;
-      lib_path_string = (char *)malloc(len * sizeof(char));
+      lib_path_string = (char *)alloca(len * sizeof(char));
       sprintf(lib_path_string, "%s:%s", old_lib_path_string, PNMPI_MODULES_DIR);
     }
   library_path = parse_path(lib_path_string);
