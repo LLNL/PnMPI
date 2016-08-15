@@ -92,6 +92,26 @@ matrix:
       env:
         - MPICH
 
+    - os: osx
+      before_install:
+        - brew update --quiet >& /dev/null;
+        - brew install clang-format
+      env:
+        FORMAT
+      script:
+        - git filter-branch --force --tree-filter '
+            find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \)
+              -not -path "./externals/*"
+              -exec clang-format -style=file -fallback-style=none -i {} \; ;
+            if test $(git diff | wc -l) -gt 0;
+            then
+                echo "";
+                git --no-pager diff --color=always;
+                exit 1;
+            fi
+          ' --tag-name-filter cat -- 7244fc1..HEAD
+      after_success:
+
 
 # Install all main dependencies. Additional compilers may be installed as
 # defined in the build matrix.
