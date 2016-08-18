@@ -10,12 +10,30 @@
 cmake_minimum_required(VERSION 2.6)
 project(pnmpi C CXX)
 
-# Workaround for this CMake issue: http://public.kitware.com/Bug/view.php?id=9220
-# Ensures that enable_language(Fortran OPTIONAL) works correctly.  Annoying.
-if (DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
-  set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
-endif()
-enable_language(Fortran OPTIONAL)
+
+# Otional Fortran support.
+#
+# By default PnMPI will be build with the Fortran interface. If PnMPI should not
+# be build with the Fortran interface or no Fortran compiler could be found, the
+# Fortran interface will be disabled.
+option(ENABLE_FORTRAN "Enable PnMPI Fortran interface." on)
+if (ENABLE_FORTRAN)
+  # Workaround for this CMake issue:
+  #  http://public.kitware.com/Bug/view.php?id=9220
+  # Ensures that enable_language(Fortran OPTIONAL) works correctly.  Annoying.
+  if (DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
+    set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
+  endif()
+
+  enable_language(Fortran OPTIONAL)
+
+  if (NOT CMAKE_Fortran_COMPILER_WORKS)
+    set(ENABLE_FORTRAN false)
+    message(STATUS "No working Fortran compiler found: PnMPI will be build "
+      "without Fortran interface.")
+  endif ()
+endif ()
+
 
 #===================================
 #Policies
@@ -155,6 +173,7 @@ install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
 # first so that the header can include build parameters.
 # include(${PROJECT_BINARY_DIR}/pnmpi-vars.cmake)
 SET(PnMPI_INSTALL_PREFIX )
+set(PNMPI_HAVE_FORTRAN ${ENABLE_FORTRAN})
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
 

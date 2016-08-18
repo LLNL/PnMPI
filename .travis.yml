@@ -95,6 +95,16 @@ matrix:
       env:
         - MPICH
 
+    - os: linux
+      dist: trusty
+      sudo: required
+      compiler: gcc-4.8
+      before_script:
+        - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
+      env:
+        - NO_FORTRAN
+
     - os: osx
       before_install:
         - brew update --quiet >& /dev/null;
@@ -160,7 +170,7 @@ script:
     fi
   - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug
       -DENABLE_TESTS=On -DENABLE_COVERAGE=On -DBUILD_DOC_INTERNAL=On
-      $SANITIZE_FLAGS
+      $SANITIZE_FLAGS $CMAKE_EXTRA_FLAGS
     && make install
     && ctest --output-on-failure
 

@@ -21,15 +21,23 @@ endif()
 add_wrapped_file(wrapper.h   wrapper.h.w)
 add_wrapped_file(newstack.h  newstack.h.w)
 add_wrapped_file(xmpi.h      xmpi.h.w)
-add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
+
+if (ENABLE_FORTRAN)
+  add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
+else ()
+  add_wrapped_file(wrapper_c.c wrapper_c.c.w)
+endif ()
 
 # Sources for the PnMPI libraries used by all libraries.
 set(PNMPI_LIB_SOURCES
   debug.c
   services.c
   core.c
-  wrapper.c
-  ${Wrap_EXTRA_SOURCE})
+  wrapper.c)
+
+if (ENABLE_FORTRAN)
+  list(APPEND PNMPI_LIB_SOURCES ${Wrap_EXTRA_SOURCE})
+endif ()
 
 
 add_custom_target(generate DEPENDS
