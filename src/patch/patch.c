@@ -75,11 +75,7 @@ Boston, MA 02111-1307 USA
 #include <libiberty.h>
 #endif
 
-#ifdef AIX
-#define DYNSTAB ".loader"
-#else
 #define DYNSTAB ".dynstr"
-#endif
 
 char prefix0, prefix1, prefix2;
 
@@ -292,17 +288,6 @@ char *make_tempname(char *filename)
   char *tmpname;
   char *slash = strrchr(filename, '/');
 
-#ifdef HAVE_DOS_BASED_FILE_SYSTEM
-  {
-    /* We could have foo/bar\\baz, or foo\\bar, or d:bar.  */
-    char *bslash = strrchr(filename, '\\');
-    if (slash == NULL || (bslash != NULL && bslash > slash))
-      slash = bslash;
-    if (slash == NULL && filename[0] != '\0' && filename[1] == ':')
-      slash = filename + 1;
-  }
-#endif
-
   if (slash != (char *)NULL)
     {
       char c;
@@ -311,13 +296,6 @@ char *make_tempname(char *filename)
       *slash = 0;
       tmpname = xmalloc(strlen(filename) + sizeof(template) + 2);
       strcpy(tmpname, filename);
-#ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      /* If tmpname is "X:", appending a slash will make it a root
-         directory on drive X, which is NOT the same as the current
-         directory on drive X.  */
-      if (tmpname[1] == ':' && tmpname[2] == '\0')
-        strcat(tmpname, ".");
-#endif
       strcat(tmpname, "/");
       strcat(tmpname, template);
       mktemp(tmpname);
@@ -852,11 +830,7 @@ bfd_boolean copy_object(bfd *ibfd, bfd *obfd)
    contents to temp file, and keep the temp file handle.  */
 
 #undef MKDIR
-#if defined(_WIN32) && !defined(__CYGWIN32__)
-#define MKDIR(DIR, MODE) mkdir(DIR)
-#else
 #define MKDIR(DIR, MODE) mkdir(DIR, MODE)
-#endif
 
 void copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
 {

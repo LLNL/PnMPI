@@ -395,8 +395,6 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   return returnVal;
 }
 
-#ifndef AIX
-
 #ifdef COMPILE_FOR_FORTRAN
 void mpi_init_(int *ierr)
 {
@@ -512,7 +510,6 @@ void mpi_init_(int *ierr)
 
   return;
 }
-#endif
 #endif
 
 
@@ -754,7 +751,6 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
   return returnVal;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
-#ifndef AIX
 
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
@@ -873,7 +869,6 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
   return;
 }
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
-#endif
 #endif
 
 #ifdef HAVE_MPI_INIT_THREAD_C

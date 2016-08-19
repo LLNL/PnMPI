@@ -27,6 +27,7 @@
 #
 # LLNL-CODE-402774
 
+find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
@@ -94,8 +95,8 @@ pnmpi_pnmpize_test(pnmpize_preload_pnmpi
 # "WRAPPER 1: Before send" to stdout.
 pnmpi_pnmpize_test(pnmpize_set_config
   NUMPROCS 2
-  PASS_EXPRESSION "WRAPPER 1: Before send"
-  PNMPIZE_ARGS -c "${CMAKE_CURRENT_SOURCE_DIR}/mod-sample.conf"
+  PASS_EXPRESSION "Wrapper: Sending"
+  PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 
@@ -119,6 +120,6 @@ pnmpi_pnmpize_test(pnmpize_fortran_preload_pnmpi
 # "WRAPPER 1: Before send" to stdout.
 pnmpi_pnmpize_test(pnmpize_fortran_set_config
   NUMPROCS 2
-  PASS_EXPRESSION "WRAPPER 1: Before send"
-  PNMPIZE_ARGS -c "${CMAKE_CURRENT_SOURCE_DIR}/mod-sample.conf"
+  PASS_EXPRESSION "Wrapper: Sending"
+  PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
   COMMAND $<TARGET_FILE:test-mpi-fortran>)

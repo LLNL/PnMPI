@@ -35,9 +35,9 @@ find_package(Sanitizers)
 
 include_directories(
   ${MPI_C_INCLUDE_PATH}
-  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/src/pnmpi
   ${PROJECT_BINARY_DIR}
-  ${PROJECT_BINARY_DIR}/src
+  ${PROJECT_BINARY_DIR}/src/pnmpi
 )
 
 set(MODS app_startup app_shutdown)

@@ -115,7 +115,7 @@ static int appendenv(const char *name, const char *value)
 
 /** \brief Argument parser for argp.
  *
- * \info See argp parser documentation for detailed information about the
+ * \note See argp parser documentation for detailed information about the
  *  structure and functionality of function.
  */
 static error_t parse_arguments(int key, char *arg, struct argp_state *state)

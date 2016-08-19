@@ -35,7 +35,7 @@ Boston, MA 02111-1307 USA
 #define PNMPI_CONFIG_H
 
 /* Built with Fortran support. */
-#define PNMPI_HAVE_FORTRAN @CMAKE_Fortran_COMPILER_WORKS@
+#cmakedefine PNMPI_HAVE_FORTRAN
 
 /* Built with Adept Utils. */
 #define PNMPI_HAVE_ADEPT_UTILS @PnMPI_USE_adept_utils@

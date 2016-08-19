@@ -31,6 +31,8 @@
   Boston, MA 02111-1307 USA
 */
 
+#include <alloca.h>
+#include <ctype.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -210,18 +212,6 @@ void *find_symbol(const module_def_p module, const char *symbol_name)
 }
 
 
-static int whitespace(char c)
-{
-  if ((c == '\t') || (c == ' ') || (c == '\n'))
-    return 1;
-#ifdef AIX
-  if ((int)c == 255)
-    return 1;
-#endif
-  return 0;
-}
-
-
 /* Core functionality for PNMPI */
 
 void pnmpi_PreInit()
@@ -265,7 +255,7 @@ void pnmpi_PreInit()
       // path.
       size_t len = strlen(lib_path_string) + strlen(PNMPI_MODULES_DIR) + 2;
       const char *old_lib_path_string = lib_path_string;
-      lib_path_string = (char *)malloc(len * sizeof(char));
+      lib_path_string = (char *)alloca(len * sizeof(char));
       sprintf(lib_path_string, "%s:%s", old_lib_path_string, PNMPI_MODULES_DIR);
     }
   library_path = parse_path(lib_path_string);
@@ -421,9 +411,9 @@ void pnmpi_PreInit()
                     }
                   else
                     {
-                      if ((!(whitespace(c))) || (!(whitespace(lastc))))
+                      if ((!(isspace(c))) || (!(isspace(lastc))))
                         {
-                          if (whitespace(c))
+                          if (isspace(c))
                             line[pos] = ' ';
                           else
                             line[pos] = c;
@@ -436,7 +426,7 @@ void pnmpi_PreInit()
 
           if (pos > 0)
             {
-              if (whitespace(line[pos - 1]))
+              if (isspace(line[pos - 1]))
                 pos--;
             }
 
