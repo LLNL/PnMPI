@@ -145,7 +145,9 @@ extern int pnmpi_init_was_fortran;
 extern int pnmpi_init_done;
 extern int pnmpi_finalize_done;
 
+#ifndef __GNUC__
 void pnmpi_PreInit(void);
+#endif
 
 extern int iargc_(void);
 extern char *getarg_(int *, char *, int);

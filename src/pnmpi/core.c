@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 #include "app_hooks.h"
+#include "attributes.h"
 #include "core.h"
 #include "pnmpi-config.h"
 
@@ -60,13 +61,7 @@ int pnmpi_finalize_done = 0;
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
 
-#ifdef __GNUC__
-#ifndef __APPLE__
-__attribute__((constructor(101)))
-#else
-__attribute__((constructor))
-#endif
-#endif
+PNMPI_CONSTRUCTOR(101)
 void initialize_pnmpi_threaded()
 {
   // Create a thread local storage for pnmpi_level (default value is NULL)
@@ -202,13 +197,7 @@ void *find_symbol(const module_def_p module, const char *symbol_name)
 
 
 /* Core functionality for PNMPI */
-#ifdef __GNUC__
-#ifndef __APPLE__
-__attribute__((constructor(102)))
-#else
-__attribute__((constructor))
-#endif
-#endif
+PNMPI_CONSTRUCTOR(105)
 void pnmpi_PreInit()
 {
   path_array_t library_path;

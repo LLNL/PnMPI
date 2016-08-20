@@ -31,8 +31,9 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-#include "app_hooks.h"
+#include <mpi.h>
 
+#include "attributes.h"
 #include "core.h"
 
 
@@ -41,13 +42,7 @@ void pmpi_finalize_(int *ierr);
 #endif
 
 
-#ifdef __GNUC__
-#ifndef __APPLE__
-__attribute__((destructor(110)))
-#else
-__attribute__((destructor))
-#endif
-#endif
+PNMPI_DESTRUCTOR(110)
 void pnmpi_app_shutdown()
 {
   /* There are two conditions to execute this function:

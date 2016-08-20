@@ -31,23 +31,17 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-#include "app_hooks.h"
-
 #include <mpi.h>
 
+#include "app_hooks.h"
+#include "attributes.h"
 #include "core.h"
 
 
 int pnmpi_mpi_thread_level_provided;
 
 
-#ifdef __GNUC__
-#ifndef __APPLE__
-__attribute__((constructor(110)))
-#else
-__attribute__((constructor))
-#endif
-#endif
+PNMPI_CONSTRUCTOR(110)
 void pnmpi_app_startup(int argc, char **argv)
 {
   /* If no module provides the app_startup hook, we can skip this function. */

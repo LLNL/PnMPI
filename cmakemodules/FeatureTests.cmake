@@ -17,7 +17,6 @@ include(CheckFunctionExists)
 include(CheckMPIConstCorrectness)
 include(CheckMPIFunctionExists)
 include(CheckMPISymbolExists)
-include(CheckSymbolExists)
 
 
 # \brief Helper maco to execute a feature test.
@@ -92,13 +91,3 @@ if(ENABLE_THREAD_SAFETY)
         MESSAGE(FATAL_ERROR "Enabling thread-safety failed, no pthread support found on this system")
     ENDIF(PNMPI_HAVE_PTHREADS)
 endif(ENABLE_THREAD_SAFETY)
-
-
-check_symbol_exists("__GNUC__" "" HAVE_GNUC)
-if (NOT HAVE_GNUC)
-  check_symbol_exists("_GNUC_" "" HAVE_GNUC2)
-endif ()
-
-if (HAVE_GNUC OR HAVE_GNUC2)
-  set(PNMPI_HAVE_GNUC true CACHE INTERNAL "GNUC compatible compiler found.")
-endif ()

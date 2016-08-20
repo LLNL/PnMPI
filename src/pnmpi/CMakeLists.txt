@@ -8,6 +8,8 @@
 # @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
 # @date 2011-05-01
 
+include(CheckSymbolExists)
+
 find_package(Sanitizers)
 
 
@@ -43,12 +45,16 @@ set(PNMPI_LIB_SOURCES
   get_mpi_interface.c
   call_hook.c
   hook_activated.c
-  fallback_constructor.c
-  fallback_destructor.c
 )
 
 if (ENABLE_FORTRAN)
   list(APPEND PNMPI_LIB_SOURCES ${Wrap_EXTRA_SOURCE})
+endif ()
+
+check_symbol_exists("__GNUC__" "" HAVE_GNUC)
+if (NOT HAVE_GNUC)
+  list(APPEND PNMPI_LIB_SOURCES
+    "fallback_constructor.c" "fallback_destructor.c")
 endif ()
 
 
@@ -72,6 +78,10 @@ set_target_properties(pnmpi PROPERTIES VERSION
   ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
   SOVERSION ${PNMPI_MAJOR_VERSION})
 
+if(NOT HAVE_GNUC)
+  set_property(TARGET pnmpi APPEND PROPERTY LINK_FLAGS " -nostartfiles")
+endif()
+
  if(APPLE)
     get_target_property(TEMP_FLAG pnmpi LINK_FLAGS)
     string(TOUPPER "${TEMP_FLAG}" TEMP_CAPITAL_FLAG)
@@ -80,20 +90,6 @@ set_target_properties(pnmpi PROPERTIES VERSION
     endif()
     set (TEMP_FLAG "${TEMP_FLAG} -undefined dynamic_lookup")
     set_target_properties(pnmpi PROPERTIES LINK_FLAGS ${TEMP_FLAG})
-  endif()
-  if(PNMPI_HAVE_PTHREADS)
-    get_target_property(TEMP_FLAG pnmpi LINK_FLAGS)
-    string(TOUPPER "${TEMP_FLAG}" TEMP_CAPITAL_FLAG)
-    if(${TEMP_CAPITAL_FLAG} STREQUAL "TEMP_FLAG-NOTFOUND")
-      set(TEMP_FLAG "")
-    endif()
-    if(NOT PNMPI_HAVE_GNUC)
-      message(STATUS "BUILDING WITHOUT GNUC EXTENSIONS")
-      set(TEMP_FLAG "${TEMP_FLAG} -nostartfiles")
-      set_target_properties(pnmpi PROPERTIES LINK_FLAGS ${TEMP_FLAG})
-    else()
-      message(STATUS "BUILDING WITH GNUC EXTENSIONS")
-    endif()
   endif()
 
 # PnMPI static library (same output name as shared lib)
@@ -126,6 +122,10 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION ${PNMPI_MAJOR_VERSION})
 
+  if(NOT HAVE_GNUC)
+    set_property(TARGET pnmpif APPEND PROPERTY LINK_FLAGS " -nostartfiles")
+  endif()
+
   if(CMAKE_Fortran_COMPILER_WORKS)
     get_target_property(TEMP_FLAG pnmpif COMPILE_FLAGS)
     string(TOUPPER "${TEMP_FLAG}" TEMP_CAPITAL_FLAG)
@@ -143,18 +143,6 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     endif()
     set(TEMP_FLAG "${TEMP_FLAG} -undefined dynamic_lookup")
     set_target_properties(pnmpif PROPERTIES LINK_FLAGS ${TEMP_FLAG})
-  endif()
-  if(PNMPI_HAVE_PTHREADS)
-    get_target_property(TEMP_FLAG pnmpif LINK_FLAGS)
-    string(TOUPPER "${TEMP_FLAG}" TEMP_CAPITAL_FLAG)
-    if(${TEMP_CAPITAL_FLAG} STREQUAL "TEMP_FLAG-NOTFOUND")
-      set(TEMP_FLAG "")
-    endif()
-    if(NOT PNMPI_HAVE_GNUC)
-      message(STATUS "BUILDING WITHOUT GNUC EXTENSIONS")
-      set(TEMP_FLAG "${TEMP_FLAG} -nostartfiles")
-      set_target_properties(pnmpif PROPERTIES LINK_FLAGS ${TEMP_FLAG})
-    endif()
   endif()
 
   # PnMPI fortran static lib
