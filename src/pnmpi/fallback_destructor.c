@@ -31,28 +31,30 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-#ifndef PNMPI_APP_HOOKS_H
-#define PNMPI_APP_HOOKS_H
-
-
-/** \brief Type of MPI interface to be used by the application.
- */
-typedef enum pnmpi_mpi_interface {
-  PNMPI_INTERFACE_C,      ///< Application uses the C MPI interface.
-  PNMPI_INTERFACE_Fortran ///< Application uses the Fortran MPI interface.
-} pnmpi_mpi_interface;
-
-
-/** \brief Cache for 'provided' return value of PMPI_Init_thread.
+/* Declaration of all destructors. They are not in a seperate header file, as
+ * they will be used in this file only. If the normal destructors are enabled,
+ * no other files call them.
  *
- * \details PMPI_Init_thread returns the provided MPI threading level. The value
- *  will be stored in this variable, to pass it to the application in later
- *  calls to \ref MPI_Init_thread.
+ * The declarations are outside of the ifndef __GNUC__, because otherwise this
+ * file will be empty if __GNUC__ is defined, which is forbidden in ISO C. */
+void pnmpi_app_shutdown();
+
+
+/* Only enable the fallback constructor for builds without individual
+ * constructors enabled. */
+#ifndef __GNUC__
+
+
+/** \brief Fallback destructor.
+ *
+ * \details If the compiler does not support '__attribute__((destructor))', the
+ *  following fallback destructor will be used to call the independend
+ *  destructors of PnMPI.
  */
-extern int pnmpi_mpi_thread_level_provided;
-
-
-pnmpi_mpi_interface pnmpi_get_mpi_interface();
+void _fini()
+{
+  pnmpi_app_shutdown();
+}
 
 
 #endif

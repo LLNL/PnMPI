@@ -61,10 +61,13 @@ int pnmpi_finalize_done = 0;
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
 
 #ifdef __GNUC__
-__attribute__((constructor)) void initialize_pnmpi_threaded()
+#ifndef __APPLE__
+__attribute__((constructor(101)))
 #else
-void _init()
+__attribute__((constructor))
 #endif
+#endif
+void initialize_pnmpi_threaded()
 {
   // Create a thread local storage for pnmpi_level (default value is NULL)
   if (pthread_key_create(&pnmpi_level_key, NULL))
@@ -72,24 +75,10 @@ void _init()
       printf("ERROR: TLS initialization failed\n");
       exit(1);
     }
-
-  // Do PnMPI Pre Initialization
-  pnmpi_PreInit();
-
-  pnmpi_app_startup();
 }
-
-#ifdef __GNUC__
-__attribute__((destructor)) void finalize_pnmpi_threaded()
-#else
-void _fini()
 #endif
-{
-  pnmpi_app_shutdown();
-}
-
-#endif /*PNMPI_ENABLE_THREAD_SAFETY*/
 /* jfm Modification (ELP AP THREAD SAFETY) END */
+
 
 modules_t modules;
 
@@ -213,7 +202,13 @@ void *find_symbol(const module_def_p module, const char *symbol_name)
 
 
 /* Core functionality for PNMPI */
-
+#ifdef __GNUC__
+#ifndef __APPLE__
+__attribute__((constructor(102)))
+#else
+__attribute__((constructor))
+#endif
+#endif
 void pnmpi_PreInit()
 {
   path_array_t library_path;

@@ -29,6 +29,10 @@ else ()
 endif ()
 
 # Sources for the PnMPI libraries used by all libraries.
+#
+# Note: The apple linker does not support reordering of constructors, so files
+#       containing a constructor must be listed in the order they should be
+#       executed.
 set(PNMPI_LIB_SOURCES
   debug.c
   services.c
@@ -36,10 +40,11 @@ set(PNMPI_LIB_SOURCES
   wrapper.c
   app_startup.c
   app_shutdown.c
-  read_cmdline.c
   get_mpi_interface.c
   call_hook.c
   hook_activated.c
+  fallback_constructor.c
+  fallback_destructor.c
 )
 
 if (ENABLE_FORTRAN)

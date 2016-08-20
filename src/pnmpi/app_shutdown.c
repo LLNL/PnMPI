@@ -41,6 +41,13 @@ void pmpi_finalize_(int *ierr);
 #endif
 
 
+#ifdef __GNUC__
+#ifndef __APPLE__
+__attribute__((destructor(110)))
+#else
+__attribute__((destructor))
+#endif
+#endif
 void pnmpi_app_shutdown()
 {
   /* There are two conditions to execute this function:

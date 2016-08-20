@@ -41,7 +41,14 @@ Boston, MA 02111-1307 USA
 int pnmpi_mpi_thread_level_provided;
 
 
-void pnmpi_app_startup()
+#ifdef __GNUC__
+#ifndef __APPLE__
+__attribute__((constructor(110)))
+#else
+__attribute__((constructor))
+#endif
+#endif
+void pnmpi_app_startup(int argc, char **argv)
 {
   /* If no module provides the app_startup hook, we can skip this function. */
   if (!pnmpi_hook_activated("app_startup"))
@@ -55,10 +62,6 @@ void pnmpi_app_startup()
 
   if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
     {
-      int argc;
-      char **argv;
-      read_cmdline(&argc, &argv);
-
       pnmpi_init_was_fortran = 0;
       PMPI_Init_thread(&argc, &argv, required,
                        &pnmpi_mpi_thread_level_provided);

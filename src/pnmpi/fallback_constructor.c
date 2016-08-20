@@ -31,28 +31,38 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-#include "core.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 
-/**
- * Tries to demangle the argc and argv application parameters out of
- * /proc/self/cmdline or in a OS specific way.
+/* Only enable the fallback constructor for builds without individual
+ * constructors enabled. */
+#ifndef __GNUC__
+
+
+/* Declaration of all constructors. They are not in a seperate header file, as
+ * they will be used in this file only. If the normal constructors are enabled,
+ * no other files call them. */
+void initialize_pnmpi_threaded();
+void pnmpi_PreInit();
+void pnmpi_app_startup(int argc, char **argv);
+
+
+#if defined(__linux__) || defined(__linux) || defined(linux)
+
+/** \brief Parse /proc/self/cmdline to get argc and argv.
  *
- * Parameters are seperated by \0 characters in this file.
  *
- * TODO: Do these mechanism cover all relevant operating systems?
- *
- *
- * @param argc
- * @param argv
+ * \param argc Pointer to dest argc.
+ * \param argv Pointer to dest argv.
  */
-#if defined(__linux__) || defined(linux) || defined(__linux)
-void read_cmdline(int *argc, char ***argv)
+static void read_cmdline(int *argc, char ***argv)
 {
   FILE *fp = fopen("/proc/self/cmdline", "rb");
   if (fp == NULL)
     {
-      printf("ERROR could not open arguments\n");
+      fprintf(stderr, "ERROR could not open arguments\n");
       exit(1);
     }
 
@@ -94,53 +104,47 @@ void read_cmdline(int *argc, char ***argv)
     }
   (*argv)[(*argc)] = NULL;
 }
-#elif defined(__APPLE__)
-extern int *_NSGetArgc(void);
-extern char ***_NSGetArgv(void);
-void read_cmdline(int *argc, char ***argv)
-{
-  *argc = *(_NSGetArgc());
-  *argv = *(_NSGetArgv());
-}
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-extern int __argc;
-extern char **__argv;
-void read_cmdline(int *argc, char ***argv)
-{
-  *argc = __argc;
-  *argv = __argv;
-}
-#elif defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__ICC)
-#include <features.h>
 
-/* This only works for GLIBC 2.4 upwards as the GNU .init_array mechanism passes
- * argc + argv to the initialization functions (the System V ABI does NOT!). */
-#if __GLIBC_PREREQ(2, 4)
 
-int myargc = 0;
-char **myargv = (char **)"";
-
-void myinitfunc(int argc, char **argv, char **envp)
-{
-  myargc = argc;
-  myargv = argv;
-}
-
-__attribute__((section(".init_array"))) static void *init_array_entry =
-  &myinitfunc;
 #else
-#warning MPIZE: No mechanism to get argc/argv arguments for MPI_INIT!
-#endif
-void read_cmdline(int *argc, char ***argv)
+
+/** \brief Fallback implementation to return empty \p argc and \p argv.
+ *
+ *
+ * \param argc Pointer to dest argc.
+ * \param argv Pointer to dest argv.
+ */
+static void read_cmdline(int *argc, char ***argv)
 {
-  *argc = myargc;
-  *argv = myargv;
-}
-#else
-#warning MPIZE: No mechanism to get argc/argv arguments for MPI_INIT!
-void read_cmdline(int *argc, char ***argv)
-{
+  fprintf(stderr,
+          "PnMPI falback constructor: No mechanism to get argc/argv!\n");
+
   *argc = 0;
   *argv = (char **)"";
 }
+
+#endif
+
+
+/** \brief Fallback constructor.
+ *
+ * \details If the compiler does not support '__attribute__((constructor))', the
+ *  following fallback constructor will be used to call the independend
+ *  constructors of PnMPI.
+ */
+void _init()
+{
+  /* Get argc and argv. */
+  int argc;
+  char **argv;
+  read_cmdline(&argc, &argv);
+
+
+  /* Call all constructor functions. */
+  initialize_pnmpi_threaded();
+  pnmpi_PreInit();
+  pnmpi_app_startup(argc, argv);
+}
+
+
 #endif
