@@ -27,6 +27,8 @@
 #
 # LLNL-CODE-402774
 
+find_package(codecov)
+find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
@@ -89,3 +91,21 @@ foreach (LANG ${TEST_LANGUAGES})
       -m "${CMAKE_CURRENT_BINARY_DIR}"
     COMMAND $<TARGET_FILE:test-mpi-${LANG}>)
 endforeach ()
+
+
+# Check if the MPI threading level may be adjusted by environment variables.
+add_executable(test-mpi-threading threading_level.c)
+target_include_directories(test-mpi-threading PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(test-mpi-threading ${MPI_C_LIBRARIES})
+add_coverage(test-mpi-threading)
+add_sanitizers(test-mpi-threading)
+
+pnmpi_pnmpize_test(app_hooks_threading_level_env
+  NUMPROCS 2
+  PASS_EXPRESSION "0"
+  PNMPIZE_ARGS
+	-c "${CMAKE_CURRENT_SOURCE_DIR}/app_startup.conf"
+	-m "${CMAKE_CURRENT_BINARY_DIR}"
+  COMMAND $<TARGET_FILE:test-mpi-threading>)
+set_property(TEST app_hooks_threading_level_env APPEND PROPERTY ENVIRONMENT
+  "PNMPI_THREADING_LEVEL=0")

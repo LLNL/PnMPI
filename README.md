@@ -196,6 +196,12 @@ Section (C) for more information on building custom modules.
 After setting up, for benchmark purposes `PNMPI_BE_SILENT` should be
 set, so PnMPI stops producing output.
 
+If you are using modules with app_startup support, but your application does not
+use the highest threading level, you may set the reqested MPI threading level
+via `PNMPI_THREADING_LEVEL` to decrease the MPI overhead. The level send by
+`MPI_Init_thread` will not be sufficient, because MPI will be initialized in the
+constructors, if `app_startup` will be used.
+
 
 ### A6a) Using the PnMPI invocation tool
 
