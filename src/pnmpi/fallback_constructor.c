@@ -49,6 +49,10 @@ void pnmpi_PreInit();
 void pnmpi_app_startup(int argc, char **argv);
 
 
+/** \brief Variable to save if \ref _init was called by the dynamic loader. */
+int pnmpi_fallback_init_called = 0;
+
+
 #if defined(__linux__) || defined(__linux) || defined(linux)
 
 /** \brief Parse /proc/self/cmdline to get argc and argv.
@@ -126,6 +130,52 @@ static void read_cmdline(int *argc, char ***argv)
 #endif
 
 
+/** \brief Call constructors that may be called later.
+ *
+ * \details If the regular call of \ref _init fails, this function will be
+ *  called later to call all constructors that don't need to be called at
+ *  program initialization.
+ */
+static void pnmpi_call_constructors()
+{
+  initialize_pnmpi_threaded();
+  pnmpi_PreInit();
+}
+
+
+/** \brief Fallback constructor for failed \ref _init call.
+ *
+ * \details If the compiler does not support '__attribute__((constructor))', the
+ *  fallback constructor \ref _init will be used to call the independend
+ *  constructors of PnMPI. If the dynamic loader of the system does not call
+ *  \ref _init, this function may be called by the \ref MPI_Init later.
+ */
+void pnmpi_fallback_init()
+{
+  /* If the fallback constructor was called before (by _init), we may skip it
+   * now. */
+  if (pnmpi_fallback_init_called)
+    return;
+
+
+  /* Call the regular constructors. */
+  pnmpi_call_constructors();
+
+
+  /* Check if the user is using app_startup or app_shutdown, due these are not
+   * supported in this scenario. */
+  if (pnmpi_hook_activated("app_startup") ||
+      pnmpi_hook_activated("app_shutdown"))
+    {
+      fprintf(stderr, "You are using modules which require the 'app_startup' "
+                      "or 'app_shutdown' hooks, but your system does not "
+                      "support them. Please deactivate them or check your "
+                      "system.\n");
+      exit(EXIT_FAILURE);
+    }
+}
+
+
 /** \brief Fallback constructor.
  *
  * \details If the compiler does not support '__attribute__((constructor))', the
@@ -134,15 +184,24 @@ static void read_cmdline(int *argc, char ***argv)
  */
 void _init()
 {
+  /* Save that _init was called (e.g. by the dynamic loader) to indicate that
+   * the constructors have been called. If this flag won't be set,
+   * pnmpi_fallback_init is able to determine that _init was not called and may
+   * call some constructors later. */
+  pnmpi_fallback_init_called = 1;
+
+
+  /* Call the regular constructors. */
+  pnmpi_call_constructors();
+
+
+  /* Call the constructors which need to be called before main is started. */
+
   /* Get argc and argv. */
   int argc;
   char **argv;
   read_cmdline(&argc, &argv);
 
-
-  /* Call all constructor functions. */
-  initialize_pnmpi_threaded();
-  pnmpi_PreInit();
   pnmpi_app_startup(argc, argv);
 }
 

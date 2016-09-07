@@ -42,6 +42,7 @@ Boston, MA 02111-1307 USA
 
 #include "app_hooks.h"
 #include "core.h"
+#include "fallback_init.h"
 #include "pnmpi-config.h"
 
 
@@ -283,14 +284,16 @@ void pnmpi_int_print_timingstats()
 
 static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 {
+#ifndef __GNUC__
+  /* If the compiler does not support GCC's constructors, check if the fallback
+   * constructor was called before this function. */
+  pnmpi_fallback_init();
+#endif
+
+
   int returnVal;
 
   inc_pnmpi_mpi_level();
-#ifndef PNMPI_ENABLE_THREAD_SAFETY
-  // If thread safety active pnmpi will already be initialized
-  pnmpi_PreInit(); /* this will never fail */
-#endif
-
   if (NOT_ACTIVATED(MPI_Init_ID))
     {
       /* If app_startup is activated, MPI was initialized before in _init. A
@@ -628,6 +631,13 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
                                         int required, int *provided)
 {
+#ifndef __GNUC__
+  /* If the compiler does not support GCC's constructors, check if the fallback
+   * constructor was called before this function. */
+  pnmpi_fallback_init();
+#endif
+
+
   int returnVal;
   if (required > PNMPI_MAX_THREADED)
     required = PNMPI_MAX_THREADED;
@@ -638,11 +648,6 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
     *provided = pnmpi_mpi_thread_level_provided;
 
   inc_pnmpi_mpi_level();
-#ifndef PNMPI_ENABLE_THREAD_SAFETY
-  // If thread safety active pnmpi will already be initialized
-  pnmpi_PreInit(); /* this will never fail */
-#endif
-
   if (NOT_ACTIVATED(MPI_Init_thread_ID))
     {
       /* If app_startup is activated, MPI was initialized before in _init. A
