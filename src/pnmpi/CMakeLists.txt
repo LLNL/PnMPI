@@ -45,6 +45,7 @@ set(PNMPI_LIB_SOURCES
   get_mpi_interface.c
   call_hook.c
   hook_activated.c
+  max_module_threading_level.c
 )
 
 if (ENABLE_FORTRAN)

@@ -39,10 +39,10 @@ Boston, MA 02111-1307 USA
 int main(int argc, char **argv)
 {
   int provided;
-  MPI_Init_thread(&argc, &argv, MPI_THREAD_SINGLE, &provided);
+  MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
   MPI_Finalize();
 
-  printf("%d\n", provided);
+  printf("Required: %d Provided: %d\n", MPI_THREAD_MULTIPLE, provided);
 
   return 0;
 }

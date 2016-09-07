@@ -445,6 +445,13 @@ PnMPI module like so:
 This should find PnMPI on your system and build your module, assuming that
 you have your environment set up correctly.
 
+### C2) Limiting the threading level
+
+If your module is not threadsafe or is only able to process a limited amount of
+threading, it may provide an integer named `PnMPI_threading_level` to define the
+maximum provided threading level of this module.
+
+
 D) Debug Options
 ================
 The debug build of PnMPI includes debug print options, that can

@@ -168,6 +168,8 @@ void *find_symbol(const module_def_p module, const char *symbol_name);
 int pnmpi_hook_activated(const char *hook);
 void pnmpi_call_hook(const char *hook);
 
+int pnmpi_max_module_threading_level();
+
 // Statistics collection for stack initialization
 // TODO: Does all the initialization really need to live in macros?  Does it
 // need to happen

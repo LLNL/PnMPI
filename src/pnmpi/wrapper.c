@@ -639,8 +639,21 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
 
   int returnVal;
-  if (required > PNMPI_MAX_THREADED)
-    required = PNMPI_MAX_THREADED;
+
+
+  /* Check the maximum threading level of all activated modules. If the
+   * application requires a higher threading level as the supported maximum
+   * level of all modules, the level will be downgraded. */
+  int max_level = pnmpi_max_module_threading_level();
+  if (required > max_level)
+    {
+      WARNPRINT("The application requested a MPI threading level of %d, but "
+                "the combination of the selected PnMPI modules provide a "
+                "maximum of %d. The threading level will be downgraded.\n",
+                required, max_level);
+      required = max_level;
+    }
+
 
   /* If app_startup is activated, we've initialized MPI before. Restore the
    * provided value, MPI_Init_thread gave us in the constructor. */

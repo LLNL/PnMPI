@@ -31,47 +31,7 @@ Free Software Foundation, Inc.,
 Boston, MA 02111-1307 USA
 */
 
-#include <stdlib.h>
-
 #include <mpi.h>
 
-#include "app_hooks.h"
-#include "attributes.h"
-#include "core.h"
 
-
-int pnmpi_mpi_thread_level_provided;
-
-
-PNMPI_CONSTRUCTOR(110)
-void pnmpi_app_startup(int argc, char **argv)
-{
-  /* If no module provides the app_startup hook, we can skip this function. */
-  if (!pnmpi_hook_activated("app_startup"))
-    return;
-
-
-  /* Before executing the app_startup hook, we have to initialize the MPI
-   * environment, so it may be used by the hooks. */
-
-  int required = pnmpi_max_module_threading_level();
-  if (getenv("PNMPI_THREADING_LEVEL") != NULL)
-    required = atoi(getenv("PNMPI_THREADING_LEVEL"));
-
-  if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
-    {
-      pnmpi_init_was_fortran = 0;
-      PMPI_Init_thread(&argc, &argv, required,
-                       &pnmpi_mpi_thread_level_provided);
-    }
-  else
-    {
-      int err;
-      pnmpi_init_was_fortran = 1;
-      pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
-    }
-  pnmpi_init_done = 1;
-
-
-  pnmpi_call_hook("app_startup");
-}
+int PnMPI_threading_level = MPI_THREAD_SINGLE;

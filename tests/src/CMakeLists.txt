@@ -53,6 +53,17 @@ add_sanitizers(test-mpi-c)
 pnmpi_mpi_test("binary_mpi_c" COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
   $<TARGET_FILE:test-mpi-c>)
 
+# The following target may be used to check general MPI functionality. It uses
+# the common MPI functions MPI_Init_thread, MPI_Finalize, MPI_Send and MPI_Recv
+# and may be used with at least 2 ranks.
+add_executable(test-mpi-threaded test-mpi-threaded.c)
+target_include_directories(test-mpi-threaded PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(test-mpi-threaded ${MPI_C_LIBRARIES})
+add_coverage(test-mpi-threaded)
+add_sanitizers(test-mpi-threaded)
+pnmpi_mpi_test("binary_mpi_threaded" COMMAND ${MPIEXEC}
+  ${MPIEXEC_NUMPROC_FLAG} 2 $<TARGET_FILE:test-mpi-threaded>)
+
 # The following target may be used to check general MPI functionality with
 # Fortran code. It uses the common MPI functions MPI_Init, MPI_Finalize,
 # MPI_Send and MPI_Recv and may be used with at least 2 ranks.
