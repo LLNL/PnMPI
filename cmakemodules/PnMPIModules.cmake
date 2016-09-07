@@ -1,19 +1,31 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
-# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
-# All rights reserved - please read information in "LICENCSE"
-
-# TODO Martin please add the copyright statment of your choice, as well as
-#      a reference to the license or license file!
+# This file is part of P^nMPI.
 #
-# This files is partially from the MUST project and bears the follwing copyright.
-# Copyright (c) 2009, ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-# Copyright (c) 2009, LLNL, United States of America
+# Copyright (c)
+#  2008-2016 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2016 RWTH Aachen University, Federal Republic of Germany
 #
-# @file PnMPIModules.cmake
-#       Contains helpful macros.
 #
-# @author Todd Gamblin, Tobias Hilbrich
-# @date 22.05.2011
+# P^nMPI is free software; you can redistribute it and/or modify it under the
+# terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation version 2.1 dated February 1999.
+#
+# P^nMPI is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with P^nMPI; if not, write to the
+#
+#   Free Software Foundation, Inc.
+#   51 Franklin St, Fifth Floor
+#   Boston, MA 02110, USA
+#
+#
+# Written by Martin Schulz, schulzm@llnl.gov.
+#
+# LLNL-CODE-402774
 
 
 # add_pnmpi_module(targetname source1 source2 ... sourceN)
