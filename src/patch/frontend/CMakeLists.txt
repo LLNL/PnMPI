@@ -45,4 +45,4 @@ if (PATCHER_FRONTEND_COMPILER)
    install(EXPORT pnmpi-patch DESTINATION share/cmake/PnMPI)
 endif()
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR})

@@ -1,5 +1,5 @@
 # Need this first to ensure that we include PnMPI's custom platform files.
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules;${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmakemodules;${CMAKE_MODULE_PATH}")
 
 # the name of the target operating system
 set(CMAKE_SYSTEM_NAME BlueGeneQ-dynamic)

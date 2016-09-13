@@ -54,7 +54,7 @@ function (pnmpi_test NAME)
   # Append the 'src' directory as PNMPI_LIB_PATH to get access to the test
   # module for all test cases.
   set_property(TEST ${NAME} APPEND PROPERTY ENVIRONMENT
-    "PNMPI_LIB_PATH=${CMAKE_BINARY_DIR}/tests/src")
+    "PNMPI_LIB_PATH=${PROJECT_BINARY_DIR}/tests/src")
 endfunction ()
 
 

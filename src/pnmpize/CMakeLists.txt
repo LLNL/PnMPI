@@ -31,7 +31,7 @@ find_package(argp REQUIRED)
 find_package(help2man REQUIRED)
 
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR})
 
 add_executable(pnmpize pnmpize.c)
 add_coverage(pnmpize)

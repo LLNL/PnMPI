@@ -49,6 +49,6 @@ install(TARGETS ${targetName} EXPORT ${targetName} RUNTIME DESTINATION bin)
 # Allow patch target to be used by subprojects.
 install(EXPORT ${targetName} DESTINATION share/cmake/PnMPI)
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(frontend)

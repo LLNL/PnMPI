@@ -180,7 +180,7 @@ install(EXPORT pnmpi-libs DESTINATION share/cmake/PnMPI)
 
 # Extra directories to include from when building.
 include_directories(
-  ${CMAKE_BINARY_DIR}
+  ${PROJECT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${MPI_C_INCLUDE_PATH})

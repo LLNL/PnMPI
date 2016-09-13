@@ -99,7 +99,7 @@ function(set_pnmpi_env testname)
 
   list(APPEND TEMP
     "PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules"
-    "PNMPI_CONF=${CMAKE_SOURCE_DIR}/demo/.pnmpi-conf-cmake"
+    "PNMPI_CONF=${PROJECT_SOURCE_DIR}/demo/.pnmpi-conf-cmake"
   )
 
   set_tests_properties(${testname} PROPERTIES ENVIRONMENT "${TEMP}")

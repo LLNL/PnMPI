@@ -41,7 +41,7 @@ include(CheckMPISymbolExists)
 # \param var Variable where the feature test result will be stored in
 #
 macro(featureTest file var)
-  file(READ "${CMAKE_SOURCE_DIR}/cmakemodules/FeatureTests/${file}" SOURCE)
+  file(READ "${PROJECT_SOURCE_DIR}/cmakemodules/FeatureTests/${file}" SOURCE)
   check_c_source_compiles("${SOURCE}" ${var})
 endmacro()
 
