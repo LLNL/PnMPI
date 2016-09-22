@@ -492,6 +492,9 @@ void pnmpi_PreInit()
                 }
               else
                 {
+                  module_def_t empty = { { 0 } };
+                  *(modules.module[modules.num]) = empty;
+
                   /* now we have space and can store the information */
 
                   DBGPRINT2("Found stack %i: %s", modules.num + 1, cmdargv[1]);
