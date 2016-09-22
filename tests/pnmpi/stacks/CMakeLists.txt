@@ -32,24 +32,29 @@ find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
-#
-# Threading-Downgrade test.
-#
-add_pnmpi_module(threading_downgrade threading_downgrade.c)
-target_include_directories(threading_downgrade PRIVATE ${MPI_C_INCLUDE_PATH})
-target_link_libraries(threading_downgrade ${MPI_C_LIBRARIES})
-add_coverage(threading_downgrade)
-add_sanitizers(threading_downgrade)
+# Add test modules for app_start and app_shutdown hooks. These modules will not
+# be installed, but used for the test cases below.
 
-pnmpi_pnmpize_test(pnmpi_threading_downgrade
+include_directories(
+  ${MPI_C_INCLUDE_PATH}
+  ${PROJECT_SOURCE_DIR}/src/pnmpi
+  ${PROJECT_BINARY_DIR}
+  ${PROJECT_BINARY_DIR}/src/pnmpi
+)
+
+set(MODS stack)
+foreach(mod ${MODS})
+  add_pnmpi_module(${mod} ${mod}.c)
+  add_coverage(${mod})
+  add_sanitizers(${mod})
+endforeach()
+
+
+# Check the module.
+pnmpi_pnmpize_test(stack
   NUMPROCS 2
-  PASS_EXPRESSION "provide a maximum of 0."
   PNMPIZE_ARGS
-	-c "${CMAKE_CURRENT_SOURCE_DIR}/threading_downgrade.conf"
-	-m "${CMAKE_CURRENT_BINARY_DIR}"
-COMMAND $<TARGET_FILE:test-mpi-threaded>)
-
-
-# Recurse into subdirectories.
-add_subdirectory(app_hooks)
-add_subdirectory(stacks)
+    -c "${CMAKE_CURRENT_SOURCE_DIR}/stack.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "Switching the stack."
+  COMMAND $<TARGET_FILE:test-mpi-c>)
