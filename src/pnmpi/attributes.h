@@ -47,17 +47,18 @@
  *  the fallback constructor \ref _init.
  *
  *
- * \param x Priority of the constructor. Priorities 0-100 are reserved by the
- *  implementation.
+ * \param priority Priority of the constructor. Priorities 0-100 are reserved by
+ *  the implementation.
  */
 #ifdef __GNUC__
 #ifndef __APPLE__
-#define PNMPI_CONSTRUCTOR(x) __attribute__((constructor(x))) static
+#define PNMPI_CONSTRUCTOR(priority) \
+  __attribute__((constructor(priority))) static
 #else
-#define PNMPI_CONSTRUCTOR(x) __attribute__((constructor)) static
+#define PNMPI_CONSTRUCTOR(priority) __attribute__((constructor)) static
 #endif
 #else
-#define PNMPI_CONSTRUCTOR(x)
+#define PNMPI_CONSTRUCTOR(priority)
 #endif
 
 
@@ -69,17 +70,17 @@
  *  the fallback constructor \ref _fini.
  *
  *
- * \param x Priority of the destructor. Priorities 0-100 are reserved by the
- *  implementation.
+ * \param priority Priority of the destructor. Priorities 0-100 are reserved by
+ *  the implementation.
  */
 #ifdef __GNUC__
 #ifndef __APPLE__
-#define PNMPI_DESTRUCTOR(x) __attribute__((destructor(x))) static
+#define PNMPI_DESTRUCTOR(priority) __attribute__((destructor(priority))) static
 #else
-#define PNMPI_DESTRUCTOR(x) __attribute__((destructor)) static
+#define PNMPI_DESTRUCTOR(priority) __attribute__((destructor)) static
 #endif
 #else
-#define PNMPI_DESTRUCTOR(x)
+#define PNMPI_DESTRUCTOR(priority)
 #endif
 
 
