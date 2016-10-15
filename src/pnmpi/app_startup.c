@@ -33,8 +33,8 @@
 #include <mpi.h>
 
 #include "app_hooks.h"
-#include "attributes.h"
 #include "core.h"
+#include <pnmpi/private/attributes.h>
 
 
 int pnmpi_mpi_thread_level_provided;

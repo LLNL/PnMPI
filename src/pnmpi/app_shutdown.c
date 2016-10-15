@@ -30,8 +30,8 @@
 
 #include <mpi.h>
 
-#include "attributes.h"
 #include "core.h"
+#include <pnmpi/private/attributes.h>
 
 
 #ifdef COMPILE_FOR_FORTRAN

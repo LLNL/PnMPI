@@ -28,8 +28,17 @@
 # LLNL-CODE-402774
 
 include(CheckSymbolExists)
+include(PnMPI_headers)
 
 find_package(Sanitizers)
+
+
+# Install and manage the public and private header files of the PnMPI sources.
+# This has to be done to use the same headers for the PnMPI sources and the API
+# without getting conflicts about the used paths. Otherwise you'd have to take
+# care about file locations after installation, especially if you use the
+# headers over multiple directories.
+pnmpi_add_private_header(attributes.h)
 
 
 # Add linkage to adept utils if we have it
@@ -183,4 +192,5 @@ include_directories(
   ${PROJECT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PNMPI_HEADER_DIR}
   ${MPI_C_INCLUDE_PATH})

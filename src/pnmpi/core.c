@@ -37,9 +37,9 @@
 #include <unistd.h>
 
 #include "app_hooks.h"
-#include "attributes.h"
 #include "core.h"
 #include "pnmpi-config.h"
+#include <pnmpi/private/attributes.h>
 
 #ifdef HAVE_ADEPT_UTILS
 #include "link_utils.h"

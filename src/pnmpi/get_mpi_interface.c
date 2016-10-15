@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "attributes.h"
+#include <pnmpi/private/attributes.h>
 
 
 /** \brief Get language of instrumented application.

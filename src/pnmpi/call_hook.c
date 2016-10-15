@@ -28,8 +28,8 @@
  * LLNL-CODE-402774
  */
 
-#include "attributes.h"
 #include "core.h"
+#include <pnmpi/private/attributes.h>
 
 
 /** \brief Call \p hook in all modules.

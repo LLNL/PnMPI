@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "attributes.h"
+#include <pnmpi/private/attributes.h>
 
 
 /* Only enable the fallback constructor for builds without individual

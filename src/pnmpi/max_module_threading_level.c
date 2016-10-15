@@ -32,7 +32,7 @@
 
 #include <mpi.h>
 
-#include "attributes.h"
+#include <pnmpi/private/attributes.h>
 
 
 /** \brief Get the maximum supported threading level of all modules.
