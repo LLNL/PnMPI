@@ -32,6 +32,8 @@
 
 #include <mpi.h>
 
+#include "attributes.h"
+
 
 /** \brief Get the maximum supported threading level of all modules.
  *
@@ -41,6 +43,7 @@
  *
  * \return The maximum supported MPI level of all modules.
  */
+PNMPI_INTERNAL
 int pnmpi_max_module_threading_level()
 {
   int max_level = MPI_THREAD_MULTIPLE;

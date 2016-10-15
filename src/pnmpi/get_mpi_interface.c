@@ -34,6 +34,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "attributes.h"
+
 
 /** \brief Get language of instrumented application.
  *
@@ -46,6 +48,7 @@
  * \return \ref PNMPI_INTERFACE_Fortran The application seems to be written in
  *  Fortran.
  */
+PNMPI_INTERNAL
 pnmpi_mpi_interface pnmpi_get_mpi_interface()
 {
   /* C applications will have a symbol called 'main', Fortran applications

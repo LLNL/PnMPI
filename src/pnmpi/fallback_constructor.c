@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "attributes.h"
+
 
 /* Only enable the fallback constructor for builds without individual
  * constructors enabled. */
@@ -147,6 +149,7 @@ static void pnmpi_call_constructors()
  *  constructors of PnMPI. If the dynamic loader of the system does not call
  *  \ref _init, this function may be called by the \ref MPI_Init later.
  */
+PNMPI_INTERNAL
 void pnmpi_fallback_init()
 {
   /* If the fallback constructor was called before (by _init), we may skip it

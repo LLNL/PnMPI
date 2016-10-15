@@ -28,6 +28,7 @@
  * LLNL-CODE-402774
  */
 
+#include "attributes.h"
 #include "core.h"
 
 
@@ -36,6 +37,7 @@
  * \details This function iterates over all modules and calls the \p hook in all
  *  of them.
  */
+PNMPI_INTERNAL
 void pnmpi_call_hook(const char *hook)
 {
   size_t i;

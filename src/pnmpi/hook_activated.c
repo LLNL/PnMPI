@@ -28,6 +28,7 @@
  * LLNL-CODE-402774
  */
 
+#include "attributes.h"
 #include "core.h"
 
 
@@ -36,6 +37,7 @@
  * \details This function iterates over all modules and checks, if \p hook is
  *  defined in any of them.
  */
+PNMPI_INTERNAL
 int pnmpi_hook_activated(const char *hook)
 {
   size_t i;

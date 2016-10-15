@@ -174,6 +174,7 @@ static int find_module(const char *lib_name, path_array_t library_path,
 }
 
 
+PNMPI_INTERNAL
 void *find_symbol(const module_def_p module, const char *symbol_name)
 {
   void *symbol = dlsym(module->handle, symbol_name);

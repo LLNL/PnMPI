@@ -84,4 +84,16 @@
 #endif
 
 
+/** \brief Mark function as internal.
+ *
+ * \details This macro will be used to mark functions as internal functions,
+ *  which will be hidden for global exports.
+ */
+#ifdef __GNUC__
+#define PNMPI_INTERNAL __attribute__((visibility("hidden")))
+#else
+#define PNMPI_INTERNAL
+#endif
+
+
 #endif
