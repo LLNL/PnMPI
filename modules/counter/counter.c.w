@@ -28,15 +28,30 @@
  * LLNL-CODE-402774
  */
 
+/* \brief Count MPI calls.
+ *
+ * \details This module counts how often each MPI call was invoked. Before MPI
+ *  finalizes, statistics will be printed for each rank and a sum of the made
+ *  calls by all ranks.
+ */
+
+
 #include <stdio.h>
 
 #include <mpi.h>
 #include <pnmpimod.h>
+#include <pnmpi/debug_io.h>
+
+#include "config.h"
 
 
-/* If C11 is available and atomics are supported, use them for the counters,
- * because these provide the most simple to use interface. */
-#if (__STDC_VERSION__ >= 201112L) && (!__STDC_NO_ATOMICS__)
+/* The counter module requires threadsafe counters, otherwise results may be
+ * wrong for MPI applications with concurrent MPI calls (MPI threading level
+ * MPI_THREAD_MULTIPLE). We will try to use C11 atomics or GCCs builtin
+ * __sync_fetch_and_add to get threadsafe counters. Otherwise the threading
+ * level will be limited to MPI_THREAD_SERIALIZED, so it is safe to use this
+ * module to get valid counters. */
+#if defined(HAVE_C11_ATOMICS)
 
 #include <stdatomic.h>
 
@@ -44,10 +59,15 @@
 #define pnmpi_counter_init(x) ATOMIC_VAR_INIT(x)
 #define pnmpi_counter_inc(x) x++
 
+#elif defined(HAVE_SYNC_FETCH_AND_ADD)
 
-/* If no thread safe counter is available, print a warning and use default C
- * types. */
+#define pnmpi_counter unsigned long int
+#define pnmpi_counter_init(x) x
+#define pnmpi_counter_inc(x) __sync_fetch_and_add(&(x), 1)
+
 #else
+
+int PnMPI_threading_level = MPI_THREAD_SERIALIZED;
 
 #define pnmpi_counter unsigned long int
 #define pnmpi_counter_init(x) x
@@ -58,10 +78,9 @@
 
 /** \brief Struct of counters.
  *
- * \details This struct stores the counters for all MPI calls. If atomic
- *  counters could have been found, they will be used.
+ * \details This struct stores the counters for all MPI calls.
  */
-struct counter
+static struct counter
 {
   {{forallfn fn_name MPI_Finalize}}
   pnmpi_counter {{fn_name}};
@@ -77,7 +96,7 @@ struct counter
  *
  * \param counter Counter struct to be printed.
  */
-void print_counters(struct counter *c)
+static void print_counters(struct counter *c)
 {
   {{forallfn fn_name MPI_Finalize}}
     if (c->{{fn_name}} > 0)
@@ -93,7 +112,7 @@ void print_counters(struct counter *c)
  *
  * \param counter Counter struct to be initialized.
  */
-void init_counters(struct counter *c)
+static void init_counters(struct counter *c)
 {
   {{forallfn fn_name MPI_Finalize}}
     c->{{fn_name}} = pnmpi_counter_init(0);
@@ -141,8 +160,11 @@ int PNMPI_RegistrationPoint()
 int MPI_Finalize()
 {
   int rank, size;
-  PMPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  PMPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
+    pnmpi_error("PMPI_Comm_rank failed.\n");
+  if (PMPI_Comm_size(MPI_COMM_WORLD, &size) != MPI_SUCCESS)
+    pnmpi_error("PMPI_Comm_size failed.\n");
 
   /* Iterate over all ranks and tell one rank after another to print his
    * statistics. The per-rank statistics will be reduced to rank 0 to get the
@@ -168,14 +190,17 @@ int MPI_Finalize()
       /* Wait until all ranks have finished processing rank n.
        *
        * This solution was inspired by: http://stackoverflow.com/a/5310506 */
-      PMPI_Barrier(MPI_COMM_WORLD);
+      if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
+        pnmpi_error("PMPI_Barrier failed.\n");
     }
 
 
   /* Reduce statistics of all ranks to rank 0. */
   {{forallfn fn_name MPI_Finalize}}
-    PMPI_Reduce(&(counters.{{fn_name}}), &(tmp.{{fn_name}}), 1,
-                MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+    if (PMPI_Reduce(&(counters.{{fn_name}}), &(tmp.{{fn_name}}), 1,
+                    MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD)
+        != MPI_SUCCESS)
+      pnmpi_error("PMPI_Reduce failed for %s counter.\n", "{{fn_name}}");
   {{endforallfn}}
 
   if (rank == 0) {

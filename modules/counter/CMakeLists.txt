@@ -27,7 +27,34 @@
 #
 # LLNL-CODE-402774
 
+include(CheckCSourceCompiles)
+include(PnMPI_headers)
+
+find_package(C11 COMPONENTS atomics)
+
+
+# Check if atomics are available for the counter module, so it will be thread-
+# safe. First we try to use C11 atomics, next the GCC builtin sync_fetch_and_add
+# method.
+if (C11_FOUND)
+  set(HAVE_C11_ATOMICS ${C11_atomics_FOUND})
+  add_definitions(${C11_FLAGS})
+else ()
+  check_c_source_compiles("
+    int main ()
+    {
+      int i;
+      __sync_fetch_and_add(&i, 0);
+    }
+    " HAVE_SYNC_FETCH_AND_ADD)
+endif ()
+
+configure_file(config.h.in config.h)
+
+
 include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${PNMPI_HEADER_DIR}
   ${PROJECT_BINARY_DIR}/
   ${PROJECT_BINARY_DIR}/src/pnmpi
   ${PROJECT_SOURCE_DIR}/src/pnmpi

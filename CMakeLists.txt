@@ -90,6 +90,7 @@ set(CMAKE_MODULE_PATH
   "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-CChelper/cmake"
   ${CMAKE_MODULE_PATH}
   "${PROJECT_SOURCE_DIR}/cmakemodules/legacy")
 
