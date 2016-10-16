@@ -1,215 +1,132 @@
 language: c
 
+git:
+  depth: 1000
+
 matrix:
   include:
     - os: linux
       compiler: gcc-4.4
-      sudo: false
-      addons:
-        apt:
-          sources:
-            - kalakris-cmake
-          packages:
-            - cmake
-            - libopenmpi-dev
-            - openmpi-bin
-            - binutils-dev
-            - gcc-4.4
-            - g++-4.4
-            - gfortran-4.4
+      sudo: required
       before_install:
+        - sudo apt-get install gcc-4.4 g++-4.4 gfortran-4.4
         - export CC=gcc-4.4; export CXX=g++-4.4; export FC=gfortran-4.4
     - os: linux
       compiler: gcc-4.5
-      sudo: false
-      addons:
-        apt:
-          sources:
-            - kalakris-cmake
-          packages:
-            - cmake
-            - libopenmpi-dev
-            - openmpi-bin
-            - binutils-dev
-            - gcc-4.5
-            - g++-4.5
-            - gfortran-4.5
+      sudo: required
       before_install:
+        - sudo apt-get install gcc-4.5 g++-4.5 gfortran-4.5
         - export CC=gcc-4.5; export CXX=g++-4.5; export FC=gfortran-4.5
     - os: linux
       compiler: gcc-4.6
       sudo: false
-      addons:
-        apt:
-          sources:
-            - kalakris-cmake
-          packages:
-            - cmake
-            - libopenmpi-dev
-            - openmpi-bin
-            - binutils-dev
-            - gcc-4.6
-            - g++-4.6
-            - gfortran-4.6
-      before_install:
+      before_script:
         - export CC=gcc-4.6; export CXX=g++-4.6; export FC=gfortran-4.6
     - os: linux
       dist: trusty
       sudo: required
       compiler: gcc-4.6-trusty
-      addons:
-        apt:
-          sources:
-            - kalakris-cmake
-          packages:
-            - cmake
-            - libopenmpi-dev
-            - openmpi-bin
-            - binutils-dev
-            - gcc-4.6
-            - g++-4.6
-            - gfortran-4.6
       before_install:
+        - sudo apt-get install gcc-4.6 g++-4.6 gfortran-4.6
         - export CC=gcc-4.6; export CXX=g++-4.6; export FC=gfortran-4.6
     - os: linux
       dist: trusty
       sudo: required
       compiler: gcc-4.7
-      addons:
-        apt:
-          sources:
-            - kalakris-cmake
-          packages:
-            - cmake
-            - libopenmpi-dev
-            - openmpi-bin
-            - binutils-dev
-            - gcc-4.7
-            - g++-4.7
-            - gfortran-4.7
       before_install:
+        - sudo apt-get install gcc-4.7 g++-4.7 gfortran-4.7
         - export CC=gcc-4.7; export CXX=g++-4.7; export FC=gfortran-4.7
     - os: linux
       dist: trusty
       sudo: required
       compiler: gcc-4.8
-      addons:
-        apt:
-          sources:
-            - kalakris-cmake
-          packages:
-            - cmake
-            - libopenmpi-dev
-            - openmpi-bin
-            - binutils-dev
-            - gcc-4.8
-            - g++-4.8
-            - gfortran-4.8
-      before_install:
+      before_script:
         - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
 
     - os: linux
       compiler: clang-3.4
       sudo: false
-      before_install:
+      before_script:
         - export CC=clang; export CXX=clang++
     - os: linux
       dist: trusty
       sudo: required
       compiler: clang-3.5
-      before_install:
+      before_script:
         - export CC=clang; export CXX=clang++
 
     - os: osx
       osx_image: beta-xcode6.1
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi argp-standalone
+      compiler: clang
     - os: osx
       osx_image: beta-xcode6.2
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi argp-standalone
+      compiler: clang
     - os: osx
       osx_image: beta-xcode6.3
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi argp-standalone
+      compiler: clang
     - os: osx
       osx_image: xcode6.4
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi argp-standalone
+      compiler: clang
     - os: osx
       osx_image: xcode7
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew install openmpi cmake argp-standalone
+      compiler: clang
     - os: osx
       osx_image: xcode7.1
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew install openmpi cmake argp-standalone
+      compiler: clang
     - os: osx
       osx_image: xcode7.2
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew install openmpi cmake argp-standalone
-      script:
-        - mkdir travis && cd travis
-        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+      compiler: clang
     - os: osx
       osx_image: xcode7.3
-      compiler: gcc
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi argp-standalone
-      script:
-        - mkdir travis && cd travis
-        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+      compiler: clang
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
     - os: osx
       compiler: gcc-6
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
+      before_script:
         - export CC=gcc-6; export CXX=g++-6
-        - brew outdated cmake || brew upgrade cmake
-        - brew install openmpi argp-standalone
 
     - os: osx
       compiler: clang
-      before_install:
-        - brew update --quiet >& /dev/null
-        - brew outdated gcc || brew upgrade gcc
-        - brew outdated cmake || brew upgrade cmake
-        - brew install mpich argp-standalone
+      before_script:
+        - brew unlink openmpi
+        - brew install mpich
       env:
         - MPICH
+
+    - os: linux
+      compiler: gcc-4.6
+      sudo: false
+      before_script:
+        - export CC=gcc-4.6; export CXX=g++-4.6; export FC=gfortran-4.6
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
+      env:
+        - NO_FORTRAN
+
+    - os: osx
+      before_install:
+        - brew update --quiet >& /dev/null;
+        - brew install clang-format
+      env:
+        FORMAT
       script:
-        - mkdir travis && cd travis
-        - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On && make install && ctest --output-on-failure
+        - git filter-branch --force --tree-filter '
+            find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \)
+              -not -path "./externals/*"
+              -exec clang-format -style=file -fallback-style=none -i {} \; ;
+            if test $(git diff | wc -l) -gt 0;
+            then
+                echo "";
+                git --no-pager diff --color=always;
+                exit 1;
+            fi
+          ' --tag-name-filter cat -- 7244fc1..HEAD
+      after_success:
 
 
+# Install all main dependencies. Additional compilers may be installed as
+# defined in the build matrix.
 addons:
   apt:
     sources:
@@ -220,11 +137,48 @@ addons:
       - libopenmpi-dev
       - openmpi-bin
       - binutils-dev
+      - doxygen
+      - help2man
+
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
+    then
+      brew update --quiet >& /dev/null;
+    fi
+  # The following solution was inspired by http://stackoverflow.com/a/20802381
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
+    then
+      for pkg in gcc cmake openmpi argp-standalone help2man doxygen; do
+        if brew list -1 | grep -q "^${pkg}\$"; then
+          brew outdated $pkg || brew upgrade $pkg;
+        else
+          brew install $pkg;
+        fi
+      done
+    fi
 
 
 script:
   - mkdir travis && cd travis
-  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=On -DENABLE_COVERAGE=On -DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On && make install && ctest --output-on-failure
+  - if [ "$TRAVIS_OS_NAME" != "osx" ] && [[ "$CC" != clang* ]];
+    then
+      SANITIZE_FLAGS="-DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On";
+    else
+      echo "Address Sanitizer is disabled for OSX and clang builds.";
+    fi
+  - if [[ "$CC" != clang* ]];
+    then
+      COVERAGE_FLAGS="-DENABLE_COVERAGE=On";
+    else
+      echo "Code coverage is disabled for clang.";
+    fi
+  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug
+      -DENABLE_TESTS=On -DBUILD_DOC_INTERNAL=On $SANITIZE_FLAGS $COVERAGE_FLAGS
+      $CMAKE_EXTRA_FLAGS
+    && make install
+    && ctest --output-on-failure
+
 
 after_success:
   - make -k gcov

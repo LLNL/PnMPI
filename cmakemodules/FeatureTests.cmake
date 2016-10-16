@@ -1,20 +1,50 @@
-# CMake file
-# Copyright (C) ZIH, Technische Universitaet Dresden, Federal Republic of Germany, 2011-2011
-# Copyright (C) Lawrence Livermore National Laboratories, United States of America, 2011-2011
+# This file is part of P^nMPI.
 #
-# TODO Martin please add the copyright statment of your choice, as well as
-#      a reference to the license or license file!
+# Copyright (c)
+#  2008-2016 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2016 RWTH Aachen University, Federal Republic of Germany
 #
-# @file FeatureTests.cmake
-#       CMake file for running feature tests.
 #
-# @author Mathias Korepkat, Tobias Hilbrich
-# @date 25.11.2011
+# P^nMPI is free software; you can redistribute it and/or modify it under the
+# terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation version 2.1 dated February 1999.
+#
+# P^nMPI is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with P^nMPI; if not, write to the
+#
+#   Free Software Foundation, Inc.
+#   51 Franklin St, Fifth Floor
+#   Boston, MA 02110, USA
+#
+#
+# Written by Martin Schulz, schulzm@llnl.gov.
+#
+# LLNL-CODE-402774
 
+include(CheckCSourceCompiles)
 include(CheckFortranMPIFunctionExists)
+include(CheckFunctionExists)
 include(CheckMPIConstCorrectness)
 include(CheckMPIFunctionExists)
 include(CheckMPISymbolExists)
+
+
+# \brief Helper maco to execute a feature test.
+#
+# \param file Source file (will be searched in cmakemodules/FeatureTests)
+# \param var Variable where the feature test result will be stored in
+#
+macro(featureTest file var)
+  file(READ "${PROJECT_SOURCE_DIR}/cmakemodules/FeatureTests/${file}" SOURCE)
+  check_c_source_compiles("${SOURCE}" ${var})
+endmacro()
+
 
 ###Run all feature tests that influence config.h
 #MPI-2 constants
@@ -59,20 +89,21 @@ FOREACH (type ${HandleConvertMacros})
 ENDFOREACH (type)
 
 if (BFD_FOUND)
-    featureTest("ft_bfd_old_api.c" "C" "PNMPI_OLD_BFD_API")
-    featureTest("ft_bfd_new_api.c" "C" "PNMPI_NEW_BFD_API")
+  featureTest("ft_bfd_old_api.c" PNMPI_OLD_BFD_API)
+  featureTest("ft_bfd_new_api.c" PNMPI_NEW_BFD_API)
 endif ()
 
 #SET(PNMPI_ENABLE_THREAD_SAFETY OFF CACHE BOOL "Pthreads found and thread safety selected")
 
 option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." TRUE)
 if(ENABLE_THREAD_SAFETY)
-    featureTest("ft_pthreads.c" C PNMPI_HAVE_PTHREADS)
+  set(CMAKE_REQUIRED_LIBRARIES "pthread")
+  check_function_exists("pthread_key_create" PNMPI_HAVE_PTHREADS)
+  unset(CMAKE_REQUIRED_LIBRARIES)
+
     IF(PNMPI_HAVE_PTHREADS)
         SET(PNMPI_ENABLE_THREAD_SAFETY ON)
     ELSE(PNMPI_HAVE_PTHREADS)
         MESSAGE(FATAL_ERROR "Enabling thread-safety failed, no pthread support found on this system")
     ENDIF(PNMPI_HAVE_PTHREADS)
 endif(ENABLE_THREAD_SAFETY)
-
-featureTest("ft_gnuc.c" C PNMPI_HAVE_GNUC)

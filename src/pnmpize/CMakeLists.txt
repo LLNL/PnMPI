@@ -28,13 +28,15 @@
 # LLNL-CODE-402774
 
 find_package(argp REQUIRED)
+find_package(help2man REQUIRED)
 
 
-include_directories(${CMAKE_BINARY_PATH})
+include_directories(${PROJECT_BINARY_DIR})
 
 add_executable(pnmpize pnmpize.c)
 add_coverage(pnmpize)
 add_sanitizers(pnmpize)
+help2man(pnmpize-man TARGET pnmpize NOINFO INSTALL RENAME pnmpi.1)
 
 target_link_libraries(pnmpize ${ARGP_LIBRARIES})
 set_target_properties(pnmpize PROPERTIES OUTPUT_NAME pnmpi)

@@ -67,6 +67,7 @@ static char args_doc[] = "utility [utility options]";
 
 static struct argp_option options[] = {
   { "config", 'c', "FILE", 0, "Configuration file" },
+  { "modules", 'm', "PATH", 0, "Module path" },
   { "quiet", 'q', 0, 0, "Don't produce any output" },
   { "silent", 's', 0, OPTION_ALIAS },
   { 0 }
@@ -114,7 +115,7 @@ static int appendenv(const char *name, const char *value)
 
 /** \brief Argument parser for argp.
  *
- * \info See argp parser documentation for detailed information about the
+ * \note See argp parser documentation for detailed information about the
  *  structure and functionality of function.
  */
 static error_t parse_arguments(int key, char *arg, struct argp_state *state)
@@ -122,6 +123,7 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
   switch (key)
     {
     case 'c': setenv("PNMPI_CONF", arg, 1); break;
+    case 'm': setenv("PNMPI_LIB_PATH", arg, 1); break;
     case 'q':
     case 's':
       setenv("PNMPI_BE_SILENT", "1", 1);

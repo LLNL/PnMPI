@@ -29,8 +29,8 @@
 
 include_directories(
   ${PROJECT_BINARY_DIR}/
-  ${PROJECT_BINARY_DIR}/src
-  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_BINARY_DIR}/src/pnmpi
+  ${PROJECT_SOURCE_DIR}/src/pnmpi
   ${MPI_C_INCLUDE_PATH})
 
 add_wrapped_file(counter.c counter.c.w)

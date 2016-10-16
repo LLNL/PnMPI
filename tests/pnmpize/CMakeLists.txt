@@ -27,13 +27,14 @@
 #
 # LLNL-CODE-402774
 
+find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
 # Helper function to add a new PnMPIze test case.
 function (pnmpi_pnmpize_test NAME)
   # Parse options.
-  set(oneValueArgs NUMPROCS PASS_EXPRESSION)
+  set(oneValueArgs NUMPROCS PASS_EXPRESSION FAIL_EXPRESSION)
   set(multiValueArgs PNMPIZE_ARGS COMMAND)
   cmake_parse_arguments("OPT" "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -48,13 +49,18 @@ function (pnmpi_pnmpize_test NAME)
 
   # Handle non-MPI tests
   if ((NOT OPT_NUMPROCS) OR (OPT_NUMPROCS EQUAL 0))
-    pnmpi_test("${NAME}" "${OPT_PASS_EXPRESSION}" ${SANITIZE_WRAPPER}
+    pnmpi_test(${NAME}
+      PASS_EXPRESSION "${OPT_PASS_EXPRESSION}"
+      FAIL_EXPRESSION "${OPT_FAIL_EXPRESSION}"
+      COMMAND ${SANITIZE_WRAPPER}
       $<TARGET_FILE:pnmpize> ${OPT_PNMPIZE_ARGS} ${OPT_COMMAND})
 
   # Handle MPI tests.
   else ()
-    pnmpi_mpi_test("${NAME}" "${OPT_PASS_EXPRESSION}"
-      ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${OPT_NUMPROCS}
+    pnmpi_mpi_test(${NAME}
+      PASS_EXPRESSION "${OPT_PASS_EXPRESSION}"
+      FAIL_EXPRESSION "${OPT_FAIL_EXPRESSION}"
+      COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${OPT_NUMPROCS}
       ${SANITIZE_WRAPPER} $<TARGET_FILE:pnmpize> ${OPT_PNMPIZE_ARGS}
       ${OPT_COMMAND})
   endif ()
@@ -89,8 +95,8 @@ pnmpi_pnmpize_test(pnmpize_preload_pnmpi
 # "WRAPPER 1: Before send" to stdout.
 pnmpi_pnmpize_test(pnmpize_set_config
   NUMPROCS 2
-  PASS_EXPRESSION "WRAPPER 1: Before send"
-  PNMPIZE_ARGS -c "${CMAKE_CURRENT_SOURCE_DIR}/mod-sample.conf"
+  PASS_EXPRESSION "Wrapper: Sending"
+  PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 
@@ -107,13 +113,13 @@ endif ()
 pnmpi_pnmpize_test(pnmpize_fortran_preload_pnmpi
   NUMPROCS 2
   PASS_EXPRESSION "Number of modules:"
-  COMMAND $<TARGET_FILE:test-mpi-f>)
+  COMMAND $<TARGET_FILE:test-mpi-fortran>)
 
 # The following test checks, if PnMPIze is able to pass a configuration file to
 # PnMPI. The sample module will be used for this check and should the output
 # "WRAPPER 1: Before send" to stdout.
 pnmpi_pnmpize_test(pnmpize_fortran_set_config
   NUMPROCS 2
-  PASS_EXPRESSION "WRAPPER 1: Before send"
-  PNMPIZE_ARGS -c "${CMAKE_CURRENT_SOURCE_DIR}/mod-sample.conf"
-  COMMAND $<TARGET_FILE:test-mpi-f>)
+  PASS_EXPRESSION "Wrapper: Sending"
+  PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
+  COMMAND $<TARGET_FILE:test-mpi-fortran>)

@@ -1,26 +1,64 @@
-# Copyright (c) 2008, Lawrence Livermore National Security, LLC.
-# Written by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774,
-# All rights reserved - please read information in "LICENCSE"
-
-# TODO Martin please add the copyright statment of your choice, as well as
-#      a reference to the license or license file!
+# This file is part of P^nMPI.
 #
-# @authors Todd Gamblin, Tobias Hilbrich, Martin Schulz
-# @date 05-22-2011
+# Copyright (c)
+#  2008-2016 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2016 RWTH Aachen University, Federal Republic of Germany
+#
+#
+# P^nMPI is free software; you can redistribute it and/or modify it under the
+# terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation version 2.1 dated February 1999.
+#
+# P^nMPI is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with P^nMPI; if not, write to the
+#
+#   Free Software Foundation, Inc.
+#   51 Franklin St, Fifth Floor
+#   Boston, MA 02110, USA
+#
+#
+# Written by Martin Schulz, schulzm@llnl.gov.
+#
+# LLNL-CODE-402774
+
 cmake_minimum_required(VERSION 2.6)
 project(pnmpi C CXX)
 
-# Workaround for this CMake issue: http://public.kitware.com/Bug/view.php?id=9220
-# Ensures that enable_language(Fortran OPTIONAL) works correctly.  Annoying.
-if (DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
-  set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
-endif()
-enable_language(Fortran OPTIONAL)
+
+# Otional Fortran support.
+#
+# By default PnMPI will be build with the Fortran interface. If PnMPI should not
+# be build with the Fortran interface or no Fortran compiler could be found, the
+# Fortran interface will be disabled.
+option(ENABLE_FORTRAN "Enable PnMPI Fortran interface." on)
+if (ENABLE_FORTRAN)
+  # Workaround for this CMake issue:
+  #  http://public.kitware.com/Bug/view.php?id=9220
+  # Ensures that enable_language(Fortran OPTIONAL) works correctly.  Annoying.
+  if (DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
+    set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
+  endif()
+
+  enable_language(Fortran OPTIONAL)
+
+  if (NOT CMAKE_Fortran_COMPILER_WORKS)
+    set(ENABLE_FORTRAN false)
+    message(STATUS "No working Fortran compiler found: PnMPI will be build "
+      "without Fortran interface.")
+  endif ()
+endif ()
+
 
 #===================================
 #Policies
 #===================================
-foreach (POL CMP0017)
+foreach (POL CMP0017 CMP0051)
   if (POLICY ${POL})
     cmake_policy(SET ${POL} NEW)
   endif ()
@@ -42,39 +80,50 @@ option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." TRUE)
 #===================================
 # Basic initialization
 #===================================
-# Version info
-set(PNMPI_MAJOR_VERSION 1)
-set(PNMPI_MINOR_VERSION 6)
-set(PNMPI_PATCH_VERSION 0)
-set(PNMPI_VERSION ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION})
-
-# Set version of the P^nMPI interface (used to determine incompatibility with P^nMPI lib)
-# TODO: is this just for services?  The basic interface is going to be MPI no matter what.
-set(PNMPI_LIB_INTERFACE_VERSION "1")
 
 # Set the module search path to include local modules.
 set(CMAKE_MODULE_PATH
-  "${CMAKE_SOURCE_DIR}/cmakemodules"
-  "${CMAKE_SOURCE_DIR}/externals/CMake-codecov/cmake"
-  "${CMAKE_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
-  "${CMAKE_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
-  "${CMAKE_SOURCE_DIR}/externals/CMake-argp/cmake"
+  "${PROJECT_SOURCE_DIR}/cmakemodules"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-codecov/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
   ${CMAKE_MODULE_PATH}
-  "${CMAKE_SOURCE_DIR}/cmakemodules/legacy")
+  "${PROJECT_SOURCE_DIR}/cmakemodules/legacy")
 
-# Sensible defaults for the install prefix on Win32.  CMake defaults to /usr/local on UNIX.
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  if (WIN32)
-    set(CMAKE_INSTALL_PREFIX "$ENV{PROGRAMFILES}/pnmpi" CACHE PATH "CMAKE_INSTALL_PREFIX" FORCE)
-  endif()
-endif()
+
+# Get the version info from git.
+if (EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  find_package(GitInfo REQUIRED)
+  git_wc_info(${PROJECT_SOURCE_DIR} GIT)
+
+# If git is not available (e.g. this git was packed as .tar.gz), try to read the
+# version-info from a hidden file in the root directory. This file should not be
+# versioned, but added at packaging time.
+elseif (EXISTS "${PROJECT_SOURCE_DIR}/.version")
+  file(READ "${PROJECT_SOURCE_DIR}/.version" GIT_WC_LATEST_TAG_LONG)
+
+# If no version could be gathered by git or the version file, print a warning,
+# so the user has to define a version in the backup version file.
+else ()
+  message(FATAL_ERROR "No PnMPI version provided by .version file")
+endif ()
+
+set(PNMPI_VERSION ${GIT_WC_LATEST_TAG_LONG} CACHE STRING "PnMPI version")
+if (GIT_WC_LATEST_TAG_LONG MATCHES "^([^0-9]*)([0-9]+)[.]([0-9]+)-([0-9]+)")
+  set(PNMPI_MAJOR_VERSION ${CMAKE_MATCH_2} CACHE STRING "")
+  set(PNMPI_MINOR_VERSION ${CMAKE_MATCH_3} CACHE STRING "")
+  set(PNMPI_PATCH_VERSION ${CMAKE_MATCH_4} CACHE STRING "")
+else ()
+  message(FATAL_ERROR "Invalid version info: '${GIT_WC_LATEST_TAG_LONG}'.")
+endif ()
+
 
 #Include our macros
 INCLUDE (PnMPIModules)
 find_package(codecov)
-
-#Find Packages
-find_package(AWK REQUIRED)
 
 #===================================
 #System inspection
@@ -93,10 +142,6 @@ set(MPI_CXX_SKIP_FLAGS
     -DMPI_NO_CPPBIND -DOMPI_SKIP_MPICXX -D_MPICC_H -DMPICH_SKIP_MPICXX -DMPIBULL_SKIP_MPICXX
     CACHE STRING "Default skip-flags used (for SGI, OpenMPI, HP-MPI, MPICH, BULL-MPI)")
 
-# Fortran name mangling option, customizable at cmd line
-# TODO: detect fortran name mangling, e.g.: F77SYMBOL = symbol_
-set(F77SYMBOL symbol_ CACHE STRING "Name demangling scheme.")
-
 # BFD is used by the patch utility.
 find_package(BFD)
 
@@ -114,9 +159,8 @@ endif()
 #===================================
 # Recurse to sub-directories
 #===================================
-#add_subdirectory(wrap)
+add_subdirectory(doc)
 add_subdirectory(src)
-add_subdirectory(patch)
 
 option(ENABLE_MODULES "Selects whether PnMPI modules are built." TRUE)
 if(ENABLE_MODULES)
@@ -150,6 +194,7 @@ install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
 # first so that the header can include build parameters.
 # include(${PROJECT_BINARY_DIR}/pnmpi-vars.cmake)
 SET(PnMPI_INSTALL_PREFIX )
+set(PNMPI_HAVE_FORTRAN ${ENABLE_FORTRAN})
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
 
