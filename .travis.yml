@@ -161,15 +161,21 @@ before_install:
 
 script:
   - mkdir travis && cd travis
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]];
+  - if [ "$TRAVIS_OS_NAME" != "osx" ] && [[ "$CC" != clang* ]];
     then
       SANITIZE_FLAGS="-DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On";
     else
-      echo "Address Sanitizer is disabled for OSX builds.";
+      echo "Address Sanitizer is disabled for OSX and clang builds.";
+    fi
+  - if [[ "$CC" != clang* ]];
+    then
+      COVERAGE_FLAGS="-DENABLE_COVERAGE=On";
+    else
+      echo "Code coverage is disabled for clang.";
     fi
   - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug
-      -DENABLE_TESTS=On -DENABLE_COVERAGE=On -DBUILD_DOC_INTERNAL=On
-      $SANITIZE_FLAGS $CMAKE_EXTRA_FLAGS
+      -DENABLE_TESTS=On -DBUILD_DOC_INTERNAL=On $SANITIZE_FLAGS $COVERAGE_FLAGS
+      $CMAKE_EXTRA_FLAGS
     && make install
     && ctest --output-on-failure
 
