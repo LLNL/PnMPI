@@ -51,7 +51,12 @@ set(PNMPI_HEADER_DIR "${PROJECT_BINARY_DIR}/src/pnmpi/header")
 # subdirectory to make #include <pnmpi/...> possible) and adds it to the install
 # list.
 function (pnmpi_add_header FILE)
-  get_filename_component("NAME" ${FILE} NAME)
+  if (ARGV1)
+    set(NAME ${ARGV1})
+  else ()
+    get_filename_component("NAME" ${FILE} NAME)
+  endif ()
+
   configure_file(${FILE} "${PNMPI_HEADER_DIR}/pnmpi/${NAME}" COPYONLY)
 
   install(FILES "${PNMPI_HEADER_DIR}/pnmpi/${NAME}"
@@ -64,6 +69,11 @@ endfunction ()
 # This function does the same except the file is placed in pnmpi/private instead
 # of pnmpi and the file will not be installed.
 function (pnmpi_add_private_header FILE)
-  get_filename_component("NAME" ${FILE} NAME)
+  if (ARGV1)
+    set(NAME ${ARGV1})
+  else ()
+    get_filename_component("NAME" ${FILE} NAME)
+  endif ()
+
   configure_file(${FILE} "${PNMPI_HEADER_DIR}/pnmpi/private/${NAME}" COPYONLY)
 endfunction ()

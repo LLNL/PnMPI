@@ -46,9 +46,9 @@ if (BUILD_DOC OR BUILD_DOC_INTERNAL)
     set(DOXYGEN_DOT_EXECUTABLE "")
   endif ()
 
-  set(DOXYGEN_EXTRACT_STATIC "NO")
+  set(DOXYGEN_DOC_INTERNAL "NO")
   if (BUILD_DOC_INTERNAL)
-    set(DOXYGEN_EXTRACT_STATIC "YES")
+    set(DOXYGEN_DOC_INTERNAL "YES")
   endif ()
 
   configure_file(${doxyfile_in} ${doxyfile} @ONLY)

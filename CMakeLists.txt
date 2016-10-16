@@ -58,7 +58,7 @@ endif ()
 #===================================
 #Policies
 #===================================
-foreach (POL CMP0017)
+foreach (POL CMP0017 CMP0051)
   if (POLICY ${POL})
     cmake_policy(SET ${POL} NEW)
   endif ()
@@ -89,6 +89,7 @@ set(CMAKE_MODULE_PATH
   "${PROJECT_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
   ${CMAKE_MODULE_PATH}
   "${PROJECT_SOURCE_DIR}/cmakemodules/legacy")
 

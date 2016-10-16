@@ -28,17 +28,21 @@
 # LLNL-CODE-402774
 
 include(CheckSymbolExists)
+include(easylib)
 include(PnMPI_headers)
 
 find_package(Sanitizers)
 
 
-# Install and manage the public and private header files of the PnMPI sources.
-# This has to be done to use the same headers for the PnMPI sources and the API
-# without getting conflicts about the used paths. Otherwise you'd have to take
-# care about file locations after installation, especially if you use the
-# headers over multiple directories.
-pnmpi_add_private_header(attributes.h)
+# Recurse into subdirectories.
+#
+# This has to be done BEFORE adding the PnMPI libraries, because for adding
+# PnMPI with its object libraries, the easylib functions need to know about the
+# available object libraries. Otherwise the compilation of PnMPI will result in
+# errors, as easylib would select the static object library for the shared PnMPI
+# library.
+add_subdirectory(attributes)
+add_subdirectory(debug)
 
 
 # Add linkage to adept utils if we have it
@@ -74,6 +78,8 @@ set(PNMPI_LIB_SOURCES
   call_hook.c
   hook_activated.c
   max_module_threading_level.c
+
+  $<TARGET_OBJECTS:pnmpi_debug>
 )
 
 if (ENABLE_FORTRAN)
@@ -94,7 +100,7 @@ add_custom_target(generate DEPENDS
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
 
 # PnMPI shared library
-add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
+easy_add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
 add_dependencies(pnmpi generate)
 add_coverage(pnmpi)
 add_sanitizers(pnmpi)
@@ -122,7 +128,7 @@ endif()
   endif()
 
 # PnMPI static library (same output name as shared lib)
-add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
+easy_add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
 add_dependencies(pnmpi_static generate)
 set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 
@@ -138,7 +144,7 @@ install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 #
 if (CMAKE_Fortran_COMPILER_WORKS)
   # PnMPI fortran shared library
-  add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
+  easy_add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
   add_coverage(pnmpif)
   add_sanitizers(pnmpif)
   add_dependencies(pnmpif generate)
@@ -175,7 +181,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   endif()
 
   # PnMPI fortran static lib
-  add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
+  easy_add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
   add_dependencies(pnmpif_static generate)
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
   set_target_properties(pnmpif_static PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")

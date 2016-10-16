@@ -32,11 +32,14 @@
  *
  * \details This file contains compiler-dependent macros, which set function or
  *  variable attributes for the compiler, if they are supported.
+ *
+ *
+ * \privatesection
  */
 
 
-#ifndef PNMPI_ATTRIBUTES_H
-#define PNMPI_ATTRIBUTES_H
+#ifndef PNMPI_PRIVATE_ATTRIBUTES_H
+#define PNMPI_PRIVATE_ATTRIBUTES_H
 
 
 /** \brief Constructor macro.
