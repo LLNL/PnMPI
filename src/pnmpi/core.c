@@ -39,6 +39,7 @@
 #include "app_hooks.h"
 #include "core.h"
 #include "pnmpi-config.h"
+#include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
 
 #ifdef HAVE_ADEPT_UTILS
@@ -363,7 +364,8 @@ void pnmpi_PreInit()
         }
     }
 
-  DBGASSERT(conffile != NULL, "Config file not open");
+  if (conffile == NULL)
+    pnmpi_error("Config file not open.\n");
 
   /* read configuration file and load modules */
 

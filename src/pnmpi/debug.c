@@ -47,7 +47,6 @@ int _print_node = -2;
 void dbg_statusprint1(char *format, ...);
 void dbg_statusprintn(char *format, ...);
 void dbg_warning(char *format, ...);
-void dbg_assert(int cnd, char *format, ...);
 void dbg_debugprint1(char *format, ...);
 void dbg_debugprint2(char *format, ...);
 void dbg_debugprint3(char *format, ...);
@@ -120,27 +119,6 @@ void dbg_warning(char *format, ...)
   vfprintf(stdout, format, va_alist);
   fprintf(stdout, "\n");
   va_end(va_alist);
-}
-#endif /* else of NOWARNINGS */
-
-#ifdef NOASSERTS
-void dbg_assert(int cnd, char *format, ...)
-{
-}
-#else
-void dbg_assert(int cnd, char *format, ...)
-{
-  va_list va_alist;
-
-  if (!(cnd))
-    {
-      va_start(va_alist, format);
-      fprintf(stdout, "ASSERTION VIOLATED (%s/%i): ", __FILE__, __LINE__);
-      vfprintf(stdout, format, va_alist);
-      fprintf(stdout, "\n");
-      va_end(va_alist);
-      exit(1);
-    }
 }
 #endif /* else of NOWARNINGS */
 

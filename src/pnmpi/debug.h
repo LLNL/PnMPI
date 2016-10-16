@@ -62,20 +62,6 @@
 #define WARNPRINT(format, args...) DOPRINT("%s" format, "WARNING: ", ##args)
 #endif
 
-#ifdef NOASSERTS
-#define DBGASSERT(cnd, format, args...)
-#else
-#define DBGASSERT(cnd, format, args...)                                    \
-  {                                                                        \
-    if (!(cnd))                                                            \
-      {                                                                    \
-        DOPRINT("ASSERTION VIOLATED (%s/%i): " format, __FILE__, __LINE__, \
-                ##args);                                                   \
-        exit(1);                                                           \
-      }                                                                    \
-  }
-#endif
-
 #ifdef DBGLEVEL
 #define DBGLEVEL1 0x0001 /* entry and exit prints */
 #define DBGLEVEL2 0x0002 /* module load and instantiation */
@@ -150,7 +136,6 @@ extern int _print_node;
 void dbg_statusprint1(char *format, ...);
 void dbg_statusprintn(char *format, ...);
 void dbg_warning(char *format, ...);
-void dbg_assert(int cnd, char *format, ...);
 void dbg_debugprint1(char *format, ...);
 void dbg_debugprint2(char *format, ...);
 void dbg_debugprint3(char *format, ...);
@@ -173,13 +158,6 @@ void dbg_debugprint6(char *format, ...);
 #else
 #define WARNPRINT dbg_warning
 #endif
-
-#ifdef NOASSERTS
-#define DBGASSERT dbg_assert
-#else
-#define DBGASSERT dbg_assert
-#endif
-
 
 #define DBGLEVEL1 0x0001 /* entry and exit prints */
 #define DBGLEVEL2 0x0002 /* module load and instantiation */
