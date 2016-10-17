@@ -28,14 +28,10 @@
 # LLNL-CODE-402774
 
 include(GNUInstallDirs)
+include(PnMPI_doc)
 
-
-option("BUILD_DOC" "Build HTML documentation" Off)
-option("BUILD_DOC_INTERNAL"
-  "Build HTML documentation including private functions" Off)
 
 set(doxyfile_in "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf.in")
-set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf")
 set(doxy_output_root "${CMAKE_CURRENT_BINARY_DIR}")
 set(doxy_html_index_file "${doxy_output_root}/html/index.html")
 
@@ -51,14 +47,9 @@ if (BUILD_DOC OR BUILD_DOC_INTERNAL)
     set(DOXYGEN_DOC_INTERNAL "YES")
   endif ()
 
-  configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+  configure_file(${doxyfile_in} ${PNMPI_DOXYFILE} @ONLY)
 
-  add_custom_command (OUTPUT ${doxy_html_index_file}
-    COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-    MAIN_DEPENDENCY ${doxyfile} ${doxyfile_in}
-    DEPENDS pnmpi pnmpize
-    COMMENT "Generating documentation"
-  )
+  pnmpi_doxygen(${doxy_html_index_file} "Generating documentation")
   add_custom_target(doc ALL DEPENDS ${doxy_html_index_file})
 
 

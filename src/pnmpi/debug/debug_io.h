@@ -28,6 +28,9 @@
  * LLNL-CODE-402774
  */
 
+/** \defgroup pnmpi_debug_io Print debug messages, warnings and  errors.
+ */
+
 #ifndef PNMPI_PRINT_H
 #define PNMPI_PRINT_H
 
@@ -38,6 +41,9 @@
 
 
 /** \brief Debug levels for \ref pnmpi_debug.
+ *
+ *
+ * \ingroup pnmpi_debug_io
  */
 enum pnmpi_debug_level
 {
@@ -73,6 +79,9 @@ enum pnmpi_debug_level
  *
  * \details To optimize the code for speed, debug printing can be disabled with
  *  the PNMPI_NO_DEBUG compile flag.
+ *
+ *
+ * \ingroup pnmpi_debug_io
  */
 #ifndef PNMPI_NO_DEBUG
 #define pnmpi_debug(...) pnmpi_print_debug(__VA_ARGS__)
@@ -90,6 +99,9 @@ enum pnmpi_debug_level
  *
  * \param format Printf-like format string.
  * \param ... Arguments to be evaluated.
+ *
+ *
+ * \ingroup pnmpi_debug_io
  */
 #define pnmpi_error(format, ...)                                            \
   {                                                                         \

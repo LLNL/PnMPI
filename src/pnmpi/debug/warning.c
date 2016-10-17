@@ -46,6 +46,7 @@
  *
  *
  * \hidecallergraph
+ * \ingroup pnmpi_debug_io
  */
 void pnmpi_warning(const char *format, ...)
 {

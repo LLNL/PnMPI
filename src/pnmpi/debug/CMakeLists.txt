@@ -28,6 +28,7 @@
 # LLNL-CODE-402774
 
 include(easylib)
+include(PnMPI_doc)
 include(PnMPI_headers)
 
 find_package(codecov)
@@ -42,6 +43,14 @@ find_package(Sanitizers)
 # headers over multiple directories.
 pnmpi_add_header(debug_io.h)
 pnmpi_add_private_header(print.h)
+
+
+# Install the public man pages for this object.
+pnmpi_add_man(pnmpi_debug_io pnmpi_error)
+pnmpi_add_man(pnmpi_debug_io pnmpi_debug)
+pnmpi_add_man(pnmpi_debug_io pnmpi_debug_level)
+pnmpi_add_man(pnmpi_debug_io pnmpi_print_debug)
+pnmpi_add_man(pnmpi_debug_io pnmpi_warning)
 
 
 include_directories(
