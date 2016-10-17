@@ -62,7 +62,7 @@ include_directories(
 
 add_wrapped_file(counter.c counter.c.w)
 
-add_pnmpi_module(counter "${CMAKE_CURRENT_BINARY_DIR}/counter.c")
+pnmpi_add_xmpi_module(counter "${CMAKE_CURRENT_BINARY_DIR}/counter.c")
 add_coverage(counter)
 add_sanitizers(counter)
 

@@ -142,7 +142,7 @@ int PNMPI_RegistrationPoint()
 {{fnall fn_name MPI_Finalize}}
   pnmpi_counter_inc(counters.{{fn_name}});
 
-  {{callfn}}
+  X{{fn_name}}({{args}});
 {{endfnall}}
 
 
@@ -211,5 +211,5 @@ int MPI_Finalize()
 
 
   /* Call original MPI_Finalize. */
-  return PMPI_Finalize();
+  return XMPI_Finalize();
 }
