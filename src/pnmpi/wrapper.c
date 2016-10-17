@@ -44,11 +44,8 @@
 
 
 /*-------------------------------------------------------------------*/
-/* timing and count variables for DBGLEVEL 5 and 6 */
+/* timing variables for DBGLEVEL 6 */
 
-#ifdef DBGLEVEL5
-pnmpi_functions_statscount_t pnmpi_totalstats_count;
-#endif
 #ifdef DBGLEVEL6
 pnmpi_functions_statstiming_t pnmpi_totalstats_timing;
 timing_t pnmpi_overall_timing;
@@ -66,203 +63,7 @@ void pmpi_init_thread_(int *ierror, int *required, int *provided);
 
 
 /*-------------------------------------------------------------------*/
-/* Statistics output for Debuglevel 5 */
-
-#ifdef DBGLEVEL5 /* additional timing statistics */
-
-#define DBGPRINT5_COUNTS_FCT_ALL(_buf, _num, _div, _out, _routine, _name) \
-  {                                                                       \
-    int _sum, _i;                                                         \
-    _sum = 0;                                                             \
-    for (_i = 0; _i < _num; _i++)                                         \
-      _sum += (_buf[_i])._routine;                                        \
-    if (_sum > 0)                                                         \
-      {                                                                   \
-        fprintf(_out, "%s\t%li", _name, ((_buf[_num])._routine) / _div);  \
-        for (_i = 0; _i < _num; _i++)                                     \
-          fprintf(_out, "\t%li", ((_buf[_i])._routine) / _div);           \
-        fprintf(_out, "\n");                                              \
-      }                                                                   \
-  }
-
-#define DBGPRINT5_TIMING_FCT_ALL(_buf, _num, _div, _out, _routine, _name) \
-  {                                                                       \
-    timing_t _sum;                                                        \
-    int _i;                                                               \
-    _sum = 0;                                                             \
-    for (_i = 0; _i < _num; _i++)                                         \
-      _sum += (_buf[_i])._routine;                                        \
-    if (sum > 0)                                                          \
-      {                                                                   \
-        fprintf(_out, "%s\t%f", _name, (_buf[_num])._routine / _div);     \
-        for (_i = 0; _i < _num; _i++)                                     \
-          fprintf(_out, "\t%f", (_buf[_i])._routine / _div);              \
-        fprintf(_out, "\n");                                              \
-      }                                                                   \
-  }
-
-void pnmpi_int_print_countstats()
-{
-  if (DBGCHECK(DBGLEVEL5))
-    {
-      FILE *out;
-      int num, rank, size, i, err;
-      pnmpi_functions_statscount_t *collect_max, *collect_min, *collect_sum;
-
-
-      err = PMPI_Barrier(MPI_COMM_WORLD);
-      if (err != MPI_SUCCESS)
-        {
-          DBGPRINT5("MPI Operation failed while writing statistics");
-          return;
-        }
-      err = PMPI_Comm_rank(MPI_COMM_WORLD, &rank);
-      if (err != MPI_SUCCESS)
-        {
-          DBGPRINT5("MPI Operation failed while writing statistics");
-          return;
-        }
-      err = PMPI_Comm_size(MPI_COMM_WORLD, &size);
-      if (err != MPI_SUCCESS)
-        {
-          DBGPRINT5("MPI Operation failed while writing statistics");
-          return;
-        }
-
-      num = sizeof(pnmpi_functions_statscount_t) / sizeof(long);
-
-      if (rank == 0)
-        {
-          DBGPRINT5("Writing statistics for counts");
-          out = fopen("pnmpi-stats-count.txt", "w");
-
-          collect_min = (pnmpi_functions_statscount_t *)malloc(
-            sizeof(pnmpi_functions_statscount_t) * (modules.num + 1));
-          if (collect_min == NULL)
-            {
-              DBGPRINT5("Memory allocation failed while writing statistics");
-              return;
-            }
-          collect_max = (pnmpi_functions_statscount_t *)malloc(
-            sizeof(pnmpi_functions_statscount_t) * (modules.num + 1));
-          if (collect_min == NULL)
-            {
-              DBGPRINT5("Memory allocation failed while writing statistics");
-              return;
-            }
-          collect_sum = (pnmpi_functions_statscount_t *)malloc(
-            sizeof(pnmpi_functions_statscount_t) * (modules.num + 1));
-          if (collect_min == NULL)
-            {
-              DBGPRINT5("Memory allocation failed while writing statistics");
-              return;
-            }
-        }
-
-      for (i = 0; i < modules.num; i++)
-        {
-          err = PMPI_Reduce(&(modules.module[i]->statscount), &(collect_min[i]),
-                            num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
-          if (err != MPI_SUCCESS)
-            {
-              DBGPRINT5("MPI Operation failed while writing statistics");
-              return;
-            }
-          err = PMPI_Reduce(&(modules.module[i]->statscount), &(collect_max[i]),
-                            num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
-          if (err != MPI_SUCCESS)
-            {
-              DBGPRINT5("MPI Operation failed while writing statistics");
-              return;
-            }
-          err = PMPI_Reduce(&(modules.module[i]->statscount), &(collect_sum[i]),
-                            num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-          if (err != MPI_SUCCESS)
-            {
-              DBGPRINT5("MPI Operation failed while writing statistics");
-              return;
-            }
-        }
-
-      err = PMPI_Reduce(&(pnmpi_totalstats_count), &(collect_min[modules.num]),
-                        num, MPI_LONG, MPI_MIN, 0, MPI_COMM_WORLD);
-      if (err != MPI_SUCCESS)
-        {
-          DBGPRINT5("MPI Operation failed while writing statistics");
-          return;
-        }
-      err = PMPI_Reduce(&(pnmpi_totalstats_count), &(collect_max[modules.num]),
-                        num, MPI_LONG, MPI_MAX, 0, MPI_COMM_WORLD);
-      if (err != MPI_SUCCESS)
-        {
-          DBGPRINT5("MPI Operation failed while writing statistics");
-          return;
-        }
-      err = PMPI_Reduce(&(pnmpi_totalstats_count), &(collect_sum[modules.num]),
-                        num, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-      if (err != MPI_SUCCESS)
-        {
-          DBGPRINT5("MPI Operation failed while writing statistics");
-          return;
-        }
-
-      if (rank == 0)
-        {
-          fprintf(out, "AVG\tPnMPI");
-          for (i = 0; i < modules.num; i++)
-            {
-              fprintf(out, "\t%s", modules.module[i]->name);
-            }
-          fprintf(out, "\n");
-          DBGPRINT5_COUNTS_ALL_ALL(collect_sum, modules.num, size, out);
-          fprintf(out, "\n");
-        }
-
-      if (rank == 0)
-        {
-          fprintf(out, "MAX\tPnMPI");
-          for (i = 0; i < modules.num; i++)
-            {
-              fprintf(out, "\t%s", modules.module[i]->name);
-            }
-          fprintf(out, "\n");
-          DBGPRINT5_COUNTS_ALL_ALL(collect_max, modules.num, 1, out);
-          fprintf(out, "\n");
-        }
-
-      if (rank == 0)
-        {
-          fprintf(out, "MIN\tPnMPI");
-          for (i = 0; i < modules.num; i++)
-            {
-              fprintf(out, "\t%s", modules.module[i]->name);
-            }
-          fprintf(out, "\n");
-          DBGPRINT5_COUNTS_ALL_ALL(collect_min, modules.num, 1, out);
-          fprintf(out, "\n");
-        }
-
-      if (rank == 0)
-        {
-          fprintf(out, "SUM\tPnMPI");
-          for (i = 0; i < modules.num; i++)
-            {
-              fprintf(out, "\t%s", modules.module[i]->name);
-            }
-          fprintf(out, "\n");
-          DBGPRINT5_COUNTS_ALL_ALL(collect_sum, modules.num, 1, out);
-
-          fclose(out);
-        }
-
-      PMPI_Barrier(MPI_COMM_WORLD);
-    }
-}
-
-#endif
-
-/*-------------------------------------------------------------------*/
-/* Statistics output for Debuglevel 5 */
+/* Statistics output for Debuglevel 6 */
 
 #ifdef DBGLEVEL6 /* additional timing statistics */
 
@@ -437,10 +238,6 @@ void mpi_init_(int *ierr)
 
   DBGPRINT3("Entering Old Fortran MPI_Init at base level");
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Init++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer = get_time_ns();
@@ -531,10 +328,6 @@ int MPI_Init(int *argc, char ***argv)
 
   DBGPRINT3("Entering Old MPI_Init at base level");
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Init++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer = get_time_ns();
@@ -576,10 +369,6 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 
               DBGPRINT3("Calling a wrapper in MPI_Init at level %i FROM %px",
                         pnmpi_level, &(Internal_XMPI_Init));
-#ifdef DBGLEVEL5
-              if (DBGCHECK(DBGLEVEL5))
-                modules.module[pnmpi_level]->statscount.MPI_Init++;
-#endif
 #ifdef DBGLEVEL6
               if (DBGCHECK(DBGLEVEL6))
                 start_timer = get_time_ns();
@@ -810,10 +599,6 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 
   DBGPRINT3("Entering Old Fortran MPI_Init_thread at base level");
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Init_thread++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer = get_time_ns();
@@ -905,10 +690,6 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 
   DBGPRINT3("Entering Old MPI_Init_thread at base level");
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Init_thread++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer = get_time_ns();
@@ -955,10 +736,6 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
               DBGPRINT3(
                 "Calling a wrapper in MPI_Init_thread at level %i FROM %px",
                 pnmpi_level, &(Internal_XMPI_Init_thread));
-#ifdef DBGLEVEL5
-              if (DBGCHECK(DBGLEVEL5))
-                modules.module[pnmpi_level]->statscount.MPI_Init_thread++;
-#endif
 #ifdef DBGLEVEL6
               if (DBGCHECK(DBGLEVEL6))
                 start_timer = get_time_ns();
@@ -1019,10 +796,6 @@ int MPI_Finalize(void)
   DBGPRINT3("Entering Old MPI_Finalize at base level - Location = %px",
             &(MPI_Finalize));
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Finalize++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer = get_time_ns();
@@ -1045,13 +818,6 @@ int MPI_Finalize(void)
   if (DBGCHECK(DBGLEVEL6))
     {
       pnmpi_overall_timing -= get_time_ns();
-    }
-#endif
-
-#ifdef DBGLEVEL5 /* additional timing statistics */
-  if (DBGCHECK(DBGLEVEL5))
-    {
-      pnmpi_int_print_countstats();
     }
 #endif
 
@@ -1108,10 +874,6 @@ int NQJ_Finalize(void)
               DBGPRINT3(
                 "Calling a wrapper in MPI_Finalize at level %i FROM %px",
                 pnmpi_level, &(Internal_XMPI_Finalize));
-#ifdef DBGLEVEL5
-              if (DBGCHECK(DBGLEVEL5))
-                modules.module[pnmpi_level]->statscount.MPI_Finalize++;
-#endif
 #ifdef DBGLEVEL6
               if (DBGCHECK(DBGLEVEL6))
                 start_timer = get_time_ns();
@@ -1207,10 +969,6 @@ int MPI_Pcontrol(int level, ...)
   timing_t start_timer2;
 #endif
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer2 = get_time_ns();
@@ -1234,10 +992,6 @@ int MPI_Pcontrol(int level, ...)
               timing_t start_timer;
 #endif
 
-#ifdef DBGLEVEL5
-              if (DBGCHECK(DBGLEVEL5))
-                modules.module[i]->statscount.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
               if (DBGCHECK(DBGLEVEL6))
                 start_timer = get_time_ns();
@@ -1297,10 +1051,6 @@ int MPI_Pcontrol(int level, ...)
               timing_t start_timer;
 #endif
 
-#ifdef DBGLEVEL5
-              if (DBGCHECK(DBGLEVEL5))
-                modules.module[i]->statscount.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
               if (DBGCHECK(DBGLEVEL6))
                 start_timer = get_time_ns();
@@ -1430,10 +1180,6 @@ int MPI_Pcontrol(int level, ...)
                   timing_t start_timer;
 #endif
 
-#ifdef DBGLEVEL5
-                  if (DBGCHECK(DBGLEVEL5))
-                    modules.module[i]->statscount.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
                   if (DBGCHECK(DBGLEVEL6))
                     start_timer = get_time_ns();
@@ -1506,10 +1252,6 @@ int MPI_Pcontrol(int level, ...)
               timing_t start_timer;
 #endif
 
-#ifdef DBGLEVEL5
-              if (DBGCHECK(DBGLEVEL5))
-                modules.module[i]->statscount.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
               if (DBGCHECK(DBGLEVEL6))
                 start_timer = get_time_ns();
@@ -1547,10 +1289,6 @@ void mpi_pcontrol_(int *level, int *ierr)
   timing_t start_timer2;
 #endif
 
-#ifdef DBGLEVEL5
-  if (DBGCHECK(DBGLEVEL5))
-    pnmpi_totalstats_count.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
   if (DBGCHECK(DBGLEVEL6))
     start_timer2 = get_time_ns();
@@ -1592,10 +1330,6 @@ void mpi_pcontrol_(int *level, int *ierr)
           timing_t start_timer;
 #endif
 /* yes, we need to call this Pcontrol */
-#ifdef DBGLEVEL5
-          if (DBGCHECK(DBGLEVEL5))
-            modules.module[i]->statscount.MPI_Pcontrol++;
-#endif
 #ifdef DBGLEVEL6
           if (DBGCHECK(DBGLEVEL6))
             start_timer = get_time_ns();
@@ -1635,10 +1369,6 @@ double mpi_wtick_(void)
       timing_t start_timer;
 #endif
 
-#ifdef DBGLEVEL5
-      if (DBGCHECK(DBGLEVEL5))
-        pnmpi_totalstats_count.MPI_Wtick++;
-#endif
 #ifdef DBGLEVEL6
       if (DBGCHECK(DBGLEVEL6))
         start_timer = get_time_ns();
@@ -1666,10 +1396,6 @@ double mpi_wtime_(void)
       timing_t start_timer;
 #endif
 
-#ifdef DBGLEVEL5
-      if (DBGCHECK(DBGLEVEL5))
-        pnmpi_totalstats_count.MPI_Wtime++;
-#endif
 #ifdef DBGLEVEL6
       if (DBGCHECK(DBGLEVEL6))
         start_timer = get_time_ns();

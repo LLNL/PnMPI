@@ -358,6 +358,12 @@ inside the "module" directory. There are:
   implemented submodules is included in the comm directory
   as a separate README.
 
+* **counter**
+  This PnMPI specific module counts the MPI call invocations. Add the module
+  at the top of your config file to count how often each rank invoked which MPI
+  call or in front of a specific module to count how often invocations reached
+  this module.
+
 Note: All modules should be compiled with mpicc or equivalent
 (which includes the MPI header files) and should be linked
 without linking to the MPI library (to avoid MPI routines
@@ -462,13 +468,12 @@ be dynamically enabled. To control it, the environment variable
  * `0x02` - Additional information for module load and instantiation
  * `0x04` - Trace all entry and exit points for all modules
  * `0x08` - Debug information for parsing and module arguments
- * `0x10` - Collect and print statistics about module invocations
  * `0x20` - Collect and print statistics about module timings
    (only available if compiled with adept_utils - see Section C4)
 
 Additionally, the printouts can be restricted to a single
-node (except for the `0x10` and `0x20`, which always only print
-on node 0) by setting the variable `DBGNODE` to an MPI rank.
+node (except for `0x20`, which always only print on node 0)
+by setting the variable `DBGNODE` to an MPI rank.
 
 
 E) Configuration and Demo codes

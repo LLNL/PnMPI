@@ -57,18 +57,6 @@ typedef struct pnmpi_functions_d
 {{endforallfn}}
 } pnmpi_functions_t;
 
-#ifdef DBGLEVEL5
-typedef struct pnmpi_functions_statscount_d
-{
-{{forallfn fn_name}} long {{fn_name}};
-{{endforallfn}}
-} pnmpi_functions_statscount_t;
-
-#define DBGPRINT5_COUNTS_ALL_ALL(buf,num,div,out) \
-{{forallfn fn_name}}DBGPRINT5_COUNTS_FCT_ALL(buf,num,div,out,{{fn_name}},"{{fn_name}}");\
-{{endforallfn}}
-#endif
-
 #ifdef DBGLEVEL6
 typedef struct pnmpi_functions_statstiming_d
 {
@@ -87,14 +75,9 @@ typedef struct pnmpi_functions_statstiming_d
 {{endforallfn}}
 
 /*-------------------------------------------------------------------*/
-/* timing and count variables for DBGLEVEL 5 and 6 */
+/* timing variables for DBGLEVEL 6 */
 
-#ifdef DBGLEVEL5
-extern pnmpi_functions_statscount_t pnmpi_totalstats_count;
-#endif
 #ifdef DBGLEVEL6
 extern pnmpi_functions_statstiming_t pnmpi_totalstats_timing;
 extern timing_t pnmpi_overall_timing;
 #endif
-
-

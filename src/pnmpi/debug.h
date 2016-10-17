@@ -67,7 +67,6 @@
 #define DBGLEVEL2 0x0002 /* module load and instantiation */
 #define DBGLEVEL3 0x0004 /* entry and exit of layers */
 #define DBGLEVEL4 0x0008 /* arguments and parse information */
-#define DBGLEVEL5 0x0010 /* print count statistics for each module */
 #ifdef HAVE_ADEPT_UTILS
 #define DBGLEVEL6 0x0020 /* print timing statistics for each module */
 #endif
@@ -77,7 +76,6 @@
 #define DBGPRINT2(format, args...) DBGPRINT(DBGLEVEL2, format, ##args)
 #define DBGPRINT3(format, args...) DBGPRINT(DBGLEVEL3, format, ##args)
 #define DBGPRINT4(format, args...) DBGPRINT(DBGLEVEL4, format, ##args)
-#define DBGPRINT5(format, args...) DBGPRINT(DBGLEVEL5, format, ##args)
 #define DBGPRINT6(format, args...) DBGPRINT(DBGLEVEL6, format, ##args)
 
 #ifdef DBGLEVEL
@@ -140,7 +138,6 @@ void dbg_debugprint1(char *format, ...);
 void dbg_debugprint2(char *format, ...);
 void dbg_debugprint3(char *format, ...);
 void dbg_debugprint4(char *format, ...);
-void dbg_debugprint5(char *format, ...);
 void dbg_debugprint6(char *format, ...);
 
 #ifdef NOSTATUS
@@ -163,7 +160,6 @@ void dbg_debugprint6(char *format, ...);
 #define DBGLEVEL2 0x0002 /* module load and instantiation */
 #define DBGLEVEL3 0x0004 /* entry and exit of layers */
 #define DBGLEVEL4 0x0008 /* arguments and parse information */
-#define DBGLEVEL5 0x0010 /* print count statistics for each module */
 #ifdef HAVE_ADEPT_UTILS
 #define DBGLEVEL6 0x0020 /* print timing statistics for each module */
 #endif
@@ -172,7 +168,6 @@ void dbg_debugprint6(char *format, ...);
 #define DBGPRINT2 dbg_debugprint2
 #define DBGPRINT3 dbg_debugprint3
 #define DBGPRINT4 dbg_debugprint4
-#define DBGPRINT5 dbg_debugprint5
 #define DBGPRINT6 dbg_debugprint6
 
 #ifdef DBGLEVEL

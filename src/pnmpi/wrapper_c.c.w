@@ -48,10 +48,6 @@
 		  timing_t start_timer;
 		  #endif
 	      DBGPRINT3("Calling a wrapper in {{fn_name}} at level %i FROM %px",pnmpi_level,&(Internal_X{{fn_name}}));
-		  #ifdef DBGLEVEL5
-		  if (DBGCHECK(DBGLEVEL5))
-		    modules.module[pnmpi_level]->statscount.{{fn_name}}++;
-		  #endif
 		  #ifdef DBGLEVEL6
 		  if (DBGCHECK(DBGLEVEL6))
 		    start_timer=get_time_ns();
@@ -98,10 +94,6 @@
     {
         #ifdef DBGLEVEL6
         timing_t start_timer;
-        #endif
-    #ifdef DBGLEVEL5
-    if (DBGCHECK(DBGLEVEL5))
-          pnmpi_totalstats_count.{{fn_name}}++;
         #endif
         #ifdef DBGLEVEL6
     if (DBGCHECK(DBGLEVEL6))
