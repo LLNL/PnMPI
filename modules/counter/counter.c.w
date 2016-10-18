@@ -139,11 +139,24 @@ int PNMPI_RegistrationPoint()
  * every call. MPI_Finalize will be ignored, because it will be used to print
  * the statistics below. */
 
-{{fnall fn_name MPI_Finalize}}
+{{fnall fn_name MPI_Finalize MPI_Pcontrol}}
   pnmpi_counter_inc(counters.{{fn_name}});
 
   X{{fn_name}}({{args}});
 {{endfnall}}
+
+
+/* MPI_Pcontrol needs special handling, as it doesn't call a PMPI function and
+ * PnMPI does not implement the required XMPI call. Instead PnMPI will act as a
+ * multiplexer for MPI_Pcontrol, so all we have to do is increment the counter
+ * and return. */
+
+int MPI_Pcontrol(const int level, ...)
+{
+  pnmpi_counter_inc(counters.MPI_Pcontrol);
+
+  return MPI_SUCCESS;
+}
 
 
 /** \brief Print the statistics.
