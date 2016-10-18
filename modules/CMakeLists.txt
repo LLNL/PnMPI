@@ -32,9 +32,9 @@ include(PnMPIModules)
 
 # Recurse to sub-directories
 add_subdirectory(comm)
-add_subdirectory(counter)
 add_subdirectory(datatype)
 add_subdirectory(empty)
+add_subdirectory(metrics)
 add_subdirectory(requests)
 add_subdirectory(sample)
 add_subdirectory(status)

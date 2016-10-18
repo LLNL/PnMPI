@@ -28,9 +28,17 @@
 # LLNL-CODE-402774
 
 # Check if counter module counts the MPI calls.
-pnmpi_pnmpize_test(mod_counter
+pnmpi_pnmpize_test(mod_metrics_counter
   NUMPROCS 2
   PASS_EXPRESSION "Stats:\nRank 0:\n.*1 MPI_Init.*Total:.*2 MPI_Init"
   PNMPIZE_ARGS
     -c "${CMAKE_CURRENT_SOURCE_DIR}/counter.conf"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# Check if timing module measures the time of the MPI calls.
+pnmpi_pnmpize_test(mod_metrics_timing
+  NUMPROCS 2
+  PASS_EXPRESSION "Timing stats:\nRank 0:\n.*MPI_Init\n.*Total:.*MPI_Init"
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_SOURCE_DIR}/timing.conf"
   COMMAND $<TARGET_FILE:test-mpi-c>)

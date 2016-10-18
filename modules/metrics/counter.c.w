@@ -42,37 +42,14 @@
 #include <pnmpimod.h>
 #include <pnmpi/debug_io.h>
 
-#include "config.h"
+#include "atomic.h"
 
 
-/* The counter module requires threadsafe counters, otherwise results may be
- * wrong for MPI applications with concurrent MPI calls (MPI threading level
- * MPI_THREAD_MULTIPLE). We will try to use C11 atomics or GCCs builtin
- * __sync_fetch_and_add to get threadsafe counters. Otherwise the threading
- * level will be limited to MPI_THREAD_SERIALIZED, so it is safe to use this
- * module to get valid counters. */
-#if defined(HAVE_C11_ATOMICS)
-
-#include <stdatomic.h>
-
-#define pnmpi_counter _Atomic unsigned long int
-#define pnmpi_counter_init(x) ATOMIC_VAR_INIT(x)
-#define pnmpi_counter_inc(x) x++
-
-#elif defined(HAVE_SYNC_FETCH_AND_ADD)
-
-#define pnmpi_counter unsigned long int
-#define pnmpi_counter_init(x) x
-#define pnmpi_counter_inc(x) __sync_fetch_and_add(&(x), 1)
-
-#else
-
+/* If there is no atomic support, we'll limit the threading level of this module
+ * to MPI_THREAD_SERIALIZED, so it is safe to use with threaded applications
+ * (but they may become slower!). */
+#if defined(METRIC_NO_ATOMIC)
 int PnMPI_threading_level = MPI_THREAD_SERIALIZED;
-
-#define pnmpi_counter unsigned long int
-#define pnmpi_counter_init(x) x
-#define pnmpi_counter_inc(x) x++
-
 #endif
 
 
@@ -83,7 +60,7 @@ int PnMPI_threading_level = MPI_THREAD_SERIALIZED;
 static struct counter
 {
   {{forallfn fn_name MPI_Finalize}}
-  pnmpi_counter {{fn_name}};
+  metric_atomic_keyword size_t {{fn_name}};
   {{endforallfn}}
 } counters;
 
@@ -94,13 +71,13 @@ static struct counter
  *  their counter.
  *
  *
- * \param counter Counter struct to be printed.
+ * \param c \ref counter struct to be printed.
  */
 static void print_counters(struct counter *c)
 {
   {{forallfn fn_name MPI_Finalize}}
-    if (c->{{fn_name}} > 0)
-      printf("  %8zu %s\n", c->{{fn_name}}, "{{fn_name}}");
+  if (c->{{fn_name}} > 0)
+    printf("  %8zu %s\n", c->{{fn_name}}, "{{fn_name}}");
   {{endforallfn}}
 }
 
@@ -110,12 +87,12 @@ static void print_counters(struct counter *c)
  * \details This function will set all counters in \p counter to zero.
  *
  *
- * \param counter Counter struct to be initialized.
+ * \param c \ref counter struct to be initialized.
  */
 static void init_counters(struct counter *c)
 {
   {{forallfn fn_name MPI_Finalize}}
-    c->{{fn_name}} = pnmpi_counter_init(0);
+  c->{{fn_name}} = metric_atomic_init(0);
   {{endforallfn}}
 }
 
@@ -140,7 +117,7 @@ int PNMPI_RegistrationPoint()
  * the statistics below. */
 
 {{fnall fn_name MPI_Finalize MPI_Pcontrol}}
-  pnmpi_counter_inc(counters.{{fn_name}});
+  metric_atomic_inc(counters.{{fn_name}});
 
   X{{fn_name}}({{args}});
 {{endfnall}}
@@ -153,7 +130,7 @@ int PNMPI_RegistrationPoint()
 
 int MPI_Pcontrol(const int level, ...)
 {
-  pnmpi_counter_inc(counters.MPI_Pcontrol);
+  metric_atomic_inc(counters.MPI_Pcontrol);
 
   return MPI_SUCCESS;
 }
@@ -164,7 +141,7 @@ int MPI_Pcontrol(const int level, ...)
  * \details This function will print the statistics to stdout for each rank and
  *  a sum of all ranks.
  *
- * \note In feature releases this should be done by the app_shutdown hook to
+ * \todo In feature releases this should be done by the app_shutdown hook to
  *  track duplicated MPI_Finalize calls.
  *
  *
@@ -172,6 +149,10 @@ int MPI_Pcontrol(const int level, ...)
  */
 int MPI_Finalize()
 {
+  /* Call original MPI_Finalize. */
+  int ret = XMPI_Finalize();
+
+
   int rank, size;
 
   if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
@@ -223,6 +204,5 @@ int MPI_Finalize()
   }
 
 
-  /* Call original MPI_Finalize. */
-  return XMPI_Finalize();
+  return ret;
 }

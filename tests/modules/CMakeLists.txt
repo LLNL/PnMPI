@@ -28,4 +28,4 @@
 # LLNL-CODE-402774
 
 # Recurse into subdirectories.
-add_subdirectory(counter)
+add_subdirectory(metrics)

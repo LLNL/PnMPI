@@ -358,11 +358,48 @@ inside the "module" directory. There are:
   implemented submodules is included in the comm directory
   as a separate README.
 
-* **counter**
+* **metrics-counter**
   This PnMPI specific module counts the MPI call invocations. Add the module
   at the top of your config file to count how often each rank invoked which MPI
   call or in front of a specific module to count how often invocations reached
   this module.
+
+* **metrics-timing**
+  This PnMPI specific module measures the time MPI call invocations take. It has
+  two different operation modes:
+
+  * simple: Add it in front of a module and it will measure the time of all
+    following modules.
+
+    ```
+    module metrics-timing
+    module sample1
+    ```
+
+  * advanced: Add the timing module before and after the modules you want to
+    measure and it will only measure the time of these, but not the following
+    modules.
+
+    ```
+    module metrics-timing
+    module sample1
+    module sample2
+    module metrics-timing
+
+    module empty
+    ```
+
+    Measuring `MPI_Pcontrol` is available in advanced mode, only. To measure
+    `MPI_Pcontrol` calls both `metrics-timing` invocations need to be pcontrol
+    enabled:
+
+    ```
+    module metrics-timing
+    pcontrol on # May be ignored if metrics-timing is the first module.
+    module sample1
+    module metrics-timing
+    pcontrol on
+    ```
 
 Note: All modules should be compiled with mpicc or equivalent
 (which includes the MPI header files) and should be linked
