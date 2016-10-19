@@ -238,6 +238,14 @@ int MPI_Finalize()
     return ret;
 
 
+  /* Wait until all ranks have flushed their buffers to avoid rank output
+   * between the statistics output. */
+  fflush(stdout);
+  fflush(stderr);
+  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
+    pnmpi_error("PMPI_Barrier failed.\n");
+
+
   int rank, size;
 
   if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
