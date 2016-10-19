@@ -48,7 +48,6 @@ add_subdirectory(debug)
 # Add linkage to adept utils if we have it
 if (PnMPI_USE_adept_utils)
   include_directories(BEFORE ${adept_utils_INCLUDE_PATH} ${adept-utils_INCLUDE_DIRS})
-  set(TIMING_LIB adept_timing adept_cutils)
 endif()
 
 # Add wrapped files to the build.
@@ -105,7 +104,6 @@ add_dependencies(pnmpi generate)
 add_coverage(pnmpi)
 add_sanitizers(pnmpi)
 target_link_libraries(pnmpi
-  ${TIMING_LIB}
   ${MPI_C_LIBRARIES}
   -ldl)
 
@@ -149,7 +147,6 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   add_sanitizers(pnmpif)
   add_dependencies(pnmpif generate)
   target_link_libraries(pnmpif
-    ${TIMING_LIB}
     ${MPI_Fortran_LIBRARIES}
     -ldl)
 

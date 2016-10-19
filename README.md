@@ -252,33 +252,6 @@ This will add only the PnMPI installation lib directory to the
 rpath of the PnMPI library.
 
 
-A8) Adding ADEPT Timing Option
-------------------------------
-PnMPI can optionally profile itself and record internal timing
-information. This includes measurements on how frequently
-particular wrappers have been invoked and how long they took.
-
-To enable this option, PnMPI must be configured with additional
-timing routines, which are part of the adept_utils package.
-The package is currently LLNL-internal, but can be distributed
-on request.
-
-If adept utils is installed in a standard system location, CMake
-will autodetect it.  If they are in a custom location, you will
-need to set the adept_utils_DIR environment variable to the prefix
-under which adept_utils was installed, e.g.:
-
-    setenv adept_utils_DIR /opt/my-custom-adept_utils
-
-This will allow CMake to autodetect the build.  On LC machines,
-you can just use adept_utils via the dotkit:
-
-    use adept_utils
-
-Once PnMPI is compiled with adept_utils, the additional timing
-statistics can be enabled dynamically (see Section E).
-
-
 B) Modules
 ==========
 
@@ -505,12 +478,9 @@ be dynamically enabled. To control it, the environment variable
  * `0x02` - Additional information for module load and instantiation
  * `0x04` - Trace all entry and exit points for all modules
  * `0x08` - Debug information for parsing and module arguments
- * `0x20` - Collect and print statistics about module timings
-   (only available if compiled with adept_utils - see Section C4)
 
 Additionally, the printouts can be restricted to a single
-node (except for `0x20`, which always only print on node 0)
-by setting the variable `DBGNODE` to an MPI rank.
+node by setting the variable `DBGNODE` to an MPI rank.
 
 
 E) Configuration and Demo codes

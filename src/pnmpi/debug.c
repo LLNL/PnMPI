@@ -135,9 +135,6 @@ void dbg_debugprint3(char *format, ...)
 void dbg_debugprint4(char *format, ...)
 {
 }
-void dbg_debugprint6(char *format, ...)
-{
-}
 #else
 void dbg_debugprint1(char *format, ...)
 {
@@ -202,28 +199,6 @@ void dbg_debugprint4(char *format, ...)
       va_end(va_alist);
     }
 }
-
-#ifdef DBGLEVEL6
-void dbg_debugprint6(char *format, ...)
-{
-  va_list va_alist;
-
-  if (((DBGLEVEL6)&_dbg_cur_level) &&
-      ((_dbg_cur_node == _print_node) || (_print_node < 0) ||
-       (_dbg_cur_node < 0)))
-    {
-      va_start(va_alist, format);
-      fprintf(stdout, "L%04x ", format, _dbg_cur_level);
-      vfprintf(stdout, format, va_alist);
-      fprintf(stdout, "\n");
-      va_end(va_alist);
-    }
-}
-#else
-void dbg_debugprint6(char *format, ...)
-{
-}
-#endif
 
 #endif /* else of not def DBGLEVEL */
 
