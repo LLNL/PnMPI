@@ -28,7 +28,7 @@
 # LLNL-CODE-402774
 
 find_package(argp REQUIRED)
-find_package(help2man REQUIRED)
+find_package(help2man)
 
 
 include_directories(${PROJECT_BINARY_DIR})
@@ -36,9 +36,15 @@ include_directories(${PROJECT_BINARY_DIR})
 add_executable(pnmpize pnmpize.c)
 add_coverage(pnmpize)
 add_sanitizers(pnmpize)
-help2man(pnmpize-man TARGET pnmpize NOINFO INSTALL RENAME pnmpi.1)
 
 target_link_libraries(pnmpize ${ARGP_LIBRARIES})
 set_target_properties(pnmpize PROPERTIES OUTPUT_NAME pnmpi)
 
 install(TARGETS pnmpize EXPORT pnmpi DESTINATION bin)
+
+
+# If help2man could be found, generate a man-page for pnmpize. The help2man
+# command will install this man-page, too.
+if (HELP2MAN_FOUND)
+  help2man(pnmpize-man TARGET pnmpize NOINFO INSTALL RENAME pnmpi.1)
+endif()
