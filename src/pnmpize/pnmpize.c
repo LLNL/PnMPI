@@ -36,6 +36,7 @@
 #include <unistd.h>
 
 #include "pnmpi-config.h"
+#include <pnmpi/debug_io.h>
 
 
 /* Define the P^nMPI library to use for preloading. If Fortran is supported, the
@@ -67,7 +68,14 @@ static char args_doc[] = "utility [utility options]";
 
 static struct argp_option options[] = {
   { "config", 'c', "FILE", 0, "Configuration file" },
+  { "debug", 'd', "LEVEL", 0, "Print debug messages. Level may be one of the "
+                              "following keywords: init, modules or call. "
+                              "Multiple levels may be combined by calling this "
+                              "option for each debug level." },
   { "modules", 'm', "PATH", 0, "Module path" },
+  { "debug-node", 'n', "RANK", 0, "Only print debug messages for this rank. "
+                                  "Note: This option has no effect on debug "
+                                  "levels init and modules." },
   { "quiet", 'q', 0, 0, "Don't produce any output" },
   { "silent", 's', 0, OPTION_ALIAS },
   { 0 }
@@ -113,6 +121,47 @@ static int appendenv(const char *name, const char *value)
 }
 
 
+/** \brief Enable debug-level \p name.
+ *
+ * \details This function enables the debug-level \p name. It will be OR'ed with
+ *  the current enabled levels.
+ *
+ *
+ * \param state The argp parser state.
+ * \param name Name of the level to be enabled.
+ */
+static void set_dbglevel(const struct argp_state *state, const char *name)
+{
+  /* Store the selected level in a static int, so it doesn't have to be looked
+   * up in the next invocation of this function and can be OR'ed directly. */
+  static int level = 0;
+
+
+  /* Compare the debug level name with the available debug levels of PnMPI. If
+   * the name is known, it will be OR'ed with the current debug level to get the
+   * new one. If the level is unknown an error will be printed and PnMPIze
+   * exits. */
+  if (strcmp(name, "init") == 0)
+    level = level | PNMPI_DEBUG_INIT;
+
+  else if (strcmp(name, "modules") == 0)
+    level = level | PNMPI_DEBUG_MODULE;
+
+  else if (strcmp(name, "call") == 0)
+    level = level | PNMPI_DEBUG_CALL;
+
+  else
+    argp_error(state, "Unknown debug level %s.", name);
+
+
+  /* Set the new debug level as PNMPI_DBGLEVEL environment variable. For this
+   * the level must be converted into a string. */
+  char buffer[11];
+  snprintf(buffer, 11, "%d", level);
+  setenv("PNMPI_DBGLEVEL", buffer, 1);
+}
+
+
 /** \brief Argument parser for argp.
  *
  * \note See argp parser documentation for detailed information about the
@@ -123,7 +172,9 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
   switch (key)
     {
     case 'c': setenv("PNMPI_CONF", arg, 1); break;
+    case 'd': set_dbglevel(state, arg); break;
     case 'm': setenv("PNMPI_LIB_PATH", arg, 1); break;
+    case 'n': setenv("PNMPI_DBGNODE", arg, 1); break;
     case 'q':
     case 's':
       setenv("PNMPI_BE_SILENT", "1", 1);

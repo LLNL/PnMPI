@@ -27,11 +27,15 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_headers)
+
 find_package(argp REQUIRED)
 find_package(help2man REQUIRED)
 
 
-include_directories(${PROJECT_BINARY_DIR})
+include_directories(
+  ${PNMPI_HEADER_DIR}
+  ${PROJECT_BINARY_DIR})
 
 add_executable(pnmpize pnmpize.c)
 add_coverage(pnmpize)

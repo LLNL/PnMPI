@@ -99,6 +99,39 @@ pnmpi_pnmpize_test(pnmpize_set_config
   PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
+# The following tests check, if PnMPIze can handle all required debug levels and
+# if it fails for unknown debug levels.
+pnmpi_pnmpize_test(pnmpize_dbglevel_init
+  PASS_EXPRESSION "PNMPI_DBGLEVEL=1"
+  PNMPIZE_ARGS -d init
+  COMMAND env)
+
+pnmpi_pnmpize_test(pnmpize_dbglevel_modules
+  PASS_EXPRESSION "PNMPI_DBGLEVEL=2"
+  PNMPIZE_ARGS -d modules
+  COMMAND env)
+
+pnmpi_pnmpize_test(pnmpize_dbglevel_call
+  PASS_EXPRESSION "PNMPI_DBGLEVEL=4"
+  PNMPIZE_ARGS -d call
+  COMMAND env)
+
+pnmpi_pnmpize_test(pnmpize_dbglevel_combined
+  PASS_EXPRESSION "PNMPI_DBGLEVEL=7"
+  PNMPIZE_ARGS -d init -d modules -d call
+  COMMAND env)
+
+pnmpi_pnmpize_test(pnmpize_dbglevel_unknown
+  PASS_EXPRESSION "Unknown debug level unknown."
+  PNMPIZE_ARGS -d unknown
+  COMMAND env)
+
+# The following test checks, if PnMPIze is able to set the debug node option.
+pnmpi_pnmpize_test(pnmpize_dbgnode
+  PASS_EXPRESSION "PNMPI_DBGNODE=42"
+  PNMPIZE_ARGS -n 42
+  COMMAND env)
+
 
 # Check Fortran functionality.
 #
