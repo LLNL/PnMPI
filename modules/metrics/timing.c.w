@@ -33,6 +33,7 @@
 #include <hires-timers.h>
 #include <mpi.h>
 #include <pnmpi/debug_io.h>
+#include <pnmpi/service.h>
 #include <pnmpimod.h>
 
 #include "atomic.h"
@@ -62,6 +63,13 @@ static struct timing_storage
 /** \brief Global variable to store how often this module was invoked.
  */
 metric_atomic_keyword size_t metric_invocations = metric_atomic_init(0);
+
+
+/** \brief Global variable to store how often this module was invoked with
+ *   Pcontrol enabled.
+ */
+metric_atomic_keyword size_t metric_invocations_pcontrol =
+  metric_atomic_init(0);
 
 
 /** \brief Helper function to print \ref timing_storage struct.
@@ -113,6 +121,14 @@ int PNMPI_RegistrationPoint()
    * to count how often this module is in the PnMPI stack to know how many
    * MPI_Finalize calls we have to ignore. */
   metric_atomic_inc(metric_invocations);
+
+
+  /* Timing for MPI_Pcontrol is available for metric-timing invocations before
+   * and after the modules to test only. To satisfy this, we'll check for each
+   * invocation of this module, if it's Pcontrol-enabled. If it is, a counter
+   * will be increased. It will be checked when calling MPI_Pcontrol. */
+  if (PNMPI_Service_GetPcontrolSelf())
+    metric_atomic_inc(metric_invocations_pcontrol);
 
 
   return PNMPI_SUCCESS;
@@ -171,18 +187,17 @@ static timing_t start_stop_timer(timing_t *t)
  *
  * The second problem is, we can't measure the timings in simple mode, as we
  * need a start- and end-point to measure the time, but PnMPI gives us (per
- * default) only the start-point. To overcome this metric_invocations must be
- * devideable by two, so the first call is our start- and the second the end-
- * time.
+ * default) only the start-point. To overcome this metric_invocations_pcontrol
+ * must be devideable by two, so the first call is our start- and the second the
+ * end-time.
  *
  * Note: This option requires both modules set pcontrol to 'on'! */
 
 int MPI_Pcontrol(const int level, ...)
 {
   /* At this point it is save to get metric_invocations without any atomic
-   * safety, as reads and writes only occur in PnMPI_Registration_Point and
-   * MPI_Finalize. */
-  if ((metric_invocations % 2) != 0)
+   * safety, as writes only occur in PnMPI_Registration_Point. */
+  if ((metric_invocations_pcontrol % 2) != 0)
     pnmpi_error("metric-timing can measure the time of MPI_Pcontrol in "
                 "advanced mode, only.\n");
 

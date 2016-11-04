@@ -43,6 +43,7 @@ find_package(Sanitizers)
 # library.
 add_subdirectory(attributes)
 add_subdirectory(debug)
+add_subdirectory(service)
 
 
 # Add linkage to adept utils if we have it
@@ -79,6 +80,7 @@ set(PNMPI_LIB_SOURCES
   max_module_threading_level.c
 
   $<TARGET_OBJECTS:pnmpi_debug>
+  $<TARGET_OBJECTS:pnmpi_service>
 )
 
 if (ENABLE_FORTRAN)
