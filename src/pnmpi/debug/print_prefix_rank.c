@@ -36,7 +36,6 @@
 
 #include <mpi.h>
 
-#include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/print.h>
 
@@ -68,7 +67,15 @@ static int pnmpi_get_size_width()
     {
       int size;
       if (PMPI_Comm_size(MPI_COMM_WORLD, &size) != MPI_SUCCESS)
-        pnmpi_error("PMPI_Comm_size failed\n");
+        {
+          /* pnmpi_error can't be used here, because this would result in an
+           * endless loop: pnmpi_error is a wrapper of pnmpi_warning which uses
+           * this function, so the PMPI_Comm_size error would occur again and
+           * again until the stack is full. */
+          fprintf(stderr, "%s:%d: PMPI_Comm_size failed\n", __FUNCTION__,
+                  __LINE__);
+          exit(EXIT_FAILURE);
+        }
 
       /* As the rank starts counting at zero, we have to decrement one. This has
        * the side effect, that for applications running with a single rank, no
@@ -117,7 +124,15 @@ void pnmpi_print_prefix_rank(FILE *stream, const char *format, va_list ap)
       size_t len = width + strlen(format) + 3;
       char buffer[len];
       if (snprintf(buffer, len, "%*d: %s", width, rank, format) >= len)
-        pnmpi_error("Not enough memory for snprintf.\n");
+        {
+          /* pnmpi_error can't be used here, because this would result in an
+           * endless loop: pnmpi_error is a wrapper of pnmpi_warning which uses
+           * this function, so the PMPI_Comm_size error would occur again and
+           * again until the stack is full. */
+          fprintf(stderr, "%s:%d: Not enough memory for snprintf.\n",
+                  __FUNCTION__, __LINE__);
+          exit(EXIT_FAILURE);
+        }
 
       /* Print the format string. */
       vprintf(buffer, ap);

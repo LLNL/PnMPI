@@ -64,7 +64,14 @@ int pnmpi_get_rank()
   /* If PnMPI is initialized get the rank of this process. If this fails,
    * print an error message and exit the application. */
   if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Comm_rank failed\n");
+    {
+      /* pnmpi_error can't be used here, because this would result in an
+       * endless loop: pnmpi_error is a wrapper of pnmpi_warning which uses
+       * this function, so the PMPI_Comm_rank error would occur again and
+       * again until the stack is full. */
+      fprintf(stderr, "%s:%d: PMPI_Comm_rank failed\n", __FUNCTION__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
 
   return rank;
 }
