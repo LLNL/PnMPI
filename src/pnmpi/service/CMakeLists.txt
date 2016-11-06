@@ -27,17 +27,37 @@
 #
 # LLNL-CODE-402774
 
-# Include module build infrastructure
-include(PnMPIModules)
+include(easylib)
+include(PnMPI_headers)
 
-# Recurse to sub-directories
-add_subdirectory(comm)
-add_subdirectory(datatype)
-add_subdirectory(empty)
-add_subdirectory(metrics)
-add_subdirectory(requests)
-add_subdirectory(sample)
-add_subdirectory(status)
-add_subdirectory(switch-matrix)
-add_subdirectory(timelapse)
-add_subdirectory(virtual)
+find_package(codecov)
+find_package(Sanitizers)
+
+
+# Install and manage the public and private header files of the PnMPI sources.
+# This has to be done to use the same headers for the PnMPI sources and the API
+# without getting conflicts about the used paths. Otherwise you'd have to take
+# care about file locations after installation, especially if you use the
+# headers over multiple directories.
+pnmpi_add_header(service.h)
+
+
+include_directories(
+  ${PNMPI_HEADER_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_BINARY_DIR}/..
+  ${PROJECT_BINARY_DIR}
+  ${MPI_C_INCLUDE_PATH})
+
+
+easy_add_library(pnmpi_service OBJECT
+  getPcontrol.c)
+
+easy_target_link_libraries(pnmpi_service ${MPI_C_LIBRARIES})
+
+foreach (target pnmpi_service pnmpi_service_pic)
+  add_dependencies(${target} generate)
+
+  add_coverage(${target})
+  add_sanitizers(${target})
+endforeach ()

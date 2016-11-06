@@ -252,33 +252,6 @@ This will add only the PnMPI installation lib directory to the
 rpath of the PnMPI library.
 
 
-A8) Adding ADEPT Timing Option
-------------------------------
-PnMPI can optionally profile itself and record internal timing
-information. This includes measurements on how frequently
-particular wrappers have been invoked and how long they took.
-
-To enable this option, PnMPI must be configured with additional
-timing routines, which are part of the adept_utils package.
-The package is currently LLNL-internal, but can be distributed
-on request.
-
-If adept utils is installed in a standard system location, CMake
-will autodetect it.  If they are in a custom location, you will
-need to set the adept_utils_DIR environment variable to the prefix
-under which adept_utils was installed, e.g.:
-
-    setenv adept_utils_DIR /opt/my-custom-adept_utils
-
-This will allow CMake to autodetect the build.  On LC machines,
-you can just use adept_utils via the dotkit:
-
-    use adept_utils
-
-Once PnMPI is compiled with adept_utils, the additional timing
-statistics can be enabled dynamically (see Section E).
-
-
 B) Modules
 ==========
 
@@ -357,6 +330,49 @@ inside the "module" directory. There are:
   datatype modules. A more detailed description on how to
   implemented submodules is included in the comm directory
   as a separate README.
+
+* **metrics-counter**
+  This PnMPI specific module counts the MPI call invocations. Add the module
+  at the top of your config file to count how often each rank invoked which MPI
+  call or in front of a specific module to count how often invocations reached
+  this module.
+
+* **metrics-timing**
+  This PnMPI specific module measures the time MPI call invocations take. It has
+  two different operation modes:
+
+  * simple: Add it in front of a module and it will measure the time of all
+    following modules.
+
+    ```
+    module metrics-timing
+    module sample1
+    ```
+
+  * advanced: Add the timing module before and after the modules you want to
+    measure and it will only measure the time of these, but not the following
+    modules.
+
+    ```
+    module metrics-timing
+    module sample1
+    module sample2
+    module metrics-timing
+
+    module empty
+    ```
+
+    Measuring `MPI_Pcontrol` is available in advanced mode, only. To measure
+    `MPI_Pcontrol` calls both `metrics-timing` invocations need to be pcontrol
+    enabled:
+
+    ```
+    module metrics-timing
+    pcontrol on # May be ignored if metrics-timing is the first module.
+    module sample1
+    module metrics-timing
+    pcontrol on
+    ```
 
 Note: All modules should be compiled with mpicc or equivalent
 (which includes the MPI header files) and should be linked
@@ -462,13 +478,9 @@ be dynamically enabled. To control it, the environment variable
  * `0x02` - Additional information for module load and instantiation
  * `0x04` - Trace all entry and exit points for all modules
  * `0x08` - Debug information for parsing and module arguments
- * `0x10` - Collect and print statistics about module invocations
- * `0x20` - Collect and print statistics about module timings
-   (only available if compiled with adept_utils - see Section C4)
 
 Additionally, the printouts can be restricted to a single
-node (except for the `0x10` and `0x20`, which always only print
-on node 0) by setting the variable `DBGNODE` to an MPI rank.
+node by setting the variable `DBGNODE` to an MPI rank.
 
 
 E) Configuration and Demo codes

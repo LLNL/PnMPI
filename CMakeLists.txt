@@ -90,6 +90,7 @@ set(CMAKE_MODULE_PATH
   "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-CChelper/cmake"
   ${CMAKE_MODULE_PATH}
   "${PROJECT_SOURCE_DIR}/cmakemodules/legacy")
 
@@ -121,10 +122,6 @@ else ()
 endif ()
 
 
-#Include our macros
-INCLUDE (PnMPIModules)
-find_package(codecov)
-
 #===================================
 #System inspection
 #===================================
@@ -148,6 +145,13 @@ find_package(BFD)
 #Run feature tests
 INCLUDE (FeatureTests)
 add_subdirectory(externals)
+
+
+#
+# Add code coverage for the sourcecode.
+#
+find_package(codecov)
+
 
 #===================================
 # Ennable PnMPI internal debugging
@@ -206,5 +210,7 @@ if (ENABLE_TESTS)
 endif (ENABLE_TESTS)
 
 
-# evaluate coverage data
+#
+# Evaluate coverage data.
+#
 coverage_evaluate()

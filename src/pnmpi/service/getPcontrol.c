@@ -28,35 +28,39 @@
  * LLNL-CODE-402774
  */
 
-typedef int (*pnmpi_int_MPI_Pcontrol_t)(int level, ... );
+#include <pnmpi/debug_io.h>
+#include <pnmpi/service.h>
 
-void mpi_init_(int *ierr);
-double mpi_wtick_(void);
-double mpi_wtime_(void);
+#include "core.h"
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
-{{endforallfn}}
 
-#include "xmpi.h"
-
-{{forallfn fn_name}}
-#define {{fn_name}}_ID {{fn_num}}
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-#define Internal_X{{fn_name}} {{sub {{fn_name}} '^MPI_' NQJ_}}
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-typedef {{ret_type}} (*pnmpi_int_{{fn_name}}_t)({{formals}});{{endforallfn}}
-
-typedef struct pnmpi_functions_d
+/** \brief Get the Pcontrol value of module \p handle.
+ *
+ *
+ * \param handle The module to be checked.
+ * \param [out] flag Where to store the result.
+ *
+ * \return \ref PNMPI_SUCCESS Successfully stored the result in \p flag.
+ */
+int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag)
 {
-{{forallfn fn_name}}  pnmpi_int_{{fn_name}}_t *pnmpi_int_{{fn_name}};
-{{endforallfn}}
-} pnmpi_functions_t;
+  /* Check, if module is available. If the module is not available, an error
+   * message will be printed and the application exits immediately. */
+  if (handle >= modules.num)
+    pnmpi_error("Unknown module %d.\n", handle);
 
-#define INITIALIZE_ALL_FUNCTION_STACKS(mods) \
-{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}", {{fn_name}}_ID, pnmpi_int_{{fn_name}}_t, pnmpi_int_{{fn_name}}, mods, {{fn_name}});\
-{{endforallfn}}
+
+  *flag = modules.module[handle]->pcontrol;
+  return PNMPI_SUCCESS;
+}
+
+
+/** \brief Get the Pcontrol value of the calling module.
+ *
+ *
+ * \return The Pcontrol configuration value of the calling module.
+ */
+int PNMPI_Service_GetPcontrolSelf()
+{
+  return modules.module[get_pnmpi_level()]->pcontrol;
+}

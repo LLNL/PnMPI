@@ -28,35 +28,29 @@
  * LLNL-CODE-402774
  */
 
-typedef int (*pnmpi_int_MPI_Pcontrol_t)(int level, ... );
+#include "config.h"
 
-void mpi_init_(int *ierr);
-double mpi_wtick_(void);
-double mpi_wtime_(void);
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
-{{endforallfn}}
+/* For the timing module we need thread local storage, otherwise storage may be
+ * corrupted for MPI applications with concurrent calls (MPI threading level
+ * MPI_THREAD_MULTIPLE).
+ *
+ * We'll try to use C11 threads or the compilers builtin __thread to get
+ * thread local storage. If thread local storage is not supported by the
+ * compiler, we'll set the METRIC_NO_TLS macro, so the modules can handle this.
+ */
 
-#include "xmpi.h"
+#if defined(C11_THREAD_LOCAL_FOUND)
 
-{{forallfn fn_name}}
-#define {{fn_name}}_ID {{fn_num}}
-{{endforallfn}}
+#define metric_tls_keyword _Thread_local
 
-{{forallfn fn_name MPI_Pcontrol}}
-#define Internal_X{{fn_name}} {{sub {{fn_name}} '^MPI_' NQJ_}}
-{{endforallfn}}
+#elif defined(THREADKEYWORD_FOUND)
 
-{{forallfn fn_name MPI_Pcontrol}}
-typedef {{ret_type}} (*pnmpi_int_{{fn_name}}_t)({{formals}});{{endforallfn}}
+#define metric_tls_keyword __thread
 
-typedef struct pnmpi_functions_d
-{
-{{forallfn fn_name}}  pnmpi_int_{{fn_name}}_t *pnmpi_int_{{fn_name}};
-{{endforallfn}}
-} pnmpi_functions_t;
+#else
 
-#define INITIALIZE_ALL_FUNCTION_STACKS(mods) \
-{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}", {{fn_name}}_ID, pnmpi_int_{{fn_name}}_t, pnmpi_int_{{fn_name}}, mods, {{fn_name}});\
-{{endforallfn}}
+#define METRIC_NO_TLS
+#define metric_tls_keyword
+
+#endif

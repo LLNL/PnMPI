@@ -27,17 +27,5 @@
 #
 # LLNL-CODE-402774
 
-# Include module build infrastructure
-include(PnMPIModules)
-
-# Recurse to sub-directories
-add_subdirectory(comm)
-add_subdirectory(datatype)
-add_subdirectory(empty)
+# Recurse into subdirectories.
 add_subdirectory(metrics)
-add_subdirectory(requests)
-add_subdirectory(sample)
-add_subdirectory(status)
-add_subdirectory(switch-matrix)
-add_subdirectory(timelapse)
-add_subdirectory(virtual)

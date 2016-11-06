@@ -110,12 +110,6 @@ typedef struct module_def_d
   module_servlist_p services;
   module_globlist_p globals;
   int stack_delimiter;
-#ifdef DBGLEVEL5
-  pnmpi_functions_statscount_t statscount;
-#endif
-#ifdef DBGLEVEL6
-  pnmpi_functions_statstiming_t statstiming;
-#endif
 } module_def_t;
 
 typedef struct modules_d
@@ -167,33 +161,6 @@ void pnmpi_call_hook(const char *hook);
 
 int pnmpi_max_module_threading_level();
 
-// Statistics collection for stack initialization
-// TODO: Does all the initialization really need to live in macros?  Does it
-// need to happen
-// TODO: that fast?  It's only done once.
-#ifdef DBGLEVEL5
-#define MODULE_STATS_5(mods, fn) \
-  if (DBGCHECK(DBGLEVEL5))       \
-    mods.module[i]->statscount.fn = 0;
-#define TOTAL_STATS_5(fn)  \
-  if (DBGCHECK(DBGLEVEL5)) \
-    pnmpi_totalstats_count.fn = 0;
-#else
-#define MODULE_STATS_5(mods, fn)
-#define TOTAL_STATS_5(fn)
-#endif
-
-#ifdef DBGLEVEL6
-#define MODULE_STATS_6(mods, fn) \
-  if (DBGCHECK(DBGLEVEL6))       \
-    mods.module[i]->statstiming.fn = 0;
-#define TOTAL_STATS_6(fn)  \
-  if (DBGCHECK(DBGLEVEL6)) \
-    pnmpi_totalstats_timing.fn = 0;
-#else
-#define MODULE_STATS_6(mods, fn)
-#define TOTAL_STATS_6(fn)
-#endif
 
 /*This can be removed at a later point in time, it allows convenient bugfixing
  * for a broken mpi.h of MVAPICH1 (Sierra at LLNL, April 2014, by Tobias)*/
@@ -272,11 +239,7 @@ int PMPI_Finalized(int *);
           }                                                                 \
         DBGPRINT2("Symbol for routine %s in module %s: value %px", routine, \
                   mods.module[i]->name, pnmpi_function_ptrs.stack[i]);      \
-        MODULE_STATS_5(mods, mpiroutine);                                   \
-        MODULE_STATS_6(mods, mpiroutine);                                   \
       }                                                                     \
-    TOTAL_STATS_5(mpiroutine);                                              \
-    TOTAL_STATS_6(mpiroutine);                                              \
   }
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */

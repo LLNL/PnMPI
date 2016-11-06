@@ -28,40 +28,66 @@
 # LLNL-CODE-402774
 
 
-# add_pnmpi_module(targetname source1 source2 ... sourceN)
+## \brief Add a native PnMPI module with XMPI calls.
 #
-#=============================================================================
-# This function adds a PnMPI module to the build and sets flags so that it
-# is built and patched properly.
+# \details This function adds a new module \p targetname. The module will not be
+#  patched, as the module itself uses XMPI calls.
 #
-function(add_pnmpi_module targetname)
-  list(LENGTH ARGN num_sources)
-  if (num_sources LESS 1)
-    message(FATAL_ERROR "add_pnmpi_module() called with no source files!")
-  endif()
+function (pnmpi_add_xmpi_module targetname)
+  if (ARGC LESS 1)
+    message(FATAL_ERROR "add_pnmpi_xmpi_module() called with no source files!")
+  endif ()
 
-  # Add a library for the module, and set it up to omit the 'lib' prefix
+
   add_library(${targetname} MODULE ${ARGN})
   set_target_properties(${targetname} PROPERTIES PREFIX "")
 
-  #For Apple set that undefined symbols should be looked up dynamically
-  #(On linux this is already the default)
+  # For Apple set that undefined symbols should be looked up dynamically (On
+  # linux this is already the default).
   if(APPLE)
-    set_target_properties(${targetname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    set_target_properties(${targetname} PROPERTIES
+                          LINK_FLAGS "-undefined dynamic_lookup")
   endif()
 
-  # Patch the library in place once it's built so that it can be installed normally,
-  # like any other library.  Also keeps build dir libraries consistent with installed libs.
+  add_dependencies(${targetname} pnmpi)
+endfunction ()
+
+
+## \brief Add a PMPI PnMPI module.
+#
+# \details This function adds a new module \p targetname. The module will be
+#  patched, so PMPI calls become XMPI calls.
+#
+function (pnmpi_add_pmpi_module targetname)
+  if (ARGC LESS 1)
+    message(FATAL_ERROR "add_pnmpi_pmpi_module() called with no source files!")
+  endif ()
+
+
+  pnmpi_add_xmpi_module(${targetname} ${ARGN})
+
+  # Patch the library in place once it's built so that it can be installed
+  # normally, like any other library. Also keeps build dir libraries consistent
+  # with installed libs.
   set(tmplib ${targetname}-unpatched.so)
 
   add_custom_command(TARGET ${targetname} POST_BUILD
-    COMMAND mv                         ARGS $<TARGET_FILE:${targetname}> ${tmplib}
-    COMMAND $<TARGET_FILE:pnmpi-patch> ARGS ${tmplib} $<TARGET_FILE:${targetname}>
-    COMMAND rm                         ARGS -f ${tmplib}
+    COMMAND mv ARGS $<TARGET_FILE:${targetname}> ${tmplib}
+    COMMAND $<TARGET_FILE:pnmpi-patch>
+      ARGS ${tmplib} $<TARGET_FILE:${targetname}>
+    COMMAND rm ARGS -f ${tmplib}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Patching ${targetname}"
     VERBATIM)
 
-  # Make sure that PnMPI lib and patch tool are built before this module.
-  add_dependencies(${targetname} pnmpi-patch pnmpi)
-endfunction()
+  add_dependencies(${targetname} pnmpi-patch)
+endfunction ()
+
+
+## \brief Wrapper for \ref pnmpi_add_pmpi_module.
+#
+# \deprecated.
+#
+function (add_pnmpi_module)
+  pnmpi_add_pmpi_module(${ARGV})
+endfunction ()

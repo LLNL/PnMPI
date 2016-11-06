@@ -28,35 +28,15 @@
  * LLNL-CODE-402774
  */
 
-typedef int (*pnmpi_int_MPI_Pcontrol_t)(int level, ... );
+#ifndef COUNTER_H
+#define COUNTER_H
 
-void mpi_init_(int *ierr);
-double mpi_wtick_(void);
-double mpi_wtime_(void);
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
-{{endforallfn}}
+#cmakedefine C11_ATOMICS_FOUND
+#cmakedefine C11_THREAD_LOCAL_FOUND
+#cmakedefine BUILTINATOMIC_FOUND
+#cmakedefine BUILTINSYNC_FOUND
+#cmakedefine THREADKEYWORD_FOUND
 
-#include "xmpi.h"
 
-{{forallfn fn_name}}
-#define {{fn_name}}_ID {{fn_num}}
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-#define Internal_X{{fn_name}} {{sub {{fn_name}} '^MPI_' NQJ_}}
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-typedef {{ret_type}} (*pnmpi_int_{{fn_name}}_t)({{formals}});{{endforallfn}}
-
-typedef struct pnmpi_functions_d
-{
-{{forallfn fn_name}}  pnmpi_int_{{fn_name}}_t *pnmpi_int_{{fn_name}};
-{{endforallfn}}
-} pnmpi_functions_t;
-
-#define INITIALIZE_ALL_FUNCTION_STACKS(mods) \
-{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}", {{fn_name}}_ID, pnmpi_int_{{fn_name}}_t, pnmpi_int_{{fn_name}}, mods, {{fn_name}});\
-{{endforallfn}}
+#endif

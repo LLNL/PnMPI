@@ -28,35 +28,40 @@
  * LLNL-CODE-402774
  */
 
-typedef int (*pnmpi_int_MPI_Pcontrol_t)(int level, ... );
+#ifndef PNMPI_SERVICE_H
+#define PNMPI_SERVICE_H
 
-void mpi_init_(int *ierr);
-double mpi_wtick_(void);
-double mpi_wtime_(void);
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
-{{endforallfn}}
+/** \brief Handle for a module.
+ */
+typedef int pnmpi_module_handle;
 
-#include "xmpi.h"
 
-{{forallfn fn_name}}
-#define {{fn_name}}_ID {{fn_num}}
-{{endforallfn}}
+/* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
+ * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
+ * API functions. */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-{{forallfn fn_name MPI_Pcontrol}}
-#define Internal_X{{fn_name}} {{sub {{fn_name}} '^MPI_' NQJ_}}
-{{endforallfn}}
 
-{{forallfn fn_name MPI_Pcontrol}}
-typedef {{ret_type}} (*pnmpi_int_{{fn_name}}_t)({{formals}});{{endforallfn}}
+/*
+ * Global service definitions.
+ */
+int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
 
-typedef struct pnmpi_functions_d
-{
-{{forallfn fn_name}}  pnmpi_int_{{fn_name}}_t *pnmpi_int_{{fn_name}};
-{{endforallfn}}
-} pnmpi_functions_t;
 
-#define INITIALIZE_ALL_FUNCTION_STACKS(mods) \
-{{forallfn fn_name}}INITIALIZE_FUNCTION_STACK("{{fn_name}}", {{fn_name}}_ID, pnmpi_int_{{fn_name}}_t, pnmpi_int_{{fn_name}}, mods, {{fn_name}});\
-{{endforallfn}}
+/* Self service definitions.
+ *
+ * These functions may be used by modules to get data associated with their own
+ * instance of the module.
+ */
+int PNMPI_Service_GetPcontrolSelf();
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif
