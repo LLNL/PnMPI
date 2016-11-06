@@ -64,6 +64,16 @@ add_sanitizers(test-mpi-threaded)
 pnmpi_mpi_test("binary_mpi_threaded" COMMAND ${MPIEXEC}
   ${MPIEXEC_NUMPROC_FLAG} 2 $<TARGET_FILE:test-mpi-threaded>)
 
+# The following target may be used to check PnMPI's Pcontrol functionality. It
+# only calls MPI_Init, MPI_Finalize and MPI_Pcontrol and no output will be
+# generated, except for errors.
+add_executable(test-mpi-pcontrol test-mpi-pcontrol.c)
+target_include_directories(test-mpi-pcontrol PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(test-mpi-pcontrol ${MPI_C_LIBRARIES})
+add_coverage(test-mpi-pcontrol)
+add_sanitizers(test-mpi-pcontrol)
+pnmpi_mpi_test("binary_mpi_pcontrol" COMMAND $<TARGET_FILE:test-mpi-pcontrol>)
+
 # The following target may be used to check general MPI functionality with
 # Fortran code. It uses the common MPI functions MPI_Init, MPI_Finalize,
 # MPI_Send and MPI_Recv and may be used with at least 2 ranks.

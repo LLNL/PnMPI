@@ -35,6 +35,7 @@ pnmpi_pnmpize_test(mod_metrics_counter
     -c "${CMAKE_CURRENT_SOURCE_DIR}/counter.conf"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
+
 # Check if timing module measures the time of the MPI calls.
 pnmpi_pnmpize_test(mod_metrics_timing
   NUMPROCS 2
@@ -42,3 +43,20 @@ pnmpi_pnmpize_test(mod_metrics_timing
   PNMPIZE_ARGS
     -c "${CMAKE_CURRENT_SOURCE_DIR}/timing.conf"
   COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# Check if timing module measures the time of the MPI calls.
+pnmpi_pnmpize_test(mod_metrics_timing_pcontrol
+  PASS_EXPRESSION
+    "Timing stats:\nRank 0:\n.*MPI_Pcontrol\n.*Total:.*MPI_Pcontrol"
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_SOURCE_DIR}/timing-pcontrol-valid.conf"
+COMMAND $<TARGET_FILE:test-mpi-pcontrol>)
+
+# Check if timing module throws an error, if Pcontrol is measured with wrong
+# configuration.
+pnmpi_pnmpize_test(mod_metrics_timing_pcontrol_invalid
+  PASS_EXPRESSION
+    "metric-timing can measure the time of MPI_Pcontrol in advanced mode, only."
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_SOURCE_DIR}/timing-pcontrol-invalid.conf"
+COMMAND $<TARGET_FILE:test-mpi-pcontrol>)
