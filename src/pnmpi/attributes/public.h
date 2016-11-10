@@ -69,4 +69,17 @@
 #endif
 
 
+/** \brief Mark function as non-return function like exit and abort.
+ *
+ * \note This macro should be attached to the declaration in the header file.
+ */
+#if defined(__GNUC__)
+#define PNMPI_FUNCTION_NORETURN __attribute__((noreturn))
+#elif defined(__clang__)
+#define PNMPI_FUNCTION_NORETURN _Noreturn
+#else
+#define PNMPI_FUNCTION_NORETURN
+#endif
+
+
 #endif

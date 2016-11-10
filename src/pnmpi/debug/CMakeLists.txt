@@ -50,6 +50,7 @@ pnmpi_add_man(pnmpi_debug_io pnmpi_error)
 pnmpi_add_man(pnmpi_debug_io pnmpi_debug)
 pnmpi_add_man(pnmpi_debug_io pnmpi_debug_level)
 pnmpi_add_man(pnmpi_debug_io pnmpi_print_debug)
+pnmpi_add_man(pnmpi_debug_io pnmpi_print_error)
 pnmpi_add_man(pnmpi_debug_io pnmpi_warning)
 
 
@@ -61,6 +62,7 @@ include_directories(
 easy_add_library(pnmpi_debug OBJECT
   get_rank.c
   print_debug.c
+  print_error.c
   print_prefix_rank.c
   warning.c)
 

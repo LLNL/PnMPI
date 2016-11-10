@@ -28,6 +28,9 @@
  * LLNL-CODE-402774
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <mpi.h>
 
 #include <pnmpi/debug_io.h>

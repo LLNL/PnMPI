@@ -35,8 +35,6 @@
 #define PNMPI_PRINT_H
 
 
-#include <stdlib.h>
-
 #include <pnmpi/attributes.h>
 
 
@@ -96,18 +94,19 @@ enum pnmpi_debug_level
  *  function and line number and exiting the program with an error code after
  *  printing the message.
  *
+ * \internal Instead of directly putting calls to \ref pnmpi_warning and exit in
+ *  the macro, the wrapper-function \ref pnmpi_print_error is used, as non-GCC
+ *  compilers don't understand \c \#\#__VA_ARGS__ to delete the comma after the
+ *  format string if no other arguments are passed.
  *
- * \param format Printf-like format string.
- * \param ... Arguments to be evaluated.
+ *
+ * \param ... Arguments to be evaluated. First argument has to be the
+ *  printf-like format string.
  *
  *
  * \ingroup pnmpi_debug_io
  */
-#define pnmpi_error(format, ...)                                            \
-  {                                                                         \
-    pnmpi_warning("%s:%d: " format, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
-    exit(EXIT_FAILURE);                                                     \
-  }
+#define pnmpi_error(...) pnmpi_print_error(__FUNCTION__, __LINE__, __VA_ARGS__);
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
@@ -121,6 +120,13 @@ extern "C" {
 PNMPI_FUNCTION_PRINTF(2, 3)
 PNMPI_FUNCTION_ARG_NONNULL(2)
 void pnmpi_print_debug(const enum pnmpi_debug_level level, const char *format,
+                       ...);
+
+PNMPI_FUNCTION_PRINTF(3, 4)
+PNMPI_FUNCTION_ARG_NONNULL(1)
+PNMPI_FUNCTION_ARG_NONNULL(3)
+PNMPI_FUNCTION_NORETURN
+void pnmpi_print_error(const char *function, const int line, const char *format,
                        ...);
 
 PNMPI_FUNCTION_PRINTF(1, 2)

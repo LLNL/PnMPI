@@ -89,6 +89,12 @@ EXTRACT_PRIVATE = @DOXYGEN_DOC_INTERNAL@
 # The default value is: NO.
 EXTRACT_STATIC = @DOXYGEN_DOC_INTERNAL@
 
+# The INTERNAL_DOCS tag determines if documentation that is typed after a
+# \internal command is included. If the tag is set to NO then the documentation
+# will be excluded. Set it to YES to include the internal documentation.
+# The default value is: NO.
+INTERNAL_DOCS = @DOXYGEN_DOC_INTERNAL@
+
 # The QUIET tag can be used to turn on/off the messages that are generated to
 # standard output by doxygen. If QUIET is set to YES this implies that the
 # messages are off.
