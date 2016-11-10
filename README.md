@@ -470,17 +470,26 @@ maximum provided threading level of this module.
 
 D) Debug Options
 ================
-The debug build of PnMPI includes debug print options, that can
-be dynamically enabled. To control it, the environment variable
-`DBGLEVEL` can be set to any combination of the following flags:
+The default build of PnMPI includes debug print options, that can be dynamically
+enabled. To control it, the environment variable 'PNMPI_DBGLEVEL' can be set to
+any combination of the following debug levels:
 
- * `0x01` - Trace all entry and exit points for PnMPI
- * `0x02` - Additional information for module load and instantiation
- * `0x04` - Trace all entry and exit points for all modules
- * `0x08` - Debug information for parsing and module arguments
+* `0x01` - Messages about PnMPI initialization (before MPI is initialized).
+* `0x02` - Messages about module loading.
+* `0x04` - Messages about MPI call entry and exit.
 
-Additionally, the printouts can be restricted to a single
-node by setting the variable `DBGNODE` to an MPI rank.
+**NOTE:** The first two levels should be enabled for single-rank executions
+only, as their output can't be limited to a single rank and thus will be printed
+on **all** ranks.
+
+Additionally, the printouts can be restricted to a single node by setting the
+variable `PNMPI_DBGNODE` to an MPI rank.
+
+### Using the PnMPI invocation tool
+
+You may set the above options in the PnMPI invocation tool. Use the `--debug`
+option to enable a specific debug level and `--debug-node` to limit the debug
+output to a single rank.
 
 
 E) Configuration and Demo codes

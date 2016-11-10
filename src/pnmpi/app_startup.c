@@ -34,6 +34,7 @@
 
 #include "app_hooks.h"
 #include "core.h"
+#include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
 
 
@@ -58,14 +59,17 @@ void pnmpi_app_startup(int argc, char **argv)
   if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
     {
       pnmpi_init_was_fortran = 0;
-      PMPI_Init_thread(&argc, &argv, required,
-                       &pnmpi_mpi_thread_level_provided);
+      if (PMPI_Init_thread(&argc, &argv, required,
+                           &pnmpi_mpi_thread_level_provided) != MPI_SUCCESS)
+        pnmpi_error("PMPI_Init_thread failed.\n");
     }
   else
     {
       int err;
       pnmpi_init_was_fortran = 1;
       pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
+      if (err != MPI_SUCCESS)
+        pnmpi_error("pmpi_init_thread_ failed.\n");
     }
   pnmpi_init_done = 1;
 

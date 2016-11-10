@@ -110,7 +110,6 @@ INPUT = @PROJECT_SOURCE_DIR@/src                       \
         @PROJECT_SOURCE_DIR@/modules                   \
         @PROJECT_SOURCE_DIR@/src/pnmpi/app_hooks.h     \
         @PROJECT_SOURCE_DIR@/src/pnmpi/core.h          \
-        @PROJECT_SOURCE_DIR@/src/pnmpi/debug.h         \
         @PROJECT_SOURCE_DIR@/src/pnmpi/fallback_init.h \
         @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpi.h         \
         @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpimod.h      \
@@ -177,8 +176,7 @@ INCLUDE_PATH = @PROJECT_BINARY_DIR@
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 PREDEFINED = PNMPI_ENABLE_THREAD_SAFETY \
-             COMPILE_FOR_FORTRAN        \
-             DBGLEVEL
+             COMPILE_FOR_FORTRAN
 
 # If you set the HAVE_DOT tag to YES then doxygen will assume the dot tool is
 # available from the path. This tool is part of Graphviz (see:

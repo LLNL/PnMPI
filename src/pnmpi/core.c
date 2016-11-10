@@ -46,6 +46,28 @@
 #include "link_utils.h"
 #endif // HAVE_ADEPT_UTILS
 
+
+/* Map the old debug macros to the new debug functions and macros.
+ *
+ * WARNING:
+ * - These macros are not portable to non-GCC compatible compilers, as
+ *   ##__VA_ARGS__ is a GNU extension.
+ * - These macros are for legacy support only. Use the functions and macros
+ *   defined in debug_io.h for new code!
+ */
+#define WARNPRINT(format, ...) pnmpi_warning(format "\n", ##__VA_ARGS__);
+#define DBGPRINT2(format, ...) \
+  pnmpi_debug(PNMPI_DEBUG_MODULE, format "\n", ##__VA_ARGS__);
+#define DBGPRINT3(format, ...) \
+  pnmpi_debug(PNMPI_DEBUG_CALL, format "\n", ##__VA_ARGS__);
+#define DBGPRINT4(format, ...) \
+  pnmpi_debug(PNMPI_DEBUG_INIT, format "\n", ##__VA_ARGS__);
+
+/* Enable all debug levels, as checking the debug level to print is part of
+ * pnmpi_debug now. */
+#define DBGLEVEL
+
+
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
 

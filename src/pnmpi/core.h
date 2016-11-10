@@ -42,7 +42,6 @@
 #include "pnmpimod.h"
 #include <mpi.h>
 
-#include "debug.h"
 #include "wrapper.h"
 
 /* jfm Modification (ELP AP THREAD SAFETY) BEGIN */

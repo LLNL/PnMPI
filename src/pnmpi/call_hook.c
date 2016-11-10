@@ -29,6 +29,7 @@
  */
 
 #include "core.h"
+#include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
 
 
@@ -51,8 +52,8 @@ void pnmpi_call_hook(const char *hook)
       int (*sym)() = (int (*)())find_symbol(modules.module[i], hook);
       if (sym == NULL)
         {
-          DBGPRINT2("Module %s has no '%s' hook", modules.module[i]->name,
-                    hook);
+          pnmpi_debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook",
+                      modules.module[i]->name, hook);
           continue;
         }
 
@@ -64,8 +65,8 @@ void pnmpi_call_hook(const char *hook)
 
       int err = sym();
       if (err != PNMPI_SUCCESS)
-        WARNPRINT("Error in '%s' hook in module %s: %i", hook,
-                  modules.module[i]->name, err);
+        pnmpi_warning("Error in '%s' hook in module %s: %i\n", hook,
+                      modules.module[i]->name, err);
     }
 
   /* Restore PnMPI level. */

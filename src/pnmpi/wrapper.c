@@ -41,6 +41,24 @@
 #include "core.h"
 #include "fallback_init.h"
 #include "pnmpi-config.h"
+#include <pnmpi/debug_io.h>
+
+
+/* Map the old debug macros to the new debug functions and macros.
+ *
+ * WARNING:
+ * - These macros are not portable to non-GCC compatible compilers, as
+ *   ##__VA_ARGS__ is a GNU extension.
+ * - These macros are for legacy support only. Use the functions and macros
+ *   defined in debug_io.h for new code!
+ */
+#define WARNPRINT(format, ...) pnmpi_warning(format "\n", ##__VA_ARGS__);
+#define DBGPRINT3(format, ...) \
+  pnmpi_debug(PNMPI_DEBUG_CALL, format "\n", ##__VA_ARGS__);
+
+/* Enable all debug levels, as checking the debug level to print is part of
+ * pnmpi_debug now. */
+#define DBGLEVEL
 
 
 extern void *MPIR_ToPointer(int idx);
@@ -131,8 +149,6 @@ void mpi_init_(int *ierr)
   char **argvSave;         /* Save the pointer to the argument vector */
 #endif
 
-  DBGEARLYINIT();
-
   DBGPRINT3("Entering Old Fortran MPI_Init at base level");
 
   if (pnmpi_init_was_fortran == 0)
@@ -200,8 +216,6 @@ void mpi_init_(int *ierr)
 int MPI_Init(int *argc, char ***argv)
 {
   int err;
-
-  DBGEARLYINIT();
 
   DBGPRINT3("Entering Old MPI_Init at base level");
 
@@ -370,8 +384,6 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
   char **argvSave;         /* Save the pointer to the argument vector */
 #endif
 
-  DBGEARLYINIT();
-
   DBGPRINT3("Entering Old Fortran MPI_Init_thread at base level");
 
   if (pnmpi_init_was_fortran == 0)
@@ -440,8 +452,6 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 {
   int err;
-
-  DBGEARLYINIT();
 
   DBGPRINT3("Entering Old MPI_Init_thread at base level");
 

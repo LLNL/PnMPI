@@ -154,13 +154,6 @@ find_package(codecov)
 
 
 #===================================
-# Ennable PnMPI internal debugging
-#===================================
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-  add_definitions(-DDBGLEVEL=0)
-endif()
-
-#===================================
 # Recurse to sub-directories
 #===================================
 add_subdirectory(doc)
