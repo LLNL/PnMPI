@@ -44,66 +44,11 @@ int _print_node = -2;
 
 #ifndef __GNUC__
 
-void dbg_statusprint1(char *format, ...);
-void dbg_statusprintn(char *format, ...);
 void dbg_warning(char *format, ...);
 void dbg_debugprint1(char *format, ...);
 void dbg_debugprint2(char *format, ...);
 void dbg_debugprint3(char *format, ...);
 void dbg_debugprint4(char *format, ...);
-
-#ifdef NOSTATUS
-void dbg_statusprint1(char *format, ...)
-{
-}
-void dbg_statusprintn(char *format, ...)
-{
-}
-#else
-
-void dbg_statusprint1(char *format, ...)
-{
-  va_list va_alist;
-
-  if (_print_node == 0)
-    {
-      va_start(va_alist, format);
-      fprintf(stdout, "%5i: ", _print_node);
-      vfprintf(stdout, format, va_alist);
-      fprintf(stdout, "\n");
-      va_end(va_alist);
-    }
-
-  if (_print_node == -2)
-    {
-      va_start(va_alist, format);
-      vfprintf(stdout, format, va_alist);
-      fprintf(stdout, "\n");
-      va_end(va_alist);
-    }
-}
-
-void dbg_statusprintn(char *format, ...)
-{
-  va_list va_alist;
-
-  if (_print_node > -2)
-    {
-      va_start(va_alist, format);
-      fprintf(stdout, "%5i: ", _print_node);
-      vfprintf(stdout, format, va_alist);
-      fprintf(stdout, "\n");
-      va_end(va_alist);
-    }
-  else
-    {
-      va_start(va_alist, format);
-      vfprintf(stdout, format, va_alist);
-      fprintf(stdout, "\n");
-      va_end(va_alist);
-    }
-}
-#endif /* else of NOSTATUS */
 
 #ifdef NOWARNINGS
 void dbg_warning(char *format, ...)

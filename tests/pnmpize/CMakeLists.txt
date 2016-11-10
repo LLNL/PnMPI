@@ -87,7 +87,7 @@ pnmpi_pnmpize_test(pnmpize_basic_mpiexec
 # found in stdout, the test will fail.
 pnmpi_pnmpize_test(pnmpize_preload_pnmpi
   NUMPROCS 1
-  PASS_EXPRESSION "Number of modules:"
+  PASS_EXPRESSION "No modules loaded."
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 # The following test checks, if PnMPIze is able to pass a configuration file to
@@ -145,7 +145,7 @@ endif ()
 # found in stdout, the test will fail.
 pnmpi_pnmpize_test(pnmpize_fortran_preload_pnmpi
   NUMPROCS 2
-  PASS_EXPRESSION "Number of modules:"
+  PASS_EXPRESSION "No modules loaded."
   COMMAND $<TARGET_FILE:test-mpi-fortran>)
 
 # The following test checks, if PnMPIze is able to pass a configuration file to

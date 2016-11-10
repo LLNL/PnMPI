@@ -70,5 +70,8 @@ void pnmpi_app_startup(int argc, char **argv)
   pnmpi_init_done = 1;
 
 
+  pnmpi_print_banner();
+
+
   pnmpi_call_hook("app_startup");
 }

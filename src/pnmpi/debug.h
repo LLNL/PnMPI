@@ -36,22 +36,6 @@
 
 #ifdef __GNUC__
 
-#ifdef NOSTATUS
-#define STATUSPRINT1(format, args...)
-#define STATUSPRINTN(format, args...)
-#define STATUSINIT()
-#else
-#define STATUSPRINT1(format, args...) \
-  {                                   \
-    if (_print_node == 0)             \
-      DOPRINT(format, ##args);        \
-  }
-#define STATUSPRINTN(format, args...) DOPRINT(format, ##args)
-#define STATUSINIT() \
-  {                  \
-  }
-#endif
-
 #ifdef NOWARNINGS
 #define WARNRPINT(format, args...)
 #else
@@ -123,23 +107,11 @@ extern int _print_node;
 
 #else /* i.e. COMP!=GNU */
 
-void dbg_statusprint1(char *format, ...);
-void dbg_statusprintn(char *format, ...);
 void dbg_warning(char *format, ...);
 void dbg_debugprint1(char *format, ...);
 void dbg_debugprint2(char *format, ...);
 void dbg_debugprint3(char *format, ...);
 void dbg_debugprint4(char *format, ...);
-
-#ifdef NOSTATUS
-#define STATUSPRINT1 dbg_statusprint1
-#define STATUSPRINTN dbg_statusprintn
-#define STATUSINIT()
-#else
-#define STATUSPRINT1 dbg_statusprint1
-#define STATUSPRINTN dbg_statusprintn
-#define STATUSINIT() // {MPI_Comm_rank(MPI_COMM_WORLD,&_print_node);}
-#endif
 
 #ifdef NOWARNINGS
 #define WARNPRINT dbg_warning

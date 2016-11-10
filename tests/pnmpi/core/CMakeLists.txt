@@ -27,30 +27,25 @@
 #
 # LLNL-CODE-402774
 
-find_package(codecov)
-find_package(MPI REQUIRED)
-find_package(Sanitizers)
-
-
 #
-# Threading-Downgrade test.
+# PnMPI header.
 #
-add_pnmpi_module(threading_downgrade threading_downgrade.c)
-target_include_directories(threading_downgrade PRIVATE ${MPI_C_INCLUDE_PATH})
-target_link_libraries(threading_downgrade ${MPI_C_LIBRARIES})
-add_coverage(threading_downgrade)
-add_sanitizers(threading_downgrade)
 
-pnmpi_pnmpize_test(pnmpi_threading_downgrade
-  NUMPROCS 2
-  PASS_EXPRESSION "provide a maximum of 0."
+# No modules loaded.
+pnmpi_pnmpize_test(pnmpi_header_no_modules
+  PASS_EXPRESSION "No modules loaded."
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# One module loaded.
+pnmpi_pnmpize_test(pnmpi_header_one_module
+  PASS_EXPRESSION "Loaded modules:.*Stack default:.*test-module \\[Pcontrol\\]"
+  PNMPIZE_ARGS -c ${TEST_MODULE_CONF}
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# Header with stacks.
+pnmpi_pnmpize_test(pnmpi_header_stacks
   PNMPIZE_ARGS
-	-c "${CMAKE_CURRENT_SOURCE_DIR}/threading_downgrade.conf"
-	-m "${CMAKE_CURRENT_BINARY_DIR}"
-COMMAND $<TARGET_FILE:test-mpi-threaded>)
-
-
-# Recurse into subdirectories.
-add_subdirectory(core)
-add_subdirectory(app_hooks)
-add_subdirectory(stacks)
+    -c "${CMAKE_CURRENT_SOURCE_DIR}/../stacks/stack.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}/../stacks"
+  PASS_EXPRESSION "Loaded modules:.*Stack default:.*Stack sample"
+  COMMAND $<TARGET_FILE:test-mpi-c>)

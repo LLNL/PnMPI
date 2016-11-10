@@ -161,6 +161,8 @@ void pnmpi_call_hook(const char *hook);
 
 int pnmpi_max_module_threading_level();
 
+void pnmpi_print_banner();
+
 
 /*This can be removed at a later point in time, it allows convenient bugfixing
  * for a broken mpi.h of MVAPICH1 (Sierra at LLNL, April 2014, by Tobias)*/

@@ -91,83 +91,15 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   else
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
 
+  dec_pnmpi_mpi_level();
+
   if (returnVal != MPI_SUCCESS)
     return returnVal;
 
   // Mpi is initialized now
   pnmpi_initialization_complete = 1;
 
-  PRINTINIT();
-  DBGLATEINIT();
-  STATUSINIT();
-  DBGPRINT1("Leaving Init");
-  dec_pnmpi_mpi_level();
-
-  if (getenv("PNMPI_BE_SILENT") == NULL)
-    {
-      STATUSPRINT1("");
-      STATUSPRINT1("\t\t  ---------------------------");
-      STATUSPRINT1("\t\t | P^N-MPI Interface         |");
-      STATUSPRINT1("\t\t | Martin Schulz, 2005, LLNL |");
-      STATUSPRINT1("\t\t  ---------------------------");
-      STATUSPRINT1("");
-
-      {
-        int i;
-        module_servlist_p serv;
-        module_globlist_p glob;
-        module_arg_t *args;
-
-        STATUSPRINT1("Number of modules: %i", modules.num);
-        STATUSPRINT1("Pcontrol Setting:  %i", modules.pcontrol);
-        STATUSPRINT1("");
-        for (i = 0; i < modules.num; i++)
-          {
-            if (modules.module[i]->registered)
-              {
-                STATUSPRINT1("Module %s: registered as %s (Pctrl %i)",
-                             modules.module[i]->name,
-                             modules.module[i]->username,
-                             modules.module[i]->pcontrol);
-              }
-            else
-              {
-                if (modules.module[i]->stack_delimiter)
-                  {
-                    STATUSPRINT1("Stack %s: not registered",
-                                 modules.module[i]->name);
-                  }
-                else
-                  {
-                    STATUSPRINT1("Module %s: not registered (Pctrl %i)",
-                                 modules.module[i]->name,
-                                 modules.module[i]->pcontrol);
-                  }
-              }
-
-            for (args = modules.module[i]->args; args != NULL;
-                 args = args->next)
-              {
-                STATUSPRINT1("\tArgument: %s = %s", args->name, args->value);
-              }
-
-            for (serv = modules.module[i]->services; serv != NULL;
-                 serv = serv->next)
-              {
-                STATUSPRINT1("\tService: %s (%s)", serv->desc.name,
-                             serv->desc.sig);
-              }
-
-            for (glob = modules.module[i]->globals; glob != NULL;
-                 glob = glob->next)
-              {
-                STATUSPRINT1("\tGlobal: %s (%c)", glob->desc.name,
-                             glob->desc.sig);
-              }
-          }
-        STATUSPRINT1("");
-      }
-    }
+  pnmpi_print_banner();
 
   return returnVal;
 }
@@ -396,83 +328,15 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
     returnVal =
       Internal_XMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
 
+  dec_pnmpi_mpi_level();
+
   if (returnVal != MPI_SUCCESS)
     return returnVal;
 
   // Mpi is initialized now
   pnmpi_initialization_complete = 1;
 
-  PRINTINIT();
-  DBGLATEINIT();
-  STATUSINIT();
-  DBGPRINT1("Leaving Init");
-  dec_pnmpi_mpi_level();
-
-  if (getenv("PNMPI_BE_SILENT") == NULL)
-    {
-      STATUSPRINT1("");
-      STATUSPRINT1("\t\t  ---------------------------");
-      STATUSPRINT1("\t\t | P^N-MPI Interface         |");
-      STATUSPRINT1("\t\t | Martin Schulz, 2005, LLNL |");
-      STATUSPRINT1("\t\t  ---------------------------");
-      STATUSPRINT1("");
-
-      {
-        int i;
-        module_servlist_p serv;
-        module_globlist_p glob;
-        module_arg_t *args;
-
-        STATUSPRINT1("Number of modules: %i", modules.num);
-        STATUSPRINT1("Pcontrol Setting:  %i", modules.pcontrol);
-        STATUSPRINT1("");
-        for (i = 0; i < modules.num; i++)
-          {
-            if (modules.module[i]->registered)
-              {
-                STATUSPRINT1("Module %s: registered as %s (Pctrl %i)",
-                             modules.module[i]->name,
-                             modules.module[i]->username,
-                             modules.module[i]->pcontrol);
-              }
-            else
-              {
-                if (modules.module[i]->stack_delimiter)
-                  {
-                    STATUSPRINT1("Stack %s: not registered",
-                                 modules.module[i]->name);
-                  }
-                else
-                  {
-                    STATUSPRINT1("Module %s: not registered (Pctrl %i)",
-                                 modules.module[i]->name,
-                                 modules.module[i]->pcontrol);
-                  }
-              }
-
-            for (args = modules.module[i]->args; args != NULL;
-                 args = args->next)
-              {
-                STATUSPRINT1("\tArgument: %s = %s", args->name, args->value);
-              }
-
-            for (serv = modules.module[i]->services; serv != NULL;
-                 serv = serv->next)
-              {
-                STATUSPRINT1("\tService: %s (%s)", serv->desc.name,
-                             serv->desc.sig);
-              }
-
-            for (glob = modules.module[i]->globals; glob != NULL;
-                 glob = glob->next)
-              {
-                STATUSPRINT1("\tGlobal: %s (%c)", glob->desc.name,
-                             glob->desc.sig);
-              }
-          }
-        STATUSPRINT1("");
-      }
-    }
+  pnmpi_print_banner();
 
   return returnVal;
 }
