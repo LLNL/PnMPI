@@ -45,16 +45,16 @@ extern "C" {
 #endif
 
 
-/*
- * Global service definitions.
+/** \defgroup pnmpi_service Service functions for module interaction.
  */
 int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
 
 
-/* Self service definitions.
+/** \defgroup pnmpi_service_self Service functions for module interaction.
  *
- * These functions may be used by modules to get data associated with their own
- * instance of the module.
+ * \note These functions are the same as the \ref pnmpi_service interface, but
+ *  allow the modules to interact with PnMPI for the own module in one call
+ *  instead of getting the handle first.
  */
 int PNMPI_Service_GetPcontrolSelf();
 

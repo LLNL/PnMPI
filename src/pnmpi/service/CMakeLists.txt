@@ -28,6 +28,7 @@
 # LLNL-CODE-402774
 
 include(easylib)
+include(PnMPI_doc)
 include(PnMPI_headers)
 
 find_package(codecov)
@@ -40,6 +41,11 @@ find_package(Sanitizers)
 # care about file locations after installation, especially if you use the
 # headers over multiple directories.
 pnmpi_add_header(service.h)
+
+
+# Install the public man pages for this object.
+pnmpi_add_man(pnmpi_service PNMPI_Service_GetPcontrol)
+pnmpi_add_man(pnmpi_service_self PNMPI_Service_GetPcontrolSelf)
 
 
 include_directories(
