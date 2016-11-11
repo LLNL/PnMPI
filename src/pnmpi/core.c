@@ -55,22 +55,7 @@ int pnmpi_initialization_complete;
 int pnmpi_init_was_fortran = -1;
 int pnmpi_init_done = 0;
 int pnmpi_finalize_done = 0;
-
-/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
-
-PNMPI_CONSTRUCTOR(101)
-void initialize_pnmpi_threaded()
-{
-  // Create a thread local storage for pnmpi_level (default value is NULL)
-  if (pthread_key_create(&pnmpi_level_key, NULL))
-    {
-      printf("ERROR: TLS initialization failed\n");
-      exit(1);
-    }
-}
-#endif
-/* jfm Modification (ELP AP THREAD SAFETY) END */
+pnmpi_compiler_tls_keyword int pnmpi_level = 0;
 
 
 modules_t modules;
@@ -211,7 +196,6 @@ void pnmpi_PreInit()
   PNMPI_RegistrationPoint_t regPoint;
   /* setup vars */
 
-  set_pnmpi_level(0);
   pnmpi_max_level = 0;
   pnmpi_initialization_complete = 0;
 
@@ -602,7 +586,7 @@ void pnmpi_PreInit()
 
                       /* PNMPI_RegistrationPoint will be called later */
 
-                      set_pnmpi_level(modules.num);
+                      pnmpi_level = modules.num;
                       modules.num++;
                     }
                 }
@@ -799,7 +783,7 @@ void pnmpi_PreInit()
 
   /* fix variables */
   pnmpi_max_level = modules.num;
-  set_pnmpi_level(0);
+  pnmpi_level = 0;
 
 #ifdef PNMPI_ENABLE_THREAD_SAFETY
   // Notify all modules that we are done initializing PnMPI
@@ -813,7 +797,7 @@ void pnmpi_PreInit()
 // it will return the previous stack layer
 int PNMPI_Change_Stack_Explicit(PNMPI_modHandle_t stack)
 {
-  int previous = get_pnmpi_level();
-  set_pnmpi_level((int)stack);
+  int previous = pnmpi_level;
+  pnmpi_level = stack;
   return previous;
 }

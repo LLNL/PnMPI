@@ -43,7 +43,6 @@
 /* Declaration of all constructors. They are not in a seperate header file, as
  * they will be used in this file only. If the normal constructors are enabled,
  * no other files call them. */
-void initialize_pnmpi_threaded();
 void pnmpi_PreInit();
 void pnmpi_app_startup(int argc, char **argv);
 
@@ -137,7 +136,6 @@ static void read_cmdline(int *argc, char ***argv)
  */
 static void pnmpi_call_constructors()
 {
-  initialize_pnmpi_threaded();
   pnmpi_PreInit();
 }
 

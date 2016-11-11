@@ -28,13 +28,29 @@
  * LLNL-CODE-402774
  */
 
-#ifndef METRICS_CONFIG_H
-#define METRICS_CONFIG_H
+#include <pnmpi/private/compiler_features.h>
 
 
-#cmakedefine C11_ATOMICS_FOUND
-#cmakedefine BUILTINATOMIC_FOUND
-#cmakedefine BUILTINSYNC_FOUND
+/* For some functionality in PnMPI and modules we need thread local storage,
+ * otherwise storage may be corrupted for MPI applications with concurrent calls
+ * (MPI threading level MPI_THREAD_MULTIPLE).
+ *
+ * We'll try to use C11 threads or the compilers builtin __thread to get
+ * thread local storage. If thread local storage is not supported by the
+ * compiler, we'll set the PNMPI_COMPILER_NO_TLS macro, so PnMPI and the modules
+ * can handle this. */
 
+#if defined(C11_THREAD_LOCAL_FOUND)
+
+#define pnmpi_compiler_tls_keyword _Thread_local
+
+#elif defined(THREADKEYWORD_FOUND)
+
+#define pnmpi_compiler_tls_keyword __thread
+
+#else
+
+#define PNMPI_COMPILER_NO_TLS
+#define pnmpi_compiler_tls_keyword
 
 #endif

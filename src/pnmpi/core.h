@@ -44,13 +44,8 @@
 
 #include "debug.h"
 #include "wrapper.h"
+#include <pnmpi/private/tls.h>
 
-/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
-#include <pthread.h>
-pthread_key_t pnmpi_level_key;
-#endif
-/* jfm Modification (ELP AP THREAD SAFETY) END */
 
 /* Private Interface for PNMPI */
 
@@ -130,6 +125,11 @@ extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
                                that are triggered be MPI_Finalize (as these
                                really hurt as we shut down our tools already in
                                that case).*/
+
+/** \brief \ref pnmpi_level is used to store the current level of MPI calls.
+ */
+extern pnmpi_compiler_tls_keyword int pnmpi_level;
+
 extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;
 extern int pnmpi_init_was_fortran;
@@ -242,34 +242,6 @@ int PMPI_Finalized(int *);
       }                                                                     \
   }
 
-/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
-static inline int set_pnmpi_level(int value)
-{
-  pthread_setspecific(pnmpi_level_key, (void *)(long)value);
-  return value;
-}
-
-// pnmpi_level++
-static inline int inc_pnmpi_level()
-{
-  int value = (int)(unsigned long)pthread_getspecific(pnmpi_level_key) + 1;
-  pthread_setspecific(pnmpi_level_key, (void *)(long)value);
-  return value;
-}
-
-// pnmpi_level--
-static inline int dec_pnmpi_level()
-{
-  int value = (int)(unsigned long)pthread_getspecific(pnmpi_level_key) - 1;
-  pthread_setspecific(pnmpi_level_key, (void *)(long)value);
-  return value;
-}
-
-static inline int get_pnmpi_level()
-{
-  return (int)((unsigned long)pthread_getspecific(pnmpi_level_key));
-}
 
 static inline int get_pnmpi_mpi_level()
 {
@@ -286,45 +258,5 @@ static inline int dec_pnmpi_mpi_level()
   return --pnmpi_mpi_level;
 }
 
-#else  /*PNMPI_ENABLE_THREAD_SAFETY*/
-// build w/o thread safety enabled
-int __pnmpi_level;
-static inline int set_pnmpi_level(int value)
-{
-  __pnmpi_level = value;
-  return value;
-}
-
-static inline int inc_pnmpi_mpi_level()
-{
-  return pnmpi_mpi_level++;
-}
-
-static inline int dec_pnmpi_mpi_level()
-{
-  return pnmpi_mpi_level--;
-}
-
-static inline int get_pnmpi_level()
-{
-  return __pnmpi_level;
-}
-
-static inline int inc_pnmpi_level()
-{
-  return ++__pnmpi_level;
-}
-
-static inline int dec_pnmpi_level()
-{
-  return --__pnmpi_level;
-}
-
-static inline int get_pnmpi_mpi_level()
-{
-  return pnmpi_mpi_level;
-}
-#endif /*PNMPI_ENABLE_THREAD_SAFETY*/
-/* jfm Modification (ELP AP THREAD SAFETY) END */
 
 #endif

@@ -33,17 +33,17 @@
 #include <hires-timers.h>
 #include <mpi.h>
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/tls.h>
 #include <pnmpi/service.h>
 #include <pnmpimod.h>
 
 #include "atomic.h"
-#include "tls.h"
 
 
 /* If there is no atomic support or no thread local storage support, we'll limit
  * the threading level of this module to MPI_THREAD_SERIALIZED, so it is safe to
  * use with threaded applications (but they may become slower!). */
-#if defined(METRIC_NO_ATOMIC) || defined(METRIC_NO_TLS)
+#if defined(METRIC_NO_ATOMIC) || defined(PNMPI_COMPILER_NO_TLS)
 int PnMPI_threading_level = MPI_THREAD_SERIALIZED;
 #endif
 
@@ -169,7 +169,7 @@ static timing_t start_stop_timer(timing_t *t)
    *
    * This variable also will be used to indicate, if the timer is active. If the
    * timer is 0, it is inactive, otherise it is active. */
-  static metric_tls_keyword timing_t timer = 0;
+  static pnmpi_compiler_tls_keyword timing_t timer = 0;
 
 
   metric_atomic_add(timing_storage.{{fn_name}}, start_stop_timer(&timer));
@@ -209,7 +209,7 @@ int MPI_Pcontrol(const int level, ...)
    *
    * This variable also will be used to indicate, if the timer is active. If the
    * timer is 0, it is inactive, otherise it is active. */
-  static metric_tls_keyword timing_t timer = 0;
+  static pnmpi_compiler_tls_keyword timing_t timer = 0;
   metric_atomic_add(timing_storage.MPI_Pcontrol, start_stop_timer(&timer));
 
   return MPI_SUCCESS;
@@ -235,7 +235,7 @@ int MPI_Finalize()
    *
    * This variable also will be used to indicate, if the timer is active. If the
    * timer is 0, it is inactive, otherise it is active. */
-  static metric_tls_keyword timing_t timer = 0;
+  static pnmpi_compiler_tls_keyword timing_t timer = 0;
 
   metric_atomic_add(timing_storage.MPI_Finalize, start_stop_timer(&timer));
   int ret = XMPI_Finalize();
