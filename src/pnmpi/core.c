@@ -785,10 +785,8 @@ void pnmpi_PreInit()
   pnmpi_max_level = modules.num;
   pnmpi_level = 0;
 
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
   // Notify all modules that we are done initializing PnMPI
   pnmpi_call_hook(PNMPI_INITCOMPLETE_POINT);
-#endif
 }
 
 // This function is exposed via newstack.h to be called

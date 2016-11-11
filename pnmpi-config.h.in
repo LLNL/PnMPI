@@ -88,9 +88,6 @@
 /* Define if mpi.h has MPI3 const arguments */
 #cmakedefine HAVE_MPI3_CONST_ARGS 1
 
-/* Define if pthreads are available */
-#cmakedefine PNMPI_HAVE_PTHREADS 1
-
 /* Define if PMPI_Type_create_indexed_block is available - fix for MVAPICH1 issue */
 #cmakedefine HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK 1
 
@@ -98,12 +95,5 @@
 #define PNMPI_MVAPICH1FIX 1
 #endif
 
-
-/* jfm Modification (ELP AP THREAD SAFETY) BEGIN */
-#cmakedefine PNMPI_ENABLE_THREAD_SAFETY 1
-#ifdef PNMPI_ENABLE_THREAD_SAFETY
-	#define ELP_MODIFICATIONS
-#endif
-/* jfm Modification (ELP AP THREAD SAFETY) END */
 
 #endif // PNMPI_CONFIG_H
