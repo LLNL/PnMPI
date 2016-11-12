@@ -98,8 +98,12 @@ void pnmpi_print_banner()
     }
 
 
-  /* Print some basic information about the loaded modules. By default the
-   * module and stack names will be printed only. */
+  /* Print global settings. */
+  printf("\n Global settings:\n  Pcontrol: %i\n\n", modules.pcontrol);
+
+
+  /* Iterate over the modules and print some basic information about their
+   * configuration. */
   printf(" Loaded modules:\n"
          "  Stack default:\n");
 
@@ -115,15 +119,51 @@ void pnmpi_print_banner()
         }
 
 
-      /* If the module has registered itself, the registered module name will be
-       * printed, otherwise the name from the configuration file. If the module
-       * handles Pcontrol a separate keyword will be printed near the module
-       * name. */
-      printf("    %s%s%s\n",
-             modules.module[i]->registered ? modules.module[i]->username
-                                           : modules.module[i]->name,
-             modules.module[i]->registered ? " [registered]" : "",
-             (modules.module[i]->pcontrol != 0) ? " [Pcontrol]" : "");
+      /* Print basic information like name, registered name and Pcontrol
+       * settings */
+      printf("    %s", modules.module[i]->name);
+
+      if (modules.module[i]->registered)
+        printf(" (registered as: %s)", modules.module[i]->username);
+
+      if (modules.module[i]->pcontrol != 0)
+        printf(" (Pcontrol: %d)", modules.module[i]->pcontrol);
+
+      printf("\n");
+
+
+      /* Print arguments of module. */
+      if (modules.module[i]->args != NULL)
+        {
+          printf("      Arguments:\n");
+
+          module_arg_t *arg;
+          for (arg = modules.module[i]->args; arg != NULL; arg = arg->next)
+            printf("        %s: %s\n", arg->name, arg->value);
+        }
+
+      /* Print services registered by module. */
+      if (modules.module[i]->services != NULL)
+        {
+          printf("      Services:\n");
+
+          module_servlist_p service;
+          for (service = modules.module[i]->services; service != NULL;
+               service = service->next)
+            printf("        %s (signature: %s)\n", service->desc.name,
+                   service->desc.sig);
+        }
+
+      /* Print globals registered by module. */
+      if (modules.module[i]->globals != NULL)
+        {
+          printf("      Globals:\n");
+
+          module_globlist_p global;
+          for (global = modules.module[i]->globals; global != NULL;
+               global = global->next)
+            printf("        %s (%c)\n", global->desc.name, global->desc.sig);
+        }
     }
   printf("\n");
 

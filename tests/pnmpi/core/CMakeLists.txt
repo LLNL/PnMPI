@@ -38,7 +38,8 @@ pnmpi_pnmpize_test(pnmpi_header_no_modules
 
 # One module loaded.
 pnmpi_pnmpize_test(pnmpi_header_one_module
-  PASS_EXPRESSION "Loaded modules:.*Stack default:.*test-module \\[Pcontrol\\]"
+  PASS_EXPRESSION
+    "Loaded modules:.*Stack default:.*test-module \\(Pcontrol: 1\\)"
   PNMPIZE_ARGS -c ${TEST_MODULE_CONF}
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
