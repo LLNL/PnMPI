@@ -30,7 +30,7 @@
 include(CheckCSourceCompiles)
 include(PnMPI_headers)
 
-find_package(C11 OPTIONAL_COMPONENTS ATOMICS THREAD_LOCAL)
+find_package(C11 OPTIONAL_COMPONENTS ATOMICS)
 
 
 # Add C11 flags, if C11 is available.
@@ -46,13 +46,6 @@ if (NOT C11_ATOMICS_FOUND)
   if (NOT BUILTINATOMIC_FOUND)
     find_package(BuiltinSync)
   endif ()
-endif ()
-
-# Check if thread local storage is available for thread safe static variables in
-# the timing functions. First we try to use C11 _Thread_local, next the
-# compiler-specific builtin __thread keyword.
-if (NOT C11_THREAD_LOCAL_FOUND)
-  find_package(ThreadKeyword)
 endif ()
 
 configure_file(config.h.in config.h)

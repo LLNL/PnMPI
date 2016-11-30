@@ -48,7 +48,6 @@
 
 int PNMPI_Service_RegisterModule(const char *name)
 {
-  int pnmpi_level = get_pnmpi_level();
   modules.module[pnmpi_level]->registered = 1;
   strncpy(modules.module[pnmpi_level]->username, name,
           PNMPI_MODULE_USERNAMELEN);
@@ -63,7 +62,6 @@ int PNMPI_Service_RegisterModule(const char *name)
 int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service)
 {
   module_servlist_p newservice;
-  int pnmpi_level = get_pnmpi_level();
 
   newservice = (module_servlist_p)malloc(sizeof(module_servlist_t));
   if (newservice == NULL)
@@ -82,7 +80,6 @@ int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service)
 int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global)
 {
   module_globlist_p newglobal;
-  int pnmpi_level = get_pnmpi_level();
 
   newglobal = (module_globlist_p)malloc(sizeof(module_globlist_t));
   if (newglobal == NULL)
@@ -124,7 +121,6 @@ int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle)
 
 int PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
 {
-  int pnmpi_level = get_pnmpi_level();
   *handle = pnmpi_level;
   return PNMPI_SUCCESS;
 }

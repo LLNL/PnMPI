@@ -33,6 +33,16 @@
 #include <mpi.h>
 
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/tls.h>
+
+
+/* If PnMPI has no thread local storage, it can't be used thread safe and the
+ * max. allowed thread level of MPI has to be limited. */
+#ifndef PNMPI_COMPILER_NO_TLS
+#define PNMPI_MAX_THREAD_LEVEL MPI_THREAD_MULTIPLE;
+#else
+#define PNMPI_MAX_THREAD_LEVEL MPI_THREAD_SERIALIZED;
+#endif
 
 
 /** \brief Get the maximum supported threading level of all modules.
@@ -46,7 +56,7 @@
 PNMPI_INTERNAL
 int pnmpi_max_module_threading_level()
 {
-  int max_level = MPI_THREAD_MULTIPLE;
+  int max_level = PNMPI_MAX_THREAD_LEVEL;
 
   size_t i;
   for (i = 0; i < modules.num; i++)

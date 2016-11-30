@@ -34,9 +34,7 @@
 {{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}})
 {
   {{ret_type}} res;
-  int start_level, pnmpi_level;
-
-  pnmpi_level=start_level=get_pnmpi_level();
+  int start_level = pnmpi_level;
 
   if (IS_ACTIVATED({{fn_name}}_ID) && (get_pnmpi_mpi_level() == 0) && (pnmpi_initialization_complete > 0))
     {
@@ -47,17 +45,17 @@
 	      DBGPRINT3("Calling a wrapper in {{fn_name}} at level %i FROM %px",pnmpi_level,&(Internal_X{{fn_name}}));
       res=(pnmpi_function_ptrs.pnmpi_int_{{fn_name}})[pnmpi_level]({{args}});
 	      DBGPRINT3("Done with wrapper in {{fn_name}} at level %i - reseting to %i",pnmpi_level,start_level);
-	      set_pnmpi_level( start_level );
+	      pnmpi_level = start_level;
 	      return res;
             }
-          pnmpi_level=inc_pnmpi_level();
+          ++pnmpi_level;
        }
     }
 
   DBGPRINT3("Calling a original MPI in {{fn_name}}");
   res=P{{fn_name}}({{args}});
   DBGPRINT3("Done with original MPI in {{fn_name}}");
-  set_pnmpi_level( start_level );
+  pnmpi_level = start_level;
   return res;
 }
 {{endforallfn}}
@@ -69,10 +67,10 @@
 
   if (NOT_ACTIVATED({{fn_name}}_ID))
   { // in case we have no registered function of this type and we call PMPI directly, a subsequent call from the mpi library starts at level1
-    int start_level=get_pnmpi_level();
-    set_pnmpi_level( pnmpi_max_level );
+    int start_level = pnmpi_level;
+    pnmpi_level = pnmpi_max_level;
     {{ret_type}} ret = P{{fn_name}}({{args}});
-    set_pnmpi_level( start_level );
+    pnmpi_level = start_level;
     return ret;
   }
   else if (get_pnmpi_mpi_level() > 0)
@@ -91,9 +89,9 @@
 {{ret_type}} X{{fn_name}}({{formals}})
 {
   {{ret_type}} returnVal;
-  inc_pnmpi_level();
+  ++pnmpi_level;
   returnVal=Internal_X{{fn_name}}({{args}});
-  dec_pnmpi_level();
+  --pnmpi_level;
   return returnVal;
 }
 {{endforallfn}}
@@ -102,14 +100,14 @@
 {{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}})
 {
   {{ret_type}} returnVal;
-  int current=get_pnmpi_level();
+  int current = pnmpi_level;
   if (stack>=0)
-    set_pnmpi_level( stack );
+    pnmpi_level = stack;
   else
-    set_pnmpi_level( current + 1 );
+    pnmpi_level++;
 
   returnVal=Internal_X{{fn_name}}({{args}});
-  set_pnmpi_level( current );
+  pnmpi_level = current;
   return returnVal;
 }
 {{endforallfn}}

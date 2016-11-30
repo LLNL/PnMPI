@@ -68,5 +68,5 @@ int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag)
  */
 int PNMPI_Service_GetPcontrolSelf()
 {
-  return modules.module[get_pnmpi_level()]->pcontrol;
+  return modules.module[pnmpi_level]->pcontrol;
 }

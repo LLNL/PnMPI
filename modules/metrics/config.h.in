@@ -28,15 +28,13 @@
  * LLNL-CODE-402774
  */
 
-#ifndef COUNTER_H
-#define COUNTER_H
+#ifndef METRICS_CONFIG_H
+#define METRICS_CONFIG_H
 
 
 #cmakedefine C11_ATOMICS_FOUND
-#cmakedefine C11_THREAD_LOCAL_FOUND
 #cmakedefine BUILTINATOMIC_FOUND
 #cmakedefine BUILTINSYNC_FOUND
-#cmakedefine THREADKEYWORD_FOUND
 
 
 #endif

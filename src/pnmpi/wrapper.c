@@ -234,7 +234,6 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   int res;
   int start_level;
 
-  int pnmpi_level = get_pnmpi_level();
   start_level = pnmpi_level;
 
   if (IS_ACTIVATED(MPI_Init_ID))
@@ -251,10 +250,10 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
               DBGPRINT3(
                 "Done with wrapper in MPI_Init at level %i - reseting to %i",
                 pnmpi_level, start_level);
-              set_pnmpi_level(start_level);
+              pnmpi_level = start_level;
               return res;
             }
-          pnmpi_level = inc_pnmpi_level();
+          ++pnmpi_level;
         }
     }
 
@@ -275,7 +274,7 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
       pnmpi_init_done = 1;
     }
   DBGPRINT3("Done with original MPI in MPI_Init");
-  set_pnmpi_level(start_level);
+  pnmpi_level = start_level;
   return res;
 }
 
@@ -473,7 +472,6 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
   int res;
   int start_level;
 
-  int pnmpi_level = get_pnmpi_level();
   start_level = pnmpi_level;
 
   if (IS_ACTIVATED(MPI_Init_thread_ID))
@@ -493,10 +491,10 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
               DBGPRINT3("Done with wrapper in MPI_Init_thread at level %i - "
                         "reseting to %i",
                         pnmpi_level, start_level);
-              set_pnmpi_level(start_level);
+              pnmpi_level = start_level;
               return res;
             }
-          pnmpi_level = inc_pnmpi_level();
+          ++pnmpi_level;
         }
     }
 
@@ -520,7 +518,7 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
       pnmpi_init_done = 1;
     }
   DBGPRINT3("Done with original MPI in MPI_Init_thread");
-  set_pnmpi_level(start_level);
+  pnmpi_level = start_level;
   return res;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
@@ -572,7 +570,6 @@ int NQJ_Finalize(void)
   int res;
   int start_level;
 
-  int pnmpi_level = get_pnmpi_level();
   start_level = pnmpi_level;
 
   if (IS_ACTIVATED(MPI_Finalize_ID))
@@ -589,17 +586,17 @@ int NQJ_Finalize(void)
               DBGPRINT3("Done with wrapper in MPI_Finalize at level %i - "
                         "reseting to %i",
                         pnmpi_level, start_level);
-              set_pnmpi_level(start_level);
+              pnmpi_level = start_level;
               return res;
             }
-          pnmpi_level = inc_pnmpi_level();
+          ++pnmpi_level;
         }
     }
 
   DBGPRINT3("Calling a original MPI in MPI_Finalize");
   res = MPI_SUCCESS;
   DBGPRINT3("Done with original MPI in MPI_Finalize");
-  set_pnmpi_level(start_level);
+  pnmpi_level = start_level;
   return res;
 }
 
@@ -674,10 +671,10 @@ int MPI_Pcontrol(int level, ...)
       ((modules.pcontrol == PNMPI_PCONTROL_TYPED) &&
        (modules.pcontrol_typed_level != level)))
     {
-      int curr_pnmpi_level = get_pnmpi_level();
+      int curr_pnmpi_level = pnmpi_level;
       for (i = 0; i < pnmpi_max_level; i++)
         {
-          set_pnmpi_level(i);
+          pnmpi_level = i;
           if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i] != NULL) &&
               (modules.module[i]->pcontrol))
             {
@@ -687,7 +684,7 @@ int MPI_Pcontrol(int level, ...)
                 return ret;
             }
         }
-      set_pnmpi_level(curr_pnmpi_level);
+      pnmpi_level = curr_pnmpi_level;
       return MPI_SUCCESS;
     }
 
@@ -716,10 +713,10 @@ int MPI_Pcontrol(int level, ...)
         }
       va_end(va_alist);
 
-      int curr_pnmpi_level = get_pnmpi_level();
+      int curr_pnmpi_level = pnmpi_level;
       for (i = 0; i < pnmpi_max_level; i++)
         {
-          set_pnmpi_level(i);
+          pnmpi_level = i;
           if ((pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i] != NULL) &&
               (modules.module[i]->pcontrol))
             {
@@ -749,7 +746,7 @@ int MPI_Pcontrol(int level, ...)
                 return ret;
             }
         }
-      set_pnmpi_level(curr_pnmpi_level);
+      pnmpi_level = curr_pnmpi_level;
 
       return MPI_SUCCESS;
     }

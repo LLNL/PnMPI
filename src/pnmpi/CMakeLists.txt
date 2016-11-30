@@ -41,7 +41,7 @@ find_package(Sanitizers)
 # available object libraries. Otherwise the compilation of PnMPI will result in
 # errors, as easylib would select the static object library for the shared PnMPI
 # library.
-add_subdirectory(attributes)
+add_subdirectory(compiler)
 add_subdirectory(debug)
 add_subdirectory(service)
 

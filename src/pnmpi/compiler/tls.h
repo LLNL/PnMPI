@@ -28,34 +28,29 @@
  * LLNL-CODE-402774
  */
 
-/* Public interface for PNMPI */
-/* To be used by applications that are aware of PNMPI */
+#include <pnmpi/private/compiler_features.h>
 
-#include <mpi.h>
 
-#include "pnmpi-config.h"
-#include "pnmpimod.h"
+/* For some functionality in PnMPI and modules we need thread local storage,
+ * otherwise storage may be corrupted for MPI applications with concurrent calls
+ * (MPI threading level MPI_THREAD_MULTIPLE).
+ *
+ * We'll try to use C11 threads or the compilers builtin __thread to get
+ * thread local storage. If thread local storage is not supported by the
+ * compiler, we'll set the PNMPI_COMPILER_NO_TLS macro, so PnMPI and the modules
+ * can handle this. */
 
-#define PNMPI_PCONTROL_LEVEL 3
+#if defined(C11_THREAD_LOCAL_FOUND)
 
-#define PNMPI_PCONTROL_SINGLE 0x0
-#define PNMPI_PCONTROL_MULTIPLE 0x1
-#define PNMPI_PCONTROL_VARG 0x0
-#define PNMPI_PCONTROL_PTR 0x2
+#define pnmpi_compiler_tls_keyword _Thread_local
 
-#define PNMPI_PCONTROL_PMPI 0
-#define PNMPI_PCONTROL_OFF 1
-#define PNMPI_PCONTROL_ON 2
-#define PNMPI_PCONTROL_PNMPI 3
-#define PNMPI_PCONTROL_MIXED 4
-#define PNMPI_PCONTROL_INT 5
-#define PNMPI_PCONTROL_TYPED 6
+#elif defined(THREADKEYWORD_FOUND)
 
-#define PNMPI_PCONTROL_DEFAULT PNMPI_PCONTROL_INT
+#define pnmpi_compiler_tls_keyword __thread
 
-#define PNMPI_PCONTROL_TYPE_INT 0
-#define PNMPI_PCONTROL_TYPE_LONG 1
-#define PNMPI_PCONTROL_TYPE_PTR 2
-#define PNMPI_PCONTROL_TYPE_DOUBLE 3
+#else
 
-#define PNMPI_ERROR -1
+#define PNMPI_COMPILER_NO_TLS
+#define pnmpi_compiler_tls_keyword
+
+#endif
