@@ -56,7 +56,7 @@ void pnmpi_call_hook(const char *hook)
       int (*sym)() = (int (*)())find_symbol(modules.module[i], hook);
       if (sym == NULL)
         {
-          pnmpi_debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook",
+          pnmpi_debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook.\n",
                       modules.module[i]->name, hook);
           continue;
         }
