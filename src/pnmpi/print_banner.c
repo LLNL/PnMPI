@@ -61,8 +61,8 @@ void pnmpi_print_banner()
    * have printed messages before MPI_Init (e.g. debug options are enabled). */
   fflush(stdout);
   fflush(stderr);
-  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Barrier failed.\n");
+  if (MPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
+    pnmpi_error("MPI_Barrier failed.\n");
 
 
   /* If we have printed the banner before, the process is not the first rank, or
@@ -173,6 +173,6 @@ wait_header_printed:
    * output in other functions, while rank 0 is printing the header. */
   fflush(stdout);
   fflush(stderr);
-  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Barrier failed.\n");
+  if (MPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
+    pnmpi_error("MPI_Barrier failed.\n");
 }
