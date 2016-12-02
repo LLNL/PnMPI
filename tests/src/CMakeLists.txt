@@ -51,7 +51,7 @@ target_link_libraries(test-mpi-c ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-c)
 add_sanitizers(test-mpi-c)
 pnmpi_mpi_test("binary_mpi_c" COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
-  $<TARGET_FILE:test-mpi-c>)
+  ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test-mpi-c> ${MPIEXEC_POSTFLAGS})
 
 # The following target may be used to check general MPI functionality. It uses
 # the common MPI functions MPI_Init_thread, MPI_Finalize, MPI_Send and MPI_Recv
@@ -62,7 +62,8 @@ target_link_libraries(test-mpi-threaded ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-threaded)
 add_sanitizers(test-mpi-threaded)
 pnmpi_mpi_test("binary_mpi_threaded" COMMAND ${MPIEXEC}
-  ${MPIEXEC_NUMPROC_FLAG} 2 $<TARGET_FILE:test-mpi-threaded>)
+  ${MPIEXEC_NUMPROC_FLAG} 2
+  ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test-mpi-threaded> ${MPIEXEC_POSTFLAGS})
 
 # The following target may be used to check PnMPI's Pcontrol functionality. It
 # only calls MPI_Init, MPI_Finalize and MPI_Pcontrol and no output will be
@@ -84,8 +85,9 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   target_link_libraries(test-mpi-fortran ${MPI_Fortran_LIBRARIES})
   add_coverage(test-mpi-fortran)
   add_sanitizers(test-mpi-fortran)
-  pnmpi_mpi_test("binary_mpi_fortran" COMMAND
-    ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2 $<TARGET_FILE:test-mpi-fortran>)
+  pnmpi_mpi_test("binary_mpi_fortran" COMMAND ${MPIEXEC}
+    ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test-mpi-fortran> ${MPIEXEC_POSTFLAGS})
 endif ()
 
 
