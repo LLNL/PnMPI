@@ -31,6 +31,7 @@
 #include <mpi.h>
 
 #include "core.h"
+#include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
 
 
@@ -49,6 +50,19 @@ void pnmpi_app_shutdown()
    * 2. app_shutdown must be enabled, otherwise MPI was shutdown before in the
    *    MPI_Finalize wrapper. */
   if (!pnmpi_init_done || !pnmpi_hook_activated("app_shutdown"))
+    return;
+
+  /* In some cases modules may have called PMPI_Finalize which was not patched
+   * and redirected to PnMPI,so MPI is not active anymore. If the app_shutdown
+   * is called under these conditions, MPI will crash, so a check is performed
+   * to ensure that MPI is still active. */
+  int mpi_initialized, mpi_finalized;
+  if (PMPI_Initialized(&mpi_initialized) != MPI_SUCCESS)
+    pnmpi_error("PMPI_Initialized failed.\n");
+  if (PMPI_Finalized(&mpi_finalized) != MPI_SUCCESS)
+    pnmpi_error("PMPI_Finalized failed.\n");
+
+  if (!mpi_initialized || mpi_finalized)
     return;
 
 
