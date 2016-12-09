@@ -102,7 +102,7 @@ add_custom_target(generate DEPENDS
 
 # PnMPI shared library
 easy_add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
-add_dependencies(pnmpi generate)
+add_dependencies(pnmpi generate pnmpi_debug_pmpi)
 add_coverage(pnmpi)
 add_sanitizers(pnmpi)
 target_link_libraries(pnmpi
@@ -129,7 +129,7 @@ endif()
 
 # PnMPI static library (same output name as shared lib)
 easy_add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
-add_dependencies(pnmpi_static generate)
+add_dependencies(pnmpi_static generate pnmpi_debug_pmpi)
 set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 
 #copy header files to include directory in binary dir
@@ -147,7 +147,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   easy_add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
   add_coverage(pnmpif)
   add_sanitizers(pnmpif)
-  add_dependencies(pnmpif generate)
+  add_dependencies(pnmpif generate pnmpi_debug_pmpi)
   target_link_libraries(pnmpif
     ${MPI_Fortran_LIBRARIES}
     -ldl)
@@ -181,7 +181,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
 
   # PnMPI fortran static lib
   easy_add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
-  add_dependencies(pnmpif_static generate)
+  add_dependencies(pnmpif_static generate pnmpi_debug_pmpi)
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
   set_target_properties(pnmpif_static PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
 

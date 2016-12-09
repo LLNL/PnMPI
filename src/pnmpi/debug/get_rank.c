@@ -60,7 +60,16 @@ int pnmpi_get_rank()
 
   /* If MPI was not initialized until now, we can't lookup the rank. */
   int initialized;
-  PMPI_Initialized(&initialized);
+  if (PMPI_Initialized(&initialized) != MPI_SUCCESS)
+    {
+      /* pnmpi_error can't be used here, because this would result in an endless
+       * loop: pnmpi_error is a wrapper of pnmpi_warning which uses this
+       * function, so the PMPI_Initialized error would occur again and again
+       * until the stack is full. */
+      fprintf(stderr, "%s:%d: PMPI_Initialized failed\n", __FUNCTION__,
+              __LINE__);
+      exit(EXIT_FAILURE);
+    }
   if (!initialized)
     return -1;
 

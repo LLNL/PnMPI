@@ -44,6 +44,13 @@ find_package(Sanitizers)
 pnmpi_add_header(debug_io.h)
 pnmpi_add_private_header(print.h)
 
+# Generate a new header for PMPI functions. This header may be used as shortcut
+# for calling the function and printing an error if the error code does not
+# match MPI_SUCCESS.
+add_wrapped_file("../header/pnmpi/private/pmpi.h" pmpi.h.w -s)
+add_custom_target(pnmpi_debug_pmpi
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/../header/pnmpi/private/pmpi.h")
+
 
 # Install the public man pages for this object.
 pnmpi_add_man(pnmpi_debug_io pnmpi_error)
@@ -69,6 +76,8 @@ easy_add_library(pnmpi_debug OBJECT
 easy_target_link_libraries(pnmpi_debug ${MPI_C_LIBRARIES})
 
 foreach (target pnmpi_debug pnmpi_debug_pic)
+  add_dependencies(${target} pnmpi_debug_pmpi)
+
   add_coverage(${target})
   add_sanitizers(${target})
 endforeach ()

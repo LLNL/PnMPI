@@ -62,7 +62,16 @@ static int pnmpi_get_size_width()
   /* Check if MPI is initialized yet. Otherwise, we can't lookup the size of
    * MPI_COMM_WORLD to calculate its width. */
   int initialized;
-  PMPI_Initialized(&initialized);
+  if (PMPI_Initialized(&initialized) != MPI_SUCCESS)
+    {
+      /* pnmpi_error can't be used here, because this would result in an endless
+       * loop: pnmpi_error is a wrapper of pnmpi_warning which uses this
+       * function, so the PMPI_Initialized error would occur again and again
+       * until the stack is full. */
+      fprintf(stderr, "%s:%d: PMPI_Initialized failed\n", __FUNCTION__,
+              __LINE__);
+      exit(EXIT_FAILURE);
+    }
   if (initialized)
     {
       int size;

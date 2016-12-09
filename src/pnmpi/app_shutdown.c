@@ -32,6 +32,7 @@
 
 #include "core.h"
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/pmpi.h>
 
 
 #ifdef COMPILE_FOR_FORTRAN

@@ -36,6 +36,7 @@
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/pmpi.h>
 
 
 int pnmpi_mpi_thread_level_provided;
@@ -59,9 +60,8 @@ void pnmpi_app_startup(int argc, char **argv)
   if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_C)
     {
       pnmpi_init_was_fortran = 0;
-      if (PMPI_Init_thread(&argc, &argv, required,
-                           &pnmpi_mpi_thread_level_provided) != MPI_SUCCESS)
-        pnmpi_error("PMPI_Init_thread failed.\n");
+      PMPI_Init_thread(&argc, &argv, required,
+                       &pnmpi_mpi_thread_level_provided);
     }
   else
     {
