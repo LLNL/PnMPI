@@ -467,6 +467,25 @@ If your module is not threadsafe or is only able to process a limited amount of
 threading, it may provide an integer named `PnMPI_threading_level` to define the
 maximum provided threading level of this module.
 
+### C3) Module hooks
+
+At different points hooks will be called in all loaded modules. These can be
+used to trigger some functionality at a given time. All hooks have the return
+type `int` and should return `PNMPI_SUCCESS` on success.
+
+* `PNMPI_RegistrationPoint`: This hook will be called just after the module has
+  been loaded. It may be used to register the name of the module, services
+  provided by the module, etc.
+* `PNMPI_RegistrationComplete`: This hook will be called after PnMPI is
+  initialized and all modules have been registered.
+* `app_startup`: If a module provides an `app_startup` hook, PnMPI will
+  initialize MPI in the applications constructor *before* `main` is started and
+  call the hook.
+* `app_shutdown`: If a module provides an `app_shutdown` hook, PnMPI will not
+  call `PMPI_Finalize` in the `MPI_Finalize` wrapper, but keeps MPI open until
+  `main` has finished and calls the hook in the applications destructor. After
+  the hooks of all modules have been called, MPI will be shut down.
+
 
 D) Debug Options
 ================
