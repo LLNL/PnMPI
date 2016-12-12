@@ -32,6 +32,14 @@ find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
+# Generate a new header for MPI functions. This header may be used as shortcut
+# for calling the function and printing an error if the error code does not
+# match MPI_SUCCESS.
+add_wrapped_file(mpi_errors.h mpi_errors.h.w -s)
+add_custom_target(test-mpi-wrapper
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mpi_errors.h)
+
+
 # The following executable may be used to check the general functionality of a
 # test case. It does not call any MPI functions, so it is useful for checking
 # non-MPI functionality like the PnMPI startup. Some memory leaks may be tracked
@@ -46,7 +54,9 @@ pnmpi_test("binary_nompi" COMMAND $<TARGET_FILE:test-nompi>)
 # the common MPI functions MPI_Init, MPI_Finalize, MPI_Send and MPI_Recv and may
 # be used with at least 2 ranks.
 add_executable("test-mpi-c" test-mpi.c)
-target_include_directories(test-mpi-c PRIVATE ${MPI_C_INCLUDE_PATH})
+add_dependencies(test-mpi-c test-mpi-wrapper)
+target_include_directories(test-mpi-c
+  PRIVATE ${MPI_C_INCLUDE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(test-mpi-c ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-c)
 add_sanitizers(test-mpi-c)
@@ -57,7 +67,9 @@ pnmpi_mpi_test("binary_mpi_c" COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
 # the common MPI functions MPI_Init_thread, MPI_Finalize, MPI_Send and MPI_Recv
 # and may be used with at least 2 ranks.
 add_executable(test-mpi-threaded test-mpi-threaded.c)
-target_include_directories(test-mpi-threaded PRIVATE ${MPI_C_INCLUDE_PATH})
+add_dependencies(test-mpi-threaded test-mpi-wrapper)
+target_include_directories(test-mpi-threaded
+  PRIVATE ${MPI_C_INCLUDE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(test-mpi-threaded ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-threaded)
 add_sanitizers(test-mpi-threaded)
@@ -69,7 +81,9 @@ pnmpi_mpi_test("binary_mpi_threaded" COMMAND ${MPIEXEC}
 # only calls MPI_Init, MPI_Finalize and MPI_Pcontrol and no output will be
 # generated, except for errors.
 add_executable(test-mpi-pcontrol test-mpi-pcontrol.c)
-target_include_directories(test-mpi-pcontrol PRIVATE ${MPI_C_INCLUDE_PATH})
+add_dependencies(test-mpi-pcontrol test-mpi-wrapper)
+target_include_directories(test-mpi-pcontrol
+  PRIVATE ${MPI_C_INCLUDE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(test-mpi-pcontrol ${MPI_C_LIBRARIES})
 add_coverage(test-mpi-pcontrol)
 add_sanitizers(test-mpi-pcontrol)

@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 
-#include <mpi.h>
+#include "mpi_errors.h"
 
 
 int main(int argc, char **argv)

@@ -28,25 +28,32 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>  // fprintf, printf
+/* This file provides macros for MPI_* calls to check the calls for their
+ * correct return value. If a call wrapped by this file failes, an error message
+ * will be printed and the function exited. */
+
+#ifndef PNMPI_MPI_ERRORS_H
+#define PNMPI_MPI_ERRORS_H
+
+
+#include <stdio.h>  // fprintf
 #include <stdlib.h> // EXIT_* macros
 
-#include "mpi_errors.h"
+#include <mpi.h>
 
 
-int main(int argc, char **argv)
-{
-  /* Note: MPI_Pcontrol is not wrapped by mpi_errors.h, but as the MPI standard
-   * does not say something about the value to be returned, it does not have to
-   * be checked. */
+{{forallfn fn_name}}
+#define {{fn_name}}({{args}})                                         \
+  {                                                                   \
+    int err;                                                          \
+    if ((err = {{fn_name}}({{args}})) != MPI_SUCCESS)                 \
+      {                                                               \
+        fprintf(stderr, "%s:%d: {{fn_name}} returned an error: %i\n", \
+                __FILE__, __LINE__, err);                             \
+        exit(EXIT_FAILURE);                                           \
+      }                                                               \
+  }
+{{endforallfn}}
 
-  MPI_Init(&argc, &argv);
-  MPI_Pcontrol(0);
-  MPI_Finalize();
 
-  /* In standard C the following return is not required, but in some situations
-   * older versions of mpiexec report the job aborted, so the test case will
-   * fail, even if it succeed. Returning EXIT_SUCCESS avoids this false error
-   * message. */
-  return EXIT_SUCCESS;
-}
+#endif

@@ -27,32 +27,39 @@ C Written by Martin Schulz, schulzm@llnl.gov.
 C
 C LLNL-CODE-402774
 
-C This test file will simply pass the own rank in a circle to the next rank and
-C can be used to check the common MPI functions Init, Finalize, Send and Recv
-C in combination with PnMPI.
-
       program firstmpi
 
       include 'mpif.h'
 
-      integer :: mpierror, mpisize, mpirank, target, incoming
+      integer :: ierror, size, rank, buffer, i
       Integer status(MPI_STATUS_SIZE)
 
 
-      call MPI_Init(mpierror)
-      call MPI_Comm_size(MPI_COMM_WORLD, mpisize, mpierror)
-      call MPI_Comm_rank(MPI_COMM_WORLD, mpirank, mpierror)
+      call MPI_INIT(ierror)
+      call MPI_Comm_size(MPI_COMM_WORLD, size, ierror)
+      call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierror)
 
-      target = MOD( mpirank + 1 , mpisize )
+      if (size < 2) stop "At least 2 ranks are required for this test."
 
-      call MPI_Send(mpirank,1,MPI_INTEGER,target,42,MPI_COMM_WORLD,
-     2              mpierror)
-      call MPI_Recv(incoming,1,MPI_INTEGER,MPI_ANY_SOURCE,42,
-     2              MPI_COMM_WORLD,status,mpierror)
+C     All ranks send their rank to rank 0 which then answers the sending rank.
+      if (rank == 0) then
+        do i = 1,size-1
+          call MPI_RECV(buffer, 1, MPI_INTEGER, i, 42, MPI_COMM_WORLD,
+     &                  status, ierror)
+          call MPI_SEND(buffer, 1, MPI_INTEGER, i, 42, MPI_COMM_WORLD,
+     &                  ierror)
 
-      print *, "Message from ",status(MPI_SOURCE),"/",incoming,
-     2      " to ",mpirank
+          print *, "Got ", buffer, " from rank ", status(MPI_SOURCE)
+        end do
+      else
+        call MPI_SEND(rank, 1, MPI_INTEGER, 0, 42, MPI_COMM_WORLD,
+     &                ierror)
+        call MPI_RECV(buffer, 1, MPI_INTEGER, 0, 42, MPI_COMM_WORLD,
+     &                status, ierror)
 
-      call MPI_Finalize(mpierror)
+        print *, "Got ", buffer, " from rank ", status(MPI_SOURCE)
+      end if
+
+      call MPI_FINALIZE(ierror)
 
       end program firstmpi

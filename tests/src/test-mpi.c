@@ -28,36 +28,15 @@
  * LLNL-CODE-402774
  */
 
-/* This test file will simply pass the own rank in a circle to the next rank and
- * can be used to check the common MPI functions Init, Finalize, Send and Recv
- * in combination with PnMPI. */
+#include <stdio.h> // printf
 
-#include <stdio.h>  // fprintf, printf
-#include <stdlib.h> // EXIT_* macros
-
-#include <mpi.h>
-
-
-/** \brief Print the error code that \p function returned and exit.
- *
- *
- * \param function Function name.
- */
-#define print_err(function)                                    \
-  {                                                            \
-    fprintf(stderr, function " returned an error: %i\n", err); \
-    return EXIT_FAILURE;                                       \
-  }
+#include "mpi_errors.h"
 
 
 int main(int argc, char **argv)
 {
-  int err;
-
-
   /* Initalize MPI. */
-  if ((err = MPI_Init(&argc, &argv)) != MPI_SUCCESS)
-    print_err("MPI_Init");
+  MPI_Init(&argc, &argv);
 
 
   /* Get MPI_COMM_WORLD size and current rank and calculate the target for
@@ -75,25 +54,29 @@ int main(int argc, char **argv)
     }
 
 
-  /* Send our rank to the next rank. */
-  int target = (rank + 1) % size;
+  /* All ranks send their rank to rank 0 which then answers the sending rank. */
   int buffer;
   MPI_Status status;
 
-  if ((err = MPI_Send(&rank, 1, MPI_INT, target, 42, MPI_COMM_WORLD)) !=
-      MPI_SUCCESS)
-    print_err("MPI_Send");
-
-  if ((err = MPI_Recv(&buffer, 1, MPI_INT, MPI_ANY_SOURCE, 42, MPI_COMM_WORLD,
-                      &status)) != MPI_SUCCESS)
-    print_err("MPI_Recv");
-
-  printf("Got %d from rank %d,\n", buffer, status.MPI_SOURCE);
-
+  if (rank == 0)
+    {
+      int i, buffer;
+      for (i = 1; i < size; i++)
+        {
+          MPI_Recv(&buffer, 1, MPI_INT, i, 42, MPI_COMM_WORLD, &status);
+          printf("Got %d from rank %d,\n", buffer, status.MPI_SOURCE);
+          MPI_Send(&buffer, 1, MPI_INT, i, 42, MPI_COMM_WORLD);
+        }
+    }
+  else
+    {
+      MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
+      MPI_Recv(&buffer, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
+      printf("Got %d from rank %d,\n", buffer, status.MPI_SOURCE);
+    }
 
   /* Finalize MPI. */
-  if ((err = MPI_Finalize()) != MPI_SUCCESS)
-    print_err("MPI_Finalize");
+  MPI_Finalize();
 
 
   /* In standard C the following return is not required, but in some situations
