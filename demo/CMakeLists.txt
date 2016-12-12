@@ -75,12 +75,8 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   endforeach ()
 endif()
 
-set(npflag "-np")
-if(MPIEXEC_NUMPROC_FLAG)
-  set(npflag ${MPIEXEC_NUMPROC_FLAG})
-endif(MPIEXEC_NUMPROC_FLAG)
-if(NOT DEFINED MPIEXEC_EXTRA_FLAG)
-  set(MPIEXEC_NUMPROC_FLAG "")
+if(NOT MPIEXEC_NUMPROC_FLAG)
+  set(MPIEXEC_NUMPROC_FLAG "-np")
 endif()
 
 
@@ -107,12 +103,12 @@ endfunction()
 
 
 # Add C tests
-add_test(simple ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/simple)
-add_test(simple-s1 ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/simple-s1)
-add_test(
-  simple-pn
-  ${MPIEXEC}
-  ${npflag} 2 ${EXECUTABLE_OUTPUT_PATH}/simple-pn)
+add_test(simple ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+  ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/simple ${MPIEXEC_POSTFLAGS})
+add_test(simple-s1 ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+  ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/simple-s1 ${MPIEXEC_POSTFLAGS})
+add_test(simple-pn ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+  ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/simple-pn ${MPIEXEC_POSTFLAGS})
 
 foreach (TARGET simple simple-s1 simple-pn)
   set_sanitizer_env(${TARGET})
@@ -122,19 +118,21 @@ set_pnmpi_env(simple-pn)
 
 #Add Fortran tests
 if (CMAKE_Fortran_COMPILER_WORKS)
-  add_test(fdemo    ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/fdemo)
-  add_test(fdemo-s1 ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/fdemo-s1)
-  add_test(
-    fdemo-pn
-    ${MPIEXEC}
-    ${npflag} 2 ${EXECUTABLE_OUTPUT_PATH}/fdemo-pn)
+  add_test(fdemo ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/fdemo ${MPIEXEC_POSTFLAGS})
+  add_test(fdemo-s1 ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/fdemo-s1 ${MPIEXEC_POSTFLAGS})
+  add_test(fdemo-pn ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/fdemo-pn ${MPIEXEC_POSTFLAGS})
 
-  add_test(f90demo    ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/f90demo)
-  add_test(f90demo-s1 ${MPIEXEC} ${npflag} 2 ${MPIEXEC_EXTRA_FLAG} ${EXECUTABLE_OUTPUT_PATH}/f90demo-s1)
-  add_test(
-    f90demo-pn
-    ${MPIEXEC}
-    ${npflag} 2 ${EXECUTABLE_OUTPUT_PATH}/f90demo-pn)
+  add_test(f90demo ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/f90demo ${MPIEXEC_POSTFLAGS})
+  add_test(f90demo-s1 ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/f90demo-s1
+    ${MPIEXEC_POSTFLAGS})
+  add_test(f90demo-pn ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
+    ${MPIEXEC_PREFLAGS} ${EXECUTABLE_OUTPUT_PATH}/f90demo-pn
+    ${MPIEXEC_POSTFLAGS})
 
 
   foreach (TARGET fdemo fdemo-s1 fdemo-pn f90demo f90demo-s1 f90demo-pn)

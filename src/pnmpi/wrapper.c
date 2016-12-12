@@ -547,8 +547,6 @@ int MPI_Finalize(void)
   if (pnmpi_hook_activated("app_shutdown") && !pnmpi_finalize_done)
     return MPI_SUCCESS;
 
-  err = PMPI_Barrier(MPI_COMM_WORLD);
-
   /* It would be better to distinguish between C and Fortran at this point, so
    * if we've called a C PMPI_Init, PMPI_Finalize would be used and for Fortran
    * pmpi_finalize_. We won't do this here, because for a long time there was a
