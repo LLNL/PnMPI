@@ -28,45 +28,38 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_SERVICE_H
-#define PNMPI_SERVICE_H
+#include <stdio.h>
+
+#include <pnmpi/debug_io.h>
+#include <pnmpi/service.h>
+
+#include "core.h"
 
 
-/** \brief Handle for a module.
- */
-typedef int pnmpi_module_handle;
-
-
-/* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
- * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
- * API functions. */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-/** \defgroup pnmpi_service Service functions for module interaction.
- */
-int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
-
-
-/** \defgroup pnmpi_service_self Service functions for module interaction.
+/** \brief Register a module.
  *
- * \note These functions are the same as the \ref pnmpi_service interface, but
- *  allow the modules to interact with PnMPI for the own module in one call
- *  instead of getting the handle first.
+ * \details This function registers the calling module with \p name.
+ *
+ *
+ * \param name The name of the module to be registered.
+ *
+ * \return PNMPI_SUCCESS The module has been registered.
+ *
+ *
+ * \ingroup pnmpi_service_register
  */
-int PNMPI_Service_GetPcontrolSelf();
+int PNMPI_Service_RegisterModule(const char *name)
+{
+  /* Copy name into the module name buffer. If the name is longer than the
+   * supplied buffer, a warning will be printed. */
+  if (snprintf(modules.module[pnmpi_level]->username, PNMPI_MODULE_USERNAMELEN,
+               "%s", name) >= PNMPI_MODULE_USERNAMELEN)
+    pnmpi_warning("Module name '%s' of module %d was too long.\n", name,
+                  pnmpi_level);
+
+  /* Mark the module as registered. */
+  modules.module[pnmpi_level]->registered = 1;
 
 
-/** \defgroup pnmpi_service_register Service functions for module registration.
- */
-int PNMPI_Service_RegisterModule(const char *name);
-
-
-#ifdef __cplusplus
+  return PNMPI_SUCCESS;
 }
-#endif
-
-
-#endif

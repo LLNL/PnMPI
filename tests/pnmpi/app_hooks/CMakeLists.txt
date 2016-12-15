@@ -27,6 +27,8 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_headers)
+
 find_package(codecov)
 find_package(MPI REQUIRED)
 find_package(Sanitizers)
@@ -40,7 +42,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/pnmpi
   ${PROJECT_BINARY_DIR}
   ${PROJECT_BINARY_DIR}/src/pnmpi
-)
+  ${PNMPI_HEADER_DIR})
 
 set(MODS app_startup app_shutdown)
 foreach(mod ${MODS})

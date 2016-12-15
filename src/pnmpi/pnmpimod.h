@@ -28,15 +28,18 @@
  * LLNL-CODE-402774
  */
 
+#ifndef _PNMPIMOD_HEADER
+#define _PNMPIMOD_HEADER
+
+#include <pnmpi/service.h>
+
+
 /*===============================================================*/
 /* P^N MPI                                                       */
 /* Service header file                                           */
 /* This file needs to be included by any module that explicitly  */
 /* is designed to work with P^N MPI and uses its extra services  */
 /*===============================================================*/
-
-#ifndef _PNMPIMOD_HEADER
-#define _PNMPIMOD_HEADER
 
 #include "pnmpi-config.h"
 #include "pnmpi.h"
@@ -124,7 +127,6 @@ extern "C" {
 
 int PNMPI_RegistrationPoint(void);
 
-int PNMPI_Service_RegisterModule(const char *name);
 int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
 int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
 

@@ -44,19 +44,6 @@
 /* Services available for cross module communication */
 
 /*........................................................*/
-/* Register a module */
-
-int PNMPI_Service_RegisterModule(const char *name)
-{
-  modules.module[pnmpi_level]->registered = 1;
-  strncpy(modules.module[pnmpi_level]->username, name,
-          PNMPI_MODULE_USERNAMELEN);
-  modules.module[pnmpi_level]->username[PNMPI_MODULE_USERNAMELEN - 1] = (char)0;
-  return PNMPI_SUCCESS;
-}
-
-
-/*........................................................*/
 /* Register a service */
 
 int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service)

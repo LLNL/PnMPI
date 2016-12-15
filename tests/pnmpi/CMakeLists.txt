@@ -53,4 +53,5 @@ COMMAND $<TARGET_FILE:test-mpi-threaded>)
 # Recurse into subdirectories.
 add_subdirectory(core)
 add_subdirectory(app_hooks)
+add_subdirectory(service)
 add_subdirectory(stacks)

@@ -28,45 +28,10 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_SERVICE_H
-#define PNMPI_SERVICE_H
+#include <pnmpi/service.h>
 
 
-/** \brief Handle for a module.
- */
-typedef int pnmpi_module_handle;
-
-
-/* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
- * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
- * API functions. */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-/** \defgroup pnmpi_service Service functions for module interaction.
- */
-int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
-
-
-/** \defgroup pnmpi_service_self Service functions for module interaction.
- *
- * \note These functions are the same as the \ref pnmpi_service interface, but
- *  allow the modules to interact with PnMPI for the own module in one call
- *  instead of getting the handle first.
- */
-int PNMPI_Service_GetPcontrolSelf();
-
-
-/** \defgroup pnmpi_service_register Service functions for module registration.
- */
-int PNMPI_Service_RegisterModule(const char *name);
-
-
-#ifdef __cplusplus
+int PNMPI_RegistrationPoint()
+{
+  return PNMPI_Service_RegisterModule("registerTest");
 }
-#endif
-
-
-#endif

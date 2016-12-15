@@ -30,21 +30,12 @@
 include(PnMPI_headers)
 
 find_package(codecov)
-find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
-# Add test modules for app_start and app_shutdown hooks. These modules will not
-# be installed, but used for the test cases below.
+include_directories(${PNMPI_HEADER_DIR})
 
-include_directories(
-  ${MPI_C_INCLUDE_PATH}
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PNMPI_HEADER_DIR})
-
-set(MODS stack)
+set(MODS register)
 foreach(mod ${MODS})
   add_pnmpi_module(${mod} ${mod}.c)
   add_coverage(${mod})
@@ -53,10 +44,10 @@ endforeach()
 
 
 # Check the module.
-pnmpi_pnmpize_test(stack
+pnmpi_pnmpize_test(service_registerModule
   NUMPROCS 2
   PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_SOURCE_DIR}/stack.conf"
+    -c "${CMAKE_CURRENT_SOURCE_DIR}/registerModule.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
-  PASS_EXPRESSION "Switching the stack."
+  PASS_EXPRESSION "registered as: registerTest"
   COMMAND $<TARGET_FILE:test-mpi-c>)

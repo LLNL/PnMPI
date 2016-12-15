@@ -27,6 +27,8 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_headers)
+
 find_package(codecov)
 find_package(MPI REQUIRED)
 find_package(Sanitizers)
@@ -110,6 +112,7 @@ endif ()
 add_pnmpi_module(test-module module.c)
 target_include_directories(test-module PRIVATE
   ${MPI_C_INCLUDE_PATH}
+  ${PNMPI_HEADER_DIR}
   ${PROJECT_BINARY_DIR})
 
 set(TEST_MODULE_CONF "${CMAKE_CURRENT_SOURCE_DIR}/module.conf" CACHE INTERNAL

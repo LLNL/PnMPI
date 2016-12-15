@@ -27,8 +27,13 @@
 #
 # LLNL-CODE-402774
 
-# Include module build infrastructure
 include(PnMPIModules)
+include(PnMPI_headers)
+
+
+# Include directories for all modules.
+include_directories(${PNMPI_HEADER_DIR})
+
 
 # Recurse to sub-directories
 add_subdirectory(comm)
