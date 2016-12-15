@@ -113,7 +113,6 @@ INPUT = @PROJECT_SOURCE_DIR@/src                       \
         @PROJECT_SOURCE_DIR@/src/pnmpi/fallback_init.h \
         @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpi.h         \
         @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpimod.h      \
-        @PROJECT_SOURCE_DIR@/src/pnmpi/services.h      \
         @PROJECT_BINARY_DIR@/src/pnmpi/header
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should

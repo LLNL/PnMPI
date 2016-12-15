@@ -28,7 +28,7 @@
  * LLNL-CODE-402774
  */
 
-#include "services.h"
+#include "pnmpimod.h"
 
 /*------------------------------------------------------------*/
 /* Declarations */
