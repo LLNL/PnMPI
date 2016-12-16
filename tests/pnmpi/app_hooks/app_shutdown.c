@@ -31,15 +31,13 @@
 #include <stdio.h>
 
 #include <mpi.h>
-#include <pnmpimod.h>
+#include <pnmpi/hooks.h>
 
 
-int app_shutdown()
+void app_shutdown()
 {
   int status;
   PMPI_Initialized(&status);
 
   printf("shutdown hook: MPI %s\n", status ? "initialized" : "NOT initialized");
-
-  return PNMPI_SUCCESS;
 }

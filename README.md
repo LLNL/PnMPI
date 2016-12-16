@@ -471,7 +471,7 @@ maximum provided threading level of this module.
 
 At different points hooks will be called in all loaded modules. These can be
 used to trigger some functionality at a given time. All hooks have the return
-type `int` and should return `PNMPI_SUCCESS` on success.
+type `void`.
 
 * `PNMPI_RegistrationPoint`: This hook will be called just after the module has
   been loaded. It may be used to register the name of the module, services

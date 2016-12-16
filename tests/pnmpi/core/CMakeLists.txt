@@ -27,6 +27,9 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_headers)
+include(PnMPIModules)
+
 find_package(MPI REQUIRED)
 
 
@@ -76,3 +79,25 @@ pnmpi_pnmpize_test(pnmpi_threading_downgrade
 	-c "${CMAKE_CURRENT_BINARY_DIR}/threading_downgrade.conf"
 	-m "${CMAKE_CURRENT_BINARY_DIR}"
 COMMAND $<TARGET_FILE:test-mpi-threaded>)
+
+
+#
+# Hooks
+#
+pnmpi_add_xmpi_module(hooks hooks.c)
+target_include_directories(hooks PRIVATE ${PNMPI_HEADER_DIR})
+add_coverage(hooks)
+add_sanitizers(hooks)
+
+pnmpi_generate_config(hooks.conf "module hooks")
+
+foreach (hook PNMPI_RegistrationPoint PNMPI_RegistrationComplete
+              app_startup app_shutdown)
+  pnmpi_pnmpize_test(pnmpi_hooks_${hook}
+    NUMPROCS 2
+    PNMPIZE_ARGS
+      -c "${CMAKE_CURRENT_BINARY_DIR}/hooks.conf"
+      -m "${CMAKE_CURRENT_BINARY_DIR}"
+    PASS_EXPRESSION "${hook} hit."
+    COMMAND $<TARGET_FILE:test-mpi-c>)
+endforeach ()

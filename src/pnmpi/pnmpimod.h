@@ -86,7 +86,6 @@
 typedef int PNMPI_modHandle_t;
 
 typedef int (*PNMPI_Service_Fct_t)();
-typedef int (*PNMPI_RegistrationPoint_t)(void);
 
 typedef struct PNMPI_Service_descriptor_d
 {
@@ -121,8 +120,6 @@ typedef struct PNMPI_Global_descriptor_d
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-int PNMPI_RegistrationPoint(void);
 
 int PNMPI_Service_RegisterModule(const char *name);
 int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);

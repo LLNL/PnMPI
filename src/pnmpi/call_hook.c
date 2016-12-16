@@ -45,6 +45,7 @@ void pnmpi_call_hook(const char *hook)
   int pnmpi_level_restore = pnmpi_level;
 
 
+  /* Iterate over all modules in all stacks. */
   size_t i;
   for (i = 0; i < modules.num; i++)
     {
@@ -61,16 +62,16 @@ void pnmpi_call_hook(const char *hook)
           continue;
         }
 
-      /* Call the hook's symbol and get the return value. If the hook does not
-       * return PNMPI_SUCCESS, the hook execution failed and a error message
-       * will be printed. Before calling the hook, the PnMPI level will be
-       * adjusted, so the hooks function may use service functions. */
+      /* Call the hook's symbol. Since the return value of the hook has no
+       * effect on the PnMPI module stack, it will be ignored. Before calling
+       * the hook, the PnMPI level will be adjusted, so the hooks function may
+       * use service functions. */
+      pnmpi_debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n", hook,
+                  modules.module[i]->name);
       pnmpi_level = i;
-      int err = sym();
-      if (err != PNMPI_SUCCESS)
-        pnmpi_warning("Error in '%s' hook in module %s: %i\n", hook,
-                      modules.module[i]->name, err);
+      sym();
     }
+
 
   /* Restore PnMPI level. */
   pnmpi_level = pnmpi_level_restore;

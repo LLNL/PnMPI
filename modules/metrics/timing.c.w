@@ -33,6 +33,7 @@
 #include <hires-timers.h>
 #include <mpi.h>
 #include <pnmpi/debug_io.h>
+#include <pnmpi/hooks.h>
 #include <pnmpi/private/tls.h>
 #include <pnmpi/service.h>
 #include <pnmpimod.h>
@@ -107,11 +108,8 @@ static void init_counters(struct timing_storage *t)
 /** \brief PnMPI registration point.
  *
  * \details This function sets all counters to zero and initializes the module.
- *
- *
- * \return \ref PNMPI_SUCCESS will be returned for every call.
  */
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
   init_counters(&timing_storage);
 
@@ -129,9 +127,6 @@ int PNMPI_RegistrationPoint()
    * will be increased. It will be checked when calling MPI_Pcontrol. */
   if (PNMPI_Service_GetPcontrolSelf())
     metric_atomic_inc(metric_invocations_pcontrol);
-
-
-  return PNMPI_SUCCESS;
 }
 
 
