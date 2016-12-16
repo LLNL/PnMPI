@@ -44,8 +44,9 @@ include_directories(
 
 set(MODS app_startup app_shutdown)
 foreach(mod ${MODS})
-    add_pnmpi_module(${mod} ${mod}.c)
-    add_coverage(${mod})
+  add_pnmpi_module(${mod} ${mod}.c)
+  add_coverage(${mod})
+  add_sanitizers(${mod})
 endforeach()
 
 
@@ -65,29 +66,34 @@ foreach (LANG ${TEST_LANGUAGES})
     COMMAND $<TARGET_FILE:test-mpi-${LANG}>)
 
   # Check app_startup will be called.
+  pnmpi_generate_config(app_startup.conf "module app_startup")
   pnmpi_pnmpize_test(app_hooks_${LANG}_startup
     NUMPROCS 2
     PASS_EXPRESSION "startup hook"
     PNMPIZE_ARGS
-      -c "${CMAKE_CURRENT_SOURCE_DIR}/app_startup.conf"
+      -c "${CMAKE_CURRENT_BINARY_DIR}/app_startup.conf"
       -m "${CMAKE_CURRENT_BINARY_DIR}"
     COMMAND $<TARGET_FILE:test-mpi-${LANG}>)
 
   # Check app_shutdown will be called.
+  pnmpi_generate_config(app_shutdown.conf "module app_shutdown")
   pnmpi_pnmpize_test(app_hooks_${LANG}_shutdown
     NUMPROCS 2
     PASS_EXPRESSION "shutdown hook"
     PNMPIZE_ARGS
-      -c "${CMAKE_CURRENT_SOURCE_DIR}/app_shutdown.conf"
+      -c "${CMAKE_CURRENT_BINARY_DIR}/app_shutdown.conf"
       -m "${CMAKE_CURRENT_BINARY_DIR}"
     COMMAND $<TARGET_FILE:test-mpi-${LANG}>)
 
   # Check app hooks. No PASS_EXPRESSION will be used, to check the exit status.
   # If any sanitizer or mpiexec fails, the exit status should be non-null.
+  pnmpi_generate_config(app_startup.conf
+                        "module app_startup"
+                        "module app_shutdown")
   pnmpi_pnmpize_test(app_hooks_${LANG}_all
     NUMPROCS 2
     PNMPIZE_ARGS
-      -c "${CMAKE_CURRENT_SOURCE_DIR}/app_hooks.conf"
+      -c "${CMAKE_CURRENT_BINARY_DIR}/app_hooks.conf"
       -m "${CMAKE_CURRENT_BINARY_DIR}"
     COMMAND $<TARGET_FILE:test-mpi-${LANG}>)
 endforeach ()
@@ -98,7 +104,7 @@ pnmpi_pnmpize_test(app_hooks_threading_level_env
   NUMPROCS 2
   PASS_EXPRESSION "0"
   PNMPIZE_ARGS
-	-c "${CMAKE_CURRENT_SOURCE_DIR}/app_startup.conf"
+	-c "${CMAKE_CURRENT_BINARY_DIR}/app_startup.conf"
 	-m "${CMAKE_CURRENT_BINARY_DIR}"
   COMMAND $<TARGET_FILE:test-mpi-threaded>)
 set_property(TEST app_hooks_threading_level_env APPEND PROPERTY ENVIRONMENT
