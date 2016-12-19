@@ -27,6 +27,15 @@
 #
 # LLNL-CODE-402774
 
-# Recurse into subdirectories.
-add_subdirectory(debug)
-add_subdirectory(metrics)
+include(PnMPI_headers)
+
+
+include_directories(
+  ${PNMPI_HEADER_DIR}
+  ${MPI_C_INCLUDE_PATH})
+
+pnmpi_add_xmpi_module(debug debug.c)
+add_coverage(debug)
+add_sanitizers(debug)
+
+install(TARGETS debug DESTINATION lib/pnmpi-modules)

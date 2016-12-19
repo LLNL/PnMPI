@@ -27,6 +27,24 @@
 #
 # LLNL-CODE-402774
 
-# Recurse into subdirectories.
-add_subdirectory(debug)
-add_subdirectory(metrics)
+pnmpi_generate_config(debug.conf "module debug")
+
+
+# Check if the module prints PID and hostname of the rank.
+pnmpi_pnmpize_test(mod_debug_print
+  NUMPROCS 1
+  PASS_EXPRESSION "Rank [0-9]+ at .* has pid [0-9]+."
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/debug.conf"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# Check if the module waits a given time at startup.
+pnmpi_pnmpize_test(mod_debug_wait
+  NUMPROCS 1
+  PASS_EXPRESSION "Waiting for 5 seconds."
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/debug.conf"
+	-d modules
+COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST mod_debug_wait APPEND PROPERTY ENVIRONMENT
+  "WAIT_AT_STARTUP=5")
