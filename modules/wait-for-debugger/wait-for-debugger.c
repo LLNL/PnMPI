@@ -87,8 +87,22 @@ void app_startup()
    * will be waited, so one may attach with a debuger in this time. */
   if (getenv("WAIT_AT_STARTUP") != NULL)
     {
+      /* Wait at this barrier, so all ranks may flush their buffers now. This
+       * will prevent for ugly output at stdout. */
+      fflush(stdout);
+      PMPI_Barrier(MPI_COMM_WORLD);
+
+
       int wait = atoi(getenv("WAIT_AT_STARTUP"));
-      pnmpi_debug(PNMPI_DEBUG_MODULE, "Waiting for %i seconds.\n", wait);
+      if (rank == 0)
+        {
+          printf("Waiting for %i seconds ... ", wait);
+          fflush(stdout);
+        }
+
       sleep(wait);
+
+      if (rank == 0)
+        printf("done.\n");
     }
 }

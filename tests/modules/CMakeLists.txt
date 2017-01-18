@@ -28,5 +28,5 @@
 # LLNL-CODE-402774
 
 # Recurse into subdirectories.
-add_subdirectory(debug)
 add_subdirectory(metrics)
+add_subdirectory(wait-for-debugger)

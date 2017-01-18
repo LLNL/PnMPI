@@ -374,6 +374,12 @@ inside the "module" directory. There are:
     pcontrol on
     ```
 
+* **wait-for-debugger**
+  This module prints the PID of each rank before executing the application. If
+  the `WAIT_AT_STARTUP` environment variable is set to a numeric value, the
+  execution will be delayed up to `value` seconds, so you may attach with a
+  debugger in that time.
+
 Note: All modules should be compiled with mpicc or equivalent
 (which includes the MPI header files) and should be linked
 without linking to the MPI library (to avoid MPI routines
