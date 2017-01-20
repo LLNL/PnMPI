@@ -74,6 +74,15 @@ function (pnmpi_mpi_test NAME)
 endfunction ()
 
 
+# Helper function to generate a configuration file for PnMPI. This may be used
+# to generate simple configuration files on demand instead of putting several
+# of them under version control.
+function (pnmpi_generate_config DEST)
+  string (REPLACE ";" "\n" PNMPI_CONFIG "${ARGN}")
+  configure_file("${PROJECT_SOURCE_DIR}/tests/src/pnmpi.conf.in" ${DEST})
+endfunction ()
+
+
 # Recurse into subdirectories.
 add_subdirectory(src)
 add_subdirectory(pnmpize)

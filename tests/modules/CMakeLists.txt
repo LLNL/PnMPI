@@ -29,3 +29,4 @@
 
 # Recurse into subdirectories.
 add_subdirectory(metrics)
+add_subdirectory(wait-for-debugger)

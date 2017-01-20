@@ -36,13 +36,15 @@ C LLNL-CODE-402774
 
 
       call MPI_INIT(ierror)
-      call MPI_Comm_size(MPI_COMM_WORLD, size, ierror)
-      call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierror)
+      call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierror)
+      call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror)
 
-      if (size < 2) stop "At least 2 ranks are required for this test."
+      if (size .lt. 2) then
+        stop "At least 2 ranks are required for this test."
+      end if
 
 C     All ranks send their rank to rank 0 which then answers the sending rank.
-      if (rank == 0) then
+      if (rank .eq. 0) then
         do i = 1,size-1
           call MPI_RECV(buffer, 1, MPI_INTEGER, i, 42, MPI_COMM_WORLD,
      &                  status, ierror)

@@ -28,16 +28,32 @@
  * LLNL-CODE-402774
  */
 
+/* This test module is used to check if PnMPI hits all hooks in modules. */
+
 #include <stdio.h>
 
-#include <mpi.h>
 #include <pnmpi/hooks.h>
+#include <pnmpi/private/attributes.h>
 
 
-void app_startup()
-{
-  int status;
-  PMPI_Initialized(&status);
+/** \brief Helper macro to generate our check functions.
+ *
+ *
+ * \param name The hooks name.
+ */
+#define check_hook(name)                                                     \
+  void name()                                                                \
+  {                                                                          \
+    printf("%s hit.\n", __FUNCTION__);                                       \
+  }                                                                          \
+  /* As C complains about an extra semicolon after the function declaration, \
+   * we have to add a variable declaration here which will be never used. */ \
+  PNMPI_INTERNAL                                                             \
+  int invisible
 
-  printf("startup hook: MPI %s\n", status ? "initialized" : "NOT initialized");
-}
+
+/* Add check functions for our hooks. */
+check_hook(PNMPI_RegistrationPoint);
+check_hook(PNMPI_RegistrationComplete);
+check_hook(app_startup);
+check_hook(app_shutdown);

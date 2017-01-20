@@ -39,8 +39,9 @@
 #include <stdio.h>
 
 #include <mpi.h>
-#include <pnmpimod.h>
 #include <pnmpi/debug_io.h>
+#include <pnmpi/hooks.h>
+#include <pnmpimod.h>
 
 #include "atomic.h"
 
@@ -100,15 +101,10 @@ static void init_counters(struct counter *c)
 /** \brief PnMPI registration point.
  *
  * \details This function sets all counters to zero.
- *
- *
- * \return \ref PNMPI_SUCCESS will be returned for every call.
  */
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
   init_counters(&counters);
-
-  return PNMPI_SUCCESS;
 }
 
 

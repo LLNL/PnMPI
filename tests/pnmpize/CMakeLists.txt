@@ -69,6 +69,9 @@ endfunction ()
 
 
 
+# Generate a configuration file to be used below.
+pnmpi_generate_config(pnmpi.conf "module test-module")
+
 
 # The following test should not check the whole functionality of PnMPIze, but
 # should check, if PnMPIze is able to execute a application. A second purpose
@@ -97,7 +100,7 @@ pnmpi_pnmpize_test(pnmpize_preload_pnmpi
 pnmpi_pnmpize_test(pnmpize_set_config
   NUMPROCS 2
   PASS_EXPRESSION "Wrapper: Sending"
-  PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
+  PNMPIZE_ARGS -c "${CMAKE_CURRENT_BINARY_DIR}/pnmpi.conf"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 # The following tests check, if PnMPIze can handle all required debug levels and
@@ -155,5 +158,5 @@ pnmpi_pnmpize_test(pnmpize_fortran_preload_pnmpi
 pnmpi_pnmpize_test(pnmpize_fortran_set_config
   NUMPROCS 2
   PASS_EXPRESSION "Wrapper: Sending"
-  PNMPIZE_ARGS -c "${TEST_MODULE_CONF}"
+  PNMPIZE_ARGS -c "${CMAKE_CURRENT_BINARY_DIR}/pnmpi.conf"
   COMMAND $<TARGET_FILE:test-mpi-fortran>)

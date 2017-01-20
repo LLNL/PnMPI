@@ -114,6 +114,3 @@ target_include_directories(test-module PRIVATE
   ${MPI_C_INCLUDE_PATH}
   ${PNMPI_HEADER_DIR}
   ${PROJECT_BINARY_DIR})
-
-set(TEST_MODULE_CONF "${CMAKE_CURRENT_SOURCE_DIR}/module.conf" CACHE INTERNAL
-  "Path to test-module PnMPI config file")

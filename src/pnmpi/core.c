@@ -215,7 +215,6 @@ void pnmpi_PreInit()
   char *cmdargv[MAX_CMDARGS + 1];
   int cmdargc, comment, i;
 
-  PNMPI_RegistrationPoint_t regPoint;
   /* setup vars */
 
   pnmpi_max_level = 0;

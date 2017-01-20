@@ -27,6 +27,12 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_headers)
+include(PnMPIModules)
+
+find_package(MPI REQUIRED)
+
+
 #
 # PnMPI header.
 #
@@ -37,16 +43,61 @@ pnmpi_pnmpize_test(pnmpi_header_no_modules
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 # One module loaded.
+pnmpi_generate_config(one_module.conf "module test-module")
 pnmpi_pnmpize_test(pnmpi_header_one_module
   PASS_EXPRESSION
     "Loaded modules:.*Stack default:.*test-module \\(Pcontrol: 1\\)"
-  PNMPIZE_ARGS -c ${TEST_MODULE_CONF}
+  PNMPIZE_ARGS -c "${CMAKE_CURRENT_BINARY_DIR}/one_module.conf"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 # Header with stacks.
+pnmpi_generate_config(stack.conf
+                      "module empty"
+                      "stack sample"
+                      "module empty")
 pnmpi_pnmpize_test(pnmpi_header_stacks
   PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_SOURCE_DIR}/../stacks/stack.conf"
-    -m "${CMAKE_CURRENT_BINARY_DIR}/../stacks"
+    -c "${CMAKE_CURRENT_BINARY_DIR}/stack.conf"
   PASS_EXPRESSION "Loaded modules:.*Stack default:.*Stack sample"
   COMMAND $<TARGET_FILE:test-mpi-c>)
+
+
+#
+# Threading-Downgrade test.
+#
+add_pnmpi_module(threading_downgrade threading_downgrade.c)
+target_include_directories(threading_downgrade PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(threading_downgrade ${MPI_C_LIBRARIES})
+add_coverage(threading_downgrade)
+add_sanitizers(threading_downgrade)
+
+pnmpi_generate_config(threading_downgrade.conf "module threading_downgrade")
+pnmpi_pnmpize_test(pnmpi_threading_downgrade
+  NUMPROCS 2
+  PASS_EXPRESSION "provide a maximum of 0."
+  PNMPIZE_ARGS
+	-c "${CMAKE_CURRENT_BINARY_DIR}/threading_downgrade.conf"
+	-m "${CMAKE_CURRENT_BINARY_DIR}"
+COMMAND $<TARGET_FILE:test-mpi-threaded>)
+
+
+#
+# Hooks
+#
+pnmpi_add_xmpi_module(hooks hooks.c)
+target_include_directories(hooks PRIVATE ${PNMPI_HEADER_DIR})
+add_coverage(hooks)
+add_sanitizers(hooks)
+
+pnmpi_generate_config(hooks.conf "module hooks")
+
+foreach (hook PNMPI_RegistrationPoint PNMPI_RegistrationComplete
+              app_startup app_shutdown)
+  pnmpi_pnmpize_test(pnmpi_hooks_${hook}
+    NUMPROCS 2
+    PNMPIZE_ARGS
+      -c "${CMAKE_CURRENT_BINARY_DIR}/hooks.conf"
+      -m "${CMAKE_CURRENT_BINARY_DIR}"
+    PASS_EXPRESSION "${hook} hit."
+    COMMAND $<TARGET_FILE:test-mpi-c>)
+endforeach ()

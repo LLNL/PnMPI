@@ -43,6 +43,7 @@ find_package(Sanitizers)
 # library.
 add_subdirectory(compiler)
 add_subdirectory(debug)
+add_subdirectory(modules)
 add_subdirectory(service)
 
 

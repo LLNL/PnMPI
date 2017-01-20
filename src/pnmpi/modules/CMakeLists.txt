@@ -27,5 +27,13 @@
 #
 # LLNL-CODE-402774
 
-module app_startup
-module app_shutdown
+include(PnMPI_doc)
+include(PnMPI_headers)
+
+
+# Install and manage the public and private header files of the PnMPI sources.
+# This has to be done to use the same headers for the PnMPI sources and the API
+# without getting conflicts about the used paths. Otherwise you'd have to take
+# care about file locations after installation, especially if you use the
+# headers over multiple directories.
+pnmpi_add_header(hooks.h)

@@ -53,10 +53,14 @@ endforeach()
 
 
 # Check the module.
+pnmpi_generate_config(stack.conf
+                      "module stack"
+                      "stack sample"
+                      "module empty")
 pnmpi_pnmpize_test(stack
   NUMPROCS 2
   PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_SOURCE_DIR}/stack.conf"
+    -c "${CMAKE_CURRENT_BINARY_DIR}/stack.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
   PASS_EXPRESSION "Switching the stack."
   COMMAND $<TARGET_FILE:test-mpi-c>)

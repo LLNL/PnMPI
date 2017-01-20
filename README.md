@@ -374,6 +374,12 @@ inside the "module" directory. There are:
     pcontrol on
     ```
 
+* **wait-for-debugger**
+  This module prints the PID of each rank before executing the application. If
+  the `WAIT_AT_STARTUP` environment variable is set to a numeric value, the
+  execution will be delayed up to `value` seconds, so you may attach with a
+  debugger in that time.
+
 Note: All modules should be compiled with mpicc or equivalent
 (which includes the MPI header files) and should be linked
 without linking to the MPI library (to avoid MPI routines
@@ -471,7 +477,7 @@ maximum provided threading level of this module.
 
 At different points hooks will be called in all loaded modules. These can be
 used to trigger some functionality at a given time. All hooks have the return
-type `int` and should return `PNMPI_SUCCESS` on success.
+type `void`.
 
 * `PNMPI_RegistrationPoint`: This hook will be called just after the module has
   been loaded. It may be used to register the name of the module, services

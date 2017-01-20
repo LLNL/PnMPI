@@ -217,21 +217,21 @@ void bfd_nonfatal(const char *string)
     fprintf(stderr, "REPORT: %s\n", errmsg);
 }
 
-void non_fatal VPARAMS((const char *format, ...))
+void non_fatal(const char *format, ...)
 {
-  VA_OPEN(args, format);
-  VA_FIXEDARG(args, const char *, format);
+  va_list args;
+  va_start(args, format);
   vfprintf(stderr, format, args);
   putc('\n', stderr);
-  VA_CLOSE(args);
+  va_end(args);
 }
 
-void fatal VPARAMS((const char *format, ...))
+void fatal(const char *format, ...)
 {
-  VA_OPEN(args, format);
-  VA_FIXEDARG(args, const char *, format);
+  va_list args;
+  va_start(args, format);
   vfprintf(stderr, format, args);
-  VA_CLOSE(args);
+  va_end(args);
   xexit(1);
 }
 

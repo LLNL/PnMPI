@@ -27,4 +27,15 @@
 #
 # LLNL-CODE-402774
 
-module app_startup
+include(PnMPI_headers)
+
+
+include_directories(
+  ${PNMPI_HEADER_DIR}
+  ${MPI_C_INCLUDE_PATH})
+
+pnmpi_add_xmpi_module(wait-for-debugger wait-for-debugger.c)
+add_coverage(wait-for-debugger)
+add_sanitizers(wait-for-debugger)
+
+install(TARGETS wait-for-debugger DESTINATION lib/pnmpi-modules)
