@@ -41,7 +41,7 @@
 #include <mpi.h>
 #include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
-#include <pnmpimod.h>
+#include <xmpi.h>
 
 #include "atomic.h"
 
