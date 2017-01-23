@@ -49,15 +49,6 @@
 /*===============================================================*/
 /* Error codes */
 
-#define PNMPI_SUCCESS 0
-#define PNMPI_NOT_INIT -1
-#define PNMPI_NOMEM -2
-#define PNMPI_NOMODULE -3
-#define PNMPI_NOSERVICE -4
-#define PNMPI_NOGLOBAL -5
-#define PNMPI_SIGNATURE -6
-#define PNMPI_NOARG -7
-
 #define MPI_ERROR_MEM MPI_ERR_INTERN
 #define MPI_ERROR_PNMPI MPI_ERR_INTERN
 

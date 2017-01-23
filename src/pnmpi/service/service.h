@@ -33,8 +33,29 @@
 
 
 /** \brief Handle for a module.
+ *
+ *
+ * \ingroup pnmpi_service
  */
 typedef int pnmpi_module_handle;
+
+/** \addtogroup pnmpi_status
+ * \{
+ */
+/** \brief PnMPI error codes.
+ */
+typedef enum pnmpi_status {
+  PNMPI_SUCCESS = 0,    ///< Everything ok.
+  PNMPI_NOT_INIT = -1,  ///< Unused.
+  PNMPI_NOMEM = -2,     ///< Not enough memory to perform action.
+  PNMPI_NOMODULE = -3,  ///< Requested module not found.
+  PNMPI_NOSERVICE = -4, ///< Requested service not found.
+  PNMPI_NOGLOBAL = -5,  ///< Requested global not found.
+  PNMPI_SIGNATURE = -6, /**< Requested service or global found, but none has a
+                             matching signature. */
+  PNMPI_NOARG = -7      ///< Requested argument not found.
+} pnmpi_status;
+/// \}
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
@@ -47,7 +68,7 @@ extern "C" {
 
 /** \defgroup pnmpi_service Service functions for module interaction.
  */
-int PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
+pnmpi_status PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
 
 
 /** \defgroup pnmpi_service_self Service functions for module interaction.
@@ -61,7 +82,7 @@ int PNMPI_Service_GetPcontrolSelf();
 
 /** \defgroup pnmpi_service_register Service functions for module registration.
  */
-int PNMPI_Service_RegisterModule(const char *name);
+pnmpi_status PNMPI_Service_RegisterModule(const char *name);
 
 
 #ifdef __cplusplus

@@ -92,7 +92,7 @@ function (pnmpi_add_man MODULE SYMBOL)
     install(FILES ${manfile} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
   endif ()
 
-  if(CMAKE_HOST_UNIX)
+  if(CMAKE_HOST_UNIX AND (NOT SYMBOL EQUAL ""))
     install(CODE "
       execute_process(COMMAND ln -fs ${MODULE}.3
                       ${CMAKE_INSTALL_FULL_MANDIR}/man3/${SYMBOL}.3)

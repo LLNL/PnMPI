@@ -43,12 +43,12 @@
  *
  * \param name The name of the module to be registered.
  *
- * \return PNMPI_SUCCESS The module has been registered.
+ * \return \ref PNMPI_SUCCESS The module has been registered.
  *
  *
  * \ingroup pnmpi_service_register
  */
-int PNMPI_Service_RegisterModule(const char *name)
+pnmpi_status PNMPI_Service_RegisterModule(const char *name)
 {
   /* Copy name into the module name buffer. If the name is longer than the
    * supplied buffer, a warning will be printed. */

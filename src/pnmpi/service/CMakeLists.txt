@@ -47,6 +47,7 @@ pnmpi_add_header(service.h)
 pnmpi_add_man(pnmpi_service PNMPI_Service_GetPcontrol)
 pnmpi_add_man(pnmpi_service_self PNMPI_Service_GetPcontrolSelf)
 pnmpi_add_man(pnmpi_service_register PNMPI_Service_RegisterModule)
+pnmpi_add_man(pnmpi_status "")
 
 
 include_directories(
