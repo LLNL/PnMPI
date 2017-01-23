@@ -35,7 +35,7 @@ find_package(Sanitizers)
 
 include_directories(${PNMPI_HEADER_DIR})
 
-set(MODS getModule register)
+set(MODS getModuleSelf getModuleByName register)
 foreach(mod ${MODS})
   add_pnmpi_module(${mod} ${mod}.c)
   add_coverage(${mod})
@@ -54,11 +54,35 @@ pnmpi_pnmpize_test(service_registerModule
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
 # Check the correctness of getting module handles.
-pnmpi_generate_config(getModule.conf "module empty\nmodule getModule")
+pnmpi_generate_config(getModuleSelf.conf "module empty\nmodule getModuleSelf")
 pnmpi_pnmpize_test(service_self_getModule
   NUMPROCS 2
   PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_BINARY_DIR}/getModule.conf"
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getModuleSelf.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
   PASS_EXPRESSION "My module ID: 1"
   COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# Check to get a module handly ba name.
+pnmpi_generate_config(getModuleByName.conf
+  "module empty\nmodule getModuleByName")
+
+pnmpi_pnmpize_test(service_getModuleByName_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getModuleByName.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetModuleByName: 1"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_getModuleByName_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_MODNAME=testmodule")
+
+pnmpi_pnmpize_test(service_getModuleByName_not_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getModuleByName.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetModuleByName failed"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_getModuleByName_not_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_MODNAME=testmodule-notfound")

@@ -68,6 +68,8 @@ extern "C" {
 
 /** \defgroup pnmpi_service Service functions for module interaction.
  */
+pnmpi_status PNMPI_Service_GetModuleByName(const char *name,
+                                           PNMPI_modHandle_t *handle);
 pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
 
 

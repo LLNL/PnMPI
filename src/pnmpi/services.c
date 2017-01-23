@@ -104,30 +104,6 @@ int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle)
 
 
 /*........................................................*/
-/* find a registered module using a given user name */
-
-int PNMPI_Service_GetModuleByName(const char *name, PNMPI_modHandle_t *handle)
-{
-  int i;
-
-  for (i = 0; i < modules.num; i++)
-    {
-      if (modules.module[i]->registered)
-        {
-          if (strcmp(modules.module[i]->username, name) == 0)
-            {
-              /* module found */
-
-              *handle = i;
-              return PNMPI_SUCCESS;
-            }
-        }
-    }
-  return PNMPI_NOMODULE;
-}
-
-
-/*........................................................*/
 /* find a service in a given module and return description */
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,

@@ -117,8 +117,6 @@ extern "C" {
 int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
 int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
 
-int PNMPI_Service_GetModuleByName(const char *name, PNMPI_modHandle_t *handle);
-
 int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle);
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
