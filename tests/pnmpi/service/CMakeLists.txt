@@ -33,11 +33,14 @@ find_package(codecov)
 find_package(Sanitizers)
 
 
-include_directories(${PNMPI_HEADER_DIR})
+include_directories(
+  ${MPI_C_INCLUDE_PATH}
+  ${PROJECT_BINARY_DIR}/src/pnmpi
+  ${PNMPI_HEADER_DIR})
 
-set(MODS getModuleSelf getModuleByName register)
+set(MODS getModuleSelf getModuleByName getStackByName register)
 foreach(mod ${MODS})
-  add_pnmpi_module(${mod} ${mod}.c)
+  pnmpi_add_xmpi_module(${mod} ${mod}.c)
   add_coverage(${mod})
   add_sanitizers(${mod})
 endforeach()
@@ -53,8 +56,11 @@ pnmpi_pnmpize_test(service_registerModule
   PASS_EXPRESSION "registered as: registerTest"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 
+
 # Check the correctness of getting module handles.
-pnmpi_generate_config(getModuleSelf.conf "module empty\nmodule getModuleSelf")
+pnmpi_generate_config(getModuleSelf.conf
+                      "module empty"
+                      "module getModuleSelf")
 pnmpi_pnmpize_test(service_self_getModule
   NUMPROCS 2
   PNMPIZE_ARGS
@@ -65,7 +71,8 @@ pnmpi_pnmpize_test(service_self_getModule
 
 # Check to get a module handly ba name.
 pnmpi_generate_config(getModuleByName.conf
-  "module empty\nmodule getModuleByName")
+                      "module empty"
+                      "module getModuleByName")
 
 pnmpi_pnmpize_test(service_getModuleByName_found
   NUMPROCS 2
@@ -86,3 +93,30 @@ pnmpi_pnmpize_test(service_getModuleByName_not_found
   COMMAND $<TARGET_FILE:test-mpi-c>)
 set_property(TEST service_getModuleByName_not_found APPEND PROPERTY ENVIRONMENT
   "PNMPI_TEST_MODNAME=testmodule-notfound")
+
+
+# Check to get stack handles.
+pnmpi_generate_config(getStackByName.conf
+                      "module getStackByName"
+                      "stack sample"
+                      "module empty")
+
+pnmpi_pnmpize_test(service_getStackByName_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getStackByName.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "Found stack sample: 2"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_getStackByName_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_STACKNAME=sample")
+
+pnmpi_pnmpize_test(service_getStackByName_not_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getStackByName.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetStackByName failed"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_getStackByName_not_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_STACKNAME=unknown")

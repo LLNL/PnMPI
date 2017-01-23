@@ -48,6 +48,7 @@ pnmpi_add_man(pnmpi_service PNMPI_modHandle_t)
 pnmpi_add_man(pnmpi_service PNMPI_Service_GetModuleByName)
 pnmpi_add_man(pnmpi_service PNMPI_Service_GetModuleSelf)
 pnmpi_add_man(pnmpi_service PNMPI_Service_GetPcontrol)
+pnmpi_add_man(pnmpi_service PNMPI_Service_GetStackByName)
 pnmpi_add_man(pnmpi_service_self PNMPI_Service_GetPcontrolSelf)
 pnmpi_add_man(pnmpi_service_register PNMPI_Service_RegisterModule)
 pnmpi_add_man(pnmpi_status "")
@@ -65,6 +66,7 @@ easy_add_library(pnmpi_service OBJECT
   getModuleByName.c
   getModuleSelf.c
   getPcontrol.c
+  getStackByName.c
   registerModule.c)
 
 easy_target_link_libraries(pnmpi_service ${MPI_C_LIBRARIES})

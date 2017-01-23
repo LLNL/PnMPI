@@ -53,7 +53,8 @@ typedef enum pnmpi_status {
   PNMPI_NOGLOBAL = -5,  ///< Requested global not found.
   PNMPI_SIGNATURE = -6, /**< Requested service or global found, but none has a
                              matching signature. */
-  PNMPI_NOARG = -7      ///< Requested argument not found.
+  PNMPI_NOARG = -7,     ///< Requested argument not found.
+  PNMPI_NOSTACK = -8    ///< Requested stack not found.
 } pnmpi_status;
 /// \}
 
@@ -71,6 +72,8 @@ extern "C" {
 pnmpi_status PNMPI_Service_GetModuleByName(const char *name,
                                            PNMPI_modHandle_t *handle);
 pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
+pnmpi_status PNMPI_Service_GetStackByName(const char *name,
+                                          PNMPI_modHandle_t *handle);
 
 
 /** \defgroup pnmpi_service_self Service functions for module interaction.

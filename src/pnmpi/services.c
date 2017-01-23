@@ -80,30 +80,6 @@ int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global)
 
 
 /*........................................................*/
-/* find a registered module using a given user name */
-
-int PNMPI_Service_GetStackByName(const char *name, PNMPI_modHandle_t *handle)
-{
-  int i;
-
-  for (i = 0; i < modules.num; i++)
-    {
-      if (modules.module[i]->stack_delimiter)
-        {
-          if (strcmp(modules.module[i]->name, name) == 0)
-            {
-              /* module found */
-
-              *handle = i + 1;
-              return PNMPI_SUCCESS;
-            }
-        }
-    }
-  return PNMPI_NOMODULE;
-}
-
-
-/*........................................................*/
 /* find a service in a given module and return description */
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
