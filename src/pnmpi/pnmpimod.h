@@ -139,53 +139,6 @@ int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
 #include "newstack.h"
 
 
-/*===============================================================*/
-/* Serives available for external communication */
-
-/*------------------------------------------------------------*/
-/* Log funtionality into global log */
-
-/*..........................................................*/
-/* Log a string */
-/* Write a string to a global log
-
-   IN: parameters as in printf
-   OUT: -
-*/
-
-void PNMPI_Service_log(char *format, ...);
-
-
-/*===============================================================*/
-/* Services available for module management */
-
-/*------------------------------------------------------------*/
-/* Query functionality */
-
-/*..........................................................*/
-/* Query one specific module */
-/* Ask if a given module has been loaded into the PMPI stack
-
-   IN:  name = string identifying the module
-   IN:  pointer to location info, afterwards:
-        <0 : module found and higher in the stack (no access)
-         0 : own module
-        >0 : module found and lower in the stack (accessible)
-   OUT:  0 : successful, location info valid
-        -1 : module not found
-*/
-
-
-int PNMPI_Service_QueryModule(char *name, int *locinfo);
-
-
-/*------------------------------------------------------------*/
-/* Load functionality */
-
-
-/*===============================================================*/
-/* The End. */
-
 #ifdef __cplusplus
 }
 #endif
