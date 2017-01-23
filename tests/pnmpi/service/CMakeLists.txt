@@ -35,7 +35,7 @@ find_package(Sanitizers)
 
 include_directories(${PNMPI_HEADER_DIR})
 
-set(MODS register)
+set(MODS getModule register)
 foreach(mod ${MODS})
   add_pnmpi_module(${mod} ${mod}.c)
   add_coverage(${mod})
@@ -43,11 +43,22 @@ foreach(mod ${MODS})
 endforeach()
 
 
-# Check the module.
+# Check the module registration.
+pnmpi_generate_config(registerModule.conf "module register")
 pnmpi_pnmpize_test(service_registerModule
   NUMPROCS 2
   PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_SOURCE_DIR}/registerModule.conf"
+    -c "${CMAKE_CURRENT_BINARY_DIR}/registerModule.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
   PASS_EXPRESSION "registered as: registerTest"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+# Check the correctness of getting module handles.
+pnmpi_generate_config(getModule.conf "module empty\nmodule getModule")
+pnmpi_pnmpize_test(service_self_getModule
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getModule.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "My module ID: 1"
   COMMAND $<TARGET_FILE:test-mpi-c>)

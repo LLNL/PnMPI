@@ -28,28 +28,14 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_NEWSTACK_H
-#define PNMPI_NEWSTACK_H
-
+#include <stdio.h>
 
 #include <pnmpi/service.h>
 
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
-
-{{forallfn fn_name MPI_Pcontrol}}
-{{retType}} P{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-int PNMPI_Change_Stack_Explicit( PNMPI_modHandle_t stack );
-
-#ifdef  __cplusplus
+void PNMPI_RegistrationPoint()
+{
+  PNMPI_modHandle_t handle;
+  if (PNMPI_Service_GetModuleSelf(&handle) == PNMPI_SUCCESS)
+    printf("My module ID: %d\n", handle;
 }
-#endif
-#endif

@@ -45,7 +45,7 @@
  *
  * \ingroup pnmpi_service
  */
-pnmpi_status PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag)
+pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag)
 {
   /* Check, if module is available. If the module is not available, an error
    * message will be printed and the application exits immediately. */

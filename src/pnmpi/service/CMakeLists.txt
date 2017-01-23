@@ -44,6 +44,8 @@ pnmpi_add_header(service.h)
 
 
 # Install the public man pages for this object.
+pnmpi_add_man(pnmpi_service PNMPI_modHandle_t)
+pnmpi_add_man(pnmpi_service PNMPI_Service_GetModuleSelf)
 pnmpi_add_man(pnmpi_service PNMPI_Service_GetPcontrol)
 pnmpi_add_man(pnmpi_service_self PNMPI_Service_GetPcontrolSelf)
 pnmpi_add_man(pnmpi_service_register PNMPI_Service_RegisterModule)
@@ -59,6 +61,7 @@ include_directories(
 
 
 easy_add_library(pnmpi_service OBJECT
+  getModuleSelf.c
   getPcontrol.c
   registerModule.c)
 

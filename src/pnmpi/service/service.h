@@ -37,7 +37,7 @@
  *
  * \ingroup pnmpi_service
  */
-typedef int pnmpi_module_handle;
+typedef int PNMPI_modHandle_t;
 
 /** \addtogroup pnmpi_status
  * \{
@@ -68,7 +68,7 @@ extern "C" {
 
 /** \defgroup pnmpi_service Service functions for module interaction.
  */
-pnmpi_status PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
+pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
 
 
 /** \defgroup pnmpi_service_self Service functions for module interaction.
@@ -78,6 +78,7 @@ pnmpi_status PNMPI_Service_GetPcontrol(pnmpi_module_handle handle, int *flag);
  *  instead of getting the handle first.
  */
 int PNMPI_Service_GetPcontrolSelf();
+pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 
 
 /** \defgroup pnmpi_service_register Service functions for module registration.

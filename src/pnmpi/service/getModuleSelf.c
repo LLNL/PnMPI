@@ -28,28 +28,27 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_NEWSTACK_H
-#define PNMPI_NEWSTACK_H
-
-
 #include <pnmpi/service.h>
 
+#include "core.h"
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{retType}} P{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-int PNMPI_Change_Stack_Explicit( PNMPI_modHandle_t stack );
-
-#ifdef  __cplusplus
+/** \brief Get handle of own module.
+ *
+ * \note This function is part of the regular service interface, as it is
+ *  required to use this interface. The self service interface is only for
+ *  functions to query data for the own module, which is provided by the regular
+ *  interface, too.
+ *
+ *
+ * \param handle Where to store the module handle of the calling module.
+ *
+ * \return \ref PNMPI_SUCCESS Module handle successfully written to \p handle.
+ *
+ * \ingroup pnmpi_service_self
+ */
+pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
+{
+  *handle = pnmpi_level;
+  return PNMPI_SUCCESS;
 }
-#endif
-#endif
