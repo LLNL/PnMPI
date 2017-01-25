@@ -73,7 +73,7 @@ easy_add_library(pnmpi_debug OBJECT
   print_prefix_rank.c
   warning.c)
 
-easy_target_link_libraries(pnmpi_debug ${MPI_C_LIBRARIES})
+easy_target_link_libraries(pnmpi_debug ${MPI_C_LIBRARIES} m)
 
 foreach (target pnmpi_debug pnmpi_debug_pic)
   add_dependencies(${target} pnmpi_debug_pmpi)
