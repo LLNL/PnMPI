@@ -19,6 +19,18 @@ addons:
       - doxygen
       - help2man
 
+# Install all required packages for OS X builds. The following solution was
+# inspired by http://stackoverflow.com/a/20802381
+before_install_tmpl: &before_install
+  - brew update --quiet >& /dev/null
+  - for pkg in gcc cmake openmpi argp-standalone help2man doxygen; do
+      if brew list -1 | grep -q "^${pkg}\$"; then
+        brew outdated $pkg || brew upgrade $pkg;
+      else
+        brew install $pkg;
+      fi
+    done
+
 
 matrix:
   include:
@@ -113,23 +125,29 @@ matrix:
     - os: osx
       osx_image: xcode7.3.1
       compiler: clang
+      before_install: *before_install
     - os: osx
       osx_image: xcode8
       compiler: clang
+      before_install: *before_install
     - os: osx
       osx_image: xcode8.1
       compiler: clang
+      before_install: *before_install
     - os: osx
       osx_image: xcode8.2
       compiler: clang
+      before_install: *before_install
     - os: osx
       compiler: gcc-6
+      before_install: *before_install
       before_script:
         - export CC=gcc-6; export CXX=g++-6
 
     # MPICH build.
     - os: osx
       compiler: clang
+      before_install: *before_install
       before_script:
         - brew unlink openmpi
         - brew install mpich
@@ -177,25 +195,6 @@ matrix:
       after_success:
 
 
-
-
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
-    then
-      brew update --quiet >& /dev/null;
-    fi
-  # The following solution was inspired by http://stackoverflow.com/a/20802381
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
-    then
-      for pkg in gcc cmake openmpi argp-standalone help2man doxygen; do
-        if brew list -1 | grep -q "^${pkg}\$"; then
-          brew outdated $pkg || brew upgrade $pkg;
-        else
-          brew install $pkg;
-        fi
-      done
-    fi
 
 
 script:
