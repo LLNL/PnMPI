@@ -147,17 +147,26 @@ matrix:
         - NO_FORTRAN
 
     # Check coding convention.
-    - os: osx
-      before_install:
-        - brew update --quiet >& /dev/null;
-        - brew install clang-format
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
       env:
         FORMAT
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty
+          packages:
+            - clang-format-3.8
+      git:
+        submodules: false
+        depth: 9999999
       script:
         - git filter-branch --force --tree-filter '
             find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \)
               -not -path "./externals/*"
-              -exec clang-format -style=file -fallback-style=none -i {} \; ;
+              -exec clang-format-3.8 -style=file -fallback-style=none -i {} \; ;
             if test $(git diff | wc -l) -gt 0;
             then
                 echo "";
