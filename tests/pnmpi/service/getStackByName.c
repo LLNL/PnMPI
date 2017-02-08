@@ -45,11 +45,15 @@ int MPI_Init(int *argc, char ***argv)
       "be searched!\n");
 
   PNMPI_modHandle_t stack;
-  if (PNMPI_Service_GetStackByName(getenv("PNMPI_TEST_STACKNAME"), &stack) ==
-      PNMPI_SUCCESS)
-    printf("Found stack sample: %d\n", stack);
-  else
-    pnmpi_error("GetStackByName failed\n");
+  int ret =
+    PNMPI_Service_GetStackByName(getenv("PNMPI_TEST_STACKNAME"), &stack);
+  switch (ret)
+    {
+    case PNMPI_SUCCESS: printf("GetStackByName: %d\n", stack); break;
+    case PNMPI_NOSTACK: pnmpi_warning("GetStackByName: not found\n"); break;
+
+    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    }
 
   return XMPI_Init(argc, argv);
 }

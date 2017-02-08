@@ -89,7 +89,7 @@ pnmpi_pnmpize_test(service_getModuleByName_not_found
   PNMPIZE_ARGS
     -c "${CMAKE_CURRENT_BINARY_DIR}/getModuleByName.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
-  PASS_EXPRESSION "GetModuleByName failed"
+  PASS_EXPRESSION "GetModuleByName: not found"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 set_property(TEST service_getModuleByName_not_found APPEND PROPERTY ENVIRONMENT
   "PNMPI_TEST_MODNAME=testmodule-notfound")
@@ -106,7 +106,7 @@ pnmpi_pnmpize_test(service_getStackByName_found
   PNMPIZE_ARGS
     -c "${CMAKE_CURRENT_BINARY_DIR}/getStackByName.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
-  PASS_EXPRESSION "Found stack sample: 2"
+  PASS_EXPRESSION "GetStackByName: 2"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 set_property(TEST service_getStackByName_found APPEND PROPERTY ENVIRONMENT
   "PNMPI_TEST_STACKNAME=sample")
@@ -116,7 +116,7 @@ pnmpi_pnmpize_test(service_getStackByName_not_found
   PNMPIZE_ARGS
     -c "${CMAKE_CURRENT_BINARY_DIR}/getStackByName.conf"
     -m "${CMAKE_CURRENT_BINARY_DIR}"
-  PASS_EXPRESSION "GetStackByName failed"
+  PASS_EXPRESSION "GetStackByName: not found"
   COMMAND $<TARGET_FILE:test-mpi-c>)
 set_property(TEST service_getStackByName_not_found APPEND PROPERTY ENVIRONMENT
   "PNMPI_TEST_STACKNAME=unknown")

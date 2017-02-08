@@ -49,9 +49,12 @@ void PNMPI_RegistrationPoint()
   PNMPI_Service_RegisterModule(module_name);
 
   PNMPI_modHandle_t h;
-  if (PNMPI_Service_GetModuleByName(getenv("PNMPI_TEST_MODNAME"), &h) ==
-      PNMPI_SUCCESS)
-    printf("GetModuleByName: %d\n", h);
-  else
-    pnmpi_error("GetModuleByName failed.\n");
+  int ret = PNMPI_Service_GetModuleByName(getenv("PNMPI_TEST_MODNAME"), &h);
+  switch (ret)
+    {
+    case PNMPI_SUCCESS: printf("GetModuleByName: %d\n", h); break;
+    case PNMPI_NOMODULE: pnmpi_warning("GetModuleByName: not found\n"); break;
+
+    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    }
 }
