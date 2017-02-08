@@ -145,28 +145,5 @@ int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, const char *name,
 }
 
 
-/*........................................................*/
-/* query an argument */
-
-int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
-                              const char **val)
-{
-  module_arg_p a;
-
-  for (a = modules.module[handle]->args; a != NULL; a = a->next)
-    {
-      if (strcmp(a->name, name) == 0)
-        {
-          /* name match, chech sig */
-
-          *val = a->value;
-          return PNMPI_SUCCESS;
-        }
-    }
-
-  return PNMPI_NOARG;
-}
-
-
 /*------------------------------------------------------------*/
 /* The End. */

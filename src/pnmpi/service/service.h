@@ -69,6 +69,8 @@ extern "C" {
 
 /** \defgroup pnmpi_service Service functions for module interaction.
  */
+pnmpi_status PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
+                                       const char *name, const char **dest);
 pnmpi_status PNMPI_Service_GetModuleByName(const char *name,
                                            PNMPI_modHandle_t *handle);
 pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
@@ -82,8 +84,9 @@ pnmpi_status PNMPI_Service_GetStackByName(const char *name,
  *  allow the modules to interact with PnMPI for the own module in one call
  *  instead of getting the handle first.
  */
-int PNMPI_Service_GetPcontrolSelf();
+const char *PNMPI_Service_GetArgumentSelf(const char *name);
 pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
+int PNMPI_Service_GetPcontrolSelf();
 
 
 /** \defgroup pnmpi_service_register Service functions for module registration.

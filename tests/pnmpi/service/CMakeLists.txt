@@ -38,7 +38,11 @@ include_directories(
   ${PROJECT_BINARY_DIR}/src/pnmpi
   ${PNMPI_HEADER_DIR})
 
-set(MODS getModuleSelf getModuleByName getStackByName register)
+set(MODS
+  getModuleByName getStackByName
+  getArgument getArgumentSelf
+  getModuleSelf
+  register)
 foreach(mod ${MODS})
   pnmpi_add_xmpi_module(${mod} ${mod}.c)
   add_coverage(${mod})
@@ -120,3 +124,59 @@ pnmpi_pnmpize_test(service_getStackByName_not_found
   COMMAND $<TARGET_FILE:test-mpi-c>)
 set_property(TEST service_getStackByName_not_found APPEND PROPERTY ENVIRONMENT
   "PNMPI_TEST_STACKNAME=unknown")
+
+
+# Check to get arguments.
+pnmpi_generate_config(getArgument.conf
+                      "module empty"
+                      "argument foo empty-bar"
+                      "module getArgument"
+                      "argument foo bar")
+
+pnmpi_pnmpize_test(service_getArgument_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getArgument.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetArgument: foo=empty-bar"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_getArgument_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_ARGUMENT=foo")
+
+pnmpi_pnmpize_test(service_getArgument_not_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getArgument.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetArgument: not found"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_getArgument_not_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_ARGUMENT=bar")
+
+
+# Check to get arguments via Self interface.
+pnmpi_generate_config(getArgumentSelf.conf
+                      "module empty"
+                      "argument foo empty-bar"
+                      "module getArgumentSelf"
+                      "argument foo bar")
+
+pnmpi_pnmpize_test(service_self_getArgument_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getArgumentSelf.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetArgument: foo=bar"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_self_getArgument_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_ARGUMENT=foo")
+
+pnmpi_pnmpize_test(service_self_getArgument_not_found
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/getArgumentSelf.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "GetArgument: not found"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+set_property(TEST service_self_getArgument_not_found APPEND PROPERTY ENVIRONMENT
+  "PNMPI_TEST_ARGUMENT=bar")

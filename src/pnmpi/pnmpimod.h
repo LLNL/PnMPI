@@ -125,9 +125,6 @@ int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, const char *name,
                                   const char sig,
                                   PNMPI_Global_descriptor_t *serv);
 
-int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
-                              const char **val);
-
 
 /*===============================================================*/
 /* Prototypes for PMPI routines on alternative stacks */
