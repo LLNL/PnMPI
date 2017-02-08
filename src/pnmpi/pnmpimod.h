@@ -41,6 +41,7 @@
 /* is designed to work with P^N MPI and uses its extra services  */
 /*===============================================================*/
 
+#include "newstack.h"
 #include "pnmpi-config.h"
 #include "pnmpi.h"
 #include "xmpi.h"
@@ -124,12 +125,6 @@ int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
 int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, const char *name,
                                   const char sig,
                                   PNMPI_Global_descriptor_t *serv);
-
-
-/*===============================================================*/
-/* Prototypes for PMPI routines on alternative stacks */
-
-#include "newstack.h"
 
 
 #ifdef __cplusplus
