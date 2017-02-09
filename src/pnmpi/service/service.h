@@ -36,6 +36,7 @@
 typedef int PNMPI_modHandle_t;
 
 /** \addtogroup PNMPI_status_t
+ * \header{pnmpi/service.h}
  * \{
  */
 /// \brief PnMPI error codes.
@@ -62,22 +63,43 @@ extern "C" {
 #endif
 
 
-/// \defgroup PNMPI_Service_GetModuleByName PNMPI_Service_GetModuleByName
+/** \defgroup PNMPI_Service_GetModuleByName PNMPI_Service_GetModuleByName
+ *
+ * \details These functions may be used for getting module handles. Each module
+ *  may receive its own module handle or lookup handles for other modules by a
+ *  unique module name. Each module is able to manipulate its module name.
+ *
+ * \header{pnmpi/service.h}
+ */
 PNMPI_status_t PNMPI_Service_RegisterModule(const char *name);
 PNMPI_status_t PNMPI_Service_GetModuleByName(const char *name,
                                              PNMPI_modHandle_t *handle);
 PNMPI_modHandle_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 
-/// \defgroup PNMPI_Service_GetStackByName PNMPI_Service_GetStackByName
+/** \defgroup PNMPI_Service_GetStackByName PNMPI_Service_GetStackByName
+ *
+ * \header{pnmpi/service.h}
+ */
 PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
                                             PNMPI_modHandle_t *handle);
 
-/// \defgroup PNMPI_Service_GetArgument PNMPI_Service_GetArgument
+/** \defgroup PNMPI_Service_GetArgument PNMPI_Service_GetArgument
+ *
+ * \details These functions may be used to query the configuration for module
+ *  arguments.
+ *
+ * \header{pnmpi/service.h}
+ */
 PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
                                          const char *name, const char **dest);
 const char *PNMPI_Service_GetArgumentSelf(const char *name);
 
-/// \defgroup PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrol
+/** \defgroup PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrol
+ *
+ * \details These functions may be used to query the modules Pcontrol settings.
+ *
+ * \header{pnmpi/service.h}
+ */
 PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
 int PNMPI_Service_GetPcontrolSelf();
 
