@@ -53,8 +53,8 @@
  *
  * \ingroup PNMPI_Service_GetArgument
  */
-int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
-                              const char **dest)
+PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
+                                         const char *name, const char **dest)
 {
   /* Iterate over the argument list of the module. Compare the name of each
    * argument with the argument to be searched. If they match copy the pointer

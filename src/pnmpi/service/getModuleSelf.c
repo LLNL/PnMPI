@@ -47,7 +47,7 @@
  *
  * \ingroup PNMPI_Service_GetModuleByName
  */
-pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
+PNMPI_status_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
 {
   *handle = pnmpi_level;
   return PNMPI_SUCCESS;

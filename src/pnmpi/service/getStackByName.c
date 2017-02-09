@@ -50,8 +50,8 @@
  *
  * \ingroup PNMPI_Service_GetStackByName
  */
-pnmpi_status PNMPI_Service_GetStackByName(const char *name,
-                                          PNMPI_modHandle_t *handle)
+PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
+                                            PNMPI_modHandle_t *handle)
 {
   int i;
   for (i = 0; i < modules.num; i++)

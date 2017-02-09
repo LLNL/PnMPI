@@ -52,7 +52,7 @@ pnmpi_add_man(PNMPI_Service_GetArgument "")
 pnmpi_add_man(PNMPI_Service_GetArgument PNMPI_Service_GetArgumentSelf)
 pnmpi_add_man(PNMPI_Service_GetPcontrol "")
 pnmpi_add_man(PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrolSelf)
-pnmpi_add_man(pnmpi_status "")
+pnmpi_add_man(PNMPI_status_t "")
 
 
 include_directories(

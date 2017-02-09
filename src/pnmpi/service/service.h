@@ -35,7 +35,7 @@
 /// \brief Handle for a module.
 typedef int PNMPI_modHandle_t;
 
-/** \addtogroup pnmpi_status
+/** \addtogroup PNMPI_status_t
  * \{
  */
 /// \brief PnMPI error codes.
@@ -50,7 +50,7 @@ typedef enum pnmpi_status {
                              matching signature. */
   PNMPI_NOARG = -7,     ///< Requested argument not found.
   PNMPI_NOSTACK = -8    ///< Requested stack not found.
-} pnmpi_status;
+} PNMPI_status_t;
 /// \}
 
 
@@ -63,22 +63,22 @@ extern "C" {
 
 
 /// \defgroup PNMPI_Service_GetModuleByName PNMPI_Service_GetModuleByName
-pnmpi_status PNMPI_Service_RegisterModule(const char *name);
-pnmpi_status PNMPI_Service_GetModuleByName(const char *name,
-                                           PNMPI_modHandle_t *handle);
-pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
+PNMPI_status_t PNMPI_Service_RegisterModule(const char *name);
+PNMPI_status_t PNMPI_Service_GetModuleByName(const char *name,
+                                             PNMPI_modHandle_t *handle);
+PNMPI_modHandle_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 
 /// \defgroup PNMPI_Service_GetStackByName PNMPI_Service_GetStackByName
-pnmpi_status PNMPI_Service_GetStackByName(const char *name,
-                                          PNMPI_modHandle_t *handle);
+PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
+                                            PNMPI_modHandle_t *handle);
 
 /// \defgroup PNMPI_Service_GetArgument PNMPI_Service_GetArgument
-pnmpi_status PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
-                                       const char *name, const char **dest);
+PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
+                                         const char *name, const char **dest);
 const char *PNMPI_Service_GetArgumentSelf(const char *name);
 
 /// \defgroup PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrol
-pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
+PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
 int PNMPI_Service_GetPcontrolSelf();
 
 

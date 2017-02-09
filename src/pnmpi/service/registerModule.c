@@ -48,7 +48,7 @@
  *
  * \ingroup PNMPI_Service_GetModuleByName
  */
-pnmpi_status PNMPI_Service_RegisterModule(const char *name)
+PNMPI_status_t PNMPI_Service_RegisterModule(const char *name)
 {
   /* Copy name into the module name buffer. If the name is longer than the
    * supplied buffer, a warning will be printed. */
