@@ -44,15 +44,14 @@ pnmpi_add_header(service.h)
 
 
 # Install the public man pages for this object.
-pnmpi_add_man(pnmpi_service PNMPI_modHandle_t)
-pnmpi_add_man(pnmpi_service PNMPI_Service_GetArgument)
-pnmpi_add_man(pnmpi_service PNMPI_Service_GetModuleByName)
-pnmpi_add_man(pnmpi_service PNMPI_Service_GetModuleSelf)
-pnmpi_add_man(pnmpi_service PNMPI_Service_GetPcontrol)
-pnmpi_add_man(pnmpi_service PNMPI_Service_GetStackByName)
-pnmpi_add_man(pnmpi_service_self PNMPI_Service_GetArgumentSelf)
-pnmpi_add_man(pnmpi_service_self PNMPI_Service_GetPcontrolSelf)
-pnmpi_add_man(pnmpi_service_register PNMPI_Service_RegisterModule)
+pnmpi_add_man(PNMPI_Service_GetModuleByName "")
+pnmpi_add_man(PNMPI_Service_GetModuleByName PNMPI_Service_GetModuleSelf)
+pnmpi_add_man(PNMPI_Service_GetModuleByName PNMPI_Service_RegisterModule)
+pnmpi_add_man(PNMPI_Service_GetStackByName "")
+pnmpi_add_man(PNMPI_Service_GetArgument "")
+pnmpi_add_man(PNMPI_Service_GetArgument PNMPI_Service_GetArgumentSelf)
+pnmpi_add_man(PNMPI_Service_GetPcontrol "")
+pnmpi_add_man(PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrolSelf)
 pnmpi_add_man(pnmpi_status "")
 
 

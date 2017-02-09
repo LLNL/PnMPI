@@ -43,7 +43,7 @@
  * \return \ref PNMPI_SUCCESS Successfully stored the result in \p flag.
  *
  *
- * \ingroup pnmpi_service
+ * \ingroup PNMPI_Service_GetPcontrol
  */
 pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag)
 {
@@ -64,7 +64,7 @@ pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag)
  * \return The Pcontrol configuration value of the calling module.
  *
  *
- * \ingroup pnmpi_service_self
+ * \ingroup PNMPI_Service_GetPcontrol
  */
 int PNMPI_Service_GetPcontrolSelf()
 {

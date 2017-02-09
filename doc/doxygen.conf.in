@@ -153,14 +153,6 @@ GENERATE_LATEX = NO
 # The default value is: NO.
 GENERATE_MAN = YES
 
-# If the MAN_LINKS tag is set to YES and doxygen generates man output, then it
-# will generate one additional man file for each entity documented in the real
-# man page(s). These additional files only source the real man page, but without
-# them the man command would be unable to find the correct page.
-# The default value is: NO.
-# This tag requires that the tag GENERATE_MAN is set to YES.
-MAN_LINKS = YES
-
 # The INCLUDE_PATH tag can be used to specify one or more directories that
 # contain include files that are not input files but should be processed by the
 # preprocessor.

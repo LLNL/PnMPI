@@ -45,7 +45,7 @@
  *
  * \return \ref PNMPI_SUCCESS Module handle successfully written to \p handle.
  *
- * \ingroup pnmpi_service_self
+ * \ingroup PNMPI_Service_GetModuleByName
  */
 pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
 {

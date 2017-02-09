@@ -51,7 +51,7 @@
  * \return \ref PNMPI_NOARG The argument can't be found.
  *
  *
- * \ingroup pnmpi_service
+ * \ingroup PNMPI_Service_GetArgument
  */
 int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
                               const char **dest)
@@ -87,7 +87,7 @@ int PNMPI_Service_GetArgument(PNMPI_modHandle_t handle, const char *name,
  *  returned, otherwise the NULL pointer.
  *
  *
- * \ingroup pnmpi_service_self
+ * \ingroup PNMPI_Service_GetArgument
  */
 const char *PNMPI_Service_GetArgumentSelf(const char *name)
 {

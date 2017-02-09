@@ -46,7 +46,7 @@
  * \return \ref PNMPI_SUCCESS The module has been registered.
  *
  *
- * \ingroup pnmpi_service_register
+ * \ingroup PNMPI_Service_GetModuleByName
  */
 pnmpi_status PNMPI_Service_RegisterModule(const char *name)
 {

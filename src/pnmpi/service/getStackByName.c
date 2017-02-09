@@ -48,7 +48,7 @@
  *  found.
  *
  *
- * \ingroup pnmpi_service
+ * \ingroup PNMPI_Service_GetStackByName
  */
 pnmpi_status PNMPI_Service_GetStackByName(const char *name,
                                           PNMPI_modHandle_t *handle)

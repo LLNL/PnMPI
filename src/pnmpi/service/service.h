@@ -32,18 +32,13 @@
 #define PNMPI_SERVICE_H
 
 
-/** \brief Handle for a module.
- *
- *
- * \ingroup pnmpi_service
- */
+/// \brief Handle for a module.
 typedef int PNMPI_modHandle_t;
 
 /** \addtogroup pnmpi_status
  * \{
  */
-/** \brief PnMPI error codes.
- */
+/// \brief PnMPI error codes.
 typedef enum pnmpi_status {
   PNMPI_SUCCESS = 0,    ///< Everything ok.
   PNMPI_NOT_INIT = -1,  ///< Unused.
@@ -67,31 +62,24 @@ extern "C" {
 #endif
 
 
-/** \defgroup pnmpi_service Service functions for module interaction.
- */
-pnmpi_status PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
-                                       const char *name, const char **dest);
+/// \defgroup PNMPI_Service_GetModuleByName PNMPI_Service_GetModuleByName
+pnmpi_status PNMPI_Service_RegisterModule(const char *name);
 pnmpi_status PNMPI_Service_GetModuleByName(const char *name,
                                            PNMPI_modHandle_t *handle);
-pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
+pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
+
+/// \defgroup PNMPI_Service_GetStackByName PNMPI_Service_GetStackByName
 pnmpi_status PNMPI_Service_GetStackByName(const char *name,
                                           PNMPI_modHandle_t *handle);
 
-
-/** \defgroup pnmpi_service_self Service functions for module interaction.
- *
- * \note These functions are the same as the \ref pnmpi_service interface, but
- *  allow the modules to interact with PnMPI for the own module in one call
- *  instead of getting the handle first.
- */
+/// \defgroup PNMPI_Service_GetArgument PNMPI_Service_GetArgument
+pnmpi_status PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
+                                       const char *name, const char **dest);
 const char *PNMPI_Service_GetArgumentSelf(const char *name);
-pnmpi_status PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
+
+/// \defgroup PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrol
+pnmpi_status PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
 int PNMPI_Service_GetPcontrolSelf();
-
-
-/** \defgroup pnmpi_service_register Service functions for module registration.
- */
-pnmpi_status PNMPI_Service_RegisterModule(const char *name);
 
 
 #ifdef __cplusplus
