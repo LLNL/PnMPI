@@ -62,24 +62,6 @@ int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service)
 
 
 /*........................................................*/
-/* Register a service */
-
-int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global)
-{
-  module_globlist_p newglobal;
-
-  newglobal = (module_globlist_p)malloc(sizeof(module_globlist_t));
-  if (newglobal == NULL)
-    return PNMPI_NOMEM;
-
-  newglobal->desc = *global;
-  newglobal->next = modules.module[pnmpi_level]->globals;
-  modules.module[pnmpi_level]->globals = newglobal;
-  return PNMPI_SUCCESS;
-}
-
-
-/*........................................................*/
 /* find a service in a given module and return description */
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
@@ -101,39 +83,6 @@ int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
               /* found service */
 
               *serv = s->desc;
-              return PNMPI_SUCCESS;
-            }
-          else
-            err = PNMPI_SIGNATURE;
-        }
-    }
-
-  return err;
-}
-
-
-/*........................................................*/
-/* find a service in a given module and return description */
-
-int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, const char *name,
-                                  const char sig,
-                                  PNMPI_Global_descriptor_t *glob)
-{
-  int err;
-  module_globlist_p g;
-
-  err = PNMPI_NOGLOBAL;
-  for (g = modules.module[handle]->globals; g != NULL; g = g->next)
-    {
-      if (strcmp(g->desc.name, name) == 0)
-        {
-          /* name match, chech sig */
-
-          if (g->desc.sig == sig)
-            {
-              /* found service */
-
-              *glob = g->desc;
               return PNMPI_SUCCESS;
             }
           else

@@ -48,6 +48,9 @@ pnmpi_add_man(PNMPI_Service_GetModuleByName "")
 pnmpi_add_man(PNMPI_Service_GetModuleByName PNMPI_Service_GetModuleSelf)
 pnmpi_add_man(PNMPI_Service_GetModuleByName PNMPI_Service_RegisterModule)
 pnmpi_add_man(PNMPI_Service_GetStackByName "")
+pnmpi_add_man(PNMPI_Service_GetGlobalByName "")
+pnmpi_add_man(PNMPI_Service_GetGlobalByName PNMPI_Service_RegisterGlobal)
+pnmpi_add_man(PNMPI_Service_GetGlobalByName PNMPI_Global_descriptor_t)
 pnmpi_add_man(PNMPI_Service_GetArgument "")
 pnmpi_add_man(PNMPI_Service_GetArgument PNMPI_Service_GetArgumentSelf)
 pnmpi_add_man(PNMPI_Service_GetPcontrol "")
@@ -65,10 +68,12 @@ include_directories(
 
 easy_add_library(pnmpi_service OBJECT
   getArgument.c
+  getGlobalByName.c
   getModuleByName.c
   getModuleSelf.c
   getPcontrol.c
   getStackByName.c
+  registerGlobal.c
   registerModule.c)
 
 easy_target_link_libraries(pnmpi_service ${MPI_C_LIBRARIES})

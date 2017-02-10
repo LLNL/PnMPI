@@ -32,6 +32,11 @@
 #define PNMPI_SERVICE_H
 
 
+/// \brief Max length of service name (including terminating null-character).
+#define PNMPI_SERVICE_NAMELEN 30
+
+
+
 /// \brief Handle for a module.
 typedef int PNMPI_modHandle_t;
 
@@ -47,11 +52,38 @@ typedef enum pnmpi_status {
   PNMPI_NOMODULE = -3,  ///< Requested module not found.
   PNMPI_NOSERVICE = -4, ///< Requested service not found.
   PNMPI_NOGLOBAL = -5,  ///< Requested global not found.
-  PNMPI_SIGNATURE = -6, /**< Requested service or global found, but none has a
-                             matching signature. */
+  PNMPI_SIGNATURE = -6, /**< Signature is invalid or no global or service with a
+                             matching signature can be found. */
   PNMPI_NOARG = -7,     ///< Requested argument not found.
   PNMPI_NOSTACK = -8    ///< Requested stack not found.
 } PNMPI_status_t;
+/// \}
+
+/** \addtogroup PNMPI_Service_GetGlobalByName
+ * \{
+ */
+/// \brief Struct to describe a module global.
+typedef struct PNMPI_Global_descriptor_d
+{
+  char name[PNMPI_SERVICE_NAMELEN]; ///< Name of the global.
+  char sig;
+  /**< \brief Signature of the global.
+   *
+   * \note The signature has no specific format, but keep the users knowing how
+   *  to search for your global.
+   */
+  union
+  {
+    char *c;
+    short *s;
+    int *i;
+    unsigned int *u;
+    long *l;
+    double *d;
+    float *f;
+    void **p;
+  } addr; ///< Pointer to the data.
+} PNMPI_Global_descriptor_t;
 /// \}
 
 
@@ -82,6 +114,19 @@ PNMPI_modHandle_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
  */
 PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
                                             PNMPI_modHandle_t *handle);
+
+/** \defgroup PNMPI_Service_GetGlobalByName PNMPI_Service_GetGlobalByName
+ *
+ * \details Modules may provide storage that is accessable by other modules.
+ *  These functions will be used to register and access this storage.
+ *
+ * \header{pnmpi/service.h}
+ */
+PNMPI_status_t
+PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
+PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
+                                             const char *name, const char sig,
+                                             PNMPI_Global_descriptor_t *dest);
 
 /** \defgroup PNMPI_Service_GetArgument PNMPI_Service_GetArgument
  *

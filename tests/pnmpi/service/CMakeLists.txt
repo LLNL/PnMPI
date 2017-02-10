@@ -42,6 +42,7 @@ set(MODS
   getModuleByName getStackByName
   getArgument getArgumentSelf
   getModuleSelf
+  globals
   register)
 foreach(mod ${MODS})
   pnmpi_add_xmpi_module(${mod} ${mod}.c)
@@ -180,3 +181,39 @@ pnmpi_pnmpize_test(service_self_getArgument_not_found
   COMMAND $<TARGET_FILE:test-mpi-c>)
 set_property(TEST service_self_getArgument_not_found APPEND PROPERTY ENVIRONMENT
   "PNMPI_TEST_ARGUMENT=bar")
+
+
+# Check to get globals.
+pnmpi_generate_config(globals.conf "module globals")
+
+pnmpi_pnmpize_test(service_registerGlobal_valid
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/globals.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "Registered global 'test'"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+pnmpi_pnmpize_test(service_getGlobalByName_invalid_name
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/globals.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  FAIL_EXPRESSION "Test 3 failed"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+pnmpi_pnmpize_test(service_getGlobalByName_invalid_signature
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/globals.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  FAIL_EXPRESSION "Test 4 failed"
+  COMMAND $<TARGET_FILE:test-mpi-c>)
+
+pnmpi_pnmpize_test(service_getGlobalByName_valid
+  NUMPROCS 2
+  PNMPIZE_ARGS
+    -c "${CMAKE_CURRENT_BINARY_DIR}/globals.conf"
+    -m "${CMAKE_CURRENT_BINARY_DIR}"
+  PASS_EXPRESSION "Got global data: 42"
+  COMMAND $<TARGET_FILE:test-mpi-c>)

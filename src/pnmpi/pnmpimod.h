@@ -63,7 +63,6 @@
 /*.......................................................*/
 /* Constants */
 
-#define PNMPI_SERVICE_NAMELEN 30
 #define PNMPI_MODULE_FILENAMELEN 512
 #define PNMPI_SERVICE_SIGLEN 20
 #define PNMPI_MODULE_USERNAMELEN 256
@@ -87,25 +86,6 @@ typedef struct PNMPI_Service_descriptor_d
   PNMPI_Service_Fct_t fct;
 } PNMPI_Service_descriptor_t;
 
-typedef union PNMPI_Global_Addr_d
-{
-  char *c;
-  short *s;
-  int *i;
-  unsigned int *u;
-  long *l;
-  double *d;
-  float *f;
-  void **p;
-} PNMPI_Global_Addr_t;
-
-typedef struct PNMPI_Global_descriptor_d
-{
-  char name[PNMPI_SERVICE_NAMELEN];
-  char sig;
-  PNMPI_Global_Addr_t addr;
-} PNMPI_Global_descriptor_t;
-
 
 /*.......................................................*/
 /* Functions */
@@ -116,15 +96,10 @@ extern "C" {
 
 
 int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
-int PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
 
 int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
                                    const char *sig,
                                    PNMPI_Service_descriptor_t *serv);
-
-int PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle, const char *name,
-                                  const char sig,
-                                  PNMPI_Global_descriptor_t *serv);
 
 
 #ifdef __cplusplus
