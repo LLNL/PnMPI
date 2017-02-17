@@ -27,16 +27,11 @@
 #
 # LLNL-CODE-402774
 
-find_package(codecov)
-find_package(MPI REQUIRED)
-find_package(Sanitizers)
-
-
 # Generate a new header for MPI functions. This header may be used as shortcut
 # for calling the function and printing an error if the error code does not
 # match MPI_SUCCESS.
 add_wrapped_file(mpi_errors.h mpi_errors.h.w -s)
-add_custom_target(test-mpi-wrapper
+add_custom_target(testbin-mpi-wrapper
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mpi_errors.h)
 
 
@@ -45,69 +40,55 @@ add_custom_target(test-mpi-wrapper
 # non-MPI functionality like the PnMPI startup. Some memory leaks may be tracked
 # with this executable, because every application calling MPI will definitly
 # have memory leaks (caused by some MPI implementations).
-add_executable("test-nompi" test-nompi.c)
-add_coverage(test-nompi)
-add_sanitizers(test-nompi)
-pnmpi_test("binary_nompi" COMMAND $<TARGET_FILE:test-nompi>)
+easy_add_test(PREFIX binary_nompi SOURCES test-nompi.c)
+set(TESTBIN_NOMPI "$<TARGET_FILE:testbin-binary_nompi>" PARENT_SCOPE)
 
-# The following target may be used to check general MPI functionality. It uses
-# the common MPI functions MPI_Init, MPI_Finalize, MPI_Send and MPI_Recv and may
-# be used with at least 2 ranks.
-add_executable("test-mpi-c" test-mpi.c)
-add_dependencies(test-mpi-c test-mpi-wrapper)
-target_include_directories(test-mpi-c
-  PRIVATE ${MPI_C_INCLUDE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(test-mpi-c ${MPI_C_LIBRARIES})
-add_coverage(test-mpi-c)
-add_sanitizers(test-mpi-c)
-pnmpi_mpi_test("binary_mpi_c" COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2
-  ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test-mpi-c> ${MPIEXEC_POSTFLAGS})
+# The following target may be used to check general PnMPI functionality. It uses
+# the common MPI functions MPI_Init and MPI_Finalize. As all PnMPI core routines
+# will be called in MPI_Init, this should be enogh to check anything except the
+# wrapper functions.
+easy_add_test(PREFIX binary_mpi_c SOURCES test-mpi.c)
+set(TESTBIN_MPI_C "$<TARGET_FILE:testbin-binary_mpi_c>" PARENT_SCOPE)
 
-# The following target may be used to check general MPI functionality. It uses
-# the common MPI functions MPI_Init_thread, MPI_Finalize, MPI_Send and MPI_Recv
+# The following target may be used to check general PnMPI functionality for
+# threaded MPI applications. It uses the common MPI functions MPI_Init_thread
+# and MPI_Finalize. As all PnMPI core routines (with threading support) will be
+# called in MPI_Init_thread, this should be enogh to check the threading
+# functionality of PnMPI.
+easy_add_test(PREFIX binary_mpi_threaded SOURCES test-mpi-threaded.c)
+set(TESTBIN_MPI_C_THREADED "$<TARGET_FILE:testbin-binary_mpi_threaded>"
+    PARENT_SCOPE)
+
+# The following target may be used to check general PnMPI wrapper functionality.
+# It uses the common MPI functions MPI_Init, MPI_Finalize, MPI_Send and MPI_Recv
 # and may be used with at least 2 ranks.
-add_executable(test-mpi-threaded test-mpi-threaded.c)
-add_dependencies(test-mpi-threaded test-mpi-wrapper)
-target_include_directories(test-mpi-threaded
-  PRIVATE ${MPI_C_INCLUDE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(test-mpi-threaded ${MPI_C_LIBRARIES})
-add_coverage(test-mpi-threaded)
-add_sanitizers(test-mpi-threaded)
-pnmpi_mpi_test("binary_mpi_threaded" COMMAND ${MPIEXEC}
-  ${MPIEXEC_NUMPROC_FLAG} 2
-  ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test-mpi-threaded> ${MPIEXEC_POSTFLAGS})
+easy_add_test(PREFIX binary_mpi_sendrecv SOURCES test-mpi-sendrecv.c)
+set(TESTBIN_MPI_C_SENDRECV "$<TARGET_FILE:testbin-binary_mpi_sendrecv>"
+    PARENT_SCOPE)
 
-# The following target may be used to check PnMPI's Pcontrol functionality. It
-# only calls MPI_Init, MPI_Finalize and MPI_Pcontrol and no output will be
-# generated, except for errors.
-add_executable(test-mpi-pcontrol test-mpi-pcontrol.c)
-add_dependencies(test-mpi-pcontrol test-mpi-wrapper)
-target_include_directories(test-mpi-pcontrol
-  PRIVATE ${MPI_C_INCLUDE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(test-mpi-pcontrol ${MPI_C_LIBRARIES})
-add_coverage(test-mpi-pcontrol)
-add_sanitizers(test-mpi-pcontrol)
-pnmpi_mpi_test("binary_mpi_pcontrol" COMMAND $<TARGET_FILE:test-mpi-pcontrol>)
 
-# The following target may be used to check general MPI functionality with
-# Fortran code. It uses the common MPI functions MPI_Init, MPI_Finalize,
-# MPI_Send and MPI_Recv and may be used with at least 2 ranks.
-if (CMAKE_Fortran_COMPILER_WORKS)
-  add_executable("test-mpi-fortran" test-mpi.f)
-  target_include_directories(test-mpi-fortran
-    PRIVATE ${MPI_Fortran_INCLUDE_PATH})
-  target_link_libraries(test-mpi-fortran ${MPI_Fortran_LIBRARIES})
-  add_coverage(test-mpi-fortran)
-  add_sanitizers(test-mpi-fortran)
-  pnmpi_mpi_test("binary_mpi_fortran" COMMAND ${MPIEXEC}
-    ${MPIEXEC_NUMPROC_FLAG} 2
-    ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test-mpi-fortran> ${MPIEXEC_POSTFLAGS})
+if (ENABLE_FORTRAN)
+  # The following target may be used to check general PnMPI Fortran
+  # functionality. It uses the common MPI functions MPI_Init and MPI_Finalize.
+  # As all PnMPI core routines will be called in MPI_Init, this should be enogh
+  # to check anything except the wrapper functions.
+  easy_add_test(PREFIX binary_mpi_fortran SOURCES test-mpi.f)
+  set(TESTBIN_MPI_FORTRAN "$<TARGET_FILE:testbin-binary_mpi_fortran>"
+      PARENT_SCOPE)
+
+  # The following target may be used to check general PnMPI functionality for
+  # threaded Fortran MPI applications. It uses the common MPI functions
+  # MPI_Init_thread and MPI_Finalize. As all PnMPI core routines (with threading
+  # support) will be called in MPI_Init_thread, this should be enogh to check
+  # the threading functionality of PnMPI.
+  easy_add_test(PREFIX binary_mpi_fortran_threaded SOURCES test-mpi-threaded.f)
+  set(TESTBIN_MPI_FORTRAN_THREADED
+      "$<TARGET_FILE:testbin-binary_mpi_fortran_threaded>" PARENT_SCOPE)
+
+  # The following target may be used to check general PnMPI Fortran wrapper
+  # functionality. It uses the common MPI functions MPI_Init, MPI_Finalize,
+  # MPI_Send and MPI_Recv and may be used with at least 2 ranks.
+  easy_add_test(PREFIX binary_mpi_fortran_sendrecv SOURCES test-mpi-sendrecv.f)
+  set(TESTBIN_MPI_FORTRAN_SENDRECV
+      "$<TARGET_FILE:testbin-binary_mpi_fortran_sendrecv>" PARENT_SCOPE)
 endif ()
-
-
-# The following target may be used as a PnMPI module for test cases. It will
-# print messages before MPI_Send and after MPI_Recv.
-add_pnmpi_module(test-module module.c)
-target_include_directories(test-module PRIVATE
-  ${MPI_C_INCLUDE_PATH}
-  ${PROJECT_BINARY_DIR})

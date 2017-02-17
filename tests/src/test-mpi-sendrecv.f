@@ -31,8 +31,37 @@ C LLNL-CODE-402774
 
       include 'mpif.h'
 
-      integer :: ierror
+      integer :: ierror, size, rank, buffer, i
+      Integer status(MPI_STATUS_SIZE)
+
+
       call MPI_INIT(ierror)
+      call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierror)
+      call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror)
+
+      if (size .lt. 2) then
+        stop "At least 2 ranks are required for this test."
+      end if
+
+C     All ranks send their rank to rank 0 which then answers the sending rank.
+      if (rank .eq. 0) then
+        do i = 1,size-1
+          call MPI_RECV(buffer, 1, MPI_INTEGER, i, 42, MPI_COMM_WORLD,
+     &                  status, ierror)
+          call MPI_SEND(buffer, 1, MPI_INTEGER, i, 42, MPI_COMM_WORLD,
+     &                  ierror)
+
+          print *, "Got ", buffer, " from rank ", status(MPI_SOURCE)
+        end do
+      else
+        call MPI_SEND(rank, 1, MPI_INTEGER, 0, 42, MPI_COMM_WORLD,
+     &                ierror)
+        call MPI_RECV(buffer, 1, MPI_INTEGER, 0, 42, MPI_COMM_WORLD,
+     &                status, ierror)
+
+        print *, "Got ", buffer, " from rank ", status(MPI_SOURCE)
+      end if
+
       call MPI_FINALIZE(ierror)
 
       end program firstmpi
@@ -41,3 +70,9 @@ C LLNL-CODE-402774
 C COMPILE_INCLUDES: @MPI_Fortran_INCLUDE_PATH@
 C COMPILE_FLAGS: @MPI_Fortran_COMPILE_FLAGS@
 C LINK: @MPI_Fortran_LINK_FLAGS@ @MPI_Fortran_LIBRARIES@
+C
+C RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 2
+C RUN:     @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
+C RUN:   | sort -n
+C
+C PASS: Got.*1.*from rank.*0.*Got.*1.*from rank.*1

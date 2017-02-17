@@ -28,16 +28,24 @@
  * LLNL-CODE-402774
  */
 
+/* The following test checks, if PnMPIze is able to pass a configuration file to
+ * PnMPI. */
+
 #include <stdio.h>
 
-#include <mpi.h>
 #include <pnmpi/hooks.h>
 
 
-void app_startup()
+void PNMPI_RegistrationPoint()
 {
-  int status;
-  PMPI_Initialized(&status);
-
-  printf("startup hook: MPI %s\n", status ? "initialized" : "NOT initialized");
+  printf("Sample module loaded.\n");
 }
+
+
+/* MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * PASS: Sample module loaded.
+ */

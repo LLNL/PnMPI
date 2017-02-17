@@ -84,13 +84,14 @@ option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." TRUE)
 # Set the module search path to include local modules.
 set(CMAKE_MODULE_PATH
   "${PROJECT_SOURCE_DIR}/cmakemodules"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-codecov/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
   "${PROJECT_SOURCE_DIR}/externals/CMake-CChelper/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-codecov/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-easytest/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
   ${CMAKE_MODULE_PATH}
   "${PROJECT_SOURCE_DIR}/cmakemodules/legacy")
 

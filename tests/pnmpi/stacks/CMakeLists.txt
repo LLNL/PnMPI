@@ -27,38 +27,7 @@
 #
 # LLNL-CODE-402774
 
-find_package(codecov)
 find_package(MPI REQUIRED)
-find_package(Sanitizers)
 
 
-# Add test modules for app_start and app_shutdown hooks. These modules will not
-# be installed, but used for the test cases below.
-
-include_directories(
-  ${MPI_C_INCLUDE_PATH}
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-)
-
-set(MODS stack)
-foreach(mod ${MODS})
-  add_pnmpi_module(${mod} ${mod}.c)
-  add_coverage(${mod})
-  add_sanitizers(${mod})
-endforeach()
-
-
-# Check the module.
-pnmpi_generate_config(stack.conf
-                      "module stack"
-                      "stack sample"
-                      "module empty")
-pnmpi_pnmpize_test(stack
-  NUMPROCS 2
-  PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_BINARY_DIR}/stack.conf"
-    -m "${CMAKE_CURRENT_BINARY_DIR}"
-  PASS_EXPRESSION "Switching the stack."
-  COMMAND $<TARGET_FILE:test-mpi-c>)
+easy_add_test(PREFIX stack SOURCES stack.c)

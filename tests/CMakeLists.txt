@@ -27,64 +27,133 @@
 #
 # LLNL-CODE-402774
 
+include(easytest)
+include(PnMPI_headers)
+
+find_package(codecov)
+find_package(MPI REQUIRED)
 find_package(Sanitizers)
 
 
-# Helper function to add a new test case.
-function (pnmpi_test NAME)
-  # Parse options.
-  set(oneValueArgs PASS_EXPRESSION FAIL_EXPRESSION)
-  set(multiValueArgs COMMAND)
-  cmake_parse_arguments("OPT" "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+# easytest setup hook.
+#
+# This hook will be used to set variables for PnMPI tests depending on the test
+# case and extracting the PnMPI configuration file if available.
+#
+macro (easytest_hook_setup TEST_TARGET BINARY_TARGET CONFIG MAIN_SOURCE)
+  # If this test is a PnMPI module, set the module name variable (the binary
+  # target name).
+  easytest_get_key(MODTYPE EASYTEST_MODTYPE ${MAIN_SOURCE})
+  if (EASYTEST_MODTYPE)
+    set(MODNAME "${BINARY_TARGET}")
+  endif ()
 
-  # Add test case with optional pass or fail regular expression.
-  add_test(NAME ${NAME} COMMAND ${OPT_COMMAND})
-  if (OPT_PASS_EXPRESSION)
-    set_tests_properties(${NAME} PROPERTIES PASS_REGULAR_EXPRESSION
-      "${OPT_PASS_EXPRESSION}")
-  else ()
-    if (NOT OPT_FAIL_EXPRESSION)
-      set(OPT_FAIL_EXPRESSION "Error;ERROR;Failed")
+  # If a PnMPI configuration file is embedded in the test file, extract it to
+  # store it in an external file, which may be loaded by the test case.
+  easytest_get_key("PNMPICONF" EASYTEST_PNMPICONF ${MAIN_SOURCE})
+  easytest_get_key("PNMPICONF-${CONFIG}" EASYTEST_PNMPICONF ${MAIN_SOURCE})
+  if (EASYTEST_PNMPICONF)
+    set(PNMPICONF "${CMAKE_CURRENT_BINARY_DIR}/${TEST_TARGET}.conf")
+    file(WRITE "${PNMPICONF}" "${EASYTEST_PNMPICONF}")
+  endif ()
+endmacro ()
+
+
+# easytest compile hook.
+#
+# If the test file is a PnMPI module, it must be build with the PMPI or XMPI
+# module build functions. This hook will handle to call these functions, if the
+# test file is a module.
+#
+macro (easytest_hook_compile TARGET CONFIG MAIN_SOURCE)
+  # If test case is a PnMPI module, build it with the PnMPI helper functions
+  # instead of the default easytest hook.
+  if (EASYTEST_MODTYPE)
+    if (EASYTEST_MODTYPE STREQUAL "XMPI")
+      pnmpi_add_xmpi_module(${TARGET} ${MAIN_SOURCE} ${ARGN})
+    elseif (EASYTEST_MODTYPE STREQUAL "PMPI")
+      pnmpi_add_xmpi_module(${TARGET} ${MAIN_SOURCE} ${ARGN})
+    else ()
+      message(FATAL_ERROR "Unknown module type '${EASYTEST_MODTYPE}'.")
     endif ()
 
-    set_tests_properties(${NAME} PROPERTIES FAIL_REGULAR_EXPRESSION
-      "${OPT_FAIL_EXPRESSION}")
-  endif ()
-
-  # Append the 'src' directory as PNMPI_LIB_PATH to get access to the test
-  # module for all test cases.
-  set_property(TEST ${NAME} APPEND PROPERTY ENVIRONMENT
-    "PNMPI_LIB_PATH=${PROJECT_BINARY_DIR}/tests/src")
-endfunction ()
+  # If the module is not an PnMPI module, call the original hook to build the
+  # binary.
+  else ()
+    _easytest_hook_compile(${TARGET} "${CONFIG}" ${MAIN_SOURCE} ${ARGN})
+  endif()
+endmacro()
 
 
-# Helper function to add a new MPI test case. In addition to the above helper
-# function, this function additionaly sets an ENV variable to disable leak
-# checks, if AddressSanitizer is enabled, because some MPI librarys have memory
-# leaks.
-function (pnmpi_mpi_test NAME)
-  # Add a new test case.
-  pnmpi_test(${ARGV})
+# easytest post-compile hook
+#
+# This hook will be used to add coverage and sanitizers to all test binaries.
+# The functions (provided by their CMake modules) will add them, if the user
+# enabled these features.
+#
+macro (easytest_hook_post_compile TARGET CONFIG MAIN_SOURCE)
+  _easytest_hook_post_compile(${TARGET} "${CONFIG}" ${MAIN_SOURCE})
 
-  # If AddressSanitizer is enabled, disable leak sanitizer.
+  add_coverage(${TARGET})
+  add_sanitizers(${TARGET})
+endmacro ()
+
+
+# easytest post-test hook
+#
+# This hook will be used to set the environment for all test binaries, if
+# necessary.
+#
+macro(easytest_hook_post_test TARGET CONFIG MAIN_SOURCE)
+  _easytest_hook_post_test(${TARGET} "${CONFIG}" ${MAIN_SOURCE})
+
   if (SANITIZE_ADDRESS)
-    set_property(TEST ${NAME} APPEND PROPERTY ENVIRONMENT
-      "ASAN_OPTIONS=detect_leaks=0")
+    # OpenMPI does have memory leaks, which can't be suppressed by
+    # LeakSanitizer, as they occur in an unknown module. If OpenMPI is used and
+    # the test case does not explictly request the LeakSanitizer, it will be
+    # disabled.
+    if (MPI_C_INCLUDE_PATH MATCHES "openmpi")
+      easytest_get_key(LeakSanitizer lsan_enabled ${MAIN_SOURCE})
+      if (NOT lsan_enabled)
+        set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+                     "ASAN_OPTIONS=detect_leaks=0")
+      endif ()
+    endif ()
+
+    # Add fail regular expressions for AddressSanitizer and LeakSanitizer. This
+    # will make tests fail, if one of them fails, even if the rest of the test
+    # succeeds. The expression will be appended to extend expressions set by the
+    # test file.
+    set_property(TEST ${TARGET} APPEND PROPERTY FAIL_REGULAR_EXPRESSION
+                 "LeakSanitizer" "AddressSanitizer")
   endif ()
-endfunction ()
+endmacro ()
 
 
-# Helper function to generate a configuration file for PnMPI. This may be used
-# to generate simple configuration files on demand instead of putting several
-# of them under version control.
-function (pnmpi_generate_config DEST)
-  string (REPLACE ";" "\n" PNMPI_CONFIG "${ARGN}")
-  configure_file("${PROJECT_SOURCE_DIR}/tests/src/pnmpi.conf.in" ${DEST})
-endfunction ()
+# The PnMPI header directory will be included always, so that it doesn't need to
+# be included by every single test file.
+include_directories(${PNMPI_HEADER_DIR})
 
 
-# Recurse into subdirectories.
+# Add src directory first. Binaries used by other tests will be build in this
+# directory and common variables set (in the scope of this file).
 add_subdirectory(src)
+
+# Set an PNMPIZE variable for all test cases, so they may use it for calling
+# PnMPIze. If AddressSanitizer is enabled, an extra wrapper will be used, so
+# AddressSanitizer will be initialized.
+set(PNMPIZE "$<TARGET_FILE:pnmpize>")
+if (SANITIZE_ADDRESS)
+  set(PNMPIZE "${ASan_WRAPPER} ${PNMPIZE}")
+endif ()
+
+
+
+# Recurse into subdirectories with test cases. The order of the test cases
+# should be to test components used by other tests first to find bugs early.
 add_subdirectory(pnmpize)
 add_subdirectory(pnmpi)
-add_subdirectory(modules)
+
+if (ENABLE_MODULES)
+  add_subdirectory(modules)
+endif ()

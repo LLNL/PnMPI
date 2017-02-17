@@ -31,8 +31,12 @@ C LLNL-CODE-402774
 
       include 'mpif.h'
 
-      integer :: ierror
-      call MPI_INIT(ierror)
+      integer :: ierror, required, provided
+      required = MPI_THREAD_MULTIPLE
+      call MPI_INIT_THREAD(required, provided, ierror)
+
+      print *, "Required: ", required, " Provided: ", provided
+
       call MPI_FINALIZE(ierror)
 
       end program firstmpi
@@ -41,3 +45,5 @@ C LLNL-CODE-402774
 C COMPILE_INCLUDES: @MPI_Fortran_INCLUDE_PATH@
 C COMPILE_FLAGS: @MPI_Fortran_COMPILE_FLAGS@
 C LINK: @MPI_Fortran_LINK_FLAGS@ @MPI_Fortran_LIBRARIES@
+C
+C PASS: Required:.*[0-9]+.*Provided:.*[0-9]+

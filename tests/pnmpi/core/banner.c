@@ -28,16 +28,33 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>
+/* The following test cases will be used to check the PnMPI banner for
+ * correctness. The banner includes some basic information about the loaded
+ * configuration. */
 
-#include <mpi.h>
 #include <pnmpi/hooks.h>
 
 
-void app_shutdown()
+void PNMPI_RegistrationPoint()
 {
-  int status;
-  PMPI_Initialized(&status);
-
-  printf("shutdown hook: MPI %s\n", status ? "initialized" : "NOT initialized");
 }
+
+
+/* CONFIGS: no_module one_module stack
+ *
+ * MODTYPE: XMPI
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ *
+ *
+ * RUN-no_module: @PNMPIZE@ @TESTBIN_MPI_C@
+ * PASS-no_module: No modules loaded
+ *
+ * PNMPICONF-one_module: module @MODNAME@
+ * PASS-one_module: Loaded modules:.*Stack default:.*@MODNAME@ \(Pcontrol: 1\)
+ *
+ * PNMPICONF-stack: module @MODNAME@\n
+ * PNMPICONF-stack: stack sample\n
+ * PNMPICONF-stack: module @MODNAME@\n
+ * PASS-stack: Loaded modules:.*Stack default:.*Stack sample
+ */
