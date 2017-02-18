@@ -28,51 +28,63 @@
  * LLNL-CODE-402774
  */
 
-/* This test case is used to check if PnMPI hits all hooks in modules.
- *
- * Note: This test cases check NOT, if the functionality of the specific hooks
- *       is correct, but only if they are called!
+/* This test case checks the app_shook functionality.
  *
  * Note: As app_startup does initialize MPI, mpiexec must be used to not get
  *       OpenMPI into a deadlock.
  */
 
-#include <stdio.h> // printf
+#include <stdio.h>
 
-#include <pnmpi/hooks.h> // PnMPI header to check if the hooks signatures match.
+#include <mpi.h>
+#include <pnmpi/hooks.h>
 
 
-#ifndef HOOKNAME
-#define HOOKNAME unknown
+#ifdef WITH_STARTUP
+void app_startup()
+{
+  int status;
+  PMPI_Initialized(&status);
+
+  printf("startup hook: MPI %s\n", status ? "initialized" : "NOT initialized");
+}
 #endif
 
 
-void HOOKNAME()
+#ifdef WITH_SHUTDOWN
+void app_shutdown()
 {
-  printf("%s hit.\n", __FUNCTION__);
+  int status;
+  PMPI_Initialized(&status);
+
+  printf("shutdown hook: MPI %s\n", status ? "initialized" : "NOT initialized");
 }
+#endif
 
 
-/* CONFIGS: RegistrationPoint RegistrationComplete app_startup app_shutdown
- *
+/* CONFIGS: no_hook startup shutdown combined threading_level_env
  * MODTYPE: XMPI
+ * COMPILE_INCLUDES: @MPI_C_INCLUDE_PATH@
+ * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
  *
  * PNMPICONF: module @MODNAME@
  *
  * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
  * RUN:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
- * RUN:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * RUN:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ -q @TESTBIN@
  *
+ * FAIL-no_hook: hook
  *
- * COMPILE_FLAGS-RegistrationPoint: -DHOOKNAME=PNMPI_RegistrationPoint
- * PASS-RegistrationPoint: PNMPI_RegistrationPoint hit.
+ * COMPILE_FLAGS-startup: @MPI_C_COMPILE_FLAGS@ -DWITH_STARTUP
+ * PASS-startup: startup hook: MPI initialized.
  *
- * COMPILE_FLAGS-RegistrationComplete: -DHOOKNAME=PNMPI_RegistrationComplete
- * PASS-RegistrationComplete: PNMPI_RegistrationComplete hit.
+ * COMPILE_FLAGS-shutdown: @MPI_C_COMPILE_FLAGS@ -DWITH_SHUTDOWN
+ * PASS-shutdown: shutdown hook: MPI initialized.
  *
- * COMPILE_FLAGS-app_startup: -DHOOKNAME=app_startup
- * PASS-app_startup: app_startup hit.
+ * COMPILE_FLAGS-combined: @MPI_C_COMPILE_FLAGS@ -DWITH_STARTUP -DWITH_SHUTDOWN
+ * PASS-combined: startup hook: MPI initialized.*shutdown hook: MPI initialized.
  *
- * COMPILE_FLAGS-app_shutdown: -DHOOKNAME=app_shutdown
- * PASS-app_shutdown: app_shutdown hit.
+ * COMPILE_FLAGS-threading_level_env: @MPI_C_COMPILE_FLAGS@ -DWITH_STARTUP
+ * ENVIRONMENT-threading_level_env: PNMPI_THREADING_LEVEL=0
+ * PAS-threading_level_env:
  */

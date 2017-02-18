@@ -28,7 +28,7 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>  // fprintf, printf
+#include <stdio.h>  // printf
 #include <stdlib.h> // EXIT_* macros
 
 
@@ -42,3 +42,7 @@ int main(int argc, char **argv)
    * message. */
   return EXIT_SUCCESS;
 }
+
+
+/* LSAN: true
+ */

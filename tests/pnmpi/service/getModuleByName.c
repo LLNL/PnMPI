@@ -28,6 +28,9 @@
  * LLNL-CODE-402774
  */
 
+/* This test case checks, if modules can be found by the registered name. There
+ * will be tests for a valid and an invalid name in this test file. */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -36,20 +39,19 @@
 
 
 #define module_name "testmodule"
+#ifndef TEST_MODNAME
+#define TEST_MODNAME module_name
+#endif
 
 
 void PNMPI_RegistrationPoint()
 {
-  if (getenv("PNMPI_TEST_MODNAME") == NULL)
-    pnmpi_error("Set environment variable PNMPI_TEST_MODNAME to module name to "
-                "be searched!\n");
-
-
   /* Register the module, so we can search it by name later. */
   PNMPI_Service_RegisterModule(module_name);
 
+  /* Search for the module and print the return code or the matching module. */
   PNMPI_modHandle_t h;
-  int ret = PNMPI_Service_GetModuleByName(getenv("PNMPI_TEST_MODNAME"), &h);
+  int ret = PNMPI_Service_GetModuleByName(TEST_MODNAME, &h);
   switch (ret)
     {
     case PNMPI_SUCCESS: printf("GetModuleByName: %d\n", h); break;
@@ -58,3 +60,18 @@ void PNMPI_RegistrationPoint()
     default: pnmpi_error("Unknown error: %d\n", ret); break;
     }
 }
+
+
+/* CONFIGS: found not_found
+ *
+ * MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ *
+ * PASS-found: GetModuleByName: [0-9]+
+ *
+ * COMPILE_FLAGS-not_found: -DTEST_MODNAME=\"foo\"
+ * PASS-not_found: GetModuleByName: not found
+ */

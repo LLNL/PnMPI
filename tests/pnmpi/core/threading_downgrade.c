@@ -28,7 +28,22 @@
  * LLNL-CODE-402774
  */
 
+/* This test case checks, if PnMPI limits the threading level, if at least one
+ * module does not support the full threading level of MPI. */
+
 #include <mpi.h>
 
 
 int PnMPI_threading_level = MPI_THREAD_SINGLE;
+
+
+/* MODTYPE: XMPI
+ * COMPILE_INCLUDES: @MPI_C_INCLUDE_PATH@
+ * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
+ *
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@
+ * RUN:   @TESTBIN_MPI_C_THREADED@
+ * PASS: provide a maximum of 0
+ */

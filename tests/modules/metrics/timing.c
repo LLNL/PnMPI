@@ -36,16 +36,15 @@
 
 int main(int argc, char **argv)
 {
-  /* Initalize and finalize MPI. This should be enough to call all PnMPI setup
-   * routines for threading support except the wrapper functions.
-   *
-   * The highes possible MPI threading level will be requested, so a possible
-   * limiting of the threading level by PnMPI may be checked. */
-  int provided;
-  MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
-  MPI_Finalize();
+  /* Note: MPI_Pcontrol is not wrapped by mpi_errors.h, but as the MPI standard
+   * does not say something about the value to be returned, it does not have to
+   * be checked. */
 
-  printf("Required: %d Provided: %d\n", MPI_THREAD_MULTIPLE, provided);
+  MPI_Init(&argc, &argv);
+#ifdef WITH_PCONTROL
+  MPI_Pcontrol(0);
+#endif
+  MPI_Finalize();
 
   /* In standard C the following return is not required, but in some situations
    * older versions of mpiexec report the job aborted, so the test case will
@@ -55,10 +54,29 @@ int main(int argc, char **argv)
 }
 
 
-/* DEPENDS: testbin-mpi-wrapper
- * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
- * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
+
+/* CONFIGS: basic pcontrol_invalid pcontrol
+ *
+ * DEPENDS: testbin-mpi-wrapper
+ * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@/../../src @MPI_C_INCLUDE_PATH@
  * LINK: @MPI_C_LINK_FLAGS@ @MPI_C_LIBRARIES@
  *
- * PASS: Required: [0-9]+ Provided: [0-9]+
+ * RUN: @PNMPIZE@ -c @PNMPICONF@ @BINARY@
+ *
+ * COMPILE_FLAGS-basic: @MPI_C_COMPILE_FLAGS@
+ * PNMPICONF-basic: module metrics-timing
+ * PASS-basic: Timing stats:\nRank 0:\n.*MPI_Init\n.*Total:.*MPI_Init
+ *
+ * COMPILE_FLAGS-pcontrol_invalid: @MPI_C_COMPILE_FLAGS@ -DWITH_PCONTROL
+ * PNMPICONF-pcontrol_invalid: module metrics-timing
+ * PASS-pcontrol_invalid: advanced mode
+ *
+ * COMPILE_FLAGS-pcontrol: @MPI_C_COMPILE_FLAGS@ -DWITH_PCONTROL
+ * PNMPICONF-pcontrol: module metrics-timing\n
+ * PNMPICONF-pcontrol: pcontrol on\n
+ * PNMPICONF-pcontrol: module empty\n
+ * PNMPICONF-pcontrol: pcontrol on\n
+ * PNMPICONF-pcontrol: module metrics-timing\n
+ * PNMPICONF-pcontrol: pcontrol on
+ * PASS-pcontrol: Timing stats:\nRank 0:\n.*MPI_Pcontrol\n.*Total:.*MPI_Pcontrol
  */

@@ -106,7 +106,7 @@ extern "C" {
 PNMPI_status_t PNMPI_Service_RegisterModule(const char *name);
 PNMPI_status_t PNMPI_Service_GetModuleByName(const char *name,
                                              PNMPI_modHandle_t *handle);
-PNMPI_modHandle_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
+PNMPI_status_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 
 /** \defgroup PNMPI_Service_GetStackByName PNMPI_Service_GetStackByName
  *

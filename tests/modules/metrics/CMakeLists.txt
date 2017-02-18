@@ -27,48 +27,5 @@
 #
 # LLNL-CODE-402774
 
-# Check if counter module counts the MPI calls.
-pnmpi_generate_config(counter.conf "module metrics-counter")
-pnmpi_pnmpize_test(mod_metrics_counter
-  NUMPROCS 2
-  PASS_EXPRESSION "Stats:\nRank 0:\n.*1 MPI_Init.*Total:.*2 MPI_Init"
-  PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_BINARY_DIR}/counter.conf"
-  COMMAND $<TARGET_FILE:test-mpi-c>)
-
-
-# Check if timing module measures the time of the MPI calls.
-pnmpi_generate_config(timing.conf "module metrics-timing")
-pnmpi_pnmpize_test(mod_metrics_timing
-  NUMPROCS 2
-  PASS_EXPRESSION "Timing stats:\nRank 0:\n.*MPI_Init\n.*Total:.*MPI_Init"
-  PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_BINARY_DIR}/timing.conf"
-  COMMAND $<TARGET_FILE:test-mpi-c>)
-
-# Check if timing module measures the time of the MPI calls.
-pnmpi_generate_config(timing-pcontrol-valid.conf
-                      "module metrics-timing"
-                      "pcontrol on"
-                      "module empty"
-                      "module metrics-timing"
-                      "pcontrol on")
-pnmpi_pnmpize_test(mod_metrics_timing_pcontrol
-  PASS_EXPRESSION
-    "Timing stats:\nRank 0:\n.*MPI_Pcontrol\n.*Total:.*MPI_Pcontrol"
-  PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_BINARY_DIR}/timing-pcontrol-valid.conf"
-COMMAND $<TARGET_FILE:test-mpi-pcontrol>)
-
-# Check if timing module throws an error, if Pcontrol is measured with wrong
-# configuration.
-pnmpi_generate_config(timing-pcontrol-invalid.conf
-                      "module metrics-timing"
-                      "pcontrol on"
-                      "module empty")
-pnmpi_pnmpize_test(mod_metrics_timing_pcontrol_invalid
-  PASS_EXPRESSION
-    "metric-timing can measure the time of MPI_Pcontrol in advanced mode, only."
-  PNMPIZE_ARGS
-    -c "${CMAKE_CURRENT_BINARY_DIR}/timing-pcontrol-invalid.conf"
-COMMAND $<TARGET_FILE:test-mpi-pcontrol>)
+easy_add_test(PREFIX module_metrics_counter SOURCES counter.conf NOBINARY)
+easy_add_test(PREFIX module_metrics_timing SOURCES timing.c)

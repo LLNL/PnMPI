@@ -28,6 +28,10 @@
  * LLNL-CODE-402774
  */
 
+/* This test case checks, if the module is able to get its own module ID. The
+ * module will be loaded multiple times to check that the module ID is different
+ * for the different loaded modules. */
+
 #include <stdio.h>
 
 #include <pnmpi/service.h>
@@ -35,7 +39,18 @@
 
 void PNMPI_RegistrationPoint()
 {
-  PNMPI_modHandle_t handle;
+  int handle;
   if (PNMPI_Service_GetModuleSelf(&handle) == PNMPI_SUCCESS)
-    printf("My module ID: %d\n", handle;
+    printf("My module ID: %d\n", handle);
 }
+
+
+/* MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@\n
+ * PNMPICONF: module @MODNAME@\n
+ * PNMPICONF: module @MODNAME@\n
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * PASS: 0.*1.*2
+ */

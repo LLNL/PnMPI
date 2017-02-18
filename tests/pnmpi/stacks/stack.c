@@ -28,6 +28,10 @@
  * LLNL-CODE-402774
  */
 
+/* This is a simple test case to check the stack switching functionality. It
+ * will be called in the default stack and tries to switch to a different stack.
+ */
+
 #include <stdio.h>
 
 #include <mpi.h>
@@ -36,10 +40,14 @@
 
 int MPI_Init(int *argc, char ***argv)
 {
+  static int flag = 0;
+
   PNMPI_modHandle_t stack;
-  if (PNMPI_Service_GetStackByName("sample", &stack) == PNMPI_SUCCESS)
+  if (flag == 0 &&
+      PNMPI_Service_GetStackByName("sample", &stack) == PNMPI_SUCCESS)
     {
       printf("Switching the stack.\n");
+      flag = 1;
       XMPI_Init_NewStack(stack, argc, argv);
     }
   else
@@ -47,3 +55,17 @@ int MPI_Init(int *argc, char ***argv)
 
   return MPI_SUCCESS;
 }
+
+
+/* MODTYPE: XMPI
+ * COMPILE_INCLUDES: @MPI_C_INCLUDE_PATH@ @PROJECT_SOURCE_DIR@/src/pnmpi
+ * COMPILE_INCLUDES:   @PROJECT_BINARY_DIR@ @PROJECT_BINARY_DIR@/src/pnmpi
+ * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
+ *
+ * PNMPICONF: module @MODNAME@\n
+ * PNMPICONF: stack sample\n
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * PASS: Switching the stack.
+ */

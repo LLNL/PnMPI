@@ -28,16 +28,21 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>
+/* This test case checks, if a module is able to register itself. */
 
-#include <mpi.h>
-#include <pnmpi/hooks.h>
+#include <pnmpi/service.h>
 
 
-void app_shutdown()
+int PNMPI_RegistrationPoint()
 {
-  int status;
-  PMPI_Initialized(&status);
-
-  printf("shutdown hook: MPI %s\n", status ? "initialized" : "NOT initialized");
+  return PNMPI_Service_RegisterModule("registerTest");
 }
+
+
+/* MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * PASS: registerTest
+ */

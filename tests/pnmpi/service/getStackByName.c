@@ -28,25 +28,26 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>
+/* This test case checks, if stacks can be found by name. There will be tests
+ * for a valid and an invalid name in this test file. */
 
-#include <mpi.h>
-#include <newstack.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <pnmpi/debug_io.h>
 #include <pnmpi/service.h>
-#include <xmpi.h>
 
 
-int MPI_Init(int *argc, char ***argv)
+#ifndef TEST_STACKNAME
+#define TEST_STACKNAME "sample"
+#endif
+
+
+void PNMPI_RegistrationPoint()
 {
-  if (getenv("PNMPI_TEST_STACKNAME") == NULL)
-    pnmpi_error(
-      "Set environment variable PNMPI_TEST_STACKNAME to module name to "
-      "be searched!\n");
-
+  /* Search for the module and print the return code or the matching module. */
   PNMPI_modHandle_t stack;
-  int ret =
-    PNMPI_Service_GetStackByName(getenv("PNMPI_TEST_STACKNAME"), &stack);
+  int ret = PNMPI_Service_GetStackByName(TEST_STACKNAME, &stack);
   switch (ret)
     {
     case PNMPI_SUCCESS: printf("GetStackByName: %d\n", stack); break;
@@ -54,6 +55,20 @@ int MPI_Init(int *argc, char ***argv)
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
     }
-
-  return XMPI_Init(argc, argv);
 }
+
+
+/* CONFIGS: found not_found
+ *
+ * MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@\n
+ * PNMPICONF: stack sample\n
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ *
+ * PASS-found: GetStackByName: [0-9]+
+ *
+ * COMPILE_FLAGS-not_found: -DTEST_STACKNAME=\"foo\"
+ * PASS-not_found: GetStackByName: not found
+ */

@@ -28,10 +28,12 @@
  * LLNL-CODE-402774
  */
 
+/* This test case checks, if a module is able to register a global. */
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
+#include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
 
@@ -41,8 +43,6 @@ int global_int = 42;
 
 void PNMPI_RegistrationPoint()
 {
-  int ret;
-
   /* First test case for a global with invalid signature. */
   PNMPI_Global_descriptor_t global;
   global.addr.i = &global_int;
@@ -50,43 +50,17 @@ void PNMPI_RegistrationPoint()
   global.sig = 'd';
 
   /* First test case for a global with valid data. */
-  ret = PNMPI_Service_RegisterGlobal(&global);
+  int ret = PNMPI_Service_RegisterGlobal(&global);
   if (ret != PNMPI_SUCCESS)
-    {
-      printf("Test 1 failed: error %d.\n", ret);
-      exit(EXIT_FAILURE);
-    }
+    pnmpi_error("Error: %d\n", ret);
   printf("Registered global '%s'\n", global.name);
-
-
-  PNMPI_modHandle_t self;
-  if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
-    pnmpi_error("Can't get module handle.\n");
-
-
-  /* Second test case to get a global with invalid name. */
-  PNMPI_Global_descriptor_t buffer;
-  ret = PNMPI_Service_GetGlobalByName(self, "test-1234", 'd', &buffer);
-  if (ret != PNMPI_NOGLOBAL)
-    {
-      printf("Test 3 failed: error %d.\n", ret);
-      exit(EXIT_FAILURE);
-    }
-
-  /* Third test case to get a global with not matching signature. */
-  ret = PNMPI_Service_GetGlobalByName(self, "test", '\0', &buffer);
-  if (ret != PNMPI_SIGNATURE)
-    {
-      printf("Test 4 failed: error %d.\n", ret);
-      exit(EXIT_FAILURE);
-    }
-
-  /* Fourth test case to get a global with valid arguments. */
-  ret = PNMPI_Service_GetGlobalByName(self, "test", 'd', &buffer);
-  if (ret != PNMPI_SUCCESS)
-    {
-      printf("Test 5 failed: error %d.\n", ret);
-      exit(EXIT_FAILURE);
-    }
-  printf("Got global data: %d\n", *(buffer.addr.i));
 }
+
+
+/* MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * PASS: Registered global
+ */

@@ -36,13 +36,49 @@
 
 int main(int argc, char **argv)
 {
-  /* Note: MPI_Pcontrol is not wrapped by mpi_errors.h, but as the MPI standard
-   * does not say something about the value to be returned, it does not have to
-   * be checked. */
-
+  /* Initalize MPI. */
   MPI_Init(&argc, &argv);
-  MPI_Pcontrol(0);
+
+
+  /* Get MPI_COMM_WORLD size and current rank and calculate the target for
+   * MPI_Send. The size will be checked, too, thus we need at least two ranks
+   * for MPI send / recv. */
+  int size, rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if (size < 2)
+    {
+      fprintf(stderr, "At least 2 ranks are required for this test.\n");
+      MPI_Finalize();
+      return EXIT_FAILURE;
+    }
+
+
+  /* All ranks send their rank to rank 0 which then answers the sending rank. */
+  int buffer;
+  MPI_Status status;
+
+  if (rank == 0)
+    {
+      int i, buffer;
+      for (i = 1; i < size; i++)
+        {
+          MPI_Recv(&buffer, 1, MPI_INT, i, 42, MPI_COMM_WORLD, &status);
+          printf("Got %d from rank %d.\n", buffer, status.MPI_SOURCE);
+          MPI_Send(&buffer, 1, MPI_INT, i, 42, MPI_COMM_WORLD);
+        }
+    }
+  else
+    {
+      MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
+      MPI_Recv(&buffer, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
+      printf("Got %d from rank %d.\n", buffer, status.MPI_SOURCE);
+    }
+
+  /* Finalize MPI. */
   MPI_Finalize();
+
 
   /* In standard C the following return is not required, but in some situations
    * older versions of mpiexec report the job aborted, so the test case will
@@ -50,3 +86,16 @@ int main(int argc, char **argv)
    * message. */
   return EXIT_SUCCESS;
 }
+
+
+/* DEPENDS: testbin-mpi-wrapper
+ * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
+ * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
+ * LINK: @MPI_C_LINK_FLAGS@ @MPI_C_LIBRARIES@
+ *
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 2
+ * RUN:     @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
+ * RUN:   | sort -n
+ *
+ * PASS: Got 1 from rank 0.\nGot 1 from rank 1.
+ */
