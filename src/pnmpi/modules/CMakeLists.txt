@@ -44,7 +44,8 @@ include_directories(
   ${PNMPI_HEADER_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_BINARY_DIR}/..
-  ${PROJECT_BINARY_DIR})
+  ${PROJECT_BINARY_DIR}
+  ${MPI_C_INCLUDE_PATH})
 
 easy_add_library(pnmpi_modules OBJECT
   valid_modhandle.c)

@@ -33,11 +33,14 @@ easy_add_test(PREFIX "service_getModuleByName" SOURCES getModuleByName.c)
 
 easy_add_test(PREFIX "service_getStackByName" SOURCES getStackByName.c)
 
-easy_add_test(PREFIX "service_getArgument" SOURCES getArgument.c)
-easy_add_test(PREFIX "service_getArgumentSelf" SOURCES getArgumentSelf.c)
-
 easy_add_test(PREFIX "service_registerGlobal" SOURCES registerGlobal.c)
 easy_add_test(PREFIX "service_getGlobalByName" SOURCES getGlobalByName.c)
 
 easy_add_test(PREFIX "service_registerService" SOURCES registerService.c)
 easy_add_test(PREFIX "service_getServiceByName" SOURCES getServiceByName.c)
+
+easy_add_test(PREFIX "service_getArgument" SOURCES getArgument.c)
+easy_add_test(PREFIX "service_getArgumentSelf" SOURCES getArgumentSelf.c)
+
+easy_add_test(PREFIX "service_getPcontrol" SOURCES getPcontrol.c)
+easy_add_test(PREFIX "service_getPcontrolSelf" SOURCES getPcontrolSelf.c)
