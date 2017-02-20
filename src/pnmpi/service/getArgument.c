@@ -57,7 +57,7 @@
  *
  * \ingroup PNMPI_Service_GetArgument
  */
-PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
+PNMPI_status_t PNMPI_Service_GetArgument(const PNMPI_modHandle_t handle,
                                          const char *name, const char **dest)
 {
   assert(name);

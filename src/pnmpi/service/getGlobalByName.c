@@ -57,7 +57,7 @@
  *
  * \ingroup PNMPI_Service_GetGlobalByName
  */
-PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
+PNMPI_status_t PNMPI_Service_GetGlobalByName(const PNMPI_modHandle_t handle,
                                              const char *name, const char sig,
                                              PNMPI_Global_descriptor_t *dest)
 {

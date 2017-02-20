@@ -195,7 +195,8 @@ const char *PNMPI_Service_GetArgumentSelf(const char *name);
  * \header{pnmpi/service.h}
  */
 PNMPI_FUNCTION_ARG_NONNULL(2)
-PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
+PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
+                                         int *flag);
 int PNMPI_Service_GetPcontrolSelf();
 
 

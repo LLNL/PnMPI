@@ -57,7 +57,7 @@
  *
  * \ingroup PNMPI_Service_GetServiceByName
  */
-PNMPI_status_t PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle,
+PNMPI_status_t PNMPI_Service_GetServiceByName(const PNMPI_modHandle_t handle,
                                               const char *name, const char *sig,
                                               PNMPI_Service_descriptor_t *dest)
 {

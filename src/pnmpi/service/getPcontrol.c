@@ -49,7 +49,8 @@
  *
  * \ingroup PNMPI_Service_GetPcontrol
  */
-PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag)
+PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
+                                         int *flag)
 {
   assert(flag);
 
