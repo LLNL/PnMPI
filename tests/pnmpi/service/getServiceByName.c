@@ -89,6 +89,9 @@ void queryService()
       printf("getServiceByName: %p\n", (void *)buffer.fct);
       buffer.fct(__LINE__);
       break;
+    case PNMPI_NOMODULE:
+      pnmpi_warning("getServiceByName: module not found\n");
+      break;
     case PNMPI_NOSERVICE:
       pnmpi_warning("getServiceByName: service not found\n");
       break;
@@ -115,7 +118,7 @@ void PNMPI_RegistrationPoint()
 }
 
 
-/* CONFIGS: found no_service_self no_service_other no_signature
+/* CONFIGS: found no_module no_service_self no_service_other no_signature
  *
  * MODTYPE: XMPI
  *
@@ -125,6 +128,9 @@ void PNMPI_RegistrationPoint()
  * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  *
  * PASS-found: getServiceByName: 0x[0-f]+\nfoo: [0-9]+
+ *
+ * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
+ * PASS: getServiceByName: module not found
  *
  * COMPILE_FLAGS-no_service_self: -DTEST_SERVICENAME=\"foo\"
  * PASS-no_service_self: getServiceByName: service not found

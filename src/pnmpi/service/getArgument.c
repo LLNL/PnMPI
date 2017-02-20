@@ -30,6 +30,7 @@
 
 #include <assert.h>
 
+#include <pnmpi/private/modules.h>
 #include <pnmpi/service.h>
 
 #include "core.h"
@@ -50,6 +51,7 @@
  *
  * \return \ref PNMPI_SUCCESS The argument was found and may be accessed by
  *  pointer \p dest now.
+ * \return \ref PNMPI_NOMODULE \p handle is no valid module handle.
  * \return \ref PNMPI_NOARG The argument can't be found.
  *
  *
@@ -60,6 +62,11 @@ PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
 {
   assert(name);
   assert(dest);
+
+  /* Check, if module is available and return an error code, if it's not
+   * available. */
+  if (!pnmpi_valid_modhandle(handle))
+    return PNMPI_NOMODULE;
 
 
   /* Iterate over the argument list of the module. Compare the name of each

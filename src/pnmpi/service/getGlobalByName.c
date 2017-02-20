@@ -30,6 +30,7 @@
 
 #include <assert.h>
 
+#include <pnmpi/private/modules.h>
 #include <pnmpi/service.h>
 
 #include "core.h"
@@ -48,6 +49,7 @@
  * \param [out] dest Where to store the pointer to the global struct.
  *
  * \return \ref PNMPI_SUCCESS Successfully stored pointer to global in \p dest.
+ * \return \ref PNMPI_NOMODULE \p handle is no valid module handle.
  * \return \ref PNMPI_NOGLOBAL No global named \p name found.
  * \return \ref PNMPI_SIGNATURE One or more globals named \p name have been
  *  found, but the signatures did not match.
@@ -61,6 +63,11 @@ PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
 {
   assert(name);
   assert(dest);
+
+  /* Check, if module is available and return an error code, if it's not
+   * available. */
+  if (!pnmpi_valid_modhandle(handle))
+    return PNMPI_NOMODULE;
 
 
   int err = PNMPI_NOGLOBAL;

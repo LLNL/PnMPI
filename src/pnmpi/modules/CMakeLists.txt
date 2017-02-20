@@ -36,4 +36,22 @@ include(PnMPI_headers)
 # without getting conflicts about the used paths. Otherwise you'd have to take
 # care about file locations after installation, especially if you use the
 # headers over multiple directories.
+pnmpi_add_private_header(modules.h)
 pnmpi_add_header(hooks.h)
+
+
+include_directories(
+  ${PNMPI_HEADER_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_BINARY_DIR}/..
+  ${PROJECT_BINARY_DIR})
+
+easy_add_library(pnmpi_modules OBJECT
+  valid_modhandle.c)
+
+foreach (target pnmpi_modules pnmpi_modules_pic)
+  add_dependencies(${target} generate)
+
+  add_coverage(${target})
+  add_sanitizers(${target})
+endforeach ()

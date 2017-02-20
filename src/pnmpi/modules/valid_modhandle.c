@@ -28,51 +28,28 @@
  * LLNL-CODE-402774
  */
 
-#include <assert.h>
-
-#include <pnmpi/debug_io.h>
+#include <pnmpi/private/attributes.h>
 #include <pnmpi/private/modules.h>
-#include <pnmpi/service.h>
 
 #include "core.h"
 
 
-/** \brief Get the Pcontrol value of module \p handle.
+/** \brief Check if \p handle is a valid module handle.
  *
  *
- * \param handle The module to be checked.
- * \param [out] flag Where to store the result.
+ * \param handle Module handle to be checked.
  *
- * \return \ref PNMPI_SUCCESS Successfully stored the result in \p flag.
- * \return \ref PNMPI_NOMODULE \p handle is no valid module handle.
+ * \return If \p handle is a valid module handle, a positive integer will be
+ *  returned, otherwise zero.
  *
  *
- * \ingroup PNMPI_Service_GetPcontrol
+ * \private
  */
-PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag)
+PNMPI_INTERNAL
+int pnmpi_valid_modhandle(const PNMPI_modHandle_t handle)
 {
-  assert(flag);
-
-  /* Check, if module is available and return an error code, if it's not
-   * available. */
-  if (!pnmpi_valid_modhandle(handle))
-    return PNMPI_NOMODULE;
-
-
-  *flag = modules.module[handle]->pcontrol;
-  return PNMPI_SUCCESS;
-}
-
-
-/** \brief Get the Pcontrol value of the calling module.
- *
- *
- * \return The Pcontrol configuration value of the calling module.
- *
- *
- * \ingroup PNMPI_Service_GetPcontrol
- */
-int PNMPI_Service_GetPcontrolSelf()
-{
-  return modules.module[pnmpi_level]->pcontrol;
+  return (handle >= 0 && handle < modules.num &&
+          !modules.module[handle]->stack_delimiter)
+           ? 1
+           : 0;
 }

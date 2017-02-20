@@ -84,6 +84,9 @@ void queryGlobal()
     case PNMPI_SUCCESS:
       printf("getGlobalByName: %d\n", *(buffer.addr.i));
       break;
+    case PNMPI_NOMODULE:
+      pnmpi_warning("getGlobalByName: module not found\n");
+      break;
     case PNMPI_NOGLOBAL:
       pnmpi_warning("getGlobalByName: global not found\n");
       break;
@@ -110,7 +113,7 @@ void PNMPI_RegistrationPoint()
 }
 
 
-/* CONFIGS: found no_global_self no_global_other no_signature
+/* CONFIGS: found no_module no_global_self no_global_other no_signature
  *
  * MODTYPE: XMPI
  *
@@ -120,6 +123,9 @@ void PNMPI_RegistrationPoint()
  * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  *
  * PASS-found: getGlobalByName: 42
+ *
+ * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
+ * PASS: getGlobalByName: module not found
  *
  * COMPILE_FLAGS-no_global_self: -DTEST_GLOBALNAME=\"foo\"
  * PASS-no_global_self: getGlobalByName: global not found

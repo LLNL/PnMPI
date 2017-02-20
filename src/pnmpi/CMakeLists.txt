@@ -80,6 +80,7 @@ set(PNMPI_LIB_SOURCES
   print_banner.c
 
   $<TARGET_OBJECTS:pnmpi_debug>
+  $<TARGET_OBJECTS:pnmpi_modules>
   $<TARGET_OBJECTS:pnmpi_service>
 )
 

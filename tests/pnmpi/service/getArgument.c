@@ -65,6 +65,9 @@ void PNMPI_RegistrationPoint()
     case PNMPI_SUCCESS:
       printf("GetArgument: %s=%s\n", TEST_ARGUMENT, buffer);
       break;
+    case PNMPI_NOMODULE:
+      pnmpi_warning("GetArgument: module not found\n");
+      break;
     case PNMPI_NOARG: pnmpi_warning("GetArgument: not found\n"); break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
@@ -72,7 +75,7 @@ void PNMPI_RegistrationPoint()
 }
 
 
-/* CONFIGS: found_self found_other found_second not_found
+/* CONFIGS: found_self found_other found_second not_found no_module
  *
  * MODTYPE: XMPI
  *
@@ -94,4 +97,7 @@ void PNMPI_RegistrationPoint()
  *
  * COMPILE_FLAGS-not_found: -DTEST_ARGUMENT=\"hello\"
  * PASS-not_found: GetArgument: not found
+ *
+ * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
+ * PASS-no_module: GetArgument: module not found
  */
