@@ -200,6 +200,13 @@ PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
 int PNMPI_Service_GetPcontrolSelf();
 
 
+/** \defgroup PNMPI_Service_strerror PNMPI_Service_strerror
+ *
+ * \header{pnmpi/service.h}
+ */
+const char *PNMPI_Service_strerror(PNMPI_status_t err);
+
+
 #ifdef __cplusplus
 }
 #endif

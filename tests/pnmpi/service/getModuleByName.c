@@ -56,7 +56,9 @@ void PNMPI_RegistrationPoint()
   switch (ret)
     {
     case PNMPI_SUCCESS: printf("GetModuleByName: %d\n", h); break;
-    case PNMPI_NOMODULE: pnmpi_warning("GetModuleByName: not found\n"); break;
+    case PNMPI_NOMODULE:
+      pnmpi_warning("GetModuleByName: %s\n", PNMPI_Service_strerror(ret));
+      break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
     }
@@ -74,5 +76,5 @@ void PNMPI_RegistrationPoint()
  * PASS-found: GetModuleByName: [0-9]+
  *
  * COMPILE_FLAGS-not_found: -DTEST_MODNAME=\"foo\"
- * PASS-not_found: GetModuleByName: not found
+ * PASS-not_found: GetModuleByName: Module not found
  */

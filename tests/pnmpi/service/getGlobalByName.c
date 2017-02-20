@@ -85,13 +85,9 @@ void queryGlobal()
       printf("getGlobalByName: %d\n", *(buffer.addr.i));
       break;
     case PNMPI_NOMODULE:
-      pnmpi_warning("getGlobalByName: module not found\n");
-      break;
     case PNMPI_NOGLOBAL:
-      pnmpi_warning("getGlobalByName: global not found\n");
-      break;
     case PNMPI_SIGNATURE:
-      pnmpi_warning("getGlobalByName: signature not found\n");
+      pnmpi_warning("getGlobalByName: %s\n", PNMPI_Service_strerror(ret));
       break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
@@ -125,14 +121,14 @@ void PNMPI_RegistrationPoint()
  * PASS-found: getGlobalByName: 42
  *
  * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
- * PASS: getGlobalByName: module not found
+ * PASS: getGlobalByName: Module not found
  *
  * COMPILE_FLAGS-no_global_self: -DTEST_GLOBALNAME=\"foo\"
- * PASS-no_global_self: getGlobalByName: global not found
+ * PASS-no_global_self: getGlobalByName: Global not found
  *
  * COMPILE_FLAGS-no_global_other: -DTEST_MODULE=1
- * PASS-no_global_other: getGlobalByName: global not found
+ * PASS-no_global_other: getGlobalByName: Global not found
  *
  * COMPILE_FLAGS-no_signature: -DTEST_GLOBALSIG=\'p\'
- * PASS-no_signature: getGlobalByName: signature not found
+ * PASS-no_signature: getGlobalByName: Signatures don't match
  */

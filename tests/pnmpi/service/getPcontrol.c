@@ -61,7 +61,7 @@ void PNMPI_RegistrationPoint()
     {
     case PNMPI_SUCCESS: printf("GetPcontrol: %d\n", buffer); break;
     case PNMPI_NOMODULE:
-      pnmpi_warning("GetPcontrol: module not found\n");
+      pnmpi_warning("GetPcontrol: %s\n", PNMPI_Service_strerror(ret));
       break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
@@ -86,5 +86,5 @@ void PNMPI_RegistrationPoint()
  * PASS-other: GetPcontrol: 0
  *
  * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
- * PASS-no_module: GetPcontrol: module not found
+ * PASS-no_module: GetPcontrol: Module not found
  */

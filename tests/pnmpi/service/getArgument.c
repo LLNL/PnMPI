@@ -67,9 +67,9 @@ void PNMPI_RegistrationPoint()
       printf("GetArgument: %s=%s\n", TEST_ARGUMENT, buffer);
       break;
     case PNMPI_NOMODULE:
-      pnmpi_warning("GetArgument: module not found\n");
+    case PNMPI_NOARG:
+      pnmpi_warning("GetArgument: %s\n", PNMPI_Service_strerror(ret));
       break;
-    case PNMPI_NOARG: pnmpi_warning("GetArgument: not found\n"); break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
     }
@@ -97,8 +97,8 @@ void PNMPI_RegistrationPoint()
  * PASS-found_second: GetArgument: bar=foo
  *
  * COMPILE_FLAGS-not_found: -DTEST_ARGUMENT=\"hello\"
- * PASS-not_found: GetArgument: not found
+ * PASS-not_found: GetArgument: Argument not found
  *
  * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
- * PASS-no_module: GetArgument: module not found
+ * PASS-no_module: GetArgument: Module not found
  */

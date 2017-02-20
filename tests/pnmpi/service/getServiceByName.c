@@ -90,13 +90,9 @@ void queryService()
       buffer.fct(__LINE__);
       break;
     case PNMPI_NOMODULE:
-      pnmpi_warning("getServiceByName: module not found\n");
-      break;
     case PNMPI_NOSERVICE:
-      pnmpi_warning("getServiceByName: service not found\n");
-      break;
     case PNMPI_SIGNATURE:
-      pnmpi_warning("getServiceByName: signature not found\n");
+      pnmpi_warning("getServiceByName: %s\n", PNMPI_Service_strerror(ret));
       break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
@@ -130,14 +126,14 @@ void PNMPI_RegistrationPoint()
  * PASS-found: getServiceByName: 0x[0-f]+\nfoo: [0-9]+
  *
  * COMPILE_FLAGS-no_module: -DTEST_MODULE=999
- * PASS: getServiceByName: module not found
+ * PASS: getServiceByName: Module not found
  *
  * COMPILE_FLAGS-no_service_self: -DTEST_SERVICENAME=\"foo\"
- * PASS-no_service_self: getServiceByName: service not found
+ * PASS-no_service_self: getServiceByName: Service not found
  *
  * COMPILE_FLAGS-no_service_other: -DTEST_MODULE=1
- * PASS-no_service_other: getServiceByName: service not found
+ * PASS-no_service_other: getServiceByName: Service not found
  *
  * COMPILE_FLAGS-no_signature: -DTEST_SERVICESIG=\"p\"
- * PASS-no_signature: getServiceByName: signature not found
+ * PASS-no_signature: getServiceByName: Signatures don't match
  */

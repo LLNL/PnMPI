@@ -59,6 +59,7 @@ pnmpi_add_man(PNMPI_Service_GetArgument "")
 pnmpi_add_man(PNMPI_Service_GetArgument PNMPI_Service_GetArgumentSelf)
 pnmpi_add_man(PNMPI_Service_GetPcontrol "")
 pnmpi_add_man(PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrolSelf)
+pnmpi_add_man(PNMPI_Service_strerror "")
 pnmpi_add_man(PNMPI_status_t "")
 
 
@@ -80,7 +81,8 @@ easy_add_library(pnmpi_service OBJECT
   getStackByName.c
   registerGlobal.c
   registerModule.c
-  registerService.c)
+  registerService.c
+  strerror.c)
 
 easy_target_link_libraries(pnmpi_service ${MPI_C_LIBRARIES})
 

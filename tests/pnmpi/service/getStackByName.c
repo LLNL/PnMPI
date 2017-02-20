@@ -52,7 +52,9 @@ void PNMPI_RegistrationPoint()
   switch (ret)
     {
     case PNMPI_SUCCESS: printf("GetStackByName: %d\n", stack); break;
-    case PNMPI_NOSTACK: pnmpi_warning("GetStackByName: not found\n"); break;
+    case PNMPI_NOSTACK:
+      pnmpi_warning("GetStackByName: %s\n", PNMPI_Service_strerror(ret));
+      break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
     }
@@ -71,5 +73,5 @@ void PNMPI_RegistrationPoint()
  * PASS-found: GetStackByName: [0-9]+
  *
  * COMPILE_FLAGS-not_found: -DTEST_STACKNAME=\"foo\"
- * PASS-not_found: GetStackByName: not found
+ * PASS-not_found: GetStackByName: Stack not found
  */
