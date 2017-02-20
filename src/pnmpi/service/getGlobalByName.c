@@ -28,6 +28,8 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
+
 #include <pnmpi/service.h>
 
 #include "core.h"
@@ -57,6 +59,10 @@ PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
                                              const char *name, const char sig,
                                              PNMPI_Global_descriptor_t *dest)
 {
+  assert(name);
+  assert(dest);
+
+
   int err = PNMPI_NOGLOBAL;
 
   /* Iterate over the globals list of the module. Compare the name and signature

@@ -28,6 +28,8 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
+
 #include <pnmpi/debug_io.h>
 #include <pnmpi/service.h>
 
@@ -47,6 +49,8 @@
  */
 PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag)
 {
+  assert(flag);
+
   /* Check, if module is available. If the module is not available, an error
    * message will be printed and the application exits immediately. */
   if (handle >= modules.num)

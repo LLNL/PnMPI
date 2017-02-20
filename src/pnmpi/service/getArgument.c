@@ -28,6 +28,8 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
+
 #include <pnmpi/service.h>
 
 #include "core.h"
@@ -56,6 +58,10 @@
 PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
                                          const char *name, const char **dest)
 {
+  assert(name);
+  assert(dest);
+
+
   /* Iterate over the argument list of the module. Compare the name of each
    * argument with the argument to be searched. If they match copy the pointer
    * to the value into dest and return success. */
@@ -91,6 +97,9 @@ PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
  */
 const char *PNMPI_Service_GetArgumentSelf(const char *name)
 {
+  assert(name);
+
+
   /* Iterate over the argument list of the module. Compare the name of each
    * argument with the argument to be searched. If they match return a pointer
    * to the argument value. */

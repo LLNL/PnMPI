@@ -28,6 +28,8 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
+
 #include <pnmpi/service.h>
 
 #include "core.h"
@@ -57,6 +59,11 @@ PNMPI_status_t PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle,
                                               const char *name, const char *sig,
                                               PNMPI_Service_descriptor_t *dest)
 {
+  assert(name);
+  assert(sig);
+  assert(dest);
+
+
   int err = PNMPI_NOSERVICE;
 
   /* Iterate over the service list of the module. Compare the name and signature

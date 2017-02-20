@@ -32,6 +32,9 @@
 #define PNMPI_SERVICE_H
 
 
+#include <pnmpi/attributes.h>
+
+
 /// \brief Max length of service name (including terminating null-character).
 #define PNMPI_SERVICE_NAMELEN 30
 
@@ -128,7 +131,9 @@ extern "C" {
  *
  * \header{pnmpi/service.h}
  */
+PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_status_t PNMPI_Service_RegisterModule(const char *name);
+PNMPI_FUNCTION_ARG_NONNULL(1, 2)
 PNMPI_status_t PNMPI_Service_GetModuleByName(const char *name,
                                              PNMPI_modHandle_t *handle);
 PNMPI_status_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
@@ -137,6 +142,7 @@ PNMPI_status_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
  *
  * \header{pnmpi/service.h}
  */
+PNMPI_FUNCTION_ARG_NONNULL(1, 2)
 PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
                                             PNMPI_modHandle_t *handle);
 
@@ -147,8 +153,10 @@ PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
  *
  * \header{pnmpi/service.h}
  */
+PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_status_t
 PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
+PNMPI_FUNCTION_ARG_NONNULL(2, 4)
 PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
                                              const char *name, const char sig,
                                              PNMPI_Global_descriptor_t *dest);
@@ -159,8 +167,10 @@ PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
  *  modules. These functions will be used to register and access these
  *  functions.
  */
+PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_status_t
 PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
+PNMPI_FUNCTION_ARG_NONNULL(2, 4)
 PNMPI_status_t PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle,
                                               const char *name, const char *sig,
                                               PNMPI_Service_descriptor_t *dest);
@@ -172,8 +182,10 @@ PNMPI_status_t PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle,
  *
  * \header{pnmpi/service.h}
  */
+PNMPI_FUNCTION_ARG_NONNULL(2, 3)
 PNMPI_status_t PNMPI_Service_GetArgument(PNMPI_modHandle_t handle,
                                          const char *name, const char **dest);
+PNMPI_FUNCTION_ARG_NONNULL(1)
 const char *PNMPI_Service_GetArgumentSelf(const char *name);
 
 /** \defgroup PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrol
@@ -182,6 +194,7 @@ const char *PNMPI_Service_GetArgumentSelf(const char *name);
  *
  * \header{pnmpi/service.h}
  */
+PNMPI_FUNCTION_ARG_NONNULL(2)
 PNMPI_status_t PNMPI_Service_GetPcontrol(PNMPI_modHandle_t handle, int *flag);
 int PNMPI_Service_GetPcontrolSelf();
 

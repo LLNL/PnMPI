@@ -28,6 +28,7 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include <pnmpi/debug_io.h>
@@ -52,6 +53,9 @@
 PNMPI_status_t
 PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global)
 {
+  assert(global);
+
+
   /* Allocate new memory to store a new global definition in the list of globals
    * of this module. */
   module_globlist_p newglobal =

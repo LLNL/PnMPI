@@ -28,6 +28,7 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
 #include <stdio.h>
 
 #include <pnmpi/debug_io.h>
@@ -50,6 +51,9 @@
  */
 PNMPI_status_t PNMPI_Service_RegisterModule(const char *name)
 {
+  assert(name);
+
+
   /* Copy name into the module name buffer. If the name is longer than the
    * supplied buffer, a warning will be printed. */
   if (snprintf(modules.module[pnmpi_level]->username, PNMPI_MODULE_USERNAMELEN,

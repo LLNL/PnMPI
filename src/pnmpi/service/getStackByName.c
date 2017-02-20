@@ -28,6 +28,8 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
+
 #include <pnmpi/service.h>
 
 #include "core.h"
@@ -53,6 +55,10 @@
 PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
                                             PNMPI_modHandle_t *handle)
 {
+  assert(name);
+  assert(handle);
+
+
   int i;
   for (i = 0; i < modules.num; i++)
     if (modules.module[i]->stack_delimiter)
