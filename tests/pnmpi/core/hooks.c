@@ -33,8 +33,8 @@
  * Note: This test cases check NOT, if the functionality of the specific hooks
  *       is correct, but only if they are called!
  *
- * Note: As app_startup does initialize MPI, mpiexec must be used to not get
- *       OpenMPI into a deadlock.
+ * Note: As PNMPI_AppStartup does initialize MPI, mpiexec must be used to not
+ *       get OpenMPI into a deadlock.
  */
 
 #include <stdio.h> // printf
@@ -53,7 +53,8 @@ void HOOKNAME()
 }
 
 
-/* CONFIGS: RegistrationPoint RegistrationComplete app_startup app_shutdown
+/* CONFIGS: RegistrationPoint RegistrationComplete
+ * CONFIGS: PNMPI_AppStartup PNMPI_AppShutdown
  *
  * MODTYPE: XMPI
  *
@@ -70,9 +71,9 @@ void HOOKNAME()
  * COMPILE_FLAGS-RegistrationComplete: -DHOOKNAME=PNMPI_RegistrationComplete
  * PASS-RegistrationComplete: PNMPI_RegistrationComplete hit.
  *
- * COMPILE_FLAGS-app_startup: -DHOOKNAME=app_startup
- * PASS-app_startup: app_startup hit.
+ * COMPILE_FLAGS-PNMPI_AppStartup: -DHOOKNAME=PNMPI_AppStartup
+ * PASS-PNMPI_AppStartup: PNMPI_AppStartup hit.
  *
- * COMPILE_FLAGS-app_shutdown: -DHOOKNAME=app_shutdown
- * PASS-app_shutdown: app_shutdown hit.
+ * COMPILE_FLAGS-PNMPI_AppShutdown: -DHOOKNAME=PNMPI_AppShutdown
+ * PASS-PNMPI_AppShutdown: PNMPI_AppShutdown hit.
  */

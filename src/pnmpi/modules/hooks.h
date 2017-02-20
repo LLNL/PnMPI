@@ -72,19 +72,19 @@ void PNMPI_RegistrationComplete();
  *  setup before calling this hook, so one may use MPI calls to e.g. broadcast
  *  messages.
  */
-void app_startup();
+void PNMPI_AppStartup();
 
 /** \brief Called just after the applications main has finished.
  *
- * \details This hook is the counterpart of \ref app_startup. It will be called
- *  just after the applications main has finished and may be used to e.g. print
- *  a message or stop timers.
+ * \details This hook is the counterpart of \ref PNMPI_AppStartup. It will be
+ *  called just after the applications main has finished and may be used to e.g.
+ *  print a message or stop timers.
  *
  * \note If any loaded module supports this hook, the MPI environment will not
  *  be destoryed in MPI_Finalize but kept open until calls to this hook have
  *  been finished. This may be used to e.g. broadcast messages.
  */
-void app_shutdown();
+void PNMPI_AppShutdown();
 
 
 #ifdef __cplusplus

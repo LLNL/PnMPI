@@ -30,8 +30,8 @@
 
 /* This test case checks the app_shook functionality.
  *
- * Note: As app_startup does initialize MPI, mpiexec must be used to not get
- *       OpenMPI into a deadlock.
+ * Note: As PNMPI_AppStartup does initialize MPI, mpiexec must be used to not
+ *       get OpenMPI into a deadlock.
  */
 
 #include <stdio.h>
@@ -41,7 +41,7 @@
 
 
 #ifdef WITH_STARTUP
-void app_startup()
+void PNMPI_AppStartup()
 {
   int status;
   PMPI_Initialized(&status);
@@ -52,7 +52,7 @@ void app_startup()
 
 
 #ifdef WITH_SHUTDOWN
-void app_shutdown()
+void PNMPI_AppShutdown()
 {
   int status;
   PMPI_Initialized(&status);

@@ -196,11 +196,11 @@ Section (C) for more information on building custom modules.
 After setting up, for benchmark purposes `PNMPI_BE_SILENT` should be
 set, so PnMPI stops producing output.
 
-If you are using modules with app_startup support, but your application does not
-use the highest threading level, you may set the reqested MPI threading level
-via `PNMPI_THREADING_LEVEL` to decrease the MPI overhead. The level send by
-`MPI_Init_thread` will not be sufficient, because MPI will be initialized in the
-constructors, if `app_startup` will be used.
+If you are using modules with the `PNMPI_AppStartup` hook, but your application
+does not use the highest threading level, you may set the requested MPI
+threading level via `PNMPI_THREADING_LEVEL` to decrease the MPI overhead. The
+level send by `MPI_Init_thread` will not be sufficient, because MPI will be
+initialized in the constructors, if `PNMPI_AppStartup` will be used.
 
 
 ### A6a) Using the PnMPI invocation tool
@@ -484,13 +484,14 @@ type `void`.
   provided by the module, etc.
 * `PNMPI_RegistrationComplete`: This hook will be called after PnMPI is
   initialized and all modules have been registered.
-* `app_startup`: If a module provides an `app_startup` hook, PnMPI will
-  initialize MPI in the applications constructor *before* `main` is started and
-  call the hook.
-* `app_shutdown`: If a module provides an `app_shutdown` hook, PnMPI will not
-  call `PMPI_Finalize` in the `MPI_Finalize` wrapper, but keeps MPI open until
-  `main` has finished and calls the hook in the applications destructor. After
-  the hooks of all modules have been called, MPI will be shut down.
+* `PNMPI_AppStartup`: If a module provides an `PNMPI_AppStartup` hook, PnMPI
+  will initialize MPI in the applications constructor *before* `main` is started
+  and call the hook.
+* `PNMPI_AppShutdown`: If a module provides an `PNMPI_AppShutdown` hook, PnMPI
+  will not call `PMPI_Finalize` in the `MPI_Finalize` wrapper, but keeps MPI
+  open until `main` has finished and calls the hook in the applications
+  destructor. After the hooks of all modules have been called, MPI will be shut
+  down.
 
 
 D) Debug Options

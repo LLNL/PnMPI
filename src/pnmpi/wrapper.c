@@ -88,8 +88,8 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   inc_pnmpi_mpi_level();
   if (NOT_ACTIVATED(MPI_Init_ID))
     {
-      /* If app_startup is activated, MPI was initialized before in _init. A
-       * second call of MPI_Init is not allowed. */
+      /* If PNMPI_AppStartup is activated, MPI was initialized before in _init.
+       * A second call of MPI_Init is not allowed. */
       if (pnmpi_init_done)
         {
           returnVal = MPI_SUCCESS;
@@ -125,8 +125,8 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 #ifdef COMPILE_FOR_FORTRAN
 void mpi_init_(int *ierr)
 {
-  /* If MPI was already initialized (by app_startup), then do not start it
-   * again, as this this forbidden by the MPI standard.
+  /* If MPI was already initialized (by the PNMPI_AppStartup hook), then do not
+   * start it again, as this this forbidden by the MPI standard.
    *
    * TODO: This is only a temporary fix. The better fix will be to fix the
    * pnmpi_get_mpi_interface function.
@@ -308,16 +308,16 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
     }
 
 
-  /* If app_startup is activated, we've initialized MPI before. Restore the
-   * provided value, MPI_Init_thread gave us in the constructor. */
-  if (pnmpi_hook_activated("app_startup"))
+  /* If the PNMPI_AppStartup hook is activated, we've initialized MPI before.
+   * Restore the provided value, MPI_Init_thread gave us in the constructor. */
+  if (pnmpi_hook_activated("PNMPI_AppStartup"))
     *provided = pnmpi_mpi_thread_level_provided;
 
   inc_pnmpi_mpi_level();
   if (NOT_ACTIVATED(MPI_Init_thread_ID))
     {
-      /* If app_startup is activated, MPI was initialized before in _init. A
-       * second call of MPI_Init_thread is not allowed. */
+      /* If the PNMPI_AppStartup hook is activated, MPI was initialized before
+       * in _init. A second call of MPI_Init_thread is not allowed. */
       if (pnmpi_init_done)
         {
           returnVal = MPI_SUCCESS;
@@ -359,8 +359,8 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
 void mpi_init_thread_(int *required, int *provided, int *ierr)
 {
-  /* If MPI was already initialized (by app_startup), then do not start it
-   * again, as this this forbidden by the MPI standard.
+  /* If MPI was already initialized (by the PNMPI_AppStartup hook), then do not
+   * start it again, as this this forbidden by the MPI standard.
    *
    * TODO: This is only a temporary fix. The better fix will be to fix the
    * pnmpi_get_mpi_interface function.
@@ -541,10 +541,10 @@ int MPI_Finalize(void)
       err = Internal_XMPI_Finalize();
     }
 
-  /* If the app_shutdown hook is provided by any module, do NOT call the
+  /* If the PNMPI_AppShutdown hook is provided by any module, do NOT call the
    * original MPI_Finalize function, because it will be called in _fini after
    * calling the app_shutdown handler. */
-  if (pnmpi_hook_activated("app_shutdown") && !pnmpi_finalize_done)
+  if (pnmpi_hook_activated("PNMPI_AppShutdown") && !pnmpi_finalize_done)
     return MPI_SUCCESS;
 
   /* It would be better to distinguish between C and Fortran at this point, so

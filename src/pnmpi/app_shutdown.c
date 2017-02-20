@@ -48,15 +48,15 @@ void pnmpi_app_shutdown()
    *
    * 1. PnMPI must have been initialized before. If PnMPI (and MPI) have not
    *    been initalized, nothing can be shutdown.
-   * 2. app_shutdown must be enabled, otherwise MPI was shutdown before in the
-   *    MPI_Finalize wrapper. */
-  if (!pnmpi_init_done || !pnmpi_hook_activated("app_shutdown"))
+   * 2. PNMPI_AppShutdown must be enabled, otherwise MPI was shutdown before in
+   *    the MPI_Finalize wrapper. */
+  if (!pnmpi_init_done || !pnmpi_hook_activated("PNMPI_AppShutdown"))
     return;
 
   /* In some cases modules may have called PMPI_Finalize which was not patched
-   * and redirected to PnMPI,so MPI is not active anymore. If the app_shutdown
-   * is called under these conditions, MPI will crash, so a check is performed
-   * to ensure that MPI is still active. */
+   * and redirected to PnMPI,so MPI is not active anymore. If the
+   * PNMPI_AppShutdown hook is called under these conditions, MPI will crash, so
+   * a check is performed to ensure that MPI is still active. */
   int mpi_initialized, mpi_finalized;
   PMPI_Initialized(&mpi_initialized);
   PMPI_Finalized(&mpi_finalized);
@@ -65,7 +65,7 @@ void pnmpi_app_shutdown()
     return;
 
 
-  pnmpi_call_hook("app_shutdown");
+  pnmpi_call_hook("PNMPI_AppShutdown");
 
 
   /* There are some bugs in OpenMPI, sending Fortran PMPI-calls to C MPI calls.

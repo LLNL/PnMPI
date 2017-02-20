@@ -137,8 +137,8 @@ int MPI_Pcontrol(const int level, ...)
  * \details This function will print the statistics to stdout for each rank and
  *  a sum of all ranks.
  *
- * \todo In feature releases this should be done by the app_shutdown hook to
- *  track duplicated MPI_Finalize calls.
+ * \todo In feature releases this should be done by the PNMPI_AppShutdown hook
+ *  to track duplicated MPI_Finalize calls.
  *
  *
  * \return The return value of PMPI_Finalize will be pass through.

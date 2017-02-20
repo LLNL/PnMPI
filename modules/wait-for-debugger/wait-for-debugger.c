@@ -60,12 +60,12 @@
 #endif
 
 
-/** \brief PnMPI app_startup module hook.
+/** \brief PnMPI PNMPI_AppStartup module hook.
  *
  * \details This hook will be called just before main starts and prints the PID
  *  and (if it can be determined) the hostname of the rank.
  */
-void app_startup()
+void PNMPI_AppStartup()
 {
   /* Get the rank of this process and print rank, hostname and PID of this rank
    * to stdout. */

@@ -160,17 +160,13 @@ void pnmpi_fallback_init()
   pnmpi_call_constructors();
 
 
-  /* Check if the user is using app_startup or app_shutdown, due these are not
-   * supported in this scenario. */
-  if (pnmpi_hook_activated("app_startup") ||
-      pnmpi_hook_activated("app_shutdown"))
-    {
-      fprintf(stderr, "You are using modules which require the 'app_startup' "
-                      "or 'app_shutdown' hooks, but your system does not "
-                      "support them. Please deactivate them or check your "
-                      "system.\n");
-      exit(EXIT_FAILURE);
-    }
+  /* Check if the user is using PNMPI_AppStartup or PNMPI_AppShutdown hooks, due
+   * these are not supported in this scenario. */
+  if (pnmpi_hook_activated("PNMPI_AppStartup") ||
+      pnmpi_hook_activated("PNMPI_AppShutdown"))
+    pnmpi_error("You are using modules which require the 'PNMPI_AppStartup' or "
+                "'PNMPI_AppShutdown' hooks, but your system does not support "
+                "them. Please deactivate them or check your system.\n");
 }
 
 

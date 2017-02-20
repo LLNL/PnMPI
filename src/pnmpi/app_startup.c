@@ -45,12 +45,13 @@ int pnmpi_mpi_thread_level_provided;
 PNMPI_CONSTRUCTOR(110)
 void pnmpi_app_startup(int argc, char **argv)
 {
-  /* If no module provides the app_startup hook, we can skip this function. */
-  if (!pnmpi_hook_activated("app_startup"))
+  /* If no module provides the PNMPI_AppStartup hook, we can skip the execution
+   * of this function. */
+  if (!pnmpi_hook_activated("PNMPI_AppStartup"))
     return;
 
 
-  /* Before executing the app_startup hook, we have to initialize the MPI
+  /* Before executing the PNMPI_AppStartup hook, we have to initialize the MPI
    * environment, so it may be used by the hooks. */
 
   int required = pnmpi_max_module_threading_level();
@@ -77,5 +78,5 @@ void pnmpi_app_startup(int argc, char **argv)
   pnmpi_print_banner();
 
 
-  pnmpi_call_hook("app_startup");
+  pnmpi_call_hook("PNMPI_AppStartup");
 }
