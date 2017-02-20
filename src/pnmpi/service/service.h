@@ -35,6 +35,11 @@
 /// \brief Max length of service name (including terminating null-character).
 #define PNMPI_SERVICE_NAMELEN 30
 
+/** \brief Max length of service signature (including terminating
+ *   null-character).
+ */
+#define PNMPI_SERVICE_SIGLEN 20
+
 
 
 /// \brief Handle for a module.
@@ -86,6 +91,26 @@ typedef struct PNMPI_Global_descriptor_d
 } PNMPI_Global_descriptor_t;
 /// \}
 
+/** \addtogroup PNMPI_Service_GetServiceByName
+ * \{
+ */
+/// \brief Type for a service function.
+typedef int (*PNMPI_Service_Fct_t)();
+
+/// \brief Struct to describe a module service.
+typedef struct PNMPI_Service_descriptor_d
+{
+  char name[PNMPI_SERVICE_NAMELEN]; ///< Name of the service.
+  char sig[PNMPI_SERVICE_SIGLEN];
+  /**< \brief Signature of the service.
+   *
+   * \note The signature has no specific format, but keep the users knowing how
+   *  to search for your service.
+   */
+  PNMPI_Service_Fct_t fct; ///< Pointer to the service function.
+} PNMPI_Service_descriptor_t;
+/// \}
+
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
  * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
@@ -127,6 +152,18 @@ PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global);
 PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
                                              const char *name, const char sig,
                                              PNMPI_Global_descriptor_t *dest);
+
+/** \defgroup PNMPI_Service_GetServiceByName PNMPI_Service_GetServiceByName
+ *
+ * \details Modules may provide service functions that are accessable by other
+ *  modules. These functions will be used to register and access these
+ *  functions.
+ */
+PNMPI_status_t
+PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
+PNMPI_status_t PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle,
+                                              const char *name, const char *sig,
+                                              PNMPI_Service_descriptor_t *dest);
 
 /** \defgroup PNMPI_Service_GetArgument PNMPI_Service_GetArgument
  *

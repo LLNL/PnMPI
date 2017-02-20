@@ -69,7 +69,6 @@ endif ()
 #       containing a constructor must be listed in the order they should be
 #       executed.
 set(PNMPI_LIB_SOURCES
-  services.c
   core.c
   wrapper.c
   app_startup.c

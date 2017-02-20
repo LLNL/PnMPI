@@ -64,7 +64,6 @@
 /* Constants */
 
 #define PNMPI_MODULE_FILENAMELEN 512
-#define PNMPI_SERVICE_SIGLEN 20
 #define PNMPI_MODULE_USERNAMELEN 256
 
 #define PNMPI_REGISTRATION_POINT "PNMPI_RegistrationPoint"
@@ -74,36 +73,5 @@
 
 #define PNMPI_MODHANDLE_NULL -1
 
-/*.......................................................*/
-/* Types */
-
-typedef int (*PNMPI_Service_Fct_t)();
-
-typedef struct PNMPI_Service_descriptor_d
-{
-  char name[PNMPI_SERVICE_NAMELEN];
-  char sig[PNMPI_SERVICE_SIGLEN];
-  PNMPI_Service_Fct_t fct;
-} PNMPI_Service_descriptor_t;
-
-
-/*.......................................................*/
-/* Functions */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-int PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service);
-
-int PNMPI_Service_GetServiceByName(PNMPI_modHandle_t handle, const char *name,
-                                   const char *sig,
-                                   PNMPI_Service_descriptor_t *serv);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _PNMPIMOD_HEADER */

@@ -28,7 +28,7 @@
  * LLNL-CODE-402774
  */
 
-/* This test case checks, if a registered global may be queried by an other
+/* This test case checks, if a registered service may be queried by an other
  * module. There will be a valid test and two failure-tests for unknown name and
  * not-matching signature in this test file. */
 
@@ -41,15 +41,15 @@
 #include <pnmpi/service.h>
 
 
-#define global_name "test"
-#define global_sig 'd'
+#define service_name "test"
+#define service_sig "d"
 
-#ifndef TEST_GLOBALNAME
-#define TEST_GLOBALNAME global_name
+#ifndef TEST_SERVICENAME
+#define TEST_SERVICENAME service_name
 #endif
 
-#ifndef TEST_GLOBALSIG
-#define TEST_GLOBALSIG global_sig
+#ifndef TEST_SERVICESIG
+#define TEST_SERVICESIG service_sig
 #endif
 
 #ifndef TEST_MODULE
@@ -57,38 +57,43 @@
 #endif
 
 
-int global_int = 42;
-
-
-void registerGlobal()
+int foo(int a)
 {
-  PNMPI_Global_descriptor_t global;
-  global.addr.i = &global_int;
-  strncpy(global.name, global_name, PNMPI_SERVICE_NAMELEN);
-  global.sig = global_sig;
+  printf("%s: %d\n", __FUNCTION__, a);
+  return a;
+}
 
-  int ret = PNMPI_Service_RegisterGlobal(&global);
+
+void registerService()
+{
+  PNMPI_Service_descriptor_t service;
+  service.fct = &foo;
+  strncpy(service.name, service_name, PNMPI_SERVICE_NAMELEN);
+  strncpy(service.sig, service_sig, PNMPI_SERVICE_SIGLEN);
+
+  int ret = PNMPI_Service_RegisterService(&service);
   if (ret != PNMPI_SUCCESS)
     pnmpi_error("Error: %d\n", ret);
 }
 
 
-void queryGlobal()
+void queryService()
 {
-  /* Query the global and print a message with the return code. */
-  PNMPI_Global_descriptor_t buffer;
-  int ret = PNMPI_Service_GetGlobalByName(TEST_MODULE, TEST_GLOBALNAME,
-                                          TEST_GLOBALSIG, &buffer);
+  /* Query the service and print a message with the return code. */
+  PNMPI_Service_descriptor_t buffer;
+  int ret = PNMPI_Service_GetServiceByName(TEST_MODULE, TEST_SERVICENAME,
+                                           TEST_SERVICESIG, &buffer);
   switch (ret)
     {
     case PNMPI_SUCCESS:
-      printf("getGlobalByName: %d\n", *(buffer.addr.i));
+      printf("getServiceByName: %p\n", (void *)buffer.fct);
+      buffer.fct(__LINE__);
       break;
-    case PNMPI_NOGLOBAL:
-      pnmpi_warning("getGlobalByName: global not found\n");
+    case PNMPI_NOSERVICE:
+      pnmpi_warning("getServiceByName: service not found\n");
       break;
     case PNMPI_SIGNATURE:
-      pnmpi_warning("getGlobalByName: signature not found\n");
+      pnmpi_warning("getServiceByName: signature not found\n");
       break;
 
     default: pnmpi_error("Unknown error: %d\n", ret); break;
@@ -98,19 +103,19 @@ void queryGlobal()
 
 void PNMPI_RegistrationPoint()
 {
-  /* The first loaded module will register the global, others try to access the
-   * global. */
+  /* The first loaded module will register the service, others try to access the
+   * service. */
   int self;
   if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
     pnmpi_error("Can't get module ID.\n");
   if (self == 0)
-    registerGlobal();
+    registerService();
   else
-    queryGlobal();
+    queryService();
 }
 
 
-/* CONFIGS: found no_global_self no_global_other no_signature
+/* CONFIGS: found no_service_self no_service_other no_signature
  *
  * MODTYPE: XMPI
  *
@@ -119,14 +124,14 @@ void PNMPI_RegistrationPoint()
  *
  * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  *
- * PASS-found: getGlobalByName: 42
+ * PASS-found: getServiceByName: 0x[0-f]+\nfoo: [0-9]+
  *
- * COMPILE_FLAGS-no_global_self: -DTEST_GLOBALNAME=\"foo\"
- * PASS-no_global_self: getGlobalByName: global not found
+ * COMPILE_FLAGS-no_service_self: -DTEST_SERVICENAME=\"foo\"
+ * PASS-no_service_self: getServiceByName: service not found
  *
- * COMPILE_FLAGS-no_global_other: -DTEST_MODULE=1
- * PASS-no_global_other: getGlobalByName: global not found
+ * COMPILE_FLAGS-no_service_other: -DTEST_MODULE=1
+ * PASS-no_service_other: getServiceByName: service not found
  *
- * COMPILE_FLAGS-no_signature: -DTEST_GLOBALSIG=\'p\'
- * PASS-no_signature: getGlobalByName: signature not found
+ * COMPILE_FLAGS-no_signature: -DTEST_SERVICESIG=\"p\"
+ * PASS-no_signature: getServiceByName: signature not found
  */

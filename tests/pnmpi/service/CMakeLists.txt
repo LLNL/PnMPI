@@ -38,3 +38,6 @@ easy_add_test(PREFIX "service_getArgumentSelf" SOURCES getArgumentSelf.c)
 
 easy_add_test(PREFIX "service_registerGlobal" SOURCES registerGlobal.c)
 easy_add_test(PREFIX "service_getGlobalByName" SOURCES getGlobalByName.c)
+
+easy_add_test(PREFIX "service_registerService" SOURCES registerService.c)
+easy_add_test(PREFIX "service_getServiceByName" SOURCES getServiceByName.c)
