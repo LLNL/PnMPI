@@ -30,12 +30,13 @@
 
 /* This test case checks, if a module is able to register itself. */
 
+#include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
 
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
-  return PNMPI_Service_RegisterModule("registerTest");
+  PNMPI_Service_RegisterModule("registerTest");
 }
 
 

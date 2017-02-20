@@ -36,6 +36,8 @@
 #include <pnmpi/service.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/hooks.h>
+
 #define PNMPI_MODULE_DATATYPEPRINT "datatype-print"
 
 PNMPIMOD_Datatype_getReference_t r_get;
@@ -48,17 +50,9 @@ PNMPIMOD_Datatype_delReference_t r_del;
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
-  int err;
-
-  /* register this module and its services */
-
-  err = PNMPI_Service_RegisterModule(PNMPI_MODULE_DATATYPEPRINT);
-  if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+  PNMPI_Service_RegisterModule(PNMPI_MODULE_DATATYPEPRINT);
 }
 
 /*.......................................................*/

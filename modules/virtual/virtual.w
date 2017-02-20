@@ -35,6 +35,8 @@
 #include <mpi.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/hooks.h>
+
 MPI_Comm Reserve_Smaller_Comm = MPI_COMM_WORLD;
 
 #define MACRO_MPI_Comm(_c) {if (_c==MPI_COMM_WORLD) _c=partition_comm;}
@@ -60,17 +62,9 @@ MPI_Comm partition_comm;
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
-  int err;
-
-  /* register this module and its services */
-
-  err=PNMPI_Service_RegisterModule(PNMPI_MODULE_VIRTUAL);
-  if (err!=PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+  PNMPI_Service_RegisterModule(PNMPI_MODULE_VIRTUAL);
 }
 
 

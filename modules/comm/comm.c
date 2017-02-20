@@ -34,6 +34,8 @@
 #include <pnmpi-config.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/hooks.h>
+
 #include "commsub.h"
 
 #define PNMPI_MODULE_COMM "communication-tracker"
@@ -166,19 +168,12 @@ void pnmpimod_comm_set_collectivesupport(int param)
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
-  int err;
-  char name[1000];
-
   /* register this module and its services */
-
+  char name[1000];
   sprintf(name, "%s:%s", PNMPI_MODULE_COMM, provide_submod_name());
-  err = PNMPI_Service_RegisterModule(name);
-  if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+  PNMPI_Service_RegisterModule(name);
 }
 
 

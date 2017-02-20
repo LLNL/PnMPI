@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 
+#include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
 
 

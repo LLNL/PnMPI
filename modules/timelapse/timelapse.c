@@ -34,6 +34,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <pnmpi/hooks.h>
+
 
 
 /*--------------------------------------------------------------------------*/
@@ -53,7 +55,7 @@ int _timelapse_status = 0;
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
   int err;
   PNMPI_Service_descriptor_t service;
@@ -63,18 +65,16 @@ int PNMPI_RegistrationPoint()
 
   err = PNMPI_Service_RegisterModule(PNMPI_MODULE_TIMELAPSE);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "timelapse");
   service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Timelapse_Switch;
   sprintf(service.sig, "i");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   _timelapse_off = PMPI_Wtime();
-
-  return err;
 }
 
 

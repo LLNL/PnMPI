@@ -34,6 +34,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <pnmpi/hooks.h>
+
 #ifdef AIX
 #pragma alloca
 #endif
@@ -78,7 +80,7 @@ int add_status_storage = 0;
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
   int err;
   PNMPI_Service_descriptor_t service;
@@ -93,23 +95,21 @@ int PNMPI_RegistrationPoint()
 
   err = PNMPI_Service_RegisterModule(PNMPI_MODULE_STATUS);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "add-storage");
   service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Status_RequestStorage;
   sprintf(service.sig, "i");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(global.name, "total-status-extension");
   global.addr.i = &add_status_storage;
   global.sig = 'i';
   err = PNMPI_Service_RegisterGlobal(&global);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+    return;
 }
 
 

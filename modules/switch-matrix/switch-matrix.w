@@ -33,6 +33,8 @@
 #include <mpi.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/hooks.h>
+
 MPI_Comm Reserve_Smaller_Comm = MPI_COMM_WORLD;
 
 #define MACRO_MPI_Comm(_c) \
@@ -61,17 +63,9 @@ PNMPI_modHandle_t select_stack_A,select_stack_B;
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
-  int err;
-
-  /* register this module and its services */
-
-  err=PNMPI_Service_RegisterModule(PNMPI_SWITCH_MATRIX);
-  if (err!=PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+  PNMPI_Service_RegisterModule(PNMPI_SWITCH_MATRIX);
 }
 
 

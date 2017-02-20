@@ -39,6 +39,8 @@
 #include <iostream>
 #include <map>
 
+#include <pnmpi/hooks.h>
+
 using namespace std;
 
 
@@ -230,7 +232,7 @@ int allocate_new_reqtable()
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
   int err;
   PNMPI_Service_descriptor_t service;
@@ -246,30 +248,28 @@ int PNMPI_RegistrationPoint()
 
   err = PNMPI_Service_RegisterModule(PNMPI_MODULE_REQUEST);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "add-storage");
   service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Requests_RequestStorage;
   sprintf(service.sig, "i");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "map-request");
   service.fct = (PNMPI_Service_Fct_t)PNMPIMOD_Requests_MapRequest;
   sprintf(service.sig, "r");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(global.name, "status-offset");
   global.addr.i = &PNMPIMOD_Request_offsetInStatus;
   global.sig = 'i';
   err = PNMPI_Service_RegisterGlobal(&global);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+    return;
 }
 
 

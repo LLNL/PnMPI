@@ -37,6 +37,8 @@
 #include <mpi.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/hooks.h>
+
 using namespace std;
 
 //#define DT_DEBUG
@@ -634,7 +636,7 @@ int MPI_Send(
 /*.......................................................*/
 /* Registration */
 
-int PNMPI_RegistrationPoint()
+void PNMPI_RegistrationPoint()
 {
   int err;
   PNMPI_Service_descriptor_t service;
@@ -643,30 +645,28 @@ int PNMPI_RegistrationPoint()
 
   err = PNMPI_Service_RegisterModule(PNMPI_MODULE_DATATYPE);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "getDatatypeReference");
   service.fct = (PNMPI_Service_Fct_t)(PNMPIMOD_Datatype_getReference);
   sprintf(service.sig, "pimp");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "delDatatypeReference");
   service.fct = (PNMPI_Service_Fct_t)(PNMPIMOD_Datatype_delReference);
   sprintf(service.sig, "p");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
+    return;
 
   sprintf(service.name, "getDatatypeSize");
   service.fct = (PNMPI_Service_Fct_t)(PNMPIMOD_Datatype_getSize);
   sprintf(service.sig, "mp");
   err = PNMPI_Service_RegisterService(&service);
   if (err != PNMPI_SUCCESS)
-    return MPI_ERROR_PNMPI;
-
-  return err;
+    return;
 }
 
 
