@@ -469,9 +469,9 @@ you have your environment set up correctly.
 
 ### C2) Limiting the threading level
 
-If your module is not threadsafe or is only able to process a limited amount of
-threading, it may provide an integer named `PnMPI_threading_level` to define the
-maximum provided threading level of this module.
+If your module is not thread safe or is only able to process a limited amount of
+threading, it may provide an integer named `PNMPI_SupportedThreadingLevel` to
+define the maximum provided threading level of this module.
 
 ### C3) Module hooks
 

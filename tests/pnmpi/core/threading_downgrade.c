@@ -31,10 +31,12 @@
 /* This test case checks, if PnMPI limits the threading level, if at least one
  * module does not support the full threading level of MPI. */
 
+#include <pnmpi/hooks.h>
+
 #include <mpi.h>
 
 
-int PnMPI_threading_level = MPI_THREAD_SINGLE;
+const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SINGLE;
 
 
 /* MODTYPE: XMPI

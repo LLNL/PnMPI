@@ -40,11 +40,23 @@ extern "C" {
 #endif
 
 
-/** \defgroup pnmpi_module_hooks PnMPI module hooks.
+/** \addtogroup pnmpi_module_hooks PnMPI module hooks.
  *
- * /details Module hooks are called at different steps in the PnMPI init- and
+ * \details Module hooks are called at different steps in the PnMPI init- and
  *  finalization.
+ *
+ * \{
  */
+
+
+/** \brief Limit the threading level the module supports.
+ *
+ * \details Usually it is assumed, that a module is thread safe. However if it
+ *  is not, you may set this variable to the highest MPI threading level your
+ *  module supports. PnMPI will ensure, that MPI_Init_thread will be called with
+ *  the highest available thread level, all modules support.
+ */
+extern const int PNMPI_SupportedThreadingLevel;
 
 /** \brief Called just after the module has been loaded.
  *
@@ -85,6 +97,9 @@ void PNMPI_AppStartup();
  *  been finished. This may be used to e.g. broadcast messages.
  */
 void PNMPI_AppShutdown();
+
+
+/// \}
 
 
 #ifdef __cplusplus

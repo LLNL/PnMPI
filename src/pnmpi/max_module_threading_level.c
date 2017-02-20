@@ -66,7 +66,8 @@ int pnmpi_max_module_threading_level()
       if (modules.module[i]->stack_delimiter)
         continue;
 
-      int *sym = find_symbol(modules.module[i], "PnMPI_threading_level");
+      const int *sym =
+        find_symbol(modules.module[i], "PNMPI_SupportedThreadingLevel");
       if (sym != NULL)
         if (*sym < max_level)
           max_level = *sym;

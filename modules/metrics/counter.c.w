@@ -50,7 +50,7 @@
  * to MPI_THREAD_SERIALIZED, so it is safe to use with threaded applications
  * (but they may become slower!). */
 #if defined(METRIC_NO_ATOMIC)
-int PnMPI_threading_level = MPI_THREAD_SERIALIZED;
+int PNMPI_SupportedThreadingLevel = MPI_THREAD_SERIALIZED;
 #endif
 
 
