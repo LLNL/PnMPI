@@ -63,6 +63,9 @@ extern const int PNMPI_SupportedThreadingLevel;
  * \details This hook will be called just after the module has been loaded. It
  *  may be used to register the name of the module, services provided by the
  *  module, etc.
+ *
+ * \note MPI is not initialized when this hook is called. You MUST NOT use any
+ *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
  */
 void PNMPI_RegistrationPoint();
 
@@ -71,6 +74,9 @@ void PNMPI_RegistrationPoint();
  * \details As \ref PNMPI_RegistrationPoint this hook is called after the module
  *  has been loaded, but after all modules have registered itself. Modules may
  *  interact with other modules in this hook.
+ *
+ * \note MPI is not initialized when this hook is called. You MUST NOT use any
+ *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
  */
 void PNMPI_RegistrationComplete();
 
