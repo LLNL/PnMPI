@@ -48,8 +48,7 @@ int pnmpi_hook_activated(const char *hook)
       if (modules.module[i]->stack_delimiter)
         continue;
 
-      int (*sym)() = (int (*)())find_symbol(modules.module[i], hook);
-      if (sym != NULL)
+      if (find_symbol(modules.module[i], hook) != NULL)
         return 1;
     }
 

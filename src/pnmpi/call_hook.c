@@ -54,7 +54,7 @@ void pnmpi_call_hook(const char *hook)
       if (modules.module[i]->stack_delimiter)
         continue;
 
-      int (*sym)() = (int (*)())find_symbol(modules.module[i], hook);
+      void (*sym)() = (void (*)())find_symbol(modules.module[i], hook);
       if (sym == NULL)
         {
           pnmpi_debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook.\n",
@@ -62,10 +62,8 @@ void pnmpi_call_hook(const char *hook)
           continue;
         }
 
-      /* Call the hook's symbol. Since the return value of the hook has no
-       * effect on the PnMPI module stack, it will be ignored. Before calling
-       * the hook, the PnMPI level will be adjusted, so the hooks function may
-       * use service functions. */
+      /* Call the hook's symbol. Before calling the hook, the PnMPI level will
+       * be adjusted, so the hooks function may use service functions. */
       pnmpi_debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n", hook,
                   modules.module[i]->name);
       pnmpi_level = i;
