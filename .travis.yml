@@ -203,7 +203,6 @@ matrix:
     # Check coding convention.
     - os: linux
       dist: trusty
-      compiler: gcc
       sudo: false
       env:
         FORMAT
@@ -216,6 +215,9 @@ matrix:
       git:
         submodules: false
         depth: 9999999
+      before_script:
+        - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+        - git fetch
       script:
         - git filter-branch --force --tree-filter '
             find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \)
@@ -227,7 +229,7 @@ matrix:
                 git --no-pager diff --color=always;
                 exit 1;
             fi
-          ' --tag-name-filter cat -- 7244fc1..HEAD
+          ' --tag-name-filter cat origin/master~1..HEAD
       after_success:
 
     # Check license in all files.
@@ -238,27 +240,37 @@ matrix:
         apt:
       git:
         submodules: false
-        depth: 1
+        depth: 9999999
+      before_script:
+        - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+        - git fetch
       script:
-        - find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h"
-                 -o -name "*.c.w" -o -name "*.h.w" -o -name "*.h.in" \)
-            -exec sh -c "cat {}
-                | head -n $(wc -l extra/license/header.c | sed 's/[^0-9]*//g')
+        - git filter-branch --force --tree-filter '
+            num=$(wc -l extra/license/header.c | sed "s/[^0-9]*//g") ;
+            find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h"
+                     -o -name "*.c.w" -o -name "*.h.w" -o -name "*.h.in" \)
+              -exec sh -c "cat {}
+                | head -n $num
                 | git diff  --no-index -- extra/license/header.c -
               || (
-                echo '';
-                echo '{} does not contain a valid license header.';
+                echo \"\";
+                echo \"{} does not contain a valid license header.\";
                 echo 1 > error
-              )" \; && test \! -f error
-        - find . \( -name "*.txt" -o -name "*.conf" -o -name "*.yml" \)
-            -exec sh -c "cat {}
-                | head -n $(wc -l extra/license/header.txt | sed 's/[^0-9]*//g')
+              )" \; ;
+
+            num=$(wc -l extra/license/header.txt | sed "s/[^0-9]*//g") ;
+            find . \( -name "*.txt" -o -name "*.conf" -o -name "*.yml" \)
+              -exec sh -c "cat {}
+                | head -n $num
                 | git diff  --no-index -- extra/license/header.txt -
               || (
-                echo '';
-                echo '{} does not contain a valid license header.';
+                echo \"\";
+                echo \"{} does not contain a valid license header.\";
                 echo 1 > error
-              )" \; && test \! -f error
+              )" \; ;
+
+              test \! -f error ;
+          ' --tag-name-filter cat origin/master~1..HEAD
       after_success:
 
 
