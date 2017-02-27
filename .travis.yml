@@ -52,7 +52,7 @@ addons:
 # inspired by http://stackoverflow.com/a/20802381
 before_install_tmpl: &before_install
   - brew update --quiet >& /dev/null
-  - for pkg in gcc cmake openmpi argp-standalone help2man doxygen; do
+  - for pkg in gcc cmake mpich argp-standalone help2man doxygen; do
       if brew list -1 | grep -q "^${pkg}\$"; then
         brew outdated $pkg || brew upgrade $pkg;
       else
@@ -167,21 +167,28 @@ matrix:
       osx_image: xcode8.2
       compiler: clang
       before_install: *before_install
+
+    # OpenMPI builds.
     - os: osx
+      osx_image: xcode8.2
       compiler: gcc-6
       before_install: *before_install
       before_script:
+        - brew link --overwrite gcc
+        - brew unlink mpich
+        - brew install openmpi
         - export CC=gcc-6; export CXX=g++-6
-
-    # MPICH build.
+      env:
+        - OpenMPI
     - os: osx
+      osx_image: xcode8.2
       compiler: clang
       before_install: *before_install
       before_script:
-        - brew unlink openmpi
-        - brew install mpich
+        - brew unlink mpich
+        - brew install openmpi
       env:
-        - MPICH
+        - OpenMPI
 
     # Build without Fortran.
     - os: linux
