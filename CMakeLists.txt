@@ -97,30 +97,8 @@ set(CMAKE_MODULE_PATH
 
 
 # Get the version info from git.
-if (EXISTS "${PROJECT_SOURCE_DIR}/.git")
-  find_package(GitInfo REQUIRED)
-  git_wc_info(${PROJECT_SOURCE_DIR} GIT)
-
-# If git is not available (e.g. this git was packed as .tar.gz), try to read the
-# version-info from a hidden file in the root directory. This file should not be
-# versioned, but added at packaging time.
-elseif (EXISTS "${PROJECT_SOURCE_DIR}/.version")
-  file(READ "${PROJECT_SOURCE_DIR}/.version" GIT_WC_LATEST_TAG_LONG)
-
-# If no version could be gathered by git or the version file, print a warning,
-# so the user has to define a version in the backup version file.
-else ()
-  message(FATAL_ERROR "No PnMPI version provided by .version file")
-endif ()
-
-set(PNMPI_VERSION ${GIT_WC_LATEST_TAG_LONG} CACHE STRING "PnMPI version")
-if (GIT_WC_LATEST_TAG_LONG MATCHES "^([^0-9]*)([0-9]+)[.]([0-9]+)-([0-9]+)")
-  set(PNMPI_MAJOR_VERSION ${CMAKE_MATCH_2} CACHE STRING "")
-  set(PNMPI_MINOR_VERSION ${CMAKE_MATCH_3} CACHE STRING "")
-  set(PNMPI_PATCH_VERSION ${CMAKE_MATCH_4} CACHE STRING "")
-else ()
-  message(FATAL_ERROR "Invalid version info: '${GIT_WC_LATEST_TAG_LONG}'.")
-endif ()
+find_package(GitInfo REQUIRED)
+git_version_info(PNMPI)
 
 
 #===================================
