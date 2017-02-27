@@ -200,6 +200,28 @@ matrix:
       env:
         - NO_FORTRAN
 
+    # Check release packaging. This will only package the current version,
+    # unpack and change into this directory. The build will be done by the
+    # default script below.
+    - os: linux
+      dist: trusty
+      sudo: false
+      compiler: gcc-4.8
+      env:
+        - DEPLOY
+      before_script:
+        - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
+        - export PWD_SAVE=$PWD
+        - git clone https://github.com/Kentzo/git-archive-all.git
+            ../git-archive-all
+        - ln -s ../git-archive-all/git_archive_all.py
+            ../git-archive-all/git-archive-all
+        - export PATH="$PATH:$PWD/../git-archive-all"
+        - mkdir package && cd package
+        - ../extra/pack.sh
+        - tar xfvz *.tar.gz
+        - cd $(echo */)
+
     # Check coding convention.
     - os: linux
       dist: trusty
@@ -262,6 +284,15 @@ matrix:
             find . \( -name "*.txt" -o -name "*.conf" -o -name "*.yml" \)
               -exec sh -c "cat {}
                 | head -n $num
+                | git diff  --no-index -- extra/license/header.txt -
+              || (
+                echo \"\";
+                echo \"{} does not contain a valid license header.\";
+                echo 1 > error
+              )" \; ;
+            find . \( -name "*.sh" \)
+              -exec sh -c "cat {}
+                | head -n $((num + 2)) | tail -n $num
                 | git diff  --no-index -- extra/license/header.txt -
               || (
                 echo \"\";
