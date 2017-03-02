@@ -93,7 +93,7 @@ you can supply your particular MPI compiler as a parameter:
       -DMPI_C_COMPILER=/path/to/my/mpicc \
       ..
 
-See the documentation in [FindMPI.cmake](cmakemodules/legacy/FindMPI.cmake)
+See the documentation in of `FindMPI.cmake`
 for more details on MPI build configuration options.
 
 If you have problems, you may want to build PnMPI in debug mode.  You
