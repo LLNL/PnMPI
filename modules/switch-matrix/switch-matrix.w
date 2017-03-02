@@ -51,7 +51,9 @@ PNMPI_modHandle_t select_stack_A,select_stack_B;
 {{fnall fn_name MPI_Init MPI_Pcontrol MPI_Finalize}} {
   int _stack=-1;
   {{apply_to_type MPI_Comm MACRO_MPI_Comm}}
+  WRAP_MPI_CALL_PREFIX
   {{ret_val}} = P{{fn_name}}_NewStack({{list _stack {{args}} }});
+  WRAP_MPI_CALL_POSTFIX
 }{{endfnall}}
 
 /*--------------------------------------------------------------------------*/

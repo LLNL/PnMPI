@@ -28,7 +28,7 @@
 # LLNL-CODE-402774
 
 add_pnmpi_module(empty empty.c)
-add_wrapped_file(empty.c empty.w)
+add_wrapped_file(empty.c empty.w -w)
 
 install(TARGETS empty DESTINATION lib/pnmpi-modules)
 

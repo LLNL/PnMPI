@@ -65,7 +65,7 @@ include_directories(
 #
 # Add the counter module
 #
-add_wrapped_file(counter.c counter.c.w)
+add_wrapped_file(counter.c counter.c.w -w)
 
 pnmpi_add_xmpi_module(metrics-counter "${CMAKE_CURRENT_BINARY_DIR}/counter.c")
 add_coverage(metrics-counter)
@@ -75,7 +75,7 @@ add_sanitizers(metrics-counter)
 #
 # Add the timing module.
 #
-add_wrapped_file(timing.c timing.c.w)
+add_wrapped_file(timing.c timing.c.w -w)
 
 # Set the RPATH for this module, so it can find LLNL-hires-timers.
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")

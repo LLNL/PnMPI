@@ -168,7 +168,9 @@ static timing_t start_stop_timer(timing_t *t)
 
 
   metric_atomic_add(timing_storage.{{fn_name}}, start_stop_timer(&timer));
+  WRAP_MPI_CALL_PREFIX
   int ret = X{{fn_name}}({{args}});
+  WRAP_MPI_CALL_POSTFIX
   metric_atomic_add(timing_storage.{{fn_name}}, start_stop_timer(&timer));
 
   return ret;

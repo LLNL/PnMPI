@@ -227,6 +227,7 @@ int PMPI_Finalized(int *);
         pnmpi_function_ptrs.stack[i] =                                      \
           (r_type)find_symbol(mods.module[i], routine);                     \
         RTLDNEXT_RETRIEVAL(r_type, routine)                                 \
+        WRAP_MPI_CALL_PREFIX                                                \
         if (pnmpi_function_ptrs.stack[i] != NULL &&                         \
             pnmpi_function_ptrs.stack[i] != (r_type)P##mpiroutine &&        \
             RTLDNEXT_CHECK(stack))                                          \
@@ -238,6 +239,7 @@ int PMPI_Finalized(int *);
             pnmpi_function_ptrs.stack[i] =                                  \
               NULL; /*needed to make RTLD_NEXT check work*/                 \
           }                                                                 \
+        WRAP_MPI_CALL_POSTFIX                                               \
         DBGPRINT2("Symbol for routine %s in module %s: value %px", routine, \
                   mods.module[i]->name, pnmpi_function_ptrs.stack[i]);      \
       }                                                                     \

@@ -115,7 +115,9 @@ void PNMPI_RegistrationPoint()
 {{fnall fn_name MPI_Finalize MPI_Pcontrol}}
   metric_atomic_inc(counters.{{fn_name}});
 
+  WRAP_MPI_CALL_PREFIX
   X{{fn_name}}({{args}});
+  WRAP_MPI_CALL_POSTFIX
 {{endfnall}}
 
 

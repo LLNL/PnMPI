@@ -53,15 +53,15 @@ if (PnMPI_USE_adept_utils)
 endif()
 
 # Add wrapped files to the build.
-add_wrapped_file(wrapper.h   wrapper.h.w)
-add_wrapped_file(newstack.h  newstack.h.w)
-add_wrapped_file(xmpi.h      xmpi.h.w)
-
 if (ENABLE_FORTRAN)
-  add_wrapped_file(wrapper_c.c wrapper_c.c.w -f)
-else ()
-  add_wrapped_file(wrapper_c.c wrapper_c.c.w)
+  set(WRAP_FORTRAN_FLAGS "-f")
 endif ()
+
+add_wrapped_file(wrapper.h   wrapper.h.w -w)
+add_wrapped_file(newstack.h  newstack.h.w -w)
+add_wrapped_file(xmpi.h      xmpi.h.w -w)
+add_wrapped_file(wrapper_c.c wrapper_c.c.w ${WRAP_FORTRAN_FLAGS} -w)
+
 
 # Sources for the PnMPI libraries used by all libraries.
 #

@@ -42,8 +42,10 @@
         {
           if (pnmpi_function_ptrs.pnmpi_int_{{fn_name}}[pnmpi_level]!=NULL)
 	    {
-	      DBGPRINT3("Calling a wrapper in {{fn_name}} at level %i FROM %px",pnmpi_level,&(Internal_X{{fn_name}}));
-      res=(pnmpi_function_ptrs.pnmpi_int_{{fn_name}})[pnmpi_level]({{args}});
+          WRAP_MPI_CALL_PREFIX
+          DBGPRINT3("Calling a wrapper in {{fn_name}} at level %i FROM %px",pnmpi_level,&(Internal_X{{fn_name}}));
+          res=(pnmpi_function_ptrs.pnmpi_int_{{fn_name}})[pnmpi_level]({{args}});
+          WRAP_MPI_CALL_POSTFIX
 	      DBGPRINT3("Done with wrapper in {{fn_name}} at level %i - reseting to %i",pnmpi_level,start_level);
 	      pnmpi_level = start_level;
 	      return res;
@@ -53,7 +55,9 @@
     }
 
   DBGPRINT3("Calling a original MPI in {{fn_name}}");
+  WRAP_MPI_CALL_PREFIX
   res=P{{fn_name}}({{args}});
+  WRAP_MPI_CALL_POSTFIX
   DBGPRINT3("Done with original MPI in {{fn_name}}");
   pnmpi_level = start_level;
   return res;
@@ -63,23 +67,31 @@
 
 {{fnall fn_name MPI_Init MPI_Init_thread MPI_Pcontrol MPI_Finalize MPI_Wtick MPI_Wtime}}
 {
+  WRAP_MPI_CALL_PREFIX
   DBGPRINT3("Entering Old {{fn_name}} at base level - Location = %px",&({{fn_name}}));
+  WRAP_MPI_CALL_POSTFIX
 
   if (NOT_ACTIVATED({{fn_name}}_ID))
   { // in case we have no registered function of this type and we call PMPI directly, a subsequent call from the mpi library starts at level1
     int start_level = pnmpi_level;
     pnmpi_level = pnmpi_max_level;
+    WRAP_MPI_CALL_PREFIX
     {{ret_type}} ret = P{{fn_name}}({{args}});
+    WRAP_MPI_CALL_POSTFIX
     pnmpi_level = start_level;
     return ret;
   }
   else if (get_pnmpi_mpi_level() > 0)
   {
+    WRAP_MPI_CALL_PREFIX
     return P{{fn_name}}({{args}});
+    WRAP_MPI_CALL_POSTFIX
   }
   else
     {
+    WRAP_MPI_CALL_PREFIX
     {{ret_val}}=Internal_X{{fn_name}}({{args}});
+    WRAP_MPI_CALL_POSTFIX
         }
 }
 {{endfnall}}
@@ -90,7 +102,9 @@
 {
   {{ret_type}} returnVal;
   ++pnmpi_level;
+  WRAP_MPI_CALL_PREFIX
   returnVal=Internal_X{{fn_name}}({{args}});
+  WRAP_MPI_CALL_POSTFIX
   --pnmpi_level;
   return returnVal;
 }
@@ -106,7 +120,9 @@
   else
     pnmpi_level++;
 
+  WRAP_MPI_CALL_PREFIX
   returnVal=Internal_X{{fn_name}}({{args}});
+  WRAP_MPI_CALL_POSTFIX
   pnmpi_level = current;
   return returnVal;
 }

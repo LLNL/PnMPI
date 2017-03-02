@@ -29,7 +29,7 @@
 
 #Use macro to: add target for module, version it, install it, patch it
 add_pnmpi_module(virtual virtual.c)
-add_wrapped_file(virtual.c virtual.w)
+add_wrapped_file(virtual.c virtual.w -w)
 
 install(TARGETS virtual DESTINATION lib/pnmpi-modules)
 
