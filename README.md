@@ -104,7 +104,7 @@ can do this by supplying an additional paramter to CMake, e.g.:
       -DCMAKE_BUILD_TYPE=Debug \
       ..
 
-The build directory contains a few sample invocations of
+The `extra/build` directory contains a few sample invocations of
 cmake that have been successfully used on LLNL systems.
 
 
