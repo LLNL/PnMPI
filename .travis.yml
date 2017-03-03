@@ -200,6 +200,19 @@ matrix:
       env:
         - NO_FORTRAN
 
+    # Build with optimized configuration.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="
+            -DENABLE_DEBUG=OFF
+            -DENABLE_THREAD_SAFETY=OFF
+          "
+      env:
+        - OPTIMIZED
+
     # Check release packaging. This will only package the current version,
     # unpack and change into this directory. The build will be done by the
     # default script below.

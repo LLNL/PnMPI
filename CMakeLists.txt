@@ -128,6 +128,19 @@ find_package(codecov)
 
 
 #===================================
+# Performance optimizations
+#===================================
+option(ENABLE_DEBUG "Enable PnMPI debug logging and assertions." on)
+if (NOT ENABLE_DEBUG)
+  # For performance, assertions and debug logging may be disabled in PnMPI to
+  # reduce the overhead in the PnMPI stack. This will not change the PnMPI API,
+  # but will compile much less comparisons into the code so PnMPI won't print
+  # any debug information nor check any parameters.
+  add_definitions("-DNDEBUG" "-DPNMPI_NO_DEBUG")
+endif ()
+
+
+#===================================
 # Recurse to sub-directories
 #===================================
 add_subdirectory(doc)
