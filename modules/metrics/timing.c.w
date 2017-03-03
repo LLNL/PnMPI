@@ -45,7 +45,7 @@
  * the threading level of this module to MPI_THREAD_SERIALIZED, so it is safe to
  * use with threaded applications (but they may become slower!). */
 #if defined(METRIC_NO_ATOMIC) || defined(PNMPI_COMPILER_NO_TLS)
-int PNMPI_SupportedThreadingLevel = MPI_THREAD_SERIALIZED;
+const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SERIALIZED;
 #endif
 
 
