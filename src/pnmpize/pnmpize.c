@@ -97,11 +97,13 @@ static struct argp argp = { options, &parse_arguments, args_doc, doc };
  *
  * \param name Name of the environment variable.
  * \param value Value to be set or appended.
+ * \param prepend If set non-zero, \p value will be prepended to the contents of
+ *  \p name, if \p name does exist.
  *
  * \return This function returns the return value of setenv. See the setenv
  *  manual for more information about it.
  */
-static int appendenv(const char *name, const char *value)
+static int appendenv(const char *name, const char *value, const int prepend)
 {
   char *temp = getenv(name);
 
@@ -115,7 +117,8 @@ static int appendenv(const char *name, const char *value)
    * the value from buffer. */
   size_t len = strlen(temp) + strlen(value);
   char buffer[len + 2];
-  snprintf(buffer, len + 2, "%s:%s", temp, value);
+  snprintf(buffer, len + 2, "%s:%s", prepend ? value : temp,
+           prepend ? temp : value);
 
   return setenv(name, buffer, 1);
 }
@@ -173,7 +176,7 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
     {
     case 'c': setenv("PNMPI_CONF", arg, 1); break;
     case 'd': set_dbglevel(state, arg); break;
-    case 'm': setenv("PNMPI_LIB_PATH", arg, 1); break;
+    case 'm': appendenv("PNMPI_LIB_PATH", arg, 1); break;
     case 'n': setenv("PNMPI_DBGNODE", arg, 1); break;
     case 'q':
     case 's':
@@ -213,13 +216,13 @@ int main(int argc, char **argv)
    * symbols in the same namespace. Otherwise P^nMPI and libmpi won't see each
    * other and no preloading will happen. */
   appendenv("DYLD_INSERT_LIBRARIES",
-            PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".dylib");
+            PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".dylib", 0);
   setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
 
 #else
   /* For other systems (Linux and other UNIX platforms), add libpnmpif to
    * LD_PRELOAD to load P^nMPI in front of libmpi. */
-  appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".so");
+  appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".so", 0);
 #endif
 
   /* Execute the utility. If the utility could be started, pnmpize will exit
