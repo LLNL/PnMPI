@@ -38,7 +38,7 @@ double mpi_wtime_(void);
 {{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}});
 {{endforallfn}}
 
-#include "xmpi.h"
+#include <pnmpi/xmpi.h>
 
 {{forallfn fn_name}}
 #define {{fn_name}}_ID {{fn_num}}

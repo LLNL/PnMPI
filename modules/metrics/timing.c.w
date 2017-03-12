@@ -36,7 +36,7 @@
 #include <pnmpi/hooks.h>
 #include <pnmpi/private/tls.h>
 #include <pnmpi/service.h>
-#include <xmpi.h>
+#include <pnmpi/xmpi.h>
 
 #include "atomic.h"
 

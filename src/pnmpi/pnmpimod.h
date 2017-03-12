@@ -31,7 +31,9 @@
 #ifndef _PNMPIMOD_HEADER
 #define _PNMPIMOD_HEADER
 
+#include <pnmpi/newstack.h>
 #include <pnmpi/service.h>
+#include <pnmpi/xmpi.h>
 
 
 /*===============================================================*/
@@ -41,10 +43,8 @@
 /* is designed to work with P^N MPI and uses its extra services  */
 /*===============================================================*/
 
-#include "newstack.h"
 #include "pnmpi-config.h"
 #include "pnmpi.h"
-#include "xmpi.h"
 #include <mpi.h>
 
 /*===============================================================*/
