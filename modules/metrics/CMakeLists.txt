@@ -35,7 +35,7 @@ find_package(C11 OPTIONAL_COMPONENTS ATOMICS)
 
 # Add C11 flags, if C11 is available.
 if (C11_FOUND)
-  add_definitions(${C11_FLAGS})
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C11_FLAGS}")
 endif ()
 
 # Check if atomics are available for thread safe storage. First we try to use

@@ -31,7 +31,15 @@ include(CheckSymbolExists)
 include(easylib)
 include(PnMPI_headers)
 
+find_package(C11)
 find_package(Sanitizers)
+
+
+# If C11 was found, add the C11 compiler flags, so C11 thread local storage can
+# be used by PnMPI.
+if (C11_FOUND)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C11_FLAGS}")
+endif ()
 
 
 # Recurse into subdirectories.
