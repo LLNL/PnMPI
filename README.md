@@ -220,6 +220,11 @@ You will need to set one environment variable to run PnMPI:
   * `PNMPI_BE_SILENT` will silence the PnMPI banner. For benchmark purposes you
     should also disable `ENABLE_DEBUG` in your CMake configuration. **Note:**
     Warnings on errors still will be printed.
+  * If you are using modules with the `PNMPI_AppStartup` hook, PnMPI trys to
+    detect the used MPI interface (C or Fortran) automatically by calling `nm`
+    on the instrumented application. However, you may set the MPI interface
+    language explictly with the `PNMPI_INTERFACE` environment variable or the
+    `--interface` flag of the PnMPI invocation tool.
   * If you are using modules with the `PNMPI_AppStartup` hook, but your
     application does not use the highest threading level, you may set the
     requested MPI threading level via `PNMPI_THREADING_LEVEL` to decrease the

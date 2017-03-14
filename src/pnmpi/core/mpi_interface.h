@@ -28,17 +28,21 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_APP_HOOKS_H
-#define PNMPI_APP_HOOKS_H
+#ifndef PNMPI_PRIVATE_MPI_INTERFACE_H
+#define PNMPI_PRIVATE_MPI_INTERFACE_H
 
 
-/** \brief Cache for 'provided' return value of PMPI_Init_thread.
- *
- * \details PMPI_Init_thread returns the provided MPI threading level. The value
- *  will be stored in this variable, to pass it to the application in later
- *  calls to \ref MPI_Init_thread.
+/** \brief Language of the MPI interface used by the application.
  */
-extern int pnmpi_mpi_thread_level_provided;
+typedef enum pnmpi_mpi_interface {
+  PNMPI_INTERFACE_UNKNOWN = 0, /**< MPI interface could not be detected or was
+                                  *   not detected yet. */
+  PNMPI_INTERFACE_C,           ///< Application uses the C MPI interface.
+  PNMPI_INTERFACE_FORTRAN      ///< Application uses the Fortran MPI interface.
+} pnmpi_mpi_interface;
+
+
+pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd);
 
 
 #endif

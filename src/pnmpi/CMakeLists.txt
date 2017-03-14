@@ -50,6 +50,7 @@ endif ()
 # errors, as easylib would select the static object library for the shared PnMPI
 # library.
 add_subdirectory(compiler)
+add_subdirectory(core)
 add_subdirectory(debug)
 add_subdirectory(modules)
 add_subdirectory(service)
@@ -94,12 +95,12 @@ set(PNMPI_LIB_SOURCES
   wrapper.c
   app_startup.c
   app_shutdown.c
-  get_mpi_interface.c
   call_hook.c
   hook_activated.c
   max_module_threading_level.c
   print_banner.c
 
+  $<TARGET_OBJECTS:pnmpi_core>
   $<TARGET_OBJECTS:pnmpi_debug>
   $<TARGET_OBJECTS:pnmpi_modules>
   $<TARGET_OBJECTS:pnmpi_service>

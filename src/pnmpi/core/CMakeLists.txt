@@ -27,10 +27,23 @@
 #
 # LLNL-CODE-402774
 
-find_package(MPI REQUIRED)
+include(PnMPI_headers)
 
 
-easy_add_test(PREFIX core_banner SOURCES banner.c)
-easy_add_test(PREFIX core_get_mpi_interface SOURCES get_mpi_interface.c)
-easy_add_test(PREFIX core_hooks SOURCES hooks.c)
-easy_add_test(PREFIX core_threading_downgrade SOURCES threading_downgrade.c)
+# Install and manage the public and private header files of the PnMPI sources.
+# This has to be done to use the same headers for the PnMPI sources and the API
+# without getting conflicts about the used paths. Otherwise you'd have to take
+# care about file locations after installation, especially if you use the
+# headers over multiple directories.
+pnmpi_add_private_header(mpi_interface.h)
+
+
+include_directories(${PNMPI_HEADER_DIR})
+
+easy_add_library(pnmpi_core OBJECT
+  get_mpi_interface.c)
+
+foreach (target pnmpi_core pnmpi_core_pic)
+  add_coverage(${target})
+  add_sanitizers(${target})
+endforeach ()

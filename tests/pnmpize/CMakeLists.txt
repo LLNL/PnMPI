@@ -34,3 +34,4 @@ endif ()
 
 easy_add_test(PREFIX pnmpize_config SOURCES config.c)
 easy_add_test(PREFIX pnmpize_debug SOURCES debug.conf NOBINARY)
+easy_add_test(PREFIX pnmpize_interface SOURCES interface.conf NOBINARY)

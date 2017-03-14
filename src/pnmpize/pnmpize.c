@@ -72,6 +72,8 @@ static struct argp_option options[] = {
                               "following keywords: init, modules or call. "
                               "Multiple levels may be combined by calling this "
                               "option for each debug level." },
+  { "interface", 'i', "LANG", 0,
+    "MPI interface language used by the utility. May be either C or Fortran." },
   { "modules", 'm', "PATH", 0, "Module path" },
   { "debug-node", 'n', "RANK", 0, "Only print debug messages for this rank. "
                                   "Note: This option has no effect on debug "
@@ -176,6 +178,7 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
     {
     case 'c': setenv("PNMPI_CONF", arg, 1); break;
     case 'd': set_dbglevel(state, arg); break;
+    case 'i': setenv("PNMPI_INTERFACE", arg, 1); break;
     case 'm': appendenv("PNMPI_LIB_PATH", arg, 1); break;
     case 'n': setenv("PNMPI_DBGNODE", arg, 1); break;
     case 'q':
