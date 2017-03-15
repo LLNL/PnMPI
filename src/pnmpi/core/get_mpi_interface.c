@@ -37,6 +37,7 @@
 
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/config.h>
 #include <pnmpi/private/mpi_interface.h>
 
 
@@ -64,8 +65,10 @@ static pnmpi_mpi_interface convert_env(const char *value)
 
   if (strcasecmp(value, "C") == 0)
     return PNMPI_INTERFACE_C;
+#ifdef ENABLE_FORTRAN
   else if (strcasecmp(value, "Fortran") == 0)
     return PNMPI_INTERFACE_FORTRAN;
+#endif
   else
     pnmpi_error("Unknown MPI interface '%s'.\n", value);
 }
@@ -130,8 +133,8 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
    * location of the binary. */
   const char *format =
     (access(cmd, F_OK) != -1)
-      ? "nm %s 2>/dev/null | grep %s MPI_Init >/dev/null"
-      : "nm $(which %s) 2>/dev/null | grep %s MPI_Init >/dev/null";
+      ? "nm %s 2>/dev/null | grep %s \"[^P]MPI_Init\" >/dev/null"
+      : "nm $(which %s) 2>/dev/null | grep %s \"[^P]MPI_Init\" >/dev/null";
 
   /* Create a buffer for the command to be used. The length should be
    * sufficient for format with the substituded parameters. */
@@ -146,6 +149,7 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
     return PNMPI_INTERFACE_C;
   else
     {
+#ifdef ENABLE_FORTRAN
       /* Next handle case (2) for the Fortran interface, so we'll lookup the
        * same expression case insensitive. */
       n = snprintf(command, len, format, cmd, "-i");
@@ -154,6 +158,7 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
 
       /* In any other case, an unknown MPI interface will be used. */
       else
+#endif
         return PNMPI_INTERFACE_NONE;
     }
 }

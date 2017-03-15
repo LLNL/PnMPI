@@ -29,7 +29,10 @@
  */
 
 /* The following test cases will be used to check if PnMPI detects the language
- * of the instrumented application right. */
+ * of the instrumented application right.
+ *
+ * The AppStartup and AppShutdown hooks will be used to initialize and finalize
+ * MPI, so this test case can be used with non-mpi applications, too. */
 
 #include <pnmpi/hooks.h>
 
@@ -38,8 +41,12 @@ void PNMPI_AppStartup()
 {
 }
 
+void PNMPI_AppShutdown()
+{
+}
 
-/* CONFIGS: env_c env_fortran env_unknown nm_c nm_fortran nm_unknown
+
+/* CONFIGS: env_c env_unknown nm_c nm_unknown
  *
  * MODTYPE: XMPI
  *
@@ -53,9 +60,6 @@ void PNMPI_AppStartup()
  * ENVIRONMENT-env_c: PNMPI_INTERFACE=C
  * PASS-env_c: MPI interface: C
  *
- * ENVIRONMENT-env_fortran: PNMPI_INTERFACE=Fortran
- * PASS-env_fortran: MPI interface: Fortran
- *
  * ENVIRONMENT-env_unknown: PNMPI_INTERFACE=foo
  * PASS-env_unknown: Unknown MPI interface 'foo'.
  *
@@ -63,12 +67,6 @@ void PNMPI_AppStartup()
  * RUN-nm_c:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
  * RUN-nm_c:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  * PASS-nm_c: MPI interface: C
- *
- * RUN-nm_fortran: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
- * RUN-nm_fortran:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
- * RUN-nm_fortran:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@
- * RUN-nm_fortran:   @TESTBIN_MPI_FORTRAN@
- * PASS-nm_fortran: MPI interface: Fortran
  *
  * PASS-nm_unknown: MPI interface: none
  */

@@ -37,6 +37,7 @@
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/config.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/print.h>
 
@@ -95,8 +96,10 @@ void pnmpi_print_banner()
   printf(" Application:\n  MPI interface: %s\n\n",
          pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_C
            ? "C"
+#ifdef ENABLE_FORTRAN
            : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN
                ? "Fortran"
+#endif
                : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_NONE
                    ? "none"
                    : "unknown");

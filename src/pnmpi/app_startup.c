@@ -36,6 +36,7 @@
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/config.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/pmpi.h>
 
@@ -77,6 +78,7 @@ void pnmpi_app_startup(int argc, char **argv)
                   pnmpi_mpi_thread_level_provided);
       break;
 
+#ifdef ENABLE_FORTRAN
     /* The Fortran MPI interface will be used for staticaly linked applications
      * and applications without MPI, too. This should have no side-effects. */
     case PNMPI_INTERFACE_FORTRAN:
@@ -92,6 +94,7 @@ void pnmpi_app_startup(int argc, char **argv)
           pnmpi_mpi_thread_level_provided);
         break;
       }
+#endif
 
     default:
       pnmpi_error("Automatic detection of the used MPI interface failed.\n");

@@ -28,29 +28,11 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_PRIVATE_MPI_INTERFACE_H
-#define PNMPI_PRIVATE_MPI_INTERFACE_H
+#ifndef PNMPI_PRIVATE_CONFIG_H
+#define PNMPI_PRIVATE_CONFIG_H
 
 
-#include <pnmpi/private/config.h>
-
-
-/** \brief Language of the MPI interface used by the application.
- */
-typedef enum pnmpi_mpi_interface {
-  PNMPI_INTERFACE_UNKNOWN = -1, /**< MPI interface could not be detected or was
-                                 *   not detected yet. */
-  PNMPI_INTERFACE_NONE = 0,     ///< Application uses no known MPI interface.
-  PNMPI_INTERFACE_C             ///< Application uses the C MPI interface.
-
-#ifdef ENABLE_FORTRAN
-  ,
-  PNMPI_INTERFACE_FORTRAN ///< Application uses the Fortran MPI interface.
-#endif
-} pnmpi_mpi_interface;
-
-
-pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd);
+#cmakedefine ENABLE_FORTRAN
 
 
 #endif

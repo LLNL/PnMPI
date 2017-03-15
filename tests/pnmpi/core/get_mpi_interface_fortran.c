@@ -28,29 +28,39 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_PRIVATE_MPI_INTERFACE_H
-#define PNMPI_PRIVATE_MPI_INTERFACE_H
+/* The following test cases will be used to check if PnMPI detects the language
+ * of the instrumented application right.
+ *
+ * The AppStartup and AppShutdown hooks will be used to initialize and finalize
+ * MPI, so this test case can be used with non-mpi applications, too. */
+
+#include <pnmpi/hooks.h>
 
 
-#include <pnmpi/private/config.h>
+void PNMPI_AppStartup()
+{
+}
+
+void PNMPI_AppShutdown()
+{
+}
 
 
-/** \brief Language of the MPI interface used by the application.
+/* CONFIGS: env nm
+ *
+ * MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@
+ *
+ * RUN-env: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN-env:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
+ * RUN-env:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_NOMPI@
+ * ENVIRONMENT-env: PNMPI_INTERFACE=Fortran
+ * PASS-env: MPI interface: Fortran
+ *
+ * RUN-nm: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN-nm:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
+ * RUN-nm:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@
+ * RUN-nm:   @TESTBIN_MPI_FORTRAN@
+ * PASS-nm: MPI interface: Fortran
  */
-typedef enum pnmpi_mpi_interface {
-  PNMPI_INTERFACE_UNKNOWN = -1, /**< MPI interface could not be detected or was
-                                 *   not detected yet. */
-  PNMPI_INTERFACE_NONE = 0,     ///< Application uses no known MPI interface.
-  PNMPI_INTERFACE_C             ///< Application uses the C MPI interface.
-
-#ifdef ENABLE_FORTRAN
-  ,
-  PNMPI_INTERFACE_FORTRAN ///< Application uses the Fortran MPI interface.
-#endif
-} pnmpi_mpi_interface;
-
-
-pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd);
-
-
-#endif

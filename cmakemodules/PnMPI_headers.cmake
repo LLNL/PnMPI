@@ -57,7 +57,7 @@ function (pnmpi_add_header FILE)
     get_filename_component("NAME" ${FILE} NAME)
   endif ()
 
-  configure_file(${FILE} "${PNMPI_HEADER_DIR}/pnmpi/${NAME}" COPYONLY)
+  configure_file(${FILE} "${PNMPI_HEADER_DIR}/pnmpi/${NAME}")
 
   install(FILES "${PNMPI_HEADER_DIR}/pnmpi/${NAME}"
           DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/pnmpi")
@@ -75,5 +75,5 @@ function (pnmpi_add_private_header FILE)
     get_filename_component("NAME" ${FILE} NAME)
   endif ()
 
-  configure_file(${FILE} "${PNMPI_HEADER_DIR}/pnmpi/private/${NAME}" COPYONLY)
+  configure_file(${FILE} "${PNMPI_HEADER_DIR}/pnmpi/private/${NAME}")
 endfunction ()

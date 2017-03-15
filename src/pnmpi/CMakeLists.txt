@@ -71,6 +71,9 @@ install(FILES
           "${PNMPI_HEADER_DIR}/pnmpi/xmpi.h"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/pnmpi")
 
+pnmpi_add_private_header(config.h.in config.h)
+
+
 if (ENABLE_FORTRAN)
   set(WRAP_FORTRAN_FLAGS "-f")
 endif ()
