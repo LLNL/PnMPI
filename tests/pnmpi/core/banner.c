@@ -40,11 +40,15 @@ void PNMPI_RegistrationPoint()
 }
 
 
-/* CONFIGS: no_module one_module stack
+/* CONFIGS: mpi_interface no_module one_module stack
  *
  * MODTYPE: XMPI
  *
  * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ *
+ *
+ * RUN-mpi_interface: @PNMPIZE@ @TESTBIN_MPI_C@
+ * PASS-mpi_interface: MPI interface: .*
  *
  *
  * RUN-no_module: @PNMPIZE@ @TESTBIN_MPI_C@

@@ -121,7 +121,9 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
  * \note See \ref check_nm for common problems of the auto-detection.
  *
  *
- * \param cmd The instrumented application (= argv[0]).
+ * \param cmd The instrumented application (= argv[0]). If this parameter is the
+ *  NULL-pointer, the cached value will be returned, even if this function was
+ *  not called before.
  *
  * \return \ref PNMPI_INTERFACE_C \p cmd uses the C MPI interface.
  * \return \ref PNMPI_INTERFACE_FORTRAN \p cmd uses the Fortran MPI interface.
@@ -134,9 +136,14 @@ pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd)
 {
   /* Check for previous invocations of this function first. If a value has been
    * cached, avoid detecting the interface language a second time and return the
-   * value from cache. */
+   * value from cache.
+   *
+   * The cached value may be forced by setting cmd to the NULL-pointer, even if
+   * no interface language has been detected before. It is useful to use this
+   * after \ref MPI_Init or \ref pnmpi_app_startup, when the interface has been
+   * detected. */
   static pnmpi_mpi_interface mpi_interface = PNMPI_INTERFACE_UNKNOWN;
-  if (mpi_interface != PNMPI_INTERFACE_UNKNOWN)
+  if (cmd == NULL || mpi_interface != PNMPI_INTERFACE_UNKNOWN)
     return mpi_interface;
 
 

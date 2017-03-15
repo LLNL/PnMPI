@@ -28,6 +28,7 @@
  * LLNL-CODE-402774
  */
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -36,6 +37,7 @@
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/print.h>
 
 
@@ -86,7 +88,16 @@ void pnmpi_print_banner()
          " |  ___/ |_| |_|| |\\/| ||  ___/   | |\n"
          " | |            | |  | || |      _| |_\n"
          " |_|            |_|  |_||_|     |_____|\n"
-         "\n");
+         "\n\n");
+
+
+  /* Print information about the instrumented application. */
+  printf(" Application:\n  MPI interface: %s\n\n",
+         pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_C
+           ? "C"
+           : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN
+               ? "Fortran"
+               : "unknown");
 
 
   /* If no modules have been loaded, no information can be printed about them,
@@ -99,7 +110,7 @@ void pnmpi_print_banner()
 
 
   /* Print global settings. */
-  printf("\n Global settings:\n  Pcontrol: %i\n\n", modules.pcontrol);
+  printf(" Global settings:\n  Pcontrol: %i\n\n", modules.pcontrol);
 
 
   /* Iterate over the modules and print some basic information about their
