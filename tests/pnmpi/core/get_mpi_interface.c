@@ -70,5 +70,5 @@ void PNMPI_AppStartup()
  * RUN-nm_fortran:   @TESTBIN_MPI_FORTRAN@
  * PASS-nm_fortran: MPI interface: Fortran
  *
- * PASS-nm_unknown: MPI interface: Fortran
+ * PASS-nm_unknown: MPI interface: none
  */

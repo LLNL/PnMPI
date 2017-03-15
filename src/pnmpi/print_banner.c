@@ -97,7 +97,9 @@ void pnmpi_print_banner()
            ? "C"
            : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN
                ? "Fortran"
-               : "unknown");
+               : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_NONE
+                   ? "none"
+                   : "unknown");
 
 
   /* If no modules have been loaded, no information can be printed about them,

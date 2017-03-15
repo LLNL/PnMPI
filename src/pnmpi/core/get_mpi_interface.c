@@ -28,6 +28,7 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -58,6 +59,9 @@
  */
 static pnmpi_mpi_interface convert_env(const char *value)
 {
+  assert(value);
+
+
   if (strcasecmp(value, "C") == 0)
     return PNMPI_INTERFACE_C;
   else if (strcasecmp(value, "Fortran") == 0)
@@ -83,32 +87,75 @@ static pnmpi_mpi_interface convert_env(const char *value)
  *
  * \return \ref PNMPI_INTERFACE_C \p cmd uses the C MPI interface.
  * \return \ref PNMPI_INTERFACE_FORTRAN \p cmd uses the Fortran MPI interface.
+ * \return \ref PNMPI_INTERFACE_NONE \p cmd uses no known MPI interface.
+ * \return \ref PNMPI_INTERFACE_UNKNOWN An error occured.
  */
 static pnmpi_mpi_interface check_nm(const char *cmd)
 {
-  /* Generate the command line to get the MPI interface language. To get it, nm
-   * will be called on the real path to cmd (may be looked up by 'which', if cmd
-   * is a programm listed in PATH). If cmd uses 'MPI_Init', this indicates using
-   * the MPI C interface. */
-  const char *fmt = (access(cmd, F_OK) != -1)
-                      ? "nm %s 2>/dev/null | grep MPI_Init >/dev/null"
-                      : "nm $(which %s) 2>/dev/null | grep MPI_Init >/dev/null";
-  size_t len = strlen(cmd) + strlen(fmt) - 1;
-  char command[len];
-  if (snprintf(command, len, fmt, cmd) == (len - 1))
-    {
-      /* Before executing the command, LD_PRELOAD and similar environment
-       * variables have to be cleared. Otherwise nm will be called with a
-       * preloaded PnMPI, which itself would execute this function, so this
-       * would result in a fork bomb. */
-      unsetenv("LD_PRELOAD");
-      unsetenv("DYLD_INSERT_LIBRARIES");
+  assert(cmd);
 
-      return (system(command) == 0) ? PNMPI_INTERFACE_C
-                                    : PNMPI_INTERFACE_FORTRAN;
+
+  /* Before executing any command via system(), LD_PRELOAD and similar
+   * environment variables have to be cleared. Otherwise the commands will be
+   * called with a preloaded PnMPI, which itself would execute this function, so
+   * this would result in a fork bomb. */
+  unsetenv("LD_PRELOAD");
+  unsetenv("DYLD_INSERT_LIBRARIES");
+
+  /* Check for all required commands first. If one of the required commands is
+   * not available, print a warning and tell the callee that we can't determine
+   * the MPI interface language. */
+  if (system("which grep nm > /dev/null 2>&1") != 0)
+    {
+      pnmpi_warning("Automatic MPI interface language detection requires the "
+                    "commands grep, nm and which in your PATH.\n");
+      return PNMPI_INTERFACE_UNKNOWN;
     }
 
-  return PNMPI_INTERFACE_UNKNOWN;
+  /* To determine the MPI interface language used by the instrumented
+   * application, we'll have to check the following three cases:
+   *
+   *  1. The application uses either MPI_Init or MPI_Init_thread. These are
+   *     symbols of the MPI C interface, so the application is using this
+   *     interface.
+   *
+   *  2. The application uses a case insensitive symbol named mpi_init or
+   *     mpi_init_thread, but not the ones of (1). The application is using the
+   *     MPI Fortran interface.
+   *
+   *  3. In any other case, the application will use no (known) MPI interface.
+   *
+   * To lookup the used symbols, `nm` will be used. As it can't handle commands
+   * from PATH, `which` will be used in this case to determine the actual
+   * location of the binary. */
+  const char *format =
+    (access(cmd, F_OK) != -1)
+      ? "nm %s 2>/dev/null | grep %s MPI_Init >/dev/null"
+      : "nm $(which %s) 2>/dev/null | grep %s MPI_Init >/dev/null";
+
+  /* Create a buffer for the command to be used. The length should be
+   * sufficient for format with the substituded parameters. */
+  size_t len = strlen(cmd) + strlen(format) - 1;
+  char command[len];
+
+  /* First handle case (1) for the C interface, so we'll lookup the symbol
+   * case-sensitive. No additional expression for MPI_Init_thread is required,
+   * as this is handled with MPI_Init, too. */
+  int n = snprintf(command, len, format, cmd, "");
+  if ((n >= 0 && n <= len) && (system(command) == 0))
+    return PNMPI_INTERFACE_C;
+  else
+    {
+      /* Next handle case (2) for the Fortran interface, so we'll lookup the
+       * same expression case insensitive. */
+      n = snprintf(command, len, format, cmd, "-i");
+      if ((n >= 0 && n <= len) && (system(command) == 0))
+        return PNMPI_INTERFACE_FORTRAN;
+
+      /* In any other case, an unknown MPI interface will be used. */
+      else
+        return PNMPI_INTERFACE_NONE;
+    }
 }
 
 
@@ -127,6 +174,9 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
  *
  * \return \ref PNMPI_INTERFACE_C \p cmd uses the C MPI interface.
  * \return \ref PNMPI_INTERFACE_FORTRAN \p cmd uses the Fortran MPI interface.
+ * \return \ref PNMPI_INTERFACE_NONE \p cmd uses no known MPI interface.
+ * \return \ref PNMPI_INTERFACE_UNKNOWN An error occured or no interface has
+ *  been determined yet.
  *
  *
  * \private

@@ -35,10 +35,11 @@
 /** \brief Language of the MPI interface used by the application.
  */
 typedef enum pnmpi_mpi_interface {
-  PNMPI_INTERFACE_UNKNOWN = 0, /**< MPI interface could not be detected or was
-                                  *   not detected yet. */
-  PNMPI_INTERFACE_C,           ///< Application uses the C MPI interface.
-  PNMPI_INTERFACE_FORTRAN      ///< Application uses the Fortran MPI interface.
+  PNMPI_INTERFACE_UNKNOWN = -1, /**< MPI interface could not be detected or was
+                                 *   not detected yet. */
+  PNMPI_INTERFACE_NONE = 0,     ///< Application uses no known MPI interface.
+  PNMPI_INTERFACE_C,            ///< Application uses the C MPI interface.
+  PNMPI_INTERFACE_FORTRAN       ///< Application uses the Fortran MPI interface.
 } pnmpi_mpi_interface;
 
 

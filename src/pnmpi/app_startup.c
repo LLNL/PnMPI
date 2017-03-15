@@ -68,6 +68,7 @@ void pnmpi_app_startup(int argc, char **argv)
   switch (pnmpi_get_mpi_interface(argv[0]))
     {
     case PNMPI_INTERFACE_C:
+    case PNMPI_INTERFACE_NONE:
       pnmpi_init_was_fortran = 0;
       PMPI_Init_thread(&argc, &argv, required,
                        &pnmpi_mpi_thread_level_provided);
