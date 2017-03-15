@@ -66,7 +66,8 @@ void PNMPI_AppShutdown()
  * RUN-nm_c: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
  * RUN-nm_c:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
  * RUN-nm_c:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
- * PASS-nm_c: MPI interface: C
+ * PASS-nm_c: MPI interface: C;
+ * PASS-nm_c: C and Fortran interfaces can't be distinguished
  *
  * PASS-nm_unknown: MPI interface: none
  */

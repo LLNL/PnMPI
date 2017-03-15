@@ -146,7 +146,24 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
    * as this is handled with MPI_Init, too. */
   int n = snprintf(command, len, format, cmd, "");
   if ((n >= 0 && n <= len) && (system(command) == 0))
+#if !defined(ENABLE_FORTRAN) || !defined(__APPLE__)
     return PNMPI_INTERFACE_C;
+#else
+    {
+      /* At mac OS, the MPI_Init symbol will be found for both C and Fortran MPI
+       * applications. Currently there is no reliable way to tell, which
+       * interface the application is using. The best we can do is using the
+       * Fortran interface in this case, as this will itself call the C MPI
+       * initializer and should have no side effects. However, if the user
+       * observes errors, he should set the MPI interface to use explictly. */
+      pnmpi_warning("At mac OS, the MPI C and Fortran interfaces can't be "
+                    "distinguished yet. The MPI Fortran interface will be used "
+                    "now. This should have no side-effects. However, if you "
+                    "observe any errors, set the MPI interface to use "
+                    "explictly.\n");
+      return PNMPI_INTERFACE_FORTRAN;
+    }
+#endif
   else
     {
 #ifdef ENABLE_FORTRAN
