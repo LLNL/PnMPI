@@ -70,7 +70,6 @@ void pnmpi_app_startup(int argc, char **argv)
     {
     case PNMPI_INTERFACE_C:
     case PNMPI_INTERFACE_NONE:
-      pnmpi_init_was_fortran = 0;
       PMPI_Init_thread(&argc, &argv, required,
                        &pnmpi_mpi_thread_level_provided);
       pnmpi_debug(PNMPI_DEBUG_INIT,
@@ -84,7 +83,6 @@ void pnmpi_app_startup(int argc, char **argv)
     case PNMPI_INTERFACE_FORTRAN:
       {
         int err;
-        pnmpi_init_was_fortran = 1;
         pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
         if (err != MPI_SUCCESS)
           pnmpi_error("pmpi_init_thread_ failed.\n");

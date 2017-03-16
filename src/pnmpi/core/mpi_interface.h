@@ -50,6 +50,9 @@ typedef enum pnmpi_mpi_interface {
 } pnmpi_mpi_interface;
 
 
+extern pnmpi_mpi_interface pnmpi_mpi_init_interface;
+
+
 pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd);
 
 

@@ -41,6 +41,18 @@
 #include <pnmpi/private/mpi_interface.h>
 
 
+/** \brief MPI interface used for `MPI_Init`.
+ *
+ * \details This variable stores the MPI interface used by the instrumented
+ *  application for MPI initialization.
+ *
+ *
+ * \private
+ */
+PNMPI_INTERNAL
+pnmpi_mpi_interface pnmpi_mpi_init_interface = PNMPI_INTERFACE_NONE;
+
+
 /** \brief Convert \p value to an \ref pnmpi_mpi_interface value.
  *
  * \details This function converts the value of \p s into a valid MPI interface
@@ -191,8 +203,8 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
  *
  *
  * \param cmd The instrumented application (= argv[0]). If this parameter is the
- *  NULL-pointer, the cached value will be returned, even if this function was
- *  not called before.
+ *  NULL-pointer, the instrumented application will not be checked for its used
+ *  symbols.
  *
  * \return \ref PNMPI_INTERFACE_C \p cmd uses the C MPI interface.
  * \return \ref PNMPI_INTERFACE_FORTRAN \p cmd uses the Fortran MPI interface.
@@ -208,16 +220,16 @@ pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd)
 {
   /* Check for previous invocations of this function first. If a value has been
    * cached, avoid detecting the interface language a second time and return the
-   * value from cache.
-   *
-   * The cached value may be forced by setting cmd to the NULL-pointer, even if
-   * no interface language has been detected before. It is useful to use this
-   * after \ref MPI_Init or \ref pnmpi_app_startup, when the interface has been
-   * detected. */
+   * value from cache. */
   static pnmpi_mpi_interface mpi_interface = PNMPI_INTERFACE_UNKNOWN;
-  if (cmd == NULL || mpi_interface != PNMPI_INTERFACE_UNKNOWN)
+  if (mpi_interface != PNMPI_INTERFACE_UNKNOWN)
     return mpi_interface;
 
+
+  /* If the instrumented application did initialize MPI yet, use the language of
+   * the used interface. */
+  if (pnmpi_mpi_init_interface != PNMPI_INTERFACE_NONE)
+    return mpi_interface = pnmpi_mpi_init_interface;
 
   /* If the user defined the interface language in the environment, use the
    * defined language instead of detecting one. The interface language will be
@@ -232,6 +244,10 @@ pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd)
     }
 
   /* If no interface language was set in the environment, check the application
-   * with nm for the used MPI interface. */
-  return mpi_interface = check_nm(cmd);
+   * with nm for the used MPI interface. This will be done for non-NULL cmd
+   * parameter. */
+  if (cmd != NULL)
+    return mpi_interface = check_nm(cmd);
+  else
+    return PNMPI_INTERFACE_UNKNOWN;
 }

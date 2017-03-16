@@ -42,6 +42,7 @@
 #include "fallback_init.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
 
 
@@ -99,7 +100,7 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
       else
         {
 #ifdef COMPILE_FOR_FORTRAN
-          if (pnmpi_init_was_fortran)
+          if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
             pmpi_init_(&returnVal);
           else
 #endif
@@ -138,17 +139,10 @@ void mpi_init_(int *ierr)
       return;
     }
 
-  /* If MPI was already initialized (by the PNMPI_AppStartup hook), then do not
-   * start it again, as this this forbidden by the MPI standard.
-   *
-   * TODO: This is only a temporary fix. The better fix will be to fix the
-   * pnmpi_get_mpi_interface function.
-   */
-  if (pnmpi_init_done)
-    {
-      *ierr = MPI_SUCCESS;
-      return;
-    }
+  /* Set the MPI interface language used to call MPI initialization. This will
+   * be used as prefered method by pnmpi_get_mpi_interface. */
+  pnmpi_mpi_init_interface = PNMPI_INTERFACE_FORTRAN;
+
 
   /* some code in here is taken from MPICH-1 */
 
@@ -163,14 +157,6 @@ void mpi_init_(int *ierr)
 #endif
 
   DBGPRINT3("Entering Old Fortran MPI_Init at base level");
-
-  if (pnmpi_init_was_fortran == 0)
-    {
-      pmpi_init_(ierr);
-      return;
-    }
-
-  pnmpi_init_was_fortran = 1;
 
 #if 0
   /* argcSave    = */ argc = iargc_() + 1;
@@ -237,14 +223,14 @@ int MPI_Init(int *argc, char ***argv)
   if (PNMPI_REENTRY_ENTER())
     return PMPI_Init(argc, argv);
 
+  /* Set the MPI interface language used to call MPI initialization. This will
+   * be used as prefered method by pnmpi_get_mpi_interface. */
+  pnmpi_mpi_init_interface = PNMPI_INTERFACE_C;
+
+
   int err;
 
   DBGPRINT3("Entering Old MPI_Init at base level");
-
-  if (pnmpi_init_was_fortran == 1)
-    return PMPI_Init(argc, argv);
-
-  pnmpi_init_was_fortran = 0;
 
   err = PNMPI_Common_MPI_Init(argc, argv);
 
@@ -289,7 +275,7 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
     {
       DBGPRINT3("Calling a original MPI in MPI_Init");
 #ifdef COMPILE_FOR_FORTRAN
-      if (pnmpi_init_was_fortran)
+      if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
         pmpi_init_(&res);
       else
 #endif
@@ -349,7 +335,7 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
         {
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-          if (pnmpi_init_was_fortran)
+          if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
             pmpi_init_thread_(&required, provided, &returnVal);
           else
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
@@ -393,17 +379,10 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
       return;
     }
 
-  /* If MPI was already initialized (by the PNMPI_AppStartup hook), then do not
-   * start it again, as this this forbidden by the MPI standard.
-   *
-   * TODO: This is only a temporary fix. The better fix will be to fix the
-   * pnmpi_get_mpi_interface function.
-   */
-  if (pnmpi_init_done)
-    {
-      *ierr = MPI_SUCCESS;
-      return;
-    }
+  /* Set the MPI interface language used to call MPI initialization. This will
+   * be used as prefered method by pnmpi_get_mpi_interface. */
+  pnmpi_mpi_init_interface = PNMPI_INTERFACE_FORTRAN;
+
 
   /* some code in here is taken from MPICH-1 */
 
@@ -418,14 +397,6 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 #endif
 
   DBGPRINT3("Entering Old Fortran MPI_Init_thread at base level");
-
-  if (pnmpi_init_was_fortran == 0)
-    {
-      pmpi_init_thread_(required, provided, ierr);
-      return;
-    }
-
-  pnmpi_init_was_fortran = 1;
 
 #if 0
   /* argcSave    = */ argc = iargc_() + 1;
@@ -493,14 +464,14 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
   if (PNMPI_REENTRY_ENTER())
     return PMPI_Init_thread(argc, argv, required, provided);
 
+  /* Set the MPI interface language used to call MPI initialization. This will
+   * be used as prefered method by pnmpi_get_mpi_interface. */
+  pnmpi_mpi_init_interface = PNMPI_INTERFACE_C;
+
+
   int err;
 
   DBGPRINT3("Entering Old MPI_Init_thread at base level");
-
-  if (pnmpi_init_was_fortran == 1)
-    return PMPI_Init_thread(argc, argv, required, provided);
-
-  pnmpi_init_was_fortran = 0;
 
   err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
 
@@ -552,7 +523,7 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
       DBGPRINT3("Calling a original MPI in MPI_Init_thread");
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-      if (pnmpi_init_was_fortran)
+      if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
         pmpi_init_thread_(&_required, _provided, &res);
       else
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/

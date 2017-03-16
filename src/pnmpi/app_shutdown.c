@@ -33,6 +33,7 @@
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/pmpi.h>
 
 
@@ -69,7 +70,7 @@ void pnmpi_app_shutdown()
 
 
 #ifdef COMPILE_FOR_FORTRAN
-  if (pnmpi_init_was_fortran)
+  if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
     {
       int res;
       pmpi_finalize_(&res);

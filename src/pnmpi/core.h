@@ -131,7 +131,6 @@ extern pnmpi_compiler_tls_keyword int pnmpi_level;
 
 extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;
-extern int pnmpi_init_was_fortran;
 extern int pnmpi_init_done;
 
 #ifndef __GNUC__
