@@ -42,6 +42,7 @@
 #include "fallback_init.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/mpi_reentry.h>
 
 
 /* Map the old debug macros to the new debug functions and macros.
@@ -65,6 +66,7 @@ extern void *MPIR_ToPointer(int idx);
 
 #ifdef COMPILE_FOR_FORTRAN
 void pmpi_init_(int *ierror);
+void pmpi_finalize_(int *ierr);
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
 void pmpi_init_thread_(int *ierror, int *required, int *provided);
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
@@ -125,6 +127,17 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 #ifdef COMPILE_FOR_FORTRAN
 void mpi_init_(int *ierr)
 {
+  /* Enter the reentry-guarded wrapper section. If the section was already
+   * entered, all calls will be passed to the PMPI interface without calling the
+   * wrappers. This is neccessary, as some (older) MPI implementations send
+   * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
+   * called twice. */
+  if (PNMPI_REENTRY_ENTER())
+    {
+      pmpi_init_(ierr);
+      return;
+    }
+
   /* If MPI was already initialized (by the PNMPI_AppStartup hook), then do not
    * start it again, as this this forbidden by the MPI standard.
    *
@@ -208,6 +221,7 @@ void mpi_init_(int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init(&argc, &argv);
 
+  PNMPI_REENTRY_EXIT();
   return;
 }
 #endif
@@ -215,6 +229,14 @@ void mpi_init_(int *ierr)
 
 int MPI_Init(int *argc, char ***argv)
 {
+  /* Enter the reentry-guarded wrapper section. If the section was already
+   * entered, all calls will be passed to the PMPI interface without calling the
+   * wrappers. This is neccessary, as some (older) MPI implementations send
+   * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
+   * called twice. */
+  if (PNMPI_REENTRY_ENTER())
+    return PMPI_Init(argc, argv);
+
   int err;
 
   DBGPRINT3("Entering Old MPI_Init at base level");
@@ -226,6 +248,7 @@ int MPI_Init(int *argc, char ***argv)
 
   err = PNMPI_Common_MPI_Init(argc, argv);
 
+  PNMPI_REENTRY_EXIT();
   return err;
 }
 
@@ -359,6 +382,17 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
 void mpi_init_thread_(int *required, int *provided, int *ierr)
 {
+  /* Enter the reentry-guarded wrapper section. If the section was already
+   * entered, all calls will be passed to the PMPI interface without calling the
+   * wrappers. This is neccessary, as some (older) MPI implementations send
+   * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
+   * called twice. */
+  if (PNMPI_REENTRY_ENTER())
+    {
+      pmpi_init_thread_(required, provided, ierr);
+      return;
+    }
+
   /* If MPI was already initialized (by the PNMPI_AppStartup hook), then do not
    * start it again, as this this forbidden by the MPI standard.
    *
@@ -442,6 +476,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init_thread(&argc, &argv, *required, provided);
 
+  PNMPI_REENTRY_EXIT();
   return;
 }
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
@@ -450,6 +485,14 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 #ifdef HAVE_MPI_INIT_THREAD_C
 int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 {
+  /* Enter the reentry-guarded wrapper section. If the section was already
+   * entered, all calls will be passed to the PMPI interface without calling the
+   * wrappers. This is neccessary, as some (older) MPI implementations send
+   * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
+   * called twice. */
+  if (PNMPI_REENTRY_ENTER())
+    return PMPI_Init_thread(argc, argv, required, provided);
+
   int err;
 
   DBGPRINT3("Entering Old MPI_Init_thread at base level");
@@ -461,6 +504,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 
   err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
 
+  PNMPI_REENTRY_EXIT();
   return err;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
@@ -528,6 +572,15 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
 
 int MPI_Finalize(void)
 {
+  /* Enter the reentry-guarded wrapper section. If the section was already
+   * entered, all calls will be passed to the PMPI interface without calling the
+   * wrappers. This is neccessary, as some (older) MPI implementations send
+   * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
+   * called twice. */
+  if (PNMPI_REENTRY_ENTER())
+    return PMPI_Finalize();
+
+
   int err = MPI_ERR_UNKNOWN;
 
   DBGPRINT3("Entering Old MPI_Finalize at base level - Location = %px",
@@ -544,22 +597,19 @@ int MPI_Finalize(void)
   /* If the PNMPI_AppShutdown hook is provided by any module, do NOT call the
    * original MPI_Finalize function, because it will be called in _fini after
    * calling the app_shutdown handler. */
-  if (pnmpi_hook_activated("PNMPI_AppShutdown") && !pnmpi_finalize_done)
+  if (pnmpi_hook_activated("PNMPI_AppShutdown"))
     return MPI_SUCCESS;
 
-  /* It would be better to distinguish between C and Fortran at this point, so
-   * if we've called a C PMPI_Init, PMPI_Finalize would be used and for Fortran
-   * pmpi_finalize_. We won't do this here, because for a long time there was a
-   * bug in OpenMPI that let pmpi_finalize_ calls redirect to MPI_Finalize,
-   * which is wrapped by PnMPI and will result in an endless recursion.
-   *
-   * The bug may be avoided with a complex set of guard variables arround the
-   * finalize calls, but until now we didn't got any errors with simply calling
-   * the MPI C finalize here. */
   inc_pnmpi_mpi_level();
-  err = PMPI_Finalize();
+#ifdef COMPILE_FOR_FORTRAN
+  if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
+    pmpi_finalize_(&err);
+  else
+#endif
+    err = PMPI_Finalize();
   dec_pnmpi_mpi_level();
 
+  PNMPI_REENTRY_EXIT();
   return err;
 }
 

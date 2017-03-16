@@ -68,13 +68,6 @@ void pnmpi_app_shutdown()
   pnmpi_call_hook("PNMPI_AppShutdown");
 
 
-  /* There are some bugs in OpenMPI, sending Fortran PMPI-calls to C MPI calls.
-   * But C MPI is wrapped by PnMPI, so a fortran pmpi_finalize_ will never reach
-   * a real PMPI_Finalize but runs into an endless loop. To fix this, the
-   * following variable should act as a guard, notifing the wrapped MPI_Finalize
-   * that it should call PMPI_Finalize instead of skipping it. */
-  pnmpi_finalize_done = 1;
-
 #ifdef COMPILE_FOR_FORTRAN
   if (pnmpi_init_was_fortran)
     {

@@ -36,7 +36,8 @@ find_package(Sanitizers)
 
 
 # If C11 was found, add the C11 compiler flags, so C11 thread local storage can
-# be used by PnMPI.
+# be used by PnMPI. Separate flags for the subdirectories are not required, as
+# setting this variable will set it for the subdirectories, too.
 if (C11_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C11_FLAGS}")
 endif ()
@@ -54,6 +55,7 @@ add_subdirectory(core)
 add_subdirectory(debug)
 add_subdirectory(modules)
 add_subdirectory(service)
+add_subdirectory(wrapper)
 
 # Install and manage the public and private header files of the PnMPI sources.
 # This has to be done to use the same headers for the PnMPI sources and the API
@@ -107,6 +109,7 @@ set(PNMPI_LIB_SOURCES
   $<TARGET_OBJECTS:pnmpi_debug>
   $<TARGET_OBJECTS:pnmpi_modules>
   $<TARGET_OBJECTS:pnmpi_service>
+  $<TARGET_OBJECTS:pnmpi_wrapper>
 )
 
 if (ENABLE_FORTRAN)

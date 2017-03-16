@@ -133,7 +133,6 @@ extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;
 extern int pnmpi_init_was_fortran;
 extern int pnmpi_init_done;
-extern int pnmpi_finalize_done;
 
 #ifndef __GNUC__
 void pnmpi_PreInit(void);
