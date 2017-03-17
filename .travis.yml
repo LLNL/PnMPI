@@ -59,6 +59,7 @@ before_install_tmpl: &before_install
         brew install $pkg;
       fi
     done
+  - brew link --overwrite gcc
 
 
 matrix:
@@ -174,7 +175,6 @@ matrix:
       compiler: gcc-6
       before_install: *before_install
       before_script:
-        - brew link --overwrite gcc
         - brew unlink mpich
         - brew install openmpi
         - export CC=gcc-6; export CXX=g++-6
@@ -195,6 +195,14 @@ matrix:
       dist: trusty
       compiler: gcc
       sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
+      env:
+        - NO_FORTRAN
+    - os: osx
+      osx_image: xcode8.2
+      compiler: clang
+      before_install: *before_install
       before_script:
         - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
       env:
