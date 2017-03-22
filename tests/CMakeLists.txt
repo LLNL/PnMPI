@@ -135,6 +135,17 @@ endmacro ()
 include_directories(${PNMPI_HEADER_DIR})
 
 
+# Some variables used in the testcases, e.g. MPIEXEC_PREFLAGS, need to be
+# converted from list to string to be used with easytest, as the whole command
+# will be wrapped in sh -c ''.
+#
+# The following solution is based on http://stackoverflow.com/a/7216542.
+foreach (VAR MPIEXEC_PREFLAGS MPIEXEC_POSTFLAGS)
+  string (REGEX REPLACE "([^\\]|^);" "\\1 " ${VAR} "${${VAR}}")
+  string (REGEX REPLACE "[\\](.)" "\\1" ${VAR} "${${VAR}}")
+endforeach ()
+
+
 # Add src directory first. Binaries used by other tests will be build in this
 # directory and common variables set (in the scope of this file).
 add_subdirectory(src)
