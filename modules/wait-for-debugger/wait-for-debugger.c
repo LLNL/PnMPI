@@ -96,13 +96,13 @@ void PNMPI_AppStartup()
       int wait = atoi(getenv("WAIT_AT_STARTUP"));
       if (rank == 0)
         {
-          printf("Waiting for %i seconds ... ", wait);
+          printf("Waiting for %i seconds ...\n", wait);
           fflush(stdout);
         }
 
       sleep(wait);
 
       if (rank == 0)
-        printf("done.\n");
+        printf("Done waiting.\n");
     }
 }
