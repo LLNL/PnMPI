@@ -45,10 +45,10 @@ int mypartition,rank,size,numpartitions;
 MPI_Comm partition_comm;
 
 /* automatically generated wrapper code */
-{{fnall fn_name MPI_Init MPI_Pcontrol}} {
+{{fntype fn_name MPI_Comm}} {
   {{apply_to_type MPI_Comm MACRO_MPI_Comm}}
   {{callfn}}
-}{{endfnall}}
+}{{endfntype}}
 
 
 #define MAXSIZE 40
