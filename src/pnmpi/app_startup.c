@@ -77,7 +77,7 @@ void pnmpi_app_startup(int argc, char **argv)
                   pnmpi_mpi_thread_level_provided);
       break;
 
-#ifdef ENABLE_FORTRAN
+#ifdef COMPILE_FOR_FORTRAN
     /* The Fortran MPI interface will be used for staticaly linked applications
      * and applications without MPI, too. This should have no side-effects. */
     case PNMPI_INTERFACE_FORTRAN:
