@@ -27,6 +27,7 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_doc)
 include(PnMPI_headers)
 
 
@@ -39,3 +40,6 @@ add_coverage(wait-for-debugger)
 add_sanitizers(wait-for-debugger)
 
 install(TARGETS wait-for-debugger DESTINATION lib/pnmpi-modules)
+
+
+pnmpi_add_module_man(wait-for-debugger module_wait_for_debugger)

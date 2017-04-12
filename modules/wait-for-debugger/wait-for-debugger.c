@@ -28,7 +28,9 @@
  * LLNL-CODE-402774
  */
 
-/** \brief Module to help for using debuggers.
+/** \class module_wait_for_debugger
+ *
+ * \brief Module to help for using debuggers.
  *
  * \details This module provides some functionality to help users to debug their
  *  code. The PID and hostname of each rank will be printed, so the user may
@@ -60,10 +62,14 @@
 #endif
 
 
-/** \brief PnMPI PNMPI_AppStartup module hook.
+/** \brief \ref pnmpi_module_hooks::PNMPI_AppStartup module hook.
  *
  * \details This hook will be called just before main starts and prints the PID
  *  and (if it can be determined) the hostname of the rank.
+ *
+ *
+ * \memberof module_wait_for_debugger
+ * \private
  */
 void PNMPI_AppStartup()
 {

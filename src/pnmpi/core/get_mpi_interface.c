@@ -199,7 +199,9 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
  *  can decide which code to execute depending on the used interface (e.g.
  *  starting Fortran MPI in \ref pnmpi_app_startup).
  *
+ * \internal
  * \note See \ref check_nm for common problems of the auto-detection.
+ * \endinternal
  *
  *
  * \param cmd The instrumented application (= argv[0]). If this parameter is the

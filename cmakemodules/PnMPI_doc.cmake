@@ -30,43 +30,6 @@
 include(GNUInstallDirs)
 
 
-#
-# Options
-#
-option("BUILD_DOC" "Build HTML documentation" Off)
-option("BUILD_DOC_INTERNAL"
-  "Build HTML documentation including private functions" Off)
-
-
-#
-# Configuration.
-#
-set(PNMPI_DOXYFILE "${PROJECT_BINARY_DIR}/doc/doxygen.conf")
-
-
-## \brief Call Doxygen to generate \p OUTPUT file.
-#
-# \details This function calls Doxygen to generate the \p OUTPUT file. All other
-#  files will be generated, too, but this is used to define dependencies if a
-#  required output file is missing (e.g. a required man page).
-#
-#
-# \param OUTPUT The file to be generated.
-# \param MESSAGE The message to be printed.
-#
-function (pnmpi_doxygen OUTPUT MESSAGE)
-  find_package(Doxygen REQUIRED)
-
-  add_custom_command(OUTPUT ${OUTPUT}
-    COMMAND ${DOXYGEN_EXECUTABLE} ${PNMPI_DOXYFILE}
-    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/doc"
-    MAIN_DEPENDENCY ${PNMPI_DOXYFILE}
-    DEPENDS pnmpi pnmpize
-    COMMENT ${MESSAGE}
-  )
-endfunction ()
-
-
 ## \brief Add a man page for Doxygen \p MODULE with \p SYMBOL as symlink.
 #
 # \note This function has no effect if BUILD_DOC and BUILD_DOC_INTERNAL are
@@ -82,24 +45,68 @@ function (pnmpi_add_man MODULE SYMBOL)
   endif ()
 
 
-  set(manfile "${PROJECT_BINARY_DIR}/doc/man/man3/${MODULE}.3")
-
-  if (NOT TARGET "${MODULE}.3")
-    pnmpi_doxygen(${manfile} "Generating man page ${MODULE}.3")
-    add_custom_target("${MODULE}.3" ALL DEPENDS ${manfile})
-
-    # Install the manpage and a link for SYMBOL.
-    install(FILES ${manfile} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
+  # Add a new target dependend on the doc target for the required man page.
+  if (NOT TARGET ${MODULE}.3)
+    set(MANFILE "${PROJECT_BINARY_DIR}/doc/man/man3/${MODULE}.3")
+    add_custom_command(OUTPUT ${MANFILE} DEPENDS doc)
+    add_custom_target(${MODULE}.3 ALL DEPENDS ${MANFILE})
   endif ()
 
-  if(CMAKE_HOST_UNIX AND (NOT SYMBOL EQUAL ""))
-    install(CODE "
-      execute_process(COMMAND ln -fs ${MODULE}.3
-                      ${CMAKE_INSTALL_FULL_MANDIR}/man3/${SYMBOL}.3)
-      message(STATUS \"Installing: \"
-                     \"${CMAKE_INSTALL_FULL_MANDIR}/man3/${SYMBOL}.3\")
-    ")
+  # Install the manpage and a link for SYMBOL.
+  install(FILES ${MANFILE}
+          DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
+  if(CMAKE_HOST_UNIX)
+    if (SYMBOL)
+      set(INSTALL_FILE ${CMAKE_INSTALL_FULL_MANDIR}/man3/${SYMBOL}.3)
+      set(LINK_TARGET ${MODULE}.3)
+      install(CODE "
+        set(install_link true)
+        if (EXISTS ${INSTALL_FILE})
+          execute_process(COMMAND readlink ${INSTALL_FILE}
+                          OUTPUT_VARIABLE link_value
+                          OUTPUT_STRIP_TRAILING_WHITESPACE)
+          if (\${link_value} STREQUAL ${LINK_TARGET})
+            set(install_link false)
+          endif ()
+        endif ()
+
+        if (install_link)
+          execute_process(COMMAND ln -fs ${LINK_TARGET} ${INSTALL_FILE})
+          message(STATUS \"Installing: ${INSTALL_FILE}\")
+        else ()
+          message(STATUS \"Up-to-date: ${INSTALL_FILE}\")
+        endif()
+      ")
+    endif ()
   else()
     message(WARNING "Can't install symlinks for man pages.")
   endif()
+endfunction ()
+
+
+## \brief Install a module man page.
+#
+# \note This function has no effect if BUILD_DOC and BUILD_DOC_INTERNAL are
+#  disabled.
+#
+#
+# \param MODNAME Name of the module. Will be appended to `pnmpi-mod-`
+# \param CLASS The class name used in Doxygen.
+#
+function (pnmpi_add_module_man MODNAME CLASS)
+  if (NOT BUILD_DOC AND NOT BUILD_DOC_INTERNAL)
+    return()
+  endif ()
+
+  # Add a new target dependend on the doc target for the required class and
+  # install it.
+  set(TARGET_FILE "pnmpi-module-${MODNAME}.1")
+  if (NOT TARGET ${MODULE}.3)
+    set(MANFILE "${PROJECT_BINARY_DIR}/doc/man/man3/${CLASS}.3")
+    add_custom_command(OUTPUT ${MANFILE} DEPENDS doc)
+    add_custom_target(${TARGET_FILE} ALL DEPENDS ${MANFILE})
+  endif ()
+  install(FILES "${PROJECT_BINARY_DIR}/doc/man/man3/${CLASS}.3"
+          DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+          RENAME ${TARGET_FILE})
 endfunction ()

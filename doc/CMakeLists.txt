@@ -30,11 +30,20 @@
 include(GNUInstallDirs)
 include(PnMPI_doc)
 
+find_package(Doxygen REQUIRED)
 
-set(doxyfile_in "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf.in")
-set(doxy_output_root "${CMAKE_CURRENT_BINARY_DIR}")
-set(doxy_html_index_file "${doxy_output_root}/html/index.html")
 
+#
+# Options
+#
+option("BUILD_DOC" "Build HTML documentation" Off)
+option("BUILD_DOC_INTERNAL"
+  "Build HTML documentation including private functions" Off)
+
+
+#
+# Generate Doxygen docs.
+#
 if (BUILD_DOC OR BUILD_DOC_INTERNAL)
   find_package(Doxygen REQUIRED)
 
@@ -47,13 +56,35 @@ if (BUILD_DOC OR BUILD_DOC_INTERNAL)
     set(DOXYGEN_DOC_INTERNAL "YES")
   endif ()
 
-  configure_file(${doxyfile_in} ${PNMPI_DOXYFILE} @ONLY)
+  set(PNMPI_DOXYFILE "${PROJECT_BINARY_DIR}/doc/doxygen.conf")
+  configure_file(doxygen.conf.in ${PNMPI_DOXYFILE} @ONLY)
 
-  pnmpi_doxygen(${doxy_html_index_file} "Generating documentation")
-  add_custom_target(doc ALL DEPENDS ${doxy_html_index_file})
+  set(DOXYGEN_HTML_INDEX "${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
+
+
+  add_custom_command(OUTPUT ${DOXYGEN_HTML_INDEX}
+                     COMMAND ${DOXYGEN_EXECUTABLE} ${PNMPI_DOXYFILE}
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                     MAIN_DEPENDENCY ${PNMPI_DOXYFILE}
+                     DEPENDS
+                       pnmpi
+                       pnmpize
+                       commsub-empty commsub-print
+                       empty
+                       metrics-counter metrics-timing
+                         ${PROJECT_SOURCE_DIR}/modules/metrics/doc.c
+                       requests
+                       sample1 sample2 sample3 sample4
+                       status
+                       switch-matrix
+                       timelapse
+                       virtual
+                       wait-for-debugger
+                     COMMENT "Generating documentation")
+  add_custom_target(doc ALL DEPENDS ${DOXYGEN_HTML_INDEX})
 
 
   # install documentation
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
-    DESTINATION ${CMAKE_INSTALL_DOCDIR})
+          DESTINATION ${CMAKE_INSTALL_DOCDIR})
 endif ()

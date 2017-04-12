@@ -40,12 +40,12 @@ extern "C" {
 #endif
 
 
-/** \addtogroup pnmpi_module_hooks PnMPI module hooks.
+/** \class pnmpi_module_hooks pnmpi/hooks.h
+ *
+ * \brief PnMPI module hooks.
  *
  * \details Module hooks are called at different steps in the PnMPI init- and
  *  finalization.
- *
- * \{
  */
 
 
@@ -55,6 +55,9 @@ extern "C" {
  *  is not, you may set this variable to the highest MPI threading level your
  *  module supports. PnMPI will ensure, that MPI_Init_thread will be called with
  *  the highest available thread level, all modules support.
+ *
+ *
+ * \memberof pnmpi_module_hooks
  */
 extern const int PNMPI_SupportedThreadingLevel;
 
@@ -66,6 +69,9 @@ extern const int PNMPI_SupportedThreadingLevel;
  *
  * \note MPI is not initialized when this hook is called. You MUST NOT use any
  *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
+ *
+ *
+ * \memberof pnmpi_module_hooks
  */
 void PNMPI_RegistrationPoint();
 
@@ -77,6 +83,9 @@ void PNMPI_RegistrationPoint();
  *
  * \note MPI is not initialized when this hook is called. You MUST NOT use any
  *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
+ *
+ *
+ * \memberof pnmpi_module_hooks
  */
 void PNMPI_RegistrationComplete();
 
@@ -89,6 +98,9 @@ void PNMPI_RegistrationComplete();
  * \note If any loaded module supports this hook, the MPI environment will be
  *  setup before calling this hook, so one may use MPI calls to e.g. broadcast
  *  messages.
+ *
+ *
+ * \memberof pnmpi_module_hooks
  */
 void PNMPI_AppStartup();
 
@@ -101,11 +113,11 @@ void PNMPI_AppStartup();
  * \note If any loaded module supports this hook, the MPI environment will not
  *  be destoryed in MPI_Finalize but kept open until calls to this hook have
  *  been finished. This may be used to e.g. broadcast messages.
+ *
+ *
+ * \memberof pnmpi_module_hooks
  */
 void PNMPI_AppShutdown();
-
-
-/// \}
 
 
 #ifdef __cplusplus
