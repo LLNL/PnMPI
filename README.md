@@ -282,7 +282,32 @@ This will add only the PnMPI installation lib directory to the rpath of the
 PnMPI library.
 
 
-B) Modules
+B) Usage
+========
+PnMPI supports multiple ways to use it with an MPI application:
+
+B1) Dynamic linking
+-------------------
+If your application is dynamically linked against the MPI library, you may use
+PnMPI by simply preloading it via `LD_PRELOAD` (or `DYLD_INSERT_LIBRARIES` at
+macOS).
+
+Instead of manually preloading, you may use the PnMPI invocation tool at
+`bin/pnmpi`.
+
+B2) Static linking
+------------------
+Instead of linking your application against the MPI library, you may link
+against the static MPI library.
+
+**Note:** By default the linker will only link functions used by your code, so
+most of the API functions would not get linked into your binary. You should tell
+the linker to link the whole PnMPI archive:
+
+    mpicc main.o -Wl,--whole-archive pnmpi.a -Wl,--no-whole-archive -o test
+
+
+C) Modules
 ==========
 PnMPI supports two different kind of tool modules:
 
@@ -320,7 +345,7 @@ offer/use services in other modules.
 described above, if they don't use the XMPI interface instead of the PMPI.
 
 
-B1) Built-in modules
+C1) Built-in modules
 --------------------
 This package includes a set of modules that can be used both to create other
 tools using their services and as templates for new modules.
@@ -408,7 +433,7 @@ and MPI, as these routines will be provided by PnMPI when the module will be
 loaded.
 
 
-C) Building your own modules with CMake
+D) Building your own modules with CMake
 =======================================
 PnMPI installs CMake build files with its distribution to allow external
 projects to quickly build MPI tool modules. The build files allow external
@@ -490,7 +515,7 @@ module like so:
 This should find PnMPI on your system and build your module, assuming that you
 have your environment set up correctly.
 
-C2) Limiting the threading level
+D2) Limiting the threading level
 --------------------------------
 If your module is not thread safe or is only able to process a limited amount of
 threading, it may provide a const integer named `PNMPI_SupportedThreadingLevel`
@@ -508,7 +533,7 @@ const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SINGLE;
 Include the `pnmpi/hooks.h` header for type safety.
 
 
-C3) Module hooks
+D3) Module hooks
 ----------------
 At different points hooks will be called in all loaded modules. These can be
 used to trigger some functionality at a given time. All hooks have the return
@@ -533,14 +558,14 @@ For a detailed description, see the Doxygen docs or man-pages for these
 functions.
 
 
-C4) Module service functions
+D4) Module service functions
 ----------------------------
 Modules may interact with the PnMPI core and other modules with the module
 service functions defined in `pnmpi/service.h`. For a detailed description about
 these functions, see the Doxygen docs for the service header or the man-pages.
 
 
-C5) Debug message functions
+D5) Debug message functions
 ---------------------------
 Modules may print debug messages, warnings and errors with the PnMPI API
 functions `pnmpi_debug`, `pnmpi_warning` and `pnmpi_error` defined in
@@ -551,7 +576,7 @@ For a detailed description, see the Doxygen docs or man-pages for these
 functions.
 
 
-D) Debug Options
+E) Debug Options
 ================
 If PnMPI is build with `ENABLE_DEBUG`, PnMPI includes debug print functions,
 that can be dynamically enabled. To control it, the environment variable
@@ -569,14 +594,14 @@ Additionally, the printouts can be restricted to a single node by setting the
 variable `PNMPI_DBGNODE` to an MPI rank.
 
 
-D1) Using the PnMPI invocation tool
+E1) Using the PnMPI invocation tool
 -----------------------------------
 You may set the above options in the PnMPI invocation tool. Use the `--debug`
 option to enable a specific debug level and `--debug-node` to limit the debug
 output to a single rank.
 
 
-E) Configuration and Demo codes
+F) Configuration and Demo codes
 ===============================
 The PnMPI distribution includes demo codes (in C and Fortran). They can be used
 to experiment with the basic PnMPI functionalities and to test the system setup.
@@ -684,7 +709,7 @@ The following describes the C version (the F77 version works similarly):
           -cwd $PWD simple-pn
 
 
-F) Using `MPI_Pcontrol`
+G) Using `MPI_Pcontrol`
 ========================
 The MPI standard defines the `MPI_Pcontrol`, which does not have any direct
 effect (it is implemented as a dummy call inside of MPI), but that can be
@@ -741,7 +766,7 @@ libunwind library. Note that this is not extensively tested and not portable
 across platforms.
 
 
-G) References
+H) References
 =============
 More documentation on PnMPI can be found in the following two published articles:
 
@@ -761,7 +786,7 @@ More documentation on PnMPI can be found in the following two published articles
   Available [here](http://ieeexplore.ieee.org/iel5/11126/35641/01690620.pdf?isnumber=35641&prod=CNF&arnumber=1690620&arSt=193&ared=202&arAuthor=Martin+Schulz%3B+Bronis+R.+de+Supinski).
 
 
-H) Contact
+I) Contact
 ==========
 For more information or in case of questions, please contact
 [Martin Schulz](schulzm@llnl.gov) or
