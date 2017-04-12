@@ -4,7 +4,7 @@ PnMPI Tool Infrastructure
 [![Travis](https://img.shields.io/travis/LLNL/PnMPI/master.svg?style=flat-square)](https://travis-ci.org/LLNL/PnMPI)
 [![Codecov](https://img.shields.io/codecov/c/github/LLNL/PnMPI.svg?style=flat-square)](https://codecov.io/github/LLNL/PnMPI?branch=master)
 [![](https://img.shields.io/github/issues-raw/LLNL/PnMPI.svg?style=flat-square)](https://github.com/LLNL/PnMPI/issues)
-[![](http://img.shields.io/badge/license-LGPL-blue.svg?style=flat-square)](http://www.gnu.org/licenses/)
+[![](https://img.shields.io/badge/license-LGPL-blue.svg?style=flat-square)](LICENSE)
 
 by Martin Schulz, schulzm@llnl.gov, LLNL-CODE-402774
 ---------
