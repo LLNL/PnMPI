@@ -178,6 +178,8 @@ matrix:
         - brew unlink mpich
         - brew install openmpi
         - export CC=gcc-6; export CXX=g++-6
+        - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
+          mkdir -p $TMPDIR
       env:
         - OpenMPI
     - os: osx
@@ -187,6 +189,8 @@ matrix:
       before_script:
         - brew unlink mpich
         - brew install openmpi
+        - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
+          mkdir -p $TMPDIR
       env:
         - OpenMPI
 
