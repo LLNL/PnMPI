@@ -55,6 +55,9 @@ include_directories(
   ${MPI_C_INCLUDE_PATH})
 
 easy_add_library(pnmpi_modules OBJECT
+  call_hook.c
+  hook_activated.c
+  max_module_threading_level.c
   valid_modhandle.c)
 
 foreach (target pnmpi_modules pnmpi_modules_pic)

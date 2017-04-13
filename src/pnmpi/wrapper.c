@@ -42,6 +42,7 @@
 #include "fallback_init.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
 

@@ -29,49 +29,35 @@
  */
 
 #include "core.h"
-
-#include <mpi.h>
-
 #include <pnmpi/private/attributes.h>
-#include <pnmpi/private/tls.h>
 
 
-/* If PnMPI has no thread local storage, it can't be used thread safe and the
- * max. allowed thread level of MPI has to be limited. */
-#ifndef PNMPI_COMPILER_NO_TLS
-#define PNMPI_MAX_THREAD_LEVEL MPI_THREAD_MULTIPLE;
-#else
-#define PNMPI_MAX_THREAD_LEVEL MPI_THREAD_SERIALIZED;
-#endif
-
-
-/** \brief Get the maximum supported threading level of all modules.
+/** \brief Check if \p hook is activated in any module.
  *
- * \details This function iterates over all modules and finds the minimum
- *  supported MPI threading level of all modules.
+ * \details This function iterates over all modules and checks, if \p hook is
+ *  defined in any of them.
  *
  *
- * \return The maximum supported MPI level of all modules.
+ * \return If any module implements the \p hook, a non-zero value will be
+ *  returned, otherwise zero.
+ *
+ *
+ * \private
  */
 PNMPI_INTERNAL
-int pnmpi_max_module_threading_level()
+int pnmpi_hook_activated(const char *hook)
 {
-  int max_level = PNMPI_MAX_THREAD_LEVEL;
-
   size_t i;
   for (i = 0; i < modules.num; i++)
     {
       /* Stack delimiter may be ignored: they are no real modules, so they can't
-       * have any symbols defined. */
+       * have any hook functions defined. */
       if (modules.module[i]->stack_delimiter)
         continue;
 
-      const int *sym =
-        find_symbol(modules.module[i], "PNMPI_SupportedThreadingLevel");
-      if (sym != NULL)
-        if (*sym < max_level)
-          max_level = *sym;
+      if (find_symbol(modules.module[i], hook) != NULL)
+        return 1;
     }
 
-  return max_level;
+  return 0;
 }

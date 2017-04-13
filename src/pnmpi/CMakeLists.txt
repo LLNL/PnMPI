@@ -100,9 +100,6 @@ set(PNMPI_LIB_SOURCES
   wrapper.c
   app_startup.c
   app_shutdown.c
-  call_hook.c
-  hook_activated.c
-  max_module_threading_level.c
   print_banner.c
 
   $<TARGET_OBJECTS:pnmpi_core>

@@ -41,6 +41,7 @@
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/modules.h>
 
 #ifdef HAVE_ADEPT_UTILS
 #include "link_utils.h"

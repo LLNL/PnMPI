@@ -37,6 +37,9 @@
  *
  * \details This function iterates over all modules and calls the \p hook in all
  *  of them.
+ *
+ *
+ * \private
  */
 PNMPI_INTERNAL
 void pnmpi_call_hook(const char *hook)
