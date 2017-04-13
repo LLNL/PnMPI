@@ -50,6 +50,20 @@
 #endif
 
 
+#if __APPLE__
+/** \brief Default value of `DYLD_FALLBACK_LIBRARY_PATH`.
+ *
+ * \details If `DYLD_FALLBACK_LIBRARY_PATH` is not set in the environment, this
+ *  will be the default value used by the dynamic linker. This macro is required
+ *  for \ref find_library.
+ *
+ * \note An additional entry for `$HOME/lib` will be generated at runtime in
+ *  \ref find_library.
+ */
+#define DEFAULT_FALLBACK_LIBRARY_PATH "/usr/local/lib:/lib:/usr/lib"
+#endif
+
+
 /* Configure argp.
  *
  * Argp is used to parse command line options. It handles the most common
@@ -167,6 +181,72 @@ static void set_dbglevel(const struct argp_state *state, const char *name)
 }
 
 
+#ifdef __APPLE__
+/** \brief Search for a library in the search paths of the dynamic linker.
+ *
+ * \details This function searches for \p library in the search path of the
+ *  dynamic linker. Its use is to get the same behaviour as for `LD_PRELOAD`,
+ *  that the library doesn't have to be at a fixed place.
+ *
+ *
+ * \param library The library to be searched.
+ *
+ * \return If the library has been found, a pointer to a new allocated string
+ *  containing its path will be returned. Remember to free this buffer!
+ * \return If the library could not be found in any path, the application will
+ *  be exited immediately with an error code.
+ */
+static char *find_library(const char *library)
+{
+  /* As the DYLD_LIBRARY_PATH variable might not reach PnMPIze because of the
+   * security features of mac OS, we'll set this variable with the contents of
+   * PNMPI_PATH, if it doesn't exist yet. */
+  if (getenv("DYLD_LIBRARY_PATH") == NULL)
+    {
+      const char *tmp = getenv("PNMPI_PATH");
+      if (tmp != NULL)
+        setenv("DYLD_LIBRARY_PATH", tmp, 0);
+    }
+
+  /* Generate the library search path, combined on first DYLD_LIBRARY_PATH and
+   * then DYLD_FALLBACK_LIBRARY_PATH. If the latter is not defined in the
+   * environment, it will be set by the default value of the mac OS dynamic
+   * linker. */
+  if (!getenv("DYLD_FALLBACK_LIBRARY_PATH"))
+    {
+      const char *home = getenv("HOME");
+      size_t len = strlen(home) + 5 + sizeof(DEFAULT_FALLBACK_LIBRARY_PATH);
+      char buffer[len];
+      snprintf(buffer, len, "%s/lib:%s", home, DEFAULT_FALLBACK_LIBRARY_PATH);
+      setenv("DYLD_FALLBACK_LIBRARY_PATH", buffer, 0);
+    }
+  appendenv("DYLD_LIBRARY_PATH", getenv("DYLD_FALLBACK_LIBRARY_PATH"), 0);
+
+  /* DYLD_LIBRARY_PATH is a colon separated list of paths to search for
+   * libraries. Iterate over all of these paths now to find the searched one. */
+  char *path = strtok(getenv("DYLD_LIBRARY_PATH"), ":");
+  while (path)
+    {
+      /* Check if the searched library can be found in this path. If yes,
+       * duplicate the buffer and return this string, so the callee can use this
+       * path. */
+      size_t len = strlen(path) + strlen(library) + 2;
+      char buffer[len];
+      snprintf(buffer, len, "%s/%s", path, library);
+      if (access(buffer, F_OK) != -1)
+        return strdup(buffer);
+
+      /* Get the next path. */
+      path = strtok(NULL, ":");
+    }
+
+  /* The searched library can't be found in any path. */
+  fprintf(stderr, "Could not find the PnMPI library.\n");
+  exit(EXIT_FAILURE);
+}
+#endif
+
+
 /** \brief Argument parser for argp.
  *
  * \note See argp parser documentation for detailed information about the
@@ -218,14 +298,17 @@ int main(int argc, char **argv)
    * sion of LD_PRELOAD. DYLD_FORCE_FLAT_NAMESPACE has to be set, to get all
    * symbols in the same namespace. Otherwise P^nMPI and libmpi won't see each
    * other and no preloading will happen. */
-  appendenv("DYLD_INSERT_LIBRARIES",
-            PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".dylib", 0);
+  char *lib = find_library(PNMPI_LIBRARY_NAME ".dylib");
+  appendenv("DYLD_INSERT_LIBRARIES", lib, 0);
   setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
+  free(lib);
 
 #else
-  /* For other systems (Linux and other UNIX platforms), add libpnmpif to
-   * LD_PRELOAD to load P^nMPI in front of libmpi. */
-  appendenv("LD_PRELOAD", PNMPI_LIBRARY_DIR "/" PNMPI_LIBRARY_NAME ".so", 0);
+  /* For other systems (Linux and other UNIX platforms), add the P^nMPI library
+   * to LD_PRELOAD to load P^nMPI in front of libmpi. No path to the shared
+   * object, but just the filename is required, as LD_PRELOAD searches in the
+   * LD_LIBRARY_PATH for this file. */
+  appendenv("LD_PRELOAD", PNMPI_LIBRARY_NAME ".so", 0);
 #endif
 
   /* Execute the utility. If the utility could be started, pnmpize will exit

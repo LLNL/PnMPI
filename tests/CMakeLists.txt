@@ -107,6 +107,36 @@ endmacro ()
 macro(easytest_hook_post_test TARGET CONFIG MAIN_SOURCE)
   _easytest_hook_post_test(${TARGET} "${CONFIG}" ${MAIN_SOURCE})
 
+  # Set the library path, so PnMPIze can find PnMPI even if it's not yet
+  # installed.
+  if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+      "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/pnmpi:$ENV{LD_LIBRARY_PATH}")
+  else ()
+    # As mac OS security features may delete the DYLD_LIBRARY_PATH and
+    # LD_LIBRARY_PATH variables under some circumstances, the alternate
+    # PNMPI_LIBRARY_PATH variable will be used in this case.
+    set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+                 "PNMPI_PATH=${PROJECT_BINARY_DIR}/src/pnmpi")
+  endif ()
+
+  # Set the PnMPI module path for the build and install directories, so the
+  # tests may be executed before installation.
+  set(PNMPI_MODULE_PATHS ${PROJECT_BINARY_DIR}/modules/comm
+                         ${PROJECT_BINARY_DIR}/modules/datatype
+                         ${PROJECT_BINARY_DIR}/modules/empty
+                         ${PROJECT_BINARY_DIR}/modules/metrics
+                         ${PROJECT_BINARY_DIR}/modules/requests
+                         ${PROJECT_BINARY_DIR}/modules/sample
+                         ${PROJECT_BINARY_DIR}/modules/status
+                         ${PROJECT_BINARY_DIR}/modules/switch-matrix
+                         ${PROJECT_BINARY_DIR}/modules/timelapse
+                         ${PROJECT_BINARY_DIR}/modules/virtual
+                         ${PROJECT_BINARY_DIR}/modules/wait-for-debugger)
+  string(REPLACE ";" ":" PNMPI_MODULE_PATHS "${PNMPI_MODULE_PATHS}")
+  set_property(TEST ${TARGET} APPEND PROPERTY
+               ENVIRONMENT "PNMPI_LIB_PATH=${PNMPI_MODULE_PATHS}")
+
   if (SANITIZE_ADDRESS)
     # OpenMPI does have memory leaks, which can't be suppressed by
     # LeakSanitizer, as they occur in an unknown module. If OpenMPI is used and

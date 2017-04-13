@@ -94,7 +94,7 @@ function(set_pnmpi_env testname)
   endif ()
 
   list(APPEND TEMP
-    "PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/lib/pnmpi-modules"
+    "PNMPI_LIB_PATH=${PROJECT_BINARY_DIR}/modules/sample"
     "PNMPI_CONF=${PROJECT_SOURCE_DIR}/demo/.pnmpi-conf-cmake"
   )
 

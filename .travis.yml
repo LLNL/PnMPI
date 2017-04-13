@@ -349,8 +349,9 @@ script:
   - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug
       -DENABLE_TESTS=On -DBUILD_DOC_INTERNAL=On $SANITIZE_FLAGS $COVERAGE_FLAGS
       $CMAKE_EXTRA_FLAGS
-    && make install
+    && make all
     && ctest --output-on-failure
+  - make install
 
 
 after_success:
