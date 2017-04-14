@@ -333,27 +333,8 @@ matrix:
 
 
 script:
-  - mkdir travis && cd travis
-  - if [ "$TRAVIS_OS_NAME" != "osx" ] && [[ "$CC" != clang* ]];
-    then
-      SANITIZE_FLAGS="-DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On";
-    else
-      echo "Address Sanitizer is disabled for OSX and clang builds.";
-    fi
-  - if [[ "$CC" != clang* ]];
-    then
-      COVERAGE_FLAGS="-DENABLE_COVERAGE=On";
-    else
-      echo "Code coverage is disabled for clang.";
-    fi
-  - cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug
-      -DENABLE_TESTS=On -DBUILD_DOC_INTERNAL=On $SANITIZE_FLAGS $COVERAGE_FLAGS
-      $CMAKE_EXTRA_FLAGS
-    && make all
-    && ctest --output-on-failure
-  - make install
-
+  - extra/build/ci.sh
 
 after_success:
-  - make -k gcov
+  - cd travis; make -k gcov
   - bash <(curl -s https://codecov.io/bash) -X gcov
