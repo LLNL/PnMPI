@@ -77,4 +77,9 @@ void pnmpi_fallback_fini()
    * called before, execution of this function should be skipped. */
   if (pnmpi_constructor_called)
     return;
+
+
+  /* Call the optional version of PNMPI_AppShutdown, that may be called at
+   * initialization time. */
+  pnmpi_call_hook("PNMPI_AppShutdownOptional");
 }

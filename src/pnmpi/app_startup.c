@@ -50,7 +50,8 @@ void pnmpi_app_startup(int argc, char **argv)
 {
   /* If no module provides the PNMPI_AppStartup hook, we can skip the execution
    * of this function. */
-  if (!pnmpi_hook_activated("PNMPI_AppStartup"))
+  if (!pnmpi_hook_activated("PNMPI_AppStartup") &&
+      !pnmpi_hook_activated("PNMPI_AppStartupOptional"))
     return;
 
 
@@ -105,4 +106,5 @@ void pnmpi_app_startup(int argc, char **argv)
 
 
   pnmpi_call_hook("PNMPI_AppStartup");
+  pnmpi_call_hook("PNMPI_AppStartupOptional");
 }

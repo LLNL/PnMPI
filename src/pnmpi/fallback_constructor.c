@@ -210,4 +210,8 @@ void pnmpi_fallback_init()
                 "'PNMPI_AppShutdown' hooks, but your environment does not "
                 "support them. Please deactivate them or check your "
                 "environment.\n");
+
+  /* Call the optional version of PNMPI_AppStartup, that may be called at
+   * initialization time. */
+  pnmpi_call_hook("PNMPI_AppStartupOptional");
 }

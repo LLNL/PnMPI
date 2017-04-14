@@ -85,30 +85,10 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   pnmpi_fallback_init();
 
 
-  int returnVal;
+  int returnVal = MPI_SUCCESS;
 
   inc_pnmpi_mpi_level();
-  if (NOT_ACTIVATED(MPI_Init_ID))
-    {
-      /* If PNMPI_AppStartup is activated, MPI was initialized before in _init.
-       * A second call of MPI_Init is not allowed. */
-      if (pnmpi_init_done)
-        {
-          returnVal = MPI_SUCCESS;
-        }
-      else
-        {
-#ifdef COMPILE_FOR_FORTRAN
-          if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
-            pmpi_init_(&returnVal);
-          else
-#endif
-            returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
-
-          pnmpi_init_done = 1;
-        }
-    }
-  else
+  if (IS_ACTIVATED(MPI_Init_ID))
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
 
   dec_pnmpi_mpi_level();
@@ -141,6 +121,17 @@ void mpi_init_(int *ierr)
   /* Set the MPI interface language used to call MPI initialization. This will
    * be used as prefered method by pnmpi_get_mpi_interface. */
   pnmpi_mpi_init_interface = PNMPI_INTERFACE_FORTRAN;
+
+  /* Initialize the MPI environment. This has to be done first, so the
+   * constructors can use this. If MPI has been initialized before (e.g. in
+   * pnmpi_app_startup), this won't be done a second time. */
+  if (!pnmpi_init_done)
+    {
+      pmpi_init_(ierr);
+      if (*ierr != MPI_SUCCESS)
+        pnmpi_error("Failed to initialize MPI.\n");
+      pnmpi_init_done = 1;
+    }
 
 
   /* some code in here is taken from MPICH-1 */
@@ -226,20 +217,27 @@ int MPI_Init(int *argc, char ***argv)
    * be used as prefered method by pnmpi_get_mpi_interface. */
   pnmpi_mpi_init_interface = PNMPI_INTERFACE_C;
 
+  /* Initialize the MPI environment. This has to be done first, so the
+   * constructors can use this. If MPI has been initialized before (e.g. in
+   * pnmpi_app_startup), this won't be done a second time. */
+  if (!pnmpi_init_done)
+    {
+      if (PMPI_Init(argc, argv) != MPI_SUCCESS)
+        pnmpi_error("Failed to initialize MPI.\n");
+      pnmpi_init_done = 1;
+    }
 
-  int err;
+  PNMPI_Common_MPI_Init(argc, argv);
 
-  DBGPRINT3("Entering Old MPI_Init at base level");
-
-  err = PNMPI_Common_MPI_Init(argc, argv);
-
+  /* Exit the reentry-guarded wrapper section and return success of MPI
+   * initialization. */
   PNMPI_REENTRY_EXIT();
-  return err;
+  return MPI_SUCCESS;
 }
 
 int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 {
-  int res;
+  int res = MPI_SUCCESS;
   int start_level;
 
   start_level = pnmpi_level;
@@ -265,23 +263,6 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
         }
     }
 
-  if (pnmpi_init_done)
-    {
-      DBGPRINT3("Duplicated: calling a original MPI in MPI_Init");
-      res = MPI_SUCCESS;
-    }
-  else
-    {
-      DBGPRINT3("Calling a original MPI in MPI_Init");
-#ifdef COMPILE_FOR_FORTRAN
-      if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
-        pmpi_init_(&res);
-      else
-#endif
-        res = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
-      pnmpi_init_done = 1;
-    }
-  DBGPRINT3("Done with original MPI in MPI_Init");
   pnmpi_level = start_level;
   return res;
 }
@@ -297,21 +278,7 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
   pnmpi_fallback_init();
 
 
-  int returnVal;
-
-
-  /* Check the maximum threading level of all activated modules. If the
-   * application requires a higher threading level as the supported maximum
-   * level of all modules, the level will be downgraded. */
-  int max_level = pnmpi_max_module_threading_level();
-  if (required > max_level)
-    {
-      WARNPRINT("The application requested a MPI threading level of %d, but "
-                "the combination of the selected PnMPI modules provide a "
-                "maximum of %d. The threading level will be downgraded.\n",
-                required, max_level);
-      required = max_level;
-    }
+  int returnVal = MPI_SUCCESS;
 
 
   /* If the PNMPI_AppStartup hook is activated, we've initialized MPI before.
@@ -320,30 +287,7 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
     *provided = pnmpi_mpi_thread_level_provided;
 
   inc_pnmpi_mpi_level();
-  if (NOT_ACTIVATED(MPI_Init_thread_ID))
-    {
-      /* If the PNMPI_AppStartup hook is activated, MPI was initialized before
-       * in _init. A second call of MPI_Init_thread is not allowed. */
-      if (pnmpi_init_done)
-        {
-          returnVal = MPI_SUCCESS;
-        }
-      else
-        {
-#ifdef COMPILE_FOR_FORTRAN
-#ifdef HAVE_MPI_INIT_THREAD_Fortran
-          if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
-            pmpi_init_thread_(&required, provided, &returnVal);
-          else
-#endif /*HAVE_MPI_INIT_THREAD_Fortran*/
-#endif
-            returnVal =
-              PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
-
-          pnmpi_init_done = 1;
-        }
-    }
-  else
+  if (IS_ACTIVATED(MPI_Init_thread_ID))
     returnVal =
       Internal_XMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
 
@@ -380,6 +324,30 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
    * be used as prefered method by pnmpi_get_mpi_interface. */
   pnmpi_mpi_init_interface = PNMPI_INTERFACE_FORTRAN;
 
+  /* Initialize the MPI environment. This has to be done first, so the
+   * constructors can use this. If MPI has been initialized before (e.g. in
+   * pnmpi_app_startup), this won't be done a second time. */
+  if (!pnmpi_init_done)
+    {
+      /* Check the maximum threading level of all activated modules. If the
+       * application requires a higher threading level as the supported maximum
+       * level of all modules, the level will be downgraded. */
+      int max_level = pnmpi_max_module_threading_level();
+      if (*required > max_level)
+        {
+          pnmpi_warning("The application requested a MPI threading level of "
+                        "%d, but the combination of the selected PnMPI modules "
+                        "provide a maximum of %d. The threading level will be "
+                        "downgraded.\n",
+                        *required, max_level);
+          *required = max_level;
+        }
+
+      pmpi_init_thread_(required, provided, ierr);
+      if (*ierr != MPI_SUCCESS)
+        pnmpi_error("Failed to initialize MPI.\n");
+      pnmpi_init_done = 1;
+    }
 
   /* some code in here is taken from MPICH-1 */
 
@@ -465,6 +433,29 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
    * be used as prefered method by pnmpi_get_mpi_interface. */
   pnmpi_mpi_init_interface = PNMPI_INTERFACE_C;
 
+  /* Initialize the MPI environment. This has to be done first, so the
+   * constructors can use this. If MPI has been initialized before (e.g. in
+   * pnmpi_app_startup), this won't be done a second time. */
+  if (!pnmpi_init_done)
+    {
+      /* Check the maximum threading level of all activated modules. If the
+       * application requires a higher threading level as the supported maximum
+       * level of all modules, the level will be downgraded. */
+      int max_level = pnmpi_max_module_threading_level();
+      if (required > max_level)
+        {
+          pnmpi_warning("The application requested a MPI threading level of "
+                        "%d, but the combination of the selected PnMPI modules "
+                        "provide a maximum of %d. The threading level will be "
+                        "downgraded.\n",
+                        required, max_level);
+          required = max_level;
+        }
+
+      if (PMPI_Init_thread(argc, argv, required, provided) != MPI_SUCCESS)
+        pnmpi_error("Failed to initialize MPI.\n");
+      pnmpi_init_done = 1;
+    }
 
   int err;
 
@@ -567,14 +558,15 @@ int MPI_Finalize(void)
    * the execution of main. */
   pnmpi_fallback_fini();
 
-  /* If the PNMPI_AppShutdown hook is provided by any module, do NOT call the
-   * original MPI_Finalize function, because it will be called in _fini after
-   * calling the app_shutdown handler.
+  /* If the PNMPI_AppShutdown or PNMPI_AppShutdownOptional hook is provided by
+   * any module, do NOT call the original MPI_Finalize function, because it will
+   * be called in pnmpi_app_shutdown.
    *
    * An extra check if the constructors are working is not required, as
    * pnmpi_fallback_init will abort PnMPI, if the destructors for this hook
    * wouldn't be called. */
-  if (pnmpi_hook_activated("PNMPI_AppShutdown"))
+  if (pnmpi_hook_activated("PNMPI_AppShutdown") ||
+      pnmpi_hook_activated("PNMPI_AppShutdownOptional"))
     return MPI_SUCCESS;
 
   inc_pnmpi_mpi_level();

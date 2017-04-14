@@ -53,8 +53,10 @@ void HOOKNAME()
 }
 
 
-/* CONFIGS: RegistrationPoint RegistrationComplete
- * CONFIGS: PNMPI_AppStartup PNMPI_AppShutdown
+/* CONFIGS: RegistrationPoint
+ * CONFIGS: RegistrationComplete
+ * CONFIGS: PNMPI_AppStartup PNMPI_AppStartupOptional
+ * CONFIGS: PNMPI_AppShutdown PNMPI_AppShutdownOptional
  *
  * MODTYPE: XMPI
  *
@@ -74,6 +76,12 @@ void HOOKNAME()
  * COMPILE_FLAGS-PNMPI_AppStartup: -DHOOKNAME=PNMPI_AppStartup
  * PASS-PNMPI_AppStartup: PNMPI_AppStartup hit.
  *
+ * COMPILE_FLAGS-PNMPI_AppStartupOptional: -DHOOKNAME=PNMPI_AppStartupOptional
+ * PASS-PNMPI_AppStartupOptional: PNMPI_AppStartupOptional hit.
+ *
  * COMPILE_FLAGS-PNMPI_AppShutdown: -DHOOKNAME=PNMPI_AppShutdown
  * PASS-PNMPI_AppShutdown: PNMPI_AppShutdown hit.
+ *
+ * COMPILE_FLAGS-PNMPI_AppShutdownOptional: -DHOOKNAME=PNMPI_AppShutdownOptional
+ * PASS-PNMPI_AppShutdownOptional: PNMPI_AppShutdownOptional hit.
  */

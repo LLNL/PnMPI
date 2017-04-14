@@ -51,9 +51,10 @@ void pnmpi_app_shutdown()
    *
    * 1. PnMPI must have been initialized before. If PnMPI (and MPI) have not
    *    been initalized, nothing can be shutdown.
-   * 2. PNMPI_AppShutdown must be enabled, otherwise MPI was shutdown before in
-   *    the MPI_Finalize wrapper. */
-  if (!pnmpi_init_done || !pnmpi_hook_activated("PNMPI_AppShutdown"))
+   * 2. PNMPI_AppShutdown or PNMPI_AppShutdownOptional must be enabled,
+   *    otherwise MPI was shutdown before in the MPI_Finalize wrapper. */
+  if (!pnmpi_init_done || (!pnmpi_hook_activated("PNMPI_AppShutdown") &&
+                           !pnmpi_hook_activated("PNMPI_AppShutdownOptional")))
     return;
 
   /* In some cases modules may have called PMPI_Finalize which was not patched
@@ -68,6 +69,7 @@ void pnmpi_app_shutdown()
     return;
 
 
+  pnmpi_call_hook("PNMPI_AppShutdownOptional");
   pnmpi_call_hook("PNMPI_AppShutdown");
 
 
