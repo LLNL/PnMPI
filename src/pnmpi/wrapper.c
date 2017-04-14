@@ -39,9 +39,9 @@
 
 #include "app_hooks.h"
 #include "core.h"
-#include "fallback_init.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/fallback_init.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
@@ -80,11 +80,9 @@ void pmpi_init_thread_(int *ierror, int *required, int *provided);
 
 static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 {
-#ifndef __GNUC__
   /* If the compiler does not support GCC's constructors, check if the fallback
    * constructor was called before this function. */
   pnmpi_fallback_init();
-#endif
 
 
   int returnVal;
@@ -294,11 +292,9 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
                                         int required, int *provided)
 {
-#ifndef __GNUC__
   /* If the compiler does not support GCC's constructors, check if the fallback
    * constructor was called before this function. */
   pnmpi_fallback_init();
-#endif
 
 
   int returnVal;
@@ -566,9 +562,18 @@ int MPI_Finalize(void)
       err = Internal_XMPI_Finalize();
     }
 
+  /* Call the fallback destructor. If PnMI detects that its destructors wouldn't
+   * be called, this function calls all, except those which MUST be called after
+   * the execution of main. */
+  pnmpi_fallback_fini();
+
   /* If the PNMPI_AppShutdown hook is provided by any module, do NOT call the
    * original MPI_Finalize function, because it will be called in _fini after
-   * calling the app_shutdown handler. */
+   * calling the app_shutdown handler.
+   *
+   * An extra check if the constructors are working is not required, as
+   * pnmpi_fallback_init will abort PnMPI, if the destructors for this hook
+   * wouldn't be called. */
   if (pnmpi_hook_activated("PNMPI_AppShutdown"))
     return MPI_SUCCESS;
 

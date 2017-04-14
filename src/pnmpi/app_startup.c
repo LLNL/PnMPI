@@ -32,9 +32,9 @@
 
 #include <mpi.h>
 
-#include "app_hooks.h"
 #include "core.h"
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/config.h>
 #include <pnmpi/private/modules.h>

@@ -73,7 +73,9 @@ install(FILES
           "${PNMPI_HEADER_DIR}/pnmpi/xmpi.h"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/pnmpi")
 
+pnmpi_add_private_header(app_hooks.h)
 pnmpi_add_private_header(config.h.in config.h)
+pnmpi_add_private_header(fallback_init.h)
 
 
 if (ENABLE_FORTRAN)
@@ -96,6 +98,9 @@ endif()
 #       containing a constructor must be listed in the order they should be
 #       executed.
 set(PNMPI_LIB_SOURCES
+  fallback_constructor.c
+  fallback_destructor.c
+
   core.c
   wrapper.c
   app_startup.c
@@ -113,11 +118,10 @@ if (ENABLE_FORTRAN)
   list(APPEND PNMPI_LIB_SOURCES ${Wrap_EXTRA_SOURCE})
 endif ()
 
-check_symbol_exists("__GNUC__" "" HAVE_GNUC)
-if (NOT HAVE_GNUC)
-  list(APPEND PNMPI_LIB_SOURCES
-    "fallback_constructor.c" "fallback_destructor.c")
-endif ()
+
+check_symbol_exists("PNMPI_HAVE_NO_CONSTRUCTOR"
+                    "${PNMPI_HEADER_DIR}/pnmpi/private/attributes.h"
+                    HAVE_NO_CONSTRUCTOR)
 
 
 add_custom_target(generate DEPENDS
@@ -139,7 +143,7 @@ set_target_properties(pnmpi PROPERTIES VERSION
   ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
   SOVERSION ${PNMPI_MAJOR_VERSION})
 
-if(NOT HAVE_GNUC)
+if(HAVE_NO_CONSTRUCTOR)
   set_property(TARGET pnmpi APPEND PROPERTY LINK_FLAGS " -nostartfiles")
 endif()
 
@@ -179,7 +183,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION ${PNMPI_MAJOR_VERSION})
 
-  if(NOT HAVE_GNUC)
+  if(HAVE_NO_CONSTRUCTOR)
     set_property(TARGET pnmpif APPEND PROPERTY LINK_FLAGS " -nostartfiles")
   endif()
 

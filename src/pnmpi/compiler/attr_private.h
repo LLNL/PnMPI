@@ -44,10 +44,11 @@
 
 /** \brief Constructor macro.
  *
- * \details Constructors are a GNU extensions. They must be static to avoid
- *  nasty reordering by name instead of priority. If the compiler does not
- *  support constructors, the function won't be static and can be accessed by
- *  the fallback constructor \ref _init.
+ * \details Constructors are a GNU extension, that is not supported by all
+ *  compilers. This macros value will be set depending on the compatibility of
+ *  the compiler.
+ *
+ * \note The function will be marked as \ref PNMPI_INTERNAL.
  *
  *
  * \param priority Priority of the constructor. Priorities 0-100 are reserved by
@@ -56,21 +57,26 @@
 #ifdef __GNUC__
 #ifndef __APPLE__
 #define PNMPI_CONSTRUCTOR(priority) \
-  __attribute__((constructor(priority))) static
+  PNMPI_INTERNAL                    \
+  __attribute__((constructor(priority)))
 #else
-#define PNMPI_CONSTRUCTOR(priority) __attribute__((constructor)) static
+#define PNMPI_CONSTRUCTOR(priority) \
+  PNMPI_INTERNAL                    \
+  __attribute__((constructor))
 #endif
 #else
-#define PNMPI_CONSTRUCTOR(priority)
+#define PNMPI_CONSTRUCTOR(priority) PNMPI_INTERNAL
+#define PNMPI_HAVE_NO_CONSTRUCTOR ///< Compiler has no constructor support.
 #endif
 
 
 /** \brief Destructor macro.
  *
- * \details Destructors are a GNU extensions. They must be static to avoid
- *  nasty reordering by name instead of priority. If the compiler does not
- *  support destructors, the function won't be static and can be accessed by
- *  the fallback constructor \ref _fini.
+ * \details Destructors are a GNU extension, that is not supported by all
+ *  compilers. This macros value will be set depending on the compatibility of
+ *  the compiler.
+ *
+ * \note The function will be marked as \ref PNMPI_INTERNAL.
  *
  *
  * \param priority Priority of the destructor. Priorities 0-100 are reserved by
@@ -78,12 +84,17 @@
  */
 #ifdef __GNUC__
 #ifndef __APPLE__
-#define PNMPI_DESTRUCTOR(priority) __attribute__((destructor(priority))) static
+#define PNMPI_DESTRUCTOR(priority) \
+  PNMPI_INTERNAL                   \
+  __attribute__((destructor(priority)))
 #else
-#define PNMPI_DESTRUCTOR(priority) __attribute__((destructor)) static
+#define PNMPI_DESTRUCTOR(priority) \
+  PNMPI_INTERNAL                   \
+  __attribute__((destructor))
 #endif
 #else
-#define PNMPI_DESTRUCTOR(priority)
+#define PNMPI_DESTRUCTOR(priority) PNMPI_INTERNAL
+#define PNMPI_HAVE_NO_DESTRUCTOR ///< Compiler has no destructor support.
 #endif
 
 

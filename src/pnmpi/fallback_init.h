@@ -32,7 +32,11 @@
 #define PNMPI_FALLBACK_INIT_H
 
 
+extern int pnmpi_constructor_called;
+
+
 void pnmpi_fallback_init();
+void pnmpi_fallback_fini();
 
 
 #endif

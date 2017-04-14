@@ -133,9 +133,7 @@ extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;
 extern int pnmpi_init_done;
 
-#ifndef __GNUC__
 void pnmpi_PreInit(void);
-#endif
 
 extern int iargc_(void);
 extern char *getarg_(int *, char *, int);

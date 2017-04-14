@@ -32,24 +32,51 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "core.h"
+#include <pnmpi/debug_io.h>
+#include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/fallback_init.h>
+#include <pnmpi/private/modules.h>
 
 
-/* Only enable the fallback constructor for builds without individual
- * constructors enabled. */
-#ifndef __GNUC__
+/** \brief Global flag indicating a constructor has been called.
+ *
+ * \details This flag indicates, that either a compiler specific constructor or
+ *  the fallback constructor \ref _init has been called. Other functions in
+ *  PnMPI use this, to check if PnMPI constructors and destructors will be
+ *  called, or the fallback mode has to be used.
+ *
+ *
+ * \private
+ */
+PNMPI_INTERNAL
+int pnmpi_constructor_called = 0;
 
 
-/* Declaration of all constructors. They are not in a seperate header file, as
- * they will be used in this file only. If the normal constructors are enabled,
- * no other files call them. */
-void pnmpi_PreInit();
-void pnmpi_app_startup(int argc, char **argv);
+/** \brief Set the constructor called flag.
+ *
+ * \details The purpose of this constructor function is to set the global flag
+ *  \ref pnmpi_constructor_called. Other functions then can check this to do the
+ *  initialization at a later time, when MPI_Init is called.
+ *
+ *
+ * \private
+ */
+PNMPI_CONSTRUCTOR(101)
+void pnmpi_check_constructor_called()
+{
+  pnmpi_constructor_called = 1;
+}
 
 
-/** \brief Variable to save if \ref _init was called by the dynamic loader. */
-int pnmpi_fallback_init_called = 0;
-
+/* If no compiler specific implementation of PNMPI_CONSTRUCTOR is available, the
+ * fallback constructor has to be used.
+ *
+ * Note: Using _init is obsolute, dangerous and is only a fallback for legacy
+ *       systems. If PnMPI has no compiler specific implementation of
+ *       PNMPI_CONSTRUCTOR for your compiler yet, please file an issue. */
+#ifdef PNMPI_HAVE_NO_CONSTRUCTOR
 
 #if defined(__linux__) || defined(__linux) || defined(linux)
 
@@ -63,10 +90,7 @@ static void read_cmdline(int *argc, char ***argv)
 {
   FILE *fp = fopen("/proc/self/cmdline", "rb");
   if (fp == NULL)
-    {
-      fprintf(stderr, "ERROR could not open arguments\n");
-      exit(1);
-    }
+    pnmpi_error("ERROR could not open arguments\n");
 
   int len = 1024;
   char *buffer = (char *)malloc(len * sizeof(char));
@@ -107,7 +131,6 @@ static void read_cmdline(int *argc, char ***argv)
   (*argv)[(*argc)] = NULL;
 }
 
-
 #else
 
 /** \brief Fallback implementation to return empty \p argc and \p argv.
@@ -118,8 +141,7 @@ static void read_cmdline(int *argc, char ***argv)
  */
 static void read_cmdline(int *argc, char ***argv)
 {
-  fprintf(stderr,
-          "PnMPI falback constructor: No mechanism to get argc/argv!\n");
+  pnmpi_warning("PnMPI falback constructor: No mechanism to get argc/argv!\n");
 
   *argc = 0;
   *argv = (char **)"";
@@ -128,36 +150,56 @@ static void read_cmdline(int *argc, char ***argv)
 #endif
 
 
-/** \brief Call constructors that may be called later.
+/** \brief Fallback constructor.
  *
- * \details If the regular call of \ref _init fails, this function will be
- *  called later to call all constructors that don't need to be called at
- *  program initialization.
+ * \details If the compiler does not support an implementation for \ref
+ *  PNMPI_CONSTRUCTOR, the following fallback constructor will be used to call
+ *  the independend constructors of PnMPI.
  */
-static void pnmpi_call_constructors()
+void _init()
 {
+  /* Call the regular constructors. These have no restriction about the time
+   * when to call them and may be called either in the constructor or at the
+   * time of MPI_Init / MPI_Init_thread. */
   pnmpi_PreInit();
+
+  /* Call the constructors which need to be called before main is started. If
+   * this function will not be called, there is no chance to call the following
+   * functions at a later time. */
+  int argc;
+  char **argv;
+  read_cmdline(&argc, &argv);
+
+  pnmpi_check_constructor_called();
+  pnmpi_app_startup(argc, argv);
 }
 
+#endif
 
-/** \brief Fallback constructor for failed \ref _init call.
+
+/** \brief Fallback constructor.
  *
- * \details If the compiler does not support '__attribute__((constructor))', the
- *  fallback constructor \ref _init will be used to call the independend
- *  constructors of PnMPI. If the dynamic loader of the system does not call
- *  \ref _init, this function may be called by the \ref MPI_Init later.
+ * \details If the compiler does not support an implementation for \ref
+ *  PNMPI_CONSTRUCTOR nor does \ref _init get called by the dynamic loader, this
+ *  function will be called by \ref MPI_Init as a backup.
+ *
+ * \note This function can't call all of the constructor functions, as some of
+ *  them, especially \ref pnmpi_app_startup, must be called before the execution
+ *  of `main`.
+ *
+ *
+ * \private
  */
 PNMPI_INTERNAL
 void pnmpi_fallback_init()
 {
-  /* If the fallback constructor was called before (by _init), we may skip it
-   * now. */
-  if (pnmpi_fallback_init_called)
+  /* If any constructor (either the compiler specific or fallback one) has been
+   * called before, execution of this function should be skipped. */
+  if (pnmpi_constructor_called)
     return;
 
-
   /* Call the regular constructors. */
-  pnmpi_call_constructors();
+  pnmpi_PreInit();
 
 
   /* Check if the user is using PNMPI_AppStartup or PNMPI_AppShutdown hooks, due
@@ -165,39 +207,7 @@ void pnmpi_fallback_init()
   if (pnmpi_hook_activated("PNMPI_AppStartup") ||
       pnmpi_hook_activated("PNMPI_AppShutdown"))
     pnmpi_error("You are using modules which require the 'PNMPI_AppStartup' or "
-                "'PNMPI_AppShutdown' hooks, but your system does not support "
-                "them. Please deactivate them or check your system.\n");
+                "'PNMPI_AppShutdown' hooks, but your environment does not "
+                "support them. Please deactivate them or check your "
+                "environment.\n");
 }
-
-
-/** \brief Fallback constructor.
- *
- * \details If the compiler does not support '__attribute__((constructor))', the
- *  following fallback constructor will be used to call the independend
- *  constructors of PnMPI.
- */
-void _init()
-{
-  /* Save that _init was called (e.g. by the dynamic loader) to indicate that
-   * the constructors have been called. If this flag won't be set,
-   * pnmpi_fallback_init is able to determine that _init was not called and may
-   * call some constructors later. */
-  pnmpi_fallback_init_called = 1;
-
-
-  /* Call the regular constructors. */
-  pnmpi_call_constructors();
-
-
-  /* Call the constructors which need to be called before main is started. */
-
-  /* Get argc and argv. */
-  int argc;
-  char **argv;
-  read_cmdline(&argc, &argv);
-
-  pnmpi_app_startup(argc, argv);
-}
-
-
-#endif

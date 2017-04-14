@@ -32,6 +32,7 @@
 
 #include "core.h"
 #include <pnmpi/debug_io.h>
+#include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>

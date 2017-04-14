@@ -28,30 +28,53 @@
  * LLNL-CODE-402774
  */
 
-/* Declaration of all destructors. They are not in a seperate header file, as
- * they will be used in this file only. If the normal destructors are enabled,
- * no other files call them.
- *
- * The declarations are outside of the ifndef __GNUC__, because otherwise this
- * file will be empty if __GNUC__ is defined, which is forbidden in ISO C. */
-void pnmpi_app_shutdown();
+#include <pnmpi/private/app_hooks.h>
+#include <pnmpi/private/attributes.h>
+#include <pnmpi/private/fallback_init.h>
+#include <pnmpi/private/modules.h>
 
 
-/* Only enable the fallback constructor for builds without individual
- * constructors enabled. */
-#ifndef __GNUC__
-
-
+#ifdef PNMPI_HAVE_NO_DESTRUCTOR
 /** \brief Fallback destructor.
  *
- * \details If the compiler does not support '__attribute__((destructor))', the
- *  following fallback destructor will be used to call the independend
- *  destructors of PnMPI.
+ * \details If the compiler does not support an implementation for \ref
+ *  PNMPI_DESTRUCTOR, the following fallback destructor will be used to call the
+ *  independend destructors of PnMPI.
+ *
+ * \note Using \ref _fini is obsolute, dangerous and is only a fallback for
+ *  legacy systems. If PnMPI has no compiler specific implementation of
+ *  PNMPI_DESTRUCTOR for your compiler yet, please file an issue.
  */
 void _fini()
 {
   pnmpi_app_shutdown();
 }
-
-
 #endif
+
+
+/** \brief Fallback destructor.
+ *
+ * \details If the compiler does not support an implementation for \ref
+ *  PNMPI_DESTRUCTOR nor does \ref _fini get called by the dynamic loader, this
+ *  function will be called by \ref MPI_Finalize as a backup.
+ *
+ * \note This function can't call all of the destructor functions, as some of
+ *  them, especially \ref pnmpi_app_shutdown, must be called before the
+ *  execution of `main`.
+ *
+ *
+ * \return If the regular destructors will be called, zero will be returned.
+ *  Otherwise the return value will be non-zero, indicating the MPI environment
+ *  must be shutdown in \ref MPI_Finalize.
+ *
+ *
+ * \private
+ */
+PNMPI_INTERNAL
+void pnmpi_fallback_fini()
+{
+  /* If any constructor (either the compiler specific or fallback one) has been
+   * called before, execution of this function should be skipped. */
+  if (pnmpi_constructor_called)
+    return;
+}

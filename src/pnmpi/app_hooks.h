@@ -41,4 +41,8 @@
 extern int pnmpi_mpi_thread_level_provided;
 
 
+void pnmpi_app_startup(int argc, char **argv);
+void pnmpi_app_shutdown();
+
+
 #endif
