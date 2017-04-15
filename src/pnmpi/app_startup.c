@@ -33,13 +33,13 @@
 #include <mpi.h>
 
 #include "core.h"
+#include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/config.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
-#include <pnmpi/private/pmpi.h>
 
 
 int pnmpi_mpi_thread_level_provided;
@@ -68,37 +68,47 @@ void pnmpi_app_startup(int argc, char **argv)
 
   /* Initialize MPI depending on the MPI interface used by the instrumented
    * application. */
+  int err;
   switch (pnmpi_get_mpi_interface(argv[0]))
     {
     case PNMPI_INTERFACE_C:
     case PNMPI_INTERFACE_NONE:
-      PMPI_Init_thread(&argc, &argv, required,
-                       &pnmpi_mpi_thread_level_provided);
-      pnmpi_debug(PNMPI_DEBUG_INIT,
-                  "Initialized MPI C interface. Provided threading level: %d\n",
-                  pnmpi_mpi_thread_level_provided);
+      pnmpi_debug(PNMPI_DEBUG_INIT, "Initialize C MPI interface ...\n");
+
+#ifdef HAVE_MPI_INIT_THREAD_C
+      err = PMPI_Init_thread(&argc, &argv, required,
+                             &pnmpi_mpi_thread_level_provided);
+      if (err == MPI_SUCCESS)
+        pnmpi_debug(PNMPI_DEBUG_INIT, "Provided threading level: %d\n",
+                    pnmpi_mpi_thread_level_provided);
+#else
+      err = PMPI_Init(&argc, &argv);
+#endif
       break;
 
 #ifdef COMPILE_FOR_FORTRAN
     /* The Fortran MPI interface will be used for staticaly linked applications
      * and applications without MPI, too. This should have no side-effects. */
     case PNMPI_INTERFACE_FORTRAN:
-      {
-        int err;
-        pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
-        if (err != MPI_SUCCESS)
-          pnmpi_error("pmpi_init_thread_ failed.\n");
-        pnmpi_debug(
-          PNMPI_DEBUG_INIT,
-          "Initialized MPI Fortran interface. Provided threading level: %d\n",
-          pnmpi_mpi_thread_level_provided);
-        break;
-      }
+      pnmpi_debug(PNMPI_DEBUG_INIT, "Initialize Fortran MPI interface ...\n");
+
+#ifdef HAVE_MPI_INIT_THREAD_Fortran
+      pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
+      if (err == MPI_SUCCESS)
+        pnmpi_debug(PNMPI_DEBUG_INIT, "Provided threading level: %d\n",
+                    pnmpi_mpi_thread_level_provided);
+#else
+      pmpi_init_(&err);
+#endif
+      break;
 #endif
 
     default:
       pnmpi_error("Automatic detection of the used MPI interface failed.\n");
     }
+
+  if (err != MPI_SUCCESS)
+    pnmpi_error("MPI initialization failed.\n");
   pnmpi_init_done = 1;
 
 
