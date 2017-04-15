@@ -86,6 +86,7 @@ static pnmpi_mpi_interface convert_env(const char *value)
 }
 
 
+#ifdef __PIC__
 /** \brief Check \p cmd for the used MPI interface.
  *
  * \details This function calls `nm` on \p cmd to determine the used MPI
@@ -191,6 +192,7 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
         return PNMPI_INTERFACE_NONE;
     }
 }
+#endif
 
 
 /** \brief Get the MPI interface used by the instrumented application.
@@ -245,11 +247,17 @@ pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd)
       return mpi_interface = convert_env(env);
     }
 
+#ifdef __PIC__
   /* If no interface language was set in the environment, check the application
    * with nm for the used MPI interface. This will be done for non-NULL cmd
-   * parameter. */
+   * parameter.
+   *
+   * This method is supported for the shared library version of PnMPI, as a
+   * binary linked to the static one will always include the MPI_Init symbol, so
+   * it would be marked as C, even if it doesn't use any MPI function. */
   if (cmd != NULL)
     return mpi_interface = check_nm(cmd);
   else
+#endif
     return PNMPI_INTERFACE_UNKNOWN;
 }
