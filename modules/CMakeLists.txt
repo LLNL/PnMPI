@@ -27,8 +27,8 @@
 #
 # LLNL-CODE-402774
 
-include(PnMPIModules)
 include(PnMPI_headers)
+include(PnMPI_modules)
 
 
 # Include directories for all modules.

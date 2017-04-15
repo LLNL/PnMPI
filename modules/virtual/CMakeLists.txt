@@ -28,7 +28,7 @@
 # LLNL-CODE-402774
 
 #Use macro to: add target for module, version it, install it, patch it
-add_pnmpi_module(virtual virtual.c)
+pnmpi_add_pmpi_module(virtual virtual.c)
 add_wrapped_file(virtual.c virtual.w -w)
 
 install(TARGETS virtual DESTINATION lib/pnmpi-modules)

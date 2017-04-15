@@ -27,8 +27,8 @@
 #
 # LLNL-CODE-402774
 
-add_pnmpi_module(datatype datatype.cpp)
-add_pnmpi_module(dtprint dtprint.c)
+pnmpi_add_pmpi_module(datatype datatype.cpp)
+pnmpi_add_pmpi_module(dtprint dtprint.c)
 
 add_coverage(datatype)
 add_coverage(dtprint)

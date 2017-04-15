@@ -28,7 +28,7 @@
 # LLNL-CODE-402774
 
 #Use macro to: add target for module, version it, install it, patch it
-add_pnmpi_module(status status.c)
+pnmpi_add_pmpi_module(status status.c)
 
 #Add header to intermediate include dir
 install(FILES status.h DESTINATION include)
