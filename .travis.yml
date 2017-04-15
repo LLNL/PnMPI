@@ -306,7 +306,12 @@ matrix:
               )" \; ;
 
             num=$(wc -l extra/license/header.txt | sed "s/[^0-9]*//g") ;
-            find . \( -name "*.txt" -o -name "*.conf" -o -name "*.yml" \)
+            find . \( -name "*.txt" -o -name "*.conf" -o -name "*.yml"
+                      -o -name "*.cmake" -o -name "*.cmake.in" \)
+                ! -path "./cmakemodules/legacy/*"
+                ! -path "./cmakemodules/Platform/*"
+                ! -path "./cmakemodules/Toolchain/*"
+                ! -path "./cmakemodules/FindBFD.cmake"
               -exec sh -c "cat {}
                 | head -n $num
                 | git diff  --no-index -- extra/license/header.txt -
