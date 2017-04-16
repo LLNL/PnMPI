@@ -28,34 +28,55 @@
  * LLNL-CODE-402774
  */
 
-#include <assert.h>
-#include <stdarg.h>
+#ifndef PRINT_DEFAULT
+#define PNMPI_MESSAGE_PREFIX "testmodule"
+#endif
+
+#ifdef PNMPI_NO_DEBUG
+#undef PNMPI_NO_DEBUG
+#endif
+
 
 #include <pnmpi/debug_io.h>
-#include <pnmpi/private/print.h>
+#include <pnmpi/hooks.h>
 
 
-/** \brief Print a warning to stderr.
- *
- * \details This function will print a warning to stderr. The selected debug
- *  node will be ignored: warnings will be printed at all nodes if they occure.
- *
- *
- * \param format Printf-like format string.
- * \param ... Arguments to be evaluated.
- *
- *
- * \hidecallergraph
- * \ingroup pnmpi_debug_io
- */
-void pnmpi_warning(const char *format, ...)
+void PNMPI_RegistrationPoint()
 {
-  assert(format);
+#ifdef PRINT_DEBUG
+  pnmpi_debug(PNMPI_DEBUG_MODULE, "debug\n");
+#endif
 
+#ifdef PRINT_WARNING
+  pnmpi_warning("warning\n");
+#endif
 
-  /* Print the message with rank as prefix. */
-  va_list ap;
-  va_start(ap, format);
-  pnmpi_print_prefix_rank(stderr, format, ap);
-  va_end(ap);
+#ifdef PRINT_ERROR
+  pnmpi_error("error\n");
+#endif
 }
+
+
+/* CONFIGS: default debug warning error
+ *
+ * MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@\n
+ *
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ *
+ *
+ * COMPILE_FLAGS-default: -DPRINT_DEFAULT -DPRINT_WARNING
+ * PASS-default: \[PnMPI\] warning
+ *
+ * COMPILE_FLAGS-debug: -DPRINT_DEBUG
+ * RUN-debug: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ -d modules
+ * RUN-debug:   @TESTBIN_MPI_C@
+ * PASS-debug: \[testmodule\] debug
+ *
+ * COMPILE_FLAGS-warning: -DPRINT_WARNING
+ * PASS-warning: \[testmodule\] warning
+ *
+ * COMPILE_FLAGS-error: -DPRINT_ERROR
+ * PASS-error: \[testmodule\] .*:[0-9]+: error
+ */

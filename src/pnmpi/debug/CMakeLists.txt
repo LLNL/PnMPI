@@ -53,11 +53,13 @@ add_custom_target(pnmpi_debug_pmpi
 
 
 # Install the public man pages for this object.
+pnmpi_add_man(pnmpi_debug_io PNMPI_MESSAGE_PREFIX)
 pnmpi_add_man(pnmpi_debug_io pnmpi_error)
 pnmpi_add_man(pnmpi_debug_io pnmpi_debug)
 pnmpi_add_man(pnmpi_debug_io pnmpi_debug_level)
 pnmpi_add_man(pnmpi_debug_io pnmpi_print_debug)
 pnmpi_add_man(pnmpi_debug_io pnmpi_print_error)
+pnmpi_add_man(pnmpi_debug_io pnmpi_print_warning)
 pnmpi_add_man(pnmpi_debug_io pnmpi_warning)
 
 
@@ -71,7 +73,7 @@ easy_add_library(pnmpi_debug OBJECT
   print_debug.c
   print_error.c
   print_prefix_rank.c
-  warning.c)
+  print_warning.c)
 
 easy_target_link_libraries(pnmpi_debug ${MPI_C_LIBRARIES} m)
 
