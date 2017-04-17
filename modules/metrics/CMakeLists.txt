@@ -31,8 +31,6 @@ include(CheckCSourceCompiles)
 include(PnMPI_doc)
 include(PnMPI_headers)
 
-find_package(C11 OPTIONAL_COMPONENTS ATOMICS)
-
 
 # Add C11 flags, if C11 is available.
 if (C11_FOUND)

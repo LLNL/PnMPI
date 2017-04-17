@@ -29,8 +29,6 @@
 
 include(PnMPI_headers)
 
-find_package(C11 OPTIONAL_COMPONENTS THREAD_LOCAL)
-
 
 # Check if thread local storage is available for thread safe variables in PnMPI
 # and modules. First we try to use C11 _Thread_local, next the compiler-specific
@@ -47,9 +45,6 @@ if (NOT ENABLE_THREAD_SAFETY)
   set(THREADKEYWORD_FOUND false)
 endif ()
 
-configure_file(features.h.in
-  ${PNMPI_HEADER_DIR}/pnmpi/private/compiler_features.h)
-
 
 # Install and manage the public and private header files of the PnMPI sources.
 # This has to be done to use the same headers for the PnMPI sources and the API
@@ -58,4 +53,5 @@ configure_file(features.h.in
 # headers over multiple directories.
 pnmpi_add_header(attr_public.h attributes.h)
 pnmpi_add_private_header(attr_private.h attributes.h)
+pnmpi_add_private_header(features.h.in compiler_features.h)
 pnmpi_add_private_header(tls.h tls.h)

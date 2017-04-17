@@ -31,7 +31,6 @@ include(CheckSymbolExists)
 include(easylib)
 include(PnMPI_headers)
 
-find_package(C11)
 find_package(Sanitizers)
 
 

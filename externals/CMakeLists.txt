@@ -27,19 +27,24 @@
 #
 # LLNL-CODE-402774
 
+include(FindPackageMessage)
+
+
 #===================================
 #Check for adept_utils timers
 #===================================
 
 find_package(adept_utils QUIET)
 if(adept_utils_FOUND)
-    message(STATUS "Found adept_utils in ${adept_utils_DIR}.")
+    find_package_message(adept_utils "Found adept_utils: ${adept_utils_DIR}"
+                         "${adept_utils_DIR}")
     add_definitions(-DHAVE_ADEPT_UTILS)
     set(PnMPI_USE_adept_utils TRUE)
 else()
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/adept-utils/CMakeLists.txt)
         ADD_SUBDIRECTORY (adept-utils)
-        message(STATUS "Found adept_utils as submodule.")
+        find_package_message(adept_utils "Found adept_utils as submodule."
+                             "submodule")
         set(adept-utils_INCLUDE_DIRS
                     ${adept-utils_SOURCE_DIR}/utils
                     ${adept-utils_SOURCE_DIR}/cutils
@@ -51,7 +56,8 @@ else()
         set(PnMPI_USE_adept_utils TRUE)
         set(adept_utils_DIR ${adept-utils_BINARY_DIR})
     else()
-        message(STATUS "adept_utils package not found.  Building without timing.")
+        find_package_message(adept_utils
+          "adept_utils package not found. Building without timing." "not found")
         # Set these for our PnMPIConfig.cmake file.
         set(adept_utils_INCLUDE_PATH adept_utils_INCLUDE_PATH-NOTFOUND)
         set(adept_utils_LIBRARIES    adept_utils_LIBRARIES-NOTFOUND)
@@ -63,11 +69,11 @@ endif()
 #======================================================
 find_package(wrap QUIET)
 if(wrap_FOUND)
-    message(STATUS "Found warp in ${wrap_DIR}.")
+    find_package_message(wrap "Found warp: ${wrap_DIR}" "${wrap_DIR}")
 else()
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/wrap/CMakeLists.txt)
         ADD_SUBDIRECTORY (wrap)
-
+        find_package_message(wrap "Found warp as submodule." "submodule")
         set(WRAP ${PROJECT_SOURCE_DIR}/externals/wrap/wrap.py)
 	set(GETSTATUSSIZE ${PROJECT_SOURCE_DIR}/externals/wrap/getStatusSize.f)
         configure_file(
@@ -78,7 +84,9 @@ else()
         ${PROJECT_BINARY_DIR}/wrap-config.cmake @ONLY)
         include(${PROJECT_BINARY_DIR}/wrap-config.cmake)
     else()
-        message( FATAL_ERROR "Subproject wrap not available, CMake will exit.\n Try:\n   git submodule update --init --recursive" )
+        message(FATAL_ERROR "Subproject wrap not available, CMake will exit.\n"
+                            "Try:\n"
+                            "   git submodule update --init --recursive")
     endif()
 endif()
 
@@ -96,8 +104,8 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/llnl-hires-timers/CMakeLists.txt)
     CACHE STRING "LLNL-hires-timers library target" FORCE)
   set(LLNL-HIRES-TIMERS_FOUND TRUE)
 
-  message(STATUS "Found llnl-hires-timers in: "
-          "${CMAKE_CURRENT_SOURCE_DIR}/llnl-hires-timers")
+  find_package_message(LLNL_HIRES_TIMERS "Found llnl-hires-timers as submodule."
+    "submodule")
 else ()
   message(FATAL_ERROR "Subproject llnl-hires-timers not available.\n"
                       "Try:\n"

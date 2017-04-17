@@ -116,9 +116,17 @@ set(MPI_CXX_SKIP_FLAGS
 # BFD is used by the patch utility.
 find_package(BFD)
 
+
+# Search for C11 compiler support.
+#
+# Some of the modules and the PnMPI library try to use C11 features. Instead of
+# searching for them in each module this will be done here, so the message gets
+# only printed once.
+find_package(C11 OPTIONAL_COMPONENTS ATOMICS THREAD_LOCAL)
+
+
 #Run feature tests
 INCLUDE (FeatureTests)
-add_subdirectory(externals)
 
 
 #
@@ -144,21 +152,30 @@ endif ()
 # Recurse to sub-directories
 #===================================
 add_subdirectory(doc)
+add_subdirectory(externals)
 add_subdirectory(src)
 
 option(ENABLE_MODULES "Selects whether PnMPI modules are built." TRUE)
-if(ENABLE_MODULES)
-    add_subdirectory(modules)
-endif(ENABLE_MODULES)
+if (ENABLE_MODULES)
+  add_subdirectory(modules)
+endif (ENABLE_MODULES)
 
 option(ENABLE_DEMO "Selects whether demo biraries are built." TRUE)
-if(ENABLE_DEMO)
-    if(ENABLE_MODULES)
-	# only if demo and modules get built
-        enable_testing() #activates creation of tests
-    endif(ENABLE_MODULES)
+if (ENABLE_DEMO)
+  # The demos require the sample modules to be built. If they will not be built,
+  # don't build the demos.
+  if (ENABLE_MODULES)
+    enable_testing()
     add_subdirectory(demo)
-endif(ENABLE_DEMO)
+  endif (ENABLE_MODULES)
+endif (ENABLE_DEMO)
+
+option(ENABLE_TESTS "Selects whether tests are built." false)
+if (ENABLE_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif (ENABLE_TESTS)
+
 
 #===================================
 #Other install stuff (which is not handled in the sub-dirs)
@@ -182,13 +199,6 @@ SET(PnMPI_INSTALL_PREFIX )
 set(PNMPI_HAVE_FORTRAN ${ENABLE_FORTRAN})
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
-
-
-option(ENABLE_TESTS "Selects whether tests are built." false)
-if (ENABLE_TESTS)
-  enable_testing()
-  add_subdirectory(tests)
-endif (ENABLE_TESTS)
 
 
 #
