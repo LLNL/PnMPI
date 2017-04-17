@@ -61,6 +61,17 @@ extern "C" {
  */
 extern const int PNMPI_SupportedThreadingLevel;
 
+/** \brief Name of the module.
+ *
+ * \details Instead of registering the module name in \ref
+ *  PNMPI_RegistrationPoint, a module may define this symbol to register its
+ *  name.
+ *
+ *
+ * \memberof pnmpi_module_hooks
+ */
+extern const char *PNMPI_ModuleName;
+
 /** \brief Called just after the module has been loaded.
  *
  * \details This hook will be called just after the module has been loaded. It

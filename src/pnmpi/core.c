@@ -604,6 +604,16 @@ void pnmpi_PreInit()
                       modules.module[modules.num]->args = NULL;
                       modules.module[modules.num]->username[0] = (char)0;
 
+                      /* Check, if the module provides a module name, so it can
+                       * be registered. */
+                      const char **module_name = find_symbol(
+                        modules.module[modules.num], "PNMPI_ModuleName");
+                      if (module_name != NULL)
+                        {
+                          pnmpi_level = modules.num;
+                          PNMPI_Service_RegisterModule(*module_name);
+                        }
+
                       /* PNMPI_RegistrationPoint will be called later */
 
                       pnmpi_level = modules.num;

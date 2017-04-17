@@ -41,6 +41,7 @@ pnmpi_add_header(hooks.h)
 
 # Install the public man pages for this object.
 pnmpi_add_man(pnmpi_module_hooks PNMPI_SupportedThreadingLevel)
+pnmpi_add_man(pnmpi_module_hooks PNMPI_ModuleName)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_RegistrationPoint)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_RegistrationComplete)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_AppStartup)
