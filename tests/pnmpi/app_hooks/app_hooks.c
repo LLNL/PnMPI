@@ -63,6 +63,8 @@ void PNMPI_AppShutdown()
 
 
 /* CONFIGS: no_hook startup shutdown combined threading_level_env
+ * CONFIGS: combined-static
+ *
  * MODTYPE: XMPI
  * COMPILE_INCLUDES: @MPI_C_INCLUDE_PATH@
  * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
@@ -84,7 +86,18 @@ void PNMPI_AppShutdown()
  * COMPILE_FLAGS-combined: @MPI_C_COMPILE_FLAGS@ -DWITH_STARTUP -DWITH_SHUTDOWN
  * PASS-combined: startup hook: MPI initialized.*shutdown hook: MPI initialized.
  *
+ * COMPILE_FLAGS-combined-static: @MPI_C_COMPILE_FLAGS@
+ * COMPILE_FLAGS-combined-static:   -DWITH_STARTUP -DWITH_SHUTDOWN
+ * ENVIRONMENT-combined-static: PNMPI_CONF=@PNMPICONF@
+ * ENVIRONMENT-combined-static: PNMPI_LIB_PATH=@CMAKE_CURRENT_BINARY_DIR@
+ * ENVIRONMENT-combined-static: PNMPI_BE_SILENT=1
+ * ENVIRONMENT-combined-static: PNMPI_INTERFACE=C
+ * RUN-combined-static: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN-combined-static:   @MPIEXEC_PREFLAGS@ @TESTBIN_MPI_C_STATIC@
+ * RUN-combined-static:   @MPIEXEC_POSTFLAGS@
+ * PASS-combined-static: startup hook:.*shutdown hook:
+ *
  * COMPILE_FLAGS-threading_level_env: @MPI_C_COMPILE_FLAGS@ -DWITH_STARTUP
  * ENVIRONMENT-threading_level_env: PNMPI_THREADING_LEVEL=0
- * PAS-threading_level_env:
+ * PASS-threading_level_env: Provided:.*0
  */

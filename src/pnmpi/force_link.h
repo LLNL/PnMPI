@@ -28,17 +28,11 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_FALLBACK_INIT_H
-#define PNMPI_FALLBACK_INIT_H
+#ifndef PNMPI_PRIVATE_FORCE_LINK_H
+#define PNMPI_PRIVATE_FORCE_LINK_H
 
 
-extern int pnmpi_constructor_called;
-
-
-void pnmpi_fallback_init();
-void pnmpi_fallback_fini();
-
-void pnmpi_check_constructor_called();
+void pnmpi_force_link();
 
 
 #endif

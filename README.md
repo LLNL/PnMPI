@@ -301,10 +301,15 @@ Instead of linking your application against the MPI library, you may link
 against the static MPI library.
 
 **Note:** By default the linker will only link functions used by your code, so
-most of the API functions would not get linked into your binary. You should tell
-the linker to link the whole PnMPI archive:
+most of the API functions would not get linked into your binary. PnMPI
+implements a helper function to force the linker to link all required functions
+into the binary. However there might be compilations, if not all functions
+wrapped by the modules are used by the application. You should tell the linker
+to link the whole PnMPI archive explicitly:
 
     mpicc main.o -Wl,--whole-archive pnmpi.a -Wl,--no-whole-archive -o test
+
+*Note: The linker option `--whole-archive` is not available at mac OS.*
 
 
 C) Modules

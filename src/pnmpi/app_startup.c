@@ -42,7 +42,11 @@
 #include <pnmpi/private/mpi_interface.h>
 
 
-int pnmpi_mpi_thread_level_provided;
+#if defined(HAVE_MPI_INIT_THREAD_C) || defined(HAVE_MPI_INIT_THREAD_Fortran)
+/** \brief The provided threading level returned from the PMPI threaded init.
+ */
+int pnmpi_mpi_thread_level_provided = MPI_THREAD_SINGLE;
+#endif
 
 
 PNMPI_CONSTRUCTOR(110)

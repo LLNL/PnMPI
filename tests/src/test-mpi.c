@@ -48,8 +48,14 @@ int main(int argc, char **argv)
 }
 
 
-/* DEPENDS: testbin-mpi-wrapper
+/* CONFIGS: plain pnmpi-static
+ *
+ * DEPENDS: testbin-mpi-wrapper
  * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
  * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
  * LINK: @MPI_C_LINK_FLAGS@ @MPI_C_LIBRARIES@
+ *
+ * DEPENDS-pnmpi-static: testbin-mpi-wrapper pnmpif_static
+ * LINK-pnmpi-static: pnmpi_static @MPI_C_LINK_FLAGS@ @MPI_C_LIBRARIES@ dl m
+ * PASS-pnmpi-static: No modules loaded.
  */

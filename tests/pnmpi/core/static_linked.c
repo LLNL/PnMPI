@@ -28,17 +28,30 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_FALLBACK_INIT_H
-#define PNMPI_FALLBACK_INIT_H
+/* This test case checks, if PnMPI is able to call modules, if it is linked
+ * statically to the application. */
+
+#include <stdio.h>
+
+#include <pnmpi/hooks.h>
 
 
-extern int pnmpi_constructor_called;
+void PNMPI_RegistrationPoint()
+{
+  printf("foo\n");
+}
 
 
-void pnmpi_fallback_init();
-void pnmpi_fallback_fini();
-
-void pnmpi_check_constructor_called();
-
-
-#endif
+/* MODTYPE: XMPI
+ *
+ * PNMPICONF: module @MODNAME@\n
+ * PNMPICONF: module @MODNAME@\n
+ * PNMPICONF: module @MODNAME@
+ *
+ * ENVIRONMENT: PNMPI_CONF=@PNMPICONF@
+ * ENVIRONMENT: PNMPI_LIB_PATH=@CMAKE_CURRENT_BINARY_DIR@
+ * ENVIRONMENT: PNMPI_BE_SILENT=1
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1 @MPIEXEC_PREFLAGS@
+ * RUN:   @TESTBIN_MPI_C_STATIC@ @MPIEXEC_POSTFLAGS@
+ * PASS: foo\nfoo\nfoo\n
+ */

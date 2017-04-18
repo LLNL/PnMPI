@@ -48,7 +48,9 @@ set(TESTBIN_NOMPI "$<TARGET_FILE:testbin-binary_nompi>" PARENT_SCOPE)
 # will be called in MPI_Init, this should be enogh to check anything except the
 # wrapper functions.
 easy_add_test(PREFIX binary_mpi_c SOURCES test-mpi.c)
-set(TESTBIN_MPI_C "$<TARGET_FILE:testbin-binary_mpi_c>" PARENT_SCOPE)
+set(TESTBIN_MPI_C "$<TARGET_FILE:testbin-binary_mpi_c-plain>" PARENT_SCOPE)
+set(TESTBIN_MPI_C_STATIC "$<TARGET_FILE:testbin-binary_mpi_c-pnmpi-static>"
+    PARENT_SCOPE)
 
 # The following target may be used to check general PnMPI functionality for
 # threaded MPI applications. It uses the common MPI functions MPI_Init_thread

@@ -42,6 +42,7 @@
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/fallback_init.h>
+#include <pnmpi/private/force_link.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
@@ -80,6 +81,13 @@ void pmpi_init_thread_(int *ierror, int *required, int *provided);
 
 static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 {
+#ifndef __PIC__
+  /* The following call has no effect on the PnMPI execution, but forces any
+   * required symbols of PnMPI to be linked, if one links the static PnMPI
+   * library. */
+  pnmpi_force_link();
+#endif
+
   /* If the compiler does not support GCC's constructors, check if the fallback
    * constructor was called before this function. */
   pnmpi_fallback_init();
@@ -273,6 +281,13 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
                                         int required, int *provided)
 {
+#ifndef __PIC__
+  /* The following call has no effect on the PnMPI execution, but forces any
+   * required symbols of PnMPI to be linked, if one links the static PnMPI
+   * library. */
+  pnmpi_force_link();
+#endif
+
   /* If the compiler does not support GCC's constructors, check if the fallback
    * constructor was called before this function. */
   pnmpi_fallback_init();

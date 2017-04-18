@@ -75,6 +75,7 @@ install(FILES
 pnmpi_add_private_header(app_hooks.h)
 pnmpi_add_private_header(config.h.in config.h)
 pnmpi_add_private_header(fallback_init.h)
+pnmpi_add_private_header(force_link.h)
 
 
 if (ENABLE_FORTRAN)
@@ -157,7 +158,7 @@ endif()
   endif()
 
 # PnMPI static library (same output name as shared lib)
-easy_add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES})
+easy_add_library(pnmpi_static STATIC ${PNMPI_LIB_SOURCES} force_link.c)
 add_dependencies(pnmpi_static generate pnmpi_debug_pmpi)
 set_target_properties(pnmpi_static PROPERTIES OUTPUT_NAME pnmpi)
 
@@ -206,7 +207,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   endif()
 
   # PnMPI fortran static lib
-  easy_add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES})
+  easy_add_library(pnmpif_static STATIC ${PNMPI_LIB_SOURCES} force_link.c)
   add_dependencies(pnmpif_static generate pnmpi_debug_pmpi)
   set_target_properties(pnmpif_static PROPERTIES OUTPUT_NAME   pnmpif)
   set_target_properties(pnmpif_static PROPERTIES COMPILE_FLAGS "-DCOMPILE_FOR_FORTRAN")
