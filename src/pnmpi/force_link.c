@@ -50,10 +50,8 @@ PNMPI_INTERNAL
 void pnmpi_force_link()
 {
   /* Con- and destructors. */
-  void (*volatile ptr_ctor_01)() = pnmpi_check_constructor_called;
-  void (*volatile ptr_ctor_02)() = pnmpi_PreInit;
-  void (*volatile ptr_ctor_03)() = pnmpi_app_startup;
-  void (*volatile ptr_dtor_01)() = pnmpi_app_shutdown;
+  void (*volatile ptr_ctor)() = pnmpi_constructor;
+  void (*volatile ptr_dtor)() = pnmpi_destructor;
 
   /* Module service functions. */
   PNMPI_status_t (*volatile ptr_service_01)(const char *name) =
@@ -92,7 +90,7 @@ void pnmpi_force_link()
 
   /* This if-clause has no special meaning, except keeping the compiler silent,
    * not to warn about unused variables. */
-  if ((ptr_ctor_01 || ptr_ctor_02 || ptr_ctor_03) || ptr_dtor_01 ||
+  if (ptr_ctor || ptr_dtor ||
       (ptr_service_01 || ptr_service_02 || ptr_service_03 || ptr_service_04 ||
        ptr_service_05 || ptr_service_06 || ptr_service_07 || ptr_service_08 ||
        ptr_service_09 || ptr_service_10 || ptr_service_11 || ptr_service_12 ||

@@ -54,19 +54,29 @@ PNMPI_INTERNAL
 int pnmpi_constructor_called = 0;
 
 
-/** \brief Set the constructor called flag.
+/** \brief The PnMPI constructor.
  *
- * \details The purpose of this constructor function is to set the global flag
- *  \ref pnmpi_constructor_called. Other functions then can check this to do the
- *  initialization at a later time, when MPI_Init is called.
+ * \details This function will be used to call all constructors in a specific
+ *  order. Independend constructors can't be used, as their order gets random
+ *  for static linking PnMPI to an executable.
+ *
+ *
+ * \param argc Count of \p argv.
+ * \param argv The argument vector of the executable.
  *
  *
  * \private
  */
 PNMPI_CONSTRUCTOR(101)
-void pnmpi_check_constructor_called()
+void pnmpi_constructor(int argc, char **argv)
 {
+  /* Set a flag that the constructor has been called, so other functions may use
+   * this flag to test what actions to do depending on the initialization. */
   pnmpi_constructor_called = 1;
+
+  /* Call all constructors. */
+  pnmpi_PreInit();
+  pnmpi_app_startup(argc, argv);
 }
 
 
@@ -158,20 +168,11 @@ static void read_cmdline(int *argc, char ***argv)
  */
 void _init()
 {
-  /* Call the regular constructors. These have no restriction about the time
-   * when to call them and may be called either in the constructor or at the
-   * time of MPI_Init / MPI_Init_thread. */
-  pnmpi_PreInit();
-
-  /* Call the constructors which need to be called before main is started. If
-   * this function will not be called, there is no chance to call the following
-   * functions at a later time. */
   int argc;
   char **argv;
   read_cmdline(&argc, &argv);
 
-  pnmpi_check_constructor_called();
-  pnmpi_app_startup(argc, argv);
+  pnmpi_constrctor(argc, argv);
 }
 
 #endif

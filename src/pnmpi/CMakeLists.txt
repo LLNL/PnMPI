@@ -98,8 +98,8 @@ endif()
 #       containing a constructor must be listed in the order they should be
 #       executed.
 set(PNMPI_LIB_SOURCES
-  fallback_constructor.c
-  fallback_destructor.c
+  constructor.c
+  destructor.c
 
   core.c
   wrapper.c

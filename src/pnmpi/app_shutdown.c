@@ -44,7 +44,12 @@ void pmpi_finalize_(int *ierr);
 #endif
 
 
-PNMPI_DESTRUCTOR(110)
+/** \brief Handler for the PnMPI app shutdown hooks.
+ *
+ * \details This function will be called to call the app shutdown hooks. After
+ *  all hooks have been called, the MPI environment will be destroyed.
+ */
+PNMPI_INTERNAL
 void pnmpi_app_shutdown()
 {
   /* There are two conditions to execute this function:

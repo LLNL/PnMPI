@@ -34,6 +34,22 @@
 #include <pnmpi/private/modules.h>
 
 
+/** \brief The PnMPI destructor.
+ *
+ * \details This function will be used to call all destructors in a specific
+ *  order. Independend destructors can't be used, as their order gets random for
+ *  static linking PnMPI to an executable.
+ *
+ *
+ * \private
+ */
+PNMPI_DESTRUCTOR(101)
+void pnmpi_destructor()
+{
+  pnmpi_app_shutdown();
+}
+
+
 #ifdef PNMPI_HAVE_NO_DESTRUCTOR
 /** \brief Fallback destructor.
  *
@@ -41,13 +57,13 @@
  *  PNMPI_DESTRUCTOR, the following fallback destructor will be used to call the
  *  independend destructors of PnMPI.
  *
- * \note Using \ref _fini is obsolute, dangerous and is only a fallback for
+ * \note Using \ref _fini is obsolete, dangerous and is only a fallback for
  *  legacy systems. If PnMPI has no compiler specific implementation of
  *  PNMPI_DESTRUCTOR for your compiler yet, please file an issue.
  */
 void _fini()
 {
-  pnmpi_app_shutdown();
+  pnmpi_destructor();
 }
 #endif
 

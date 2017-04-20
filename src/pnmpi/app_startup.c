@@ -49,7 +49,19 @@ int pnmpi_mpi_thread_level_provided = MPI_THREAD_SINGLE;
 #endif
 
 
-PNMPI_CONSTRUCTOR(110)
+/** \brief Handler for the PnMPI app startup hooks.
+ *
+ * \details This function will call the app startup hooks. Before all hooks will
+ *  be called, the MPI environment will be initialized.
+ *
+ *
+ * \param argc Count of \p argv.
+ * \param argv The argument vector of the executable.
+ *
+ *
+ * \private
+ */
+PNMPI_INTERNAL
 void pnmpi_app_startup(int argc, char **argv)
 {
   /* If no module provides the PNMPI_AppStartup hook, we can skip the execution

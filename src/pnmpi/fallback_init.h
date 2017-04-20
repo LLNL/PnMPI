@@ -35,10 +35,11 @@
 extern int pnmpi_constructor_called;
 
 
+void pnmpi_constructor();
+void pnmpi_destructor();
+
 void pnmpi_fallback_init();
 void pnmpi_fallback_fini();
-
-void pnmpi_check_constructor_called();
 
 
 #endif
