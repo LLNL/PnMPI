@@ -35,7 +35,7 @@
 #include <argp.h>
 #include <unistd.h>
 
-#include "pnmpi-config.h"
+#include "config.h"
 #include <pnmpi/debug_io.h>
 
 
@@ -43,7 +43,7 @@
  * Fortran PnMPI will be used, thus it covers C and Fortran. In any other case
  * the C library will be used, so Fortran binaries can't be executed with
  * preloaded P^nMPI. */
-#ifdef PNMPI_HAVE_FORTRAN
+#ifdef ENABLE_FORTRAN
 #define PNMPI_LIBRARY_NAME "libpnmpif"
 #else
 #define PNMPI_LIBRARY_NAME "libpnmpi"
@@ -60,7 +60,7 @@
  * \note An additional entry for `$HOME/lib` will be generated at runtime in
  *  \ref find_library.
  */
-#define DEFAULT_FALLBACK_LIBRARY_PATH "/usr/local/lib:/lib:/usr/lib"
+#define DEFAULT_FALLBACK_LIBRARY_PATH PNMPIZE_SEARCH_PATHS
 #endif
 
 

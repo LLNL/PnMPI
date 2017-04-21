@@ -27,16 +27,43 @@
 #
 # LLNL-CODE-402774
 
+include(GNUInstallDirs)
 include(PnMPI_headers)
 
 find_package(argp REQUIRED)
 find_package(help2man)
 
 
+# Set the PnMPI search paths for mac OS.
+#
+# DYLD_INSERT_LIBRARIES works with paths only, so PnMPIze will search for the
+# PnMPI library to preload. By default these path's are the following ones, but
+# the install path should be appended to these.
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(PNMPIZE_SEARCH_PATHS
+    ${CMAKE_INSTALL_FULL_LIBDIR}
+    "/usr/local/lib"
+    "/lib"
+    "/usr/lib")
+
+  # If PnMPI is installed in a default install directory, this duplicated path
+  # should be stripped from the list.
+  list(REMOVE_DUPLICATES PNMPIZE_SEARCH_PATHS)
+
+  # Convert the list to a search-path list.
+  string(REPLACE ";" ":" PNMPIZE_SEARCH_PATHS "${PNMPIZE_SEARCH_PATHS}")
+endif ()
+
+configure_file(config.h.in config.h)
+
+
+# Include all required directories.
 include_directories(
   ${PNMPI_HEADER_DIR}
-  ${PROJECT_BINARY_DIR})
+  ${CMAKE_CURRENT_BINARY_DIR})
 
+
+# Build and install PnMPIze.
 add_executable(pnmpize pnmpize.c)
 add_coverage(pnmpize)
 add_sanitizers(pnmpize)
@@ -44,7 +71,7 @@ add_sanitizers(pnmpize)
 target_link_libraries(pnmpize ${ARGP_LIBRARIES})
 set_target_properties(pnmpize PROPERTIES OUTPUT_NAME pnmpi)
 
-install(TARGETS pnmpize EXPORT pnmpi DESTINATION bin)
+install(TARGETS pnmpize EXPORT pnmpi DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
 # If help2man could be found, generate a man-page for pnmpize. The help2man
