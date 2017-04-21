@@ -145,6 +145,8 @@ PNMPI_status_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle);
 PNMPI_FUNCTION_ARG_NONNULL(1, 2)
 PNMPI_status_t PNMPI_Service_GetStackByName(const char *name,
                                             PNMPI_modHandle_t *handle);
+PNMPI_status_t PNMPI_Service_ChangeStack(PNMPI_modHandle_t stack);
+
 
 /** \defgroup PNMPI_Service_GetGlobalByName PNMPI_Service_GetGlobalByName
  *

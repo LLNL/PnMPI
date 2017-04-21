@@ -28,26 +28,26 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_NEWSTACK_H
-#define PNMPI_NEWSTACK_H
-
-
 #include <pnmpi/service.h>
 
+#include "core.h"
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
 
-{{forallfn fn_name MPI_Pcontrol}}
-{{retType}} P{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-{{forallfn fn_name MPI_Pcontrol}}
-{{ret_type}} X{{fn_name}}_NewStack({{list "PNMPI_modHandle_t stack" {{formals}}}});
-{{endforallfn}}
-
-#ifdef  __cplusplus
+/** \brief Change the current stack.
+ *
+ * \note You should use this function only, if the newstack functions can't be
+ *  used, e.g. if you want to change the stack outside a wrapper function.
+ *
+ *
+ * \param stack The new stack.
+ *
+ * \return \ref PNMPI_SUCCESS Stack successfully changed.
+ *
+ *
+ * \ingroup PNMPI_Service_GetStackByName
+ */
+PNMPI_status_t PNMPI_Service_ChangeStack(PNMPI_modHandle_t stack)
+{
+  pnmpi_level = stack;
+  return PNMPI_SUCCESS;
 }
-#endif
-#endif
