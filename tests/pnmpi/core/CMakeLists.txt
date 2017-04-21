@@ -39,6 +39,10 @@ if (ENABLE_FORTRAN)
 endif ()
 
 easy_add_test(PREFIX core_hooks SOURCES hooks.c)
-easy_add_test(PREFIX core_threading_downgrade SOURCES threading_downgrade.c)
 easy_add_test(PREFIX core_module_name SOURCES module_name.c)
 easy_add_test(PREFIX core_static_linked SOURCES static_linked.c)
+
+
+if (HAVE_MPI_INIT_THREAD_C)
+  easy_add_test(PREFIX core_threading_downgrade SOURCES threading_downgrade.c)
+endif ()
