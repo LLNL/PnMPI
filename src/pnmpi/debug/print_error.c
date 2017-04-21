@@ -41,7 +41,7 @@
 
 /** \brief Print a warning to stderr and exit the application.
  *
- * \details This function is a wrapper for \ref pnmpi_warning and exit.
+ * \details This function is a wrapper for \ref PNMPI_Warning and exit.
  *
  * \details This function will print a warning to stderr. The selected debug
  *  node will be ignored: warnings will be printed at all nodes if they occure.

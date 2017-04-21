@@ -52,7 +52,7 @@ void PNMPI_RegistrationPoint()
   /* First test case for a global with valid data. */
   int ret = PNMPI_Service_RegisterGlobal(&global);
   if (ret != PNMPI_SUCCESS)
-    pnmpi_error("Error: %d\n", ret);
+    PNMPI_Error("Error: %d\n", ret);
   printf("Registered global '%s'\n", global.name);
 }
 

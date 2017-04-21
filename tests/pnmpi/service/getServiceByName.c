@@ -73,7 +73,7 @@ void registerService()
 
   int ret = PNMPI_Service_RegisterService(&service);
   if (ret != PNMPI_SUCCESS)
-    pnmpi_error("Error: %d\n", ret);
+    PNMPI_Error("Error: %d\n", ret);
 }
 
 
@@ -92,10 +92,10 @@ void queryService()
     case PNMPI_NOMODULE:
     case PNMPI_NOSERVICE:
     case PNMPI_SIGNATURE:
-      pnmpi_warning("getServiceByName: %s\n", PNMPI_Service_strerror(ret));
+      PNMPI_Warning("getServiceByName: %s\n", PNMPI_Service_strerror(ret));
       break;
 
-    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    default: PNMPI_Error("Unknown error: %d\n", ret); break;
     }
 }
 
@@ -106,7 +106,7 @@ void PNMPI_RegistrationPoint()
    * service. */
   int self;
   if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
-    pnmpi_error("Can't get module ID.\n");
+    PNMPI_Error("Can't get module ID.\n");
   if (self == 0)
     registerService();
   else

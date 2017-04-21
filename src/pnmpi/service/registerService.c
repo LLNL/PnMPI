@@ -63,7 +63,7 @@ PNMPI_Service_RegisterService(const PNMPI_Service_descriptor_t *service)
     (module_servlist_p)malloc(sizeof(module_servlist_t));
   if (newservice == NULL)
     {
-      pnmpi_warning("Can't allocate memory to register service '%s' for module "
+      PNMPI_Warning("Can't allocate memory to register service '%s' for module "
                     "at level %d.\n",
                     service->name, pnmpi_level);
       return PNMPI_NOMEM;

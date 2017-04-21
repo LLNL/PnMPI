@@ -57,10 +57,10 @@ void PNMPI_RegistrationPoint()
     {
     case PNMPI_SUCCESS: printf("GetModuleByName: %d\n", h); break;
     case PNMPI_NOMODULE:
-      pnmpi_warning("GetModuleByName: %s\n", PNMPI_Service_strerror(ret));
+      PNMPI_Warning("GetModuleByName: %s\n", PNMPI_Service_strerror(ret));
       break;
 
-    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    default: PNMPI_Error("Unknown error: %d\n", ret); break;
     }
 }
 

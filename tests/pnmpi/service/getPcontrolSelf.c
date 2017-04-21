@@ -46,7 +46,7 @@ void PNMPI_RegistrationPoint()
    * will be used to store arguments only. */
   int self;
   if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
-    pnmpi_error("Can't get module ID.\n");
+    PNMPI_Error("Can't get module ID.\n");
   if (self != 1)
     return;
 

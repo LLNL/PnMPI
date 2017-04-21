@@ -56,9 +56,9 @@
  * - These macros are for legacy support only. Use the functions and macros
  *   defined in debug_io.h for new code!
  */
-#define WARNPRINT(format, ...) pnmpi_warning(format "\n", ##__VA_ARGS__);
+#define WARNPRINT(format, ...) PNMPI_Warning(format "\n", ##__VA_ARGS__);
 #define DBGPRINT3(format, ...) \
-  pnmpi_debug(PNMPI_DEBUG_CALL, format "\n", ##__VA_ARGS__);
+  PNMPI_Debug(PNMPI_DEBUG_CALL, format "\n", ##__VA_ARGS__);
 
 /* Enable all debug levels, as checking the debug level to print is part of
  * pnmpi_debug now. */
@@ -137,7 +137,7 @@ void mpi_init_(int *ierr)
     {
       pmpi_init_(ierr);
       if (*ierr != MPI_SUCCESS)
-        pnmpi_error("Failed to initialize MPI.\n");
+        PNMPI_Error("Failed to initialize MPI.\n");
       pnmpi_init_done = 1;
     }
 
@@ -231,7 +231,7 @@ int MPI_Init(int *argc, char ***argv)
   if (!pnmpi_init_done)
     {
       if (PMPI_Init(argc, argv) != MPI_SUCCESS)
-        pnmpi_error("Failed to initialize MPI.\n");
+        PNMPI_Error("Failed to initialize MPI.\n");
       pnmpi_init_done = 1;
     }
 
@@ -350,7 +350,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
       int max_level = pnmpi_max_module_threading_level();
       if (*required > max_level)
         {
-          pnmpi_warning("The application requested a MPI threading level of "
+          PNMPI_Warning("The application requested a MPI threading level of "
                         "%d, but the combination of the selected PnMPI modules "
                         "provide a maximum of %d. The threading level will be "
                         "downgraded.\n",
@@ -360,7 +360,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 
       pmpi_init_thread_(required, provided, ierr);
       if (*ierr != MPI_SUCCESS)
-        pnmpi_error("Failed to initialize MPI.\n");
+        PNMPI_Error("Failed to initialize MPI.\n");
       pnmpi_init_done = 1;
     }
 
@@ -459,7 +459,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
       int max_level = pnmpi_max_module_threading_level();
       if (required > max_level)
         {
-          pnmpi_warning("The application requested a MPI threading level of "
+          PNMPI_Warning("The application requested a MPI threading level of "
                         "%d, but the combination of the selected PnMPI modules "
                         "provide a maximum of %d. The threading level will be "
                         "downgraded.\n",
@@ -468,7 +468,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
         }
 
       if (PMPI_Init_thread(argc, argv, required, provided) != MPI_SUCCESS)
-        pnmpi_error("Failed to initialize MPI.\n");
+        PNMPI_Error("Failed to initialize MPI.\n");
       pnmpi_init_done = 1;
     }
 

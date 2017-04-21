@@ -156,15 +156,15 @@ int MPI_Finalize()
   fflush(stdout);
   fflush(stderr);
   if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Barrier failed.\n");
+    PNMPI_Error("PMPI_Barrier failed.\n");
 
 
   int rank, size;
 
   if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Comm_rank failed.\n");
+    PNMPI_Error("PMPI_Comm_rank failed.\n");
   if (PMPI_Comm_size(MPI_COMM_WORLD, &size) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Comm_size failed.\n");
+    PNMPI_Error("PMPI_Comm_size failed.\n");
 
   /* Iterate over all ranks and tell one rank after another to print his
    * statistics. The per-rank statistics will be reduced to rank 0 to get the
@@ -191,7 +191,7 @@ int MPI_Finalize()
        *
        * This solution was inspired by: http://stackoverflow.com/a/5310506 */
       if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-        pnmpi_error("PMPI_Barrier failed.\n");
+        PNMPI_Error("PMPI_Barrier failed.\n");
     }
 
 
@@ -200,7 +200,7 @@ int MPI_Finalize()
     if (PMPI_Reduce(&(counters.{{fn_name}}), &(tmp.{{fn_name}}), 1,
                     MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD)
         != MPI_SUCCESS)
-      pnmpi_error("PMPI_Reduce failed for %s counter.\n", "{{fn_name}}");
+      PNMPI_Error("PMPI_Reduce failed for %s counter.\n", "{{fn_name}}");
   {{endforallfn}}
 
   if (rank == 0) {

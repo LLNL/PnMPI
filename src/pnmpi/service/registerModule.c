@@ -58,7 +58,7 @@ PNMPI_status_t PNMPI_Service_RegisterModule(const char *name)
    * supplied buffer, a warning will be printed. */
   if (snprintf(modules.module[pnmpi_level]->username, PNMPI_MODULE_USERNAMELEN,
                "%s", name) >= PNMPI_MODULE_USERNAMELEN)
-    pnmpi_warning("Module name '%s' of module %d was too long.\n", name,
+    PNMPI_Warning("Module name '%s' of module %d was too long.\n", name,
                   pnmpi_level);
 
   /* Mark the module as registered. */

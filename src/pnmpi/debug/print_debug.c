@@ -94,7 +94,7 @@ static int pnmpi_check_dbgnode()
     {
       int print_node = atoi(env_var);
       if (print_node < 0)
-        pnmpi_error("PNMPI_DBGNODE must be a positive integer.\n");
+        PNMPI_Error("PNMPI_DBGNODE must be a positive integer.\n");
 
       /* Check if print_node matches the rank of this process to make a decision
        * about to print the message or not. If MPI can't find a rank, because it

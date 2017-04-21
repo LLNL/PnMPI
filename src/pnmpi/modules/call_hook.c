@@ -60,14 +60,14 @@ void pnmpi_call_hook(const char *hook)
       void (*sym)() = (void (*)())find_symbol(modules.module[i], hook);
       if (sym == NULL)
         {
-          pnmpi_debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook.\n",
+          PNMPI_Debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook.\n",
                       modules.module[i]->name, hook);
           continue;
         }
 
       /* Call the hook's symbol. Before calling the hook, the PnMPI level will
        * be adjusted, so the hooks function may use service functions. */
-      pnmpi_debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n", hook,
+      PNMPI_Debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n", hook,
                   modules.module[i]->name);
       pnmpi_level = i;
       sym();

@@ -55,7 +55,7 @@ void PNMPI_RegistrationPoint()
    * will be used to store arguments only. */
   int self;
   if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
-    pnmpi_error("Can't get module ID.\n");
+    PNMPI_Error("Can't get module ID.\n");
   if (self != 0)
     return;
 
@@ -68,10 +68,10 @@ void PNMPI_RegistrationPoint()
       break;
     case PNMPI_NOMODULE:
     case PNMPI_NOARG:
-      pnmpi_warning("GetArgument: %s\n", PNMPI_Service_strerror(ret));
+      PNMPI_Warning("GetArgument: %s\n", PNMPI_Service_strerror(ret));
       break;
 
-    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    default: PNMPI_Error("Unknown error: %d\n", ret); break;
     }
 }
 

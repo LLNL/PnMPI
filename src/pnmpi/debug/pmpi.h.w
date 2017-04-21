@@ -46,7 +46,7 @@
 #define P{{fn_name}}({{args}})                 \
   {                                            \
     if (P{{fn_name}}({{args}}) != MPI_SUCCESS) \
-      pnmpi_error("P{{fn_name}} failed.\n");   \
+      PNMPI_Error("P{{fn_name}} failed.\n");   \
   }
 {{endforallfn}}
 

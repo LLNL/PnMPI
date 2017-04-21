@@ -53,10 +53,10 @@ void PNMPI_RegistrationPoint()
     {
     case PNMPI_SUCCESS: printf("GetStackByName: %d\n", stack); break;
     case PNMPI_NOSTACK:
-      pnmpi_warning("GetStackByName: %s\n", PNMPI_Service_strerror(ret));
+      PNMPI_Warning("GetStackByName: %s\n", PNMPI_Service_strerror(ret));
       break;
 
-    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    default: PNMPI_Error("Unknown error: %d\n", ret); break;
     }
 }
 

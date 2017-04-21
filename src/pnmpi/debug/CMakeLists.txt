@@ -54,13 +54,13 @@ add_custom_target(pnmpi_debug_pmpi
 
 # Install the public man pages for this object.
 pnmpi_add_man(pnmpi_debug_io PNMPI_MESSAGE_PREFIX)
-pnmpi_add_man(pnmpi_debug_io pnmpi_error)
-pnmpi_add_man(pnmpi_debug_io pnmpi_debug)
-pnmpi_add_man(pnmpi_debug_io pnmpi_debug_level)
+pnmpi_add_man(pnmpi_debug_io PNMPI_Error)
+pnmpi_add_man(pnmpi_debug_io PNMPI_Debug)
+pnmpi_add_man(pnmpi_debug_io PNMPI_debug_level_t)
 pnmpi_add_man(pnmpi_debug_io pnmpi_print_debug)
 pnmpi_add_man(pnmpi_debug_io pnmpi_print_error)
 pnmpi_add_man(pnmpi_debug_io pnmpi_print_warning)
-pnmpi_add_man(pnmpi_debug_io pnmpi_warning)
+pnmpi_add_man(pnmpi_debug_io PNMPI_Warning)
 
 
 include_directories(

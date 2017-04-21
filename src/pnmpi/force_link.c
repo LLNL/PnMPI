@@ -29,6 +29,7 @@
  */
 
 #include "core.h"
+#include <pnmpi/debug_io.h>
 #include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/fallback_init.h>
@@ -87,6 +88,14 @@ void pnmpi_force_link()
   const char *(*volatile ptr_service_14)(PNMPI_status_t err) =
     PNMPI_Service_strerror;
 
+  /* Debug printing functions. */
+  void (*volatile ptr_debug_01)(PNMPI_debug_level_t level, const char *format,
+                                ...) = pnmpi_print_debug;
+  void (*volatile ptr_debug_02)(const char *format, ...) = pnmpi_print_warning;
+  void (*volatile ptr_debug_03)(const char *prefix, const char *function,
+                                const int line, const char *format, ...) =
+    pnmpi_print_error;
+
 
   /* This if-clause has no special meaning, except keeping the compiler silent,
    * not to warn about unused variables. */
@@ -94,6 +103,7 @@ void pnmpi_force_link()
       (ptr_service_01 || ptr_service_02 || ptr_service_03 || ptr_service_04 ||
        ptr_service_05 || ptr_service_06 || ptr_service_07 || ptr_service_08 ||
        ptr_service_09 || ptr_service_10 || ptr_service_11 || ptr_service_12 ||
-       ptr_service_13 || ptr_service_14))
+       ptr_service_13 || ptr_service_14) ||
+      (ptr_debug_01 || ptr_debug_02 || ptr_debug_03))
     return;
 }

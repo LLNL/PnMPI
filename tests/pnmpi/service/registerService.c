@@ -53,7 +53,7 @@ void PNMPI_RegistrationPoint()
 
   int ret = PNMPI_Service_RegisterService(&service);
   if (ret != PNMPI_SUCCESS)
-    pnmpi_error("Error: %d\n", ret);
+    PNMPI_Error("Error: %d\n", ret);
   printf("Registered service '%s'\n", service.name);
 }
 

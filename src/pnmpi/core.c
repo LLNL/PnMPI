@@ -56,13 +56,13 @@
  * - These macros are for legacy support only. Use the functions and macros
  *   defined in debug_io.h for new code!
  */
-#define WARNPRINT(format, ...) pnmpi_warning(format "\n", ##__VA_ARGS__);
+#define WARNPRINT(format, ...) PNMPI_Warning(format "\n", ##__VA_ARGS__);
 #define DBGPRINT2(format, ...) \
-  pnmpi_debug(PNMPI_DEBUG_MODULE, format "\n", ##__VA_ARGS__);
+  PNMPI_Debug(PNMPI_DEBUG_MODULE, format "\n", ##__VA_ARGS__);
 #define DBGPRINT3(format, ...) \
-  pnmpi_debug(PNMPI_DEBUG_CALL, format "\n", ##__VA_ARGS__);
+  PNMPI_Debug(PNMPI_DEBUG_CALL, format "\n", ##__VA_ARGS__);
 #define DBGPRINT4(format, ...) \
-  pnmpi_debug(PNMPI_DEBUG_INIT, format "\n", ##__VA_ARGS__);
+  PNMPI_Debug(PNMPI_DEBUG_INIT, format "\n", ##__VA_ARGS__);
 
 /* Enable all debug levels, as checking the debug level to print is part of
  * pnmpi_debug now. */
@@ -369,7 +369,7 @@ void pnmpi_PreInit()
     }
 
   if (conffile == NULL)
-    pnmpi_error("Config file not open.\n");
+    PNMPI_Error("Config file not open.\n");
 
   /* read configuration file and load modules */
 

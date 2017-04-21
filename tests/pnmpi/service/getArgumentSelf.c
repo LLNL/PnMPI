@@ -51,13 +51,13 @@ void PNMPI_RegistrationPoint()
    * will be used to store arguments only. */
   int self;
   if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
-    pnmpi_error("Can't get module ID.\n");
+    PNMPI_Error("Can't get module ID.\n");
   if (self != 1)
     return;
 
   const char *buffer = PNMPI_Service_GetArgumentSelf(TEST_ARGUMENT);
   if (buffer == NULL)
-    pnmpi_warning("GetArgument: not found\n");
+    PNMPI_Warning("GetArgument: not found\n");
   else
     printf("GetArgument: %s=%s\n", TEST_ARGUMENT, buffer);
 }

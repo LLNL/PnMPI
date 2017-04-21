@@ -195,7 +195,7 @@ int MPI_Pcontrol(const int level, ...)
   /* At this point it is save to get metric_invocations without any atomic
    * safety, as writes only occur in PnMPI_Registration_Point. */
   if ((metric_invocations_pcontrol % 2) != 0)
-    pnmpi_error("metric-timing can measure the time of MPI_Pcontrol in "
+    PNMPI_Error("metric-timing can measure the time of MPI_Pcontrol in "
                 "advanced mode, only.\n");
 
 
@@ -253,15 +253,15 @@ int MPI_Finalize()
   fflush(stdout);
   fflush(stderr);
   if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Barrier failed.\n");
+    PNMPI_Error("PMPI_Barrier failed.\n");
 
 
   int rank, size;
 
   if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Comm_rank failed.\n");
+    PNMPI_Error("PMPI_Comm_rank failed.\n");
   if (PMPI_Comm_size(MPI_COMM_WORLD, &size) != MPI_SUCCESS)
-    pnmpi_error("PMPI_Comm_size failed.\n");
+    PNMPI_Error("PMPI_Comm_size failed.\n");
 
 
   /* First we iterate over all ranks to print the per-rank statistics. We'll do
@@ -283,7 +283,7 @@ int MPI_Finalize()
       n++;
 
       if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-        pnmpi_error("PMPI_Barrier failed.\n");
+        PNMPI_Error("PMPI_Barrier failed.\n");
     }
 
 
@@ -296,7 +296,7 @@ int MPI_Finalize()
   if (PMPI_Reduce(&(timing_storage.{{fn_name}}), &(tmp.{{fn_name}}), 1,
                   MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD) !=
                   MPI_SUCCESS)
-    pnmpi_error("PMPI_Reduce failed for {{fn_name}} timer.\n");
+    PNMPI_Error("PMPI_Reduce failed for {{fn_name}} timer.\n");
   {{endforallfn}}
 
   if (rank == 0)

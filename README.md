@@ -579,7 +579,7 @@ these functions, see the Doxygen docs for the service header or the man-pages.
 D5) Debug message functions
 ---------------------------
 Modules may print debug messages, warnings and errors with the PnMPI API
-functions `pnmpi_debug`, `pnmpi_warning` and `pnmpi_error` defined in
+functions `PNMPI_Debug`, `PNMPI_Warning` and `PNMPI_Warning` defined in
 `pnmpi/debug_io.h`. *PnMPI will add additional informations like rank or line
 numbers to the printed messages.*
 

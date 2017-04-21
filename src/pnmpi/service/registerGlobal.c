@@ -62,7 +62,7 @@ PNMPI_Service_RegisterGlobal(const PNMPI_Global_descriptor_t *global)
     (module_globlist_p)malloc(sizeof(module_globlist_t));
   if (newglobal == NULL)
     {
-      pnmpi_warning("Can't allocate memory to register global '%s' for module "
+      PNMPI_Warning("Can't allocate memory to register global '%s' for module "
                     "at level %d.\n",
                     global->name, pnmpi_level);
       return PNMPI_NOMEM;

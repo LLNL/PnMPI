@@ -59,7 +59,7 @@ pnmpi_mpi_interface pnmpi_mpi_init_interface = PNMPI_INTERFACE_NONE;
  *  language of \ref pnmpi_mpi_interface. The value of \p s will be compared
  *  case insensitive.
  *
- * \note If \p s is not a valid MPI interface language, \ref pnmpi_error will be
+ * \note If \p s is not a valid MPI interface language, \ref PNMPI_Error will be
  *  called and PnMPI will exit immediately.
  *
  *
@@ -82,7 +82,7 @@ static pnmpi_mpi_interface convert_env(const char *value)
     return PNMPI_INTERFACE_FORTRAN;
 #endif
   else
-    pnmpi_error("Unknown MPI interface '%s'.\n", value);
+    PNMPI_Error("Unknown MPI interface '%s'.\n", value);
 }
 
 
@@ -123,7 +123,7 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
    * the MPI interface language. */
   if (system("which grep nm > /dev/null 2>&1") != 0)
     {
-      pnmpi_warning("Automatic MPI interface language detection requires the "
+      PNMPI_Warning("Automatic MPI interface language detection requires the "
                     "commands grep, nm and which in your PATH.\n");
       return PNMPI_INTERFACE_UNKNOWN;
     }
@@ -169,7 +169,7 @@ static pnmpi_mpi_interface check_nm(const char *cmd)
        * Fortran interface in this case, as this will itself call the C MPI
        * initializer and should have no side effects. However, if the user
        * observes errors, he should set the MPI interface to use explictly. */
-      pnmpi_warning("At mac OS, the MPI C and Fortran interfaces can't be "
+      PNMPI_Warning("At mac OS, the MPI C and Fortran interfaces can't be "
                     "distinguished yet. The MPI Fortran interface will be used "
                     "now. This should have no side-effects. However, if you "
                     "observe any errors, set the MPI interface to use "
@@ -242,7 +242,7 @@ pnmpi_mpi_interface pnmpi_get_mpi_interface(const char *cmd)
   const char *env = getenv("PNMPI_INTERFACE");
   if (env != NULL)
     {
-      pnmpi_debug(PNMPI_DEBUG_INIT,
+      PNMPI_Debug(PNMPI_DEBUG_INIT,
                   "Using MPI interface '%s' defined in environment.\n", env);
       return mpi_interface = convert_env(env);
     }

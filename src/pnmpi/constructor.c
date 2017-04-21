@@ -100,7 +100,7 @@ static void read_cmdline(int *argc, char ***argv)
 {
   FILE *fp = fopen("/proc/self/cmdline", "rb");
   if (fp == NULL)
-    pnmpi_error("ERROR could not open arguments\n");
+    PNMPI_Error("ERROR could not open arguments\n");
 
   int len = 1024;
   char *buffer = (char *)malloc(len * sizeof(char));
@@ -151,7 +151,7 @@ static void read_cmdline(int *argc, char ***argv)
  */
 static void read_cmdline(int *argc, char ***argv)
 {
-  pnmpi_warning("PnMPI falback constructor: No mechanism to get argc/argv!\n");
+  PNMPI_Warning("PnMPI falback constructor: No mechanism to get argc/argv!\n");
 
   *argc = 0;
   *argv = (char **)"";
@@ -207,7 +207,7 @@ void pnmpi_fallback_init()
    * these are not supported in this scenario. */
   if (pnmpi_hook_activated("PNMPI_AppStartup") ||
       pnmpi_hook_activated("PNMPI_AppShutdown"))
-    pnmpi_error("You are using modules which require the 'PNMPI_AppStartup' or "
+    PNMPI_Error("You are using modules which require the 'PNMPI_AppStartup' or "
                 "'PNMPI_AppShutdown' hooks, but your environment does not "
                 "support them. Please deactivate them or check your "
                 "environment.\n");

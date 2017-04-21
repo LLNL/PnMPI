@@ -82,7 +82,7 @@ void PNMPI_AppStartupOptional()
   char hostname[HOST_NAME_MAX];
   if (gethostname(hostname, HOST_NAME_MAX) != 0)
     {
-      pnmpi_warning("Unable to get hostname.\n");
+      PNMPI_Warning("Unable to get hostname.\n");
       hostname[0] = '\0';
     }
 

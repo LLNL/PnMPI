@@ -44,15 +44,15 @@
 void PNMPI_RegistrationPoint()
 {
 #ifdef PRINT_DEBUG
-  pnmpi_debug(PNMPI_DEBUG_MODULE, "debug\n");
+  PNMPI_Debug(PNMPI_DEBUG_MODULE, "debug\n");
 #endif
 
 #ifdef PRINT_WARNING
-  pnmpi_warning("warning\n");
+  PNMPI_Warning("warning\n");
 #endif
 
 #ifdef PRINT_ERROR
-  pnmpi_error("error\n");
+  PNMPI_Error("error\n");
 #endif
 }
 

@@ -69,7 +69,7 @@ void registerGlobal()
 
   int ret = PNMPI_Service_RegisterGlobal(&global);
   if (ret != PNMPI_SUCCESS)
-    pnmpi_error("Error: %d\n", ret);
+    PNMPI_Error("Error: %d\n", ret);
 }
 
 
@@ -87,10 +87,10 @@ void queryGlobal()
     case PNMPI_NOMODULE:
     case PNMPI_NOGLOBAL:
     case PNMPI_SIGNATURE:
-      pnmpi_warning("getGlobalByName: %s\n", PNMPI_Service_strerror(ret));
+      PNMPI_Warning("getGlobalByName: %s\n", PNMPI_Service_strerror(ret));
       break;
 
-    default: pnmpi_error("Unknown error: %d\n", ret); break;
+    default: PNMPI_Error("Unknown error: %d\n", ret); break;
     }
 }
 
@@ -101,7 +101,7 @@ void PNMPI_RegistrationPoint()
    * global. */
   int self;
   if (PNMPI_Service_GetModuleSelf(&self) != PNMPI_SUCCESS)
-    pnmpi_error("Can't get module ID.\n");
+    PNMPI_Error("Can't get module ID.\n");
   if (self == 0)
     registerGlobal();
   else
