@@ -36,12 +36,8 @@
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
+#include <pnmpi/private/pmpi.h>
 #include <pnmpi/private/pmpi_assert.h>
-
-
-#ifdef COMPILE_FOR_FORTRAN
-void pmpi_finalize_(int *ierr);
-#endif
 
 
 /** \brief Handler for the PnMPI app shutdown hooks.

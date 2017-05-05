@@ -155,14 +155,6 @@ void *find_symbol(const module_def_p module, const char *symbol_name);
 void pnmpi_print_banner();
 
 
-/*This can be removed at a later point in time, it allows convenient bugfixing
- * for a broken mpi.h of MVAPICH1 (Sierra at LLNL, April 2014, by Tobias)*/
-#ifdef PNMPI_MVAPICH1FIX
-int PMPI_Type_create_indexed_block(int, int, int *, MPI_Datatype,
-                                   MPI_Datatype *);
-int PMPI_Finalized(int *);
-#endif /*PNMPI_MVAPICH1FIX*/
-
 // Helper to check for RTLDNEXT Availability
 /**
  * Rational on RTLDNEXT usage:

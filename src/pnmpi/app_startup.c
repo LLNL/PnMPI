@@ -39,6 +39,7 @@
 #include <pnmpi/private/config.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
+#include <pnmpi/private/pmpi.h>
 #include <pnmpi/private/pmpi_assert.h>
 
 

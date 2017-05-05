@@ -46,6 +46,7 @@
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
+#include <pnmpi/private/pmpi.h>
 #include <pnmpi/private/pmpi_assert.h>
 
 
@@ -67,14 +68,6 @@
 
 
 extern void *MPIR_ToPointer(int idx);
-
-#ifdef COMPILE_FOR_FORTRAN
-void pmpi_init_(int *ierror);
-void pmpi_finalize_(int *ierr);
-#ifdef HAVE_MPI_INIT_THREAD_Fortran
-void pmpi_init_thread_(int *ierror, int *required, int *provided);
-#endif /*HAVE_MPI_INIT_THREAD_Fortran*/
-#endif
 
 
 /*-------------------------------------------------------------------*/
