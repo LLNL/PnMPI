@@ -172,12 +172,13 @@ matrix:
     # OpenMPI builds.
     - os: osx
       osx_image: xcode8.2
-      compiler: gcc-6
+      compiler: gcc
       before_install: *before_install
       before_script:
         - brew unlink mpich
         - brew install openmpi
-        - export CC=gcc-6; export CXX=g++-6
+        - export CC=$(ls /usr/local/bin/gcc-[0-9]*);
+          export CXX=$(ls /usr/local/bin/g++-[0-9]*)
         - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
           mkdir -p $TMPDIR
       env:
