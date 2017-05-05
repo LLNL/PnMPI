@@ -36,7 +36,7 @@
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
-#include <pnmpi/private/pmpi.h>
+#include <pnmpi/private/pmpi_assert.h>
 
 
 #ifdef COMPILE_FOR_FORTRAN
@@ -67,8 +67,8 @@ void pnmpi_app_shutdown()
    * PNMPI_AppShutdown hook is called under these conditions, MPI will crash, so
    * a check is performed to ensure that MPI is still active. */
   int mpi_initialized, mpi_finalized;
-  PMPI_Initialized(&mpi_initialized);
-  PMPI_Finalized(&mpi_finalized);
+  PMPI_Initialized_assert(&mpi_initialized);
+  PMPI_Finalized_assert(&mpi_finalized);
 
   if (!mpi_initialized || mpi_finalized)
     return;
@@ -82,9 +82,9 @@ void pnmpi_app_shutdown()
   if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
     {
       int res;
-      pmpi_finalize_(&res);
+      pmpi_finalize_assert_(&res);
     }
   else
 #endif
-    PMPI_Finalize();
+    PMPI_Finalize_assert();
 }

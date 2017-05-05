@@ -48,7 +48,7 @@
 
 #include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
-#include <pnmpi/private/pmpi.h>
+#include <pnmpi/private/pmpi_assert.h>
 
 
 /* OSX does not support HOST_NAME_MAX in limits.h. We'll ensure that it'll be
@@ -77,7 +77,7 @@ void PNMPI_AppStartupOptional()
   /* Get the rank of this process and print rank, hostname and PID of this rank
    * to stdout. */
   int rank;
-  PMPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  PMPI_Comm_rank_assert(MPI_COMM_WORLD, &rank);
 
   char hostname[HOST_NAME_MAX];
   if (gethostname(hostname, HOST_NAME_MAX) != 0)
@@ -97,7 +97,7 @@ void PNMPI_AppStartupOptional()
       /* Wait at this barrier, so all ranks may flush their buffers now. This
        * will prevent for ugly output at stdout. */
       fflush(stdout);
-      PMPI_Barrier(MPI_COMM_WORLD);
+      PMPI_Barrier_assert(MPI_COMM_WORLD);
 
 
       int wait = atoi(getenv("WAIT_AT_STARTUP"));

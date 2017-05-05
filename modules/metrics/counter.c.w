@@ -41,6 +41,7 @@
 #include <mpi.h>
 #include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
+#include <pnmpi/private/pmpi_assert.h>
 #include <pnmpi/xmpi.h>
 
 #include "atomic.h"
@@ -155,16 +156,13 @@ int MPI_Finalize()
    * between the statistics output. */
   fflush(stdout);
   fflush(stderr);
-  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    PNMPI_Error("PMPI_Barrier failed.\n");
+  PMPI_Barrier_assert(MPI_COMM_WORLD);
 
 
   int rank, size;
 
-  if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
-    PNMPI_Error("PMPI_Comm_rank failed.\n");
-  if (PMPI_Comm_size(MPI_COMM_WORLD, &size) != MPI_SUCCESS)
-    PNMPI_Error("PMPI_Comm_size failed.\n");
+  PMPI_Comm_rank_assert(MPI_COMM_WORLD, &rank);
+  PMPI_Comm_size_assert(MPI_COMM_WORLD, &size);
 
   /* Iterate over all ranks and tell one rank after another to print his
    * statistics. The per-rank statistics will be reduced to rank 0 to get the
@@ -190,17 +188,14 @@ int MPI_Finalize()
       /* Wait until all ranks have finished processing rank n.
        *
        * This solution was inspired by: http://stackoverflow.com/a/5310506 */
-      if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-        PNMPI_Error("PMPI_Barrier failed.\n");
+      PMPI_Barrier_assert(MPI_COMM_WORLD);
     }
 
 
   /* Reduce statistics of all ranks to rank 0. */
   {{forallfn fn_name MPI_Finalize}}
-    if (PMPI_Reduce(&(counters.{{fn_name}}), &(tmp.{{fn_name}}), 1,
-                    MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD)
-        != MPI_SUCCESS)
-      PNMPI_Error("PMPI_Reduce failed for %s counter.\n", "{{fn_name}}");
+    PMPI_Reduce_assert(&(counters.{{fn_name}}), &(tmp.{{fn_name}}), 1,
+                       MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
   {{endforallfn}}
 
   if (rank == 0) {

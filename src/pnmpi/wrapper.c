@@ -46,6 +46,7 @@
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
+#include <pnmpi/private/pmpi_assert.h>
 
 
 /* Map the old debug macros to the new debug functions and macros.
@@ -135,9 +136,7 @@ void mpi_init_(int *ierr)
    * pnmpi_app_startup), this won't be done a second time. */
   if (!pnmpi_init_done)
     {
-      pmpi_init_(ierr);
-      if (*ierr != MPI_SUCCESS)
-        PNMPI_Error("Failed to initialize MPI.\n");
+      pmpi_init_assert_(ierr);
       pnmpi_init_done = 1;
     }
 
@@ -230,8 +229,7 @@ int MPI_Init(int *argc, char ***argv)
    * pnmpi_app_startup), this won't be done a second time. */
   if (!pnmpi_init_done)
     {
-      if (PMPI_Init(argc, argv) != MPI_SUCCESS)
-        PNMPI_Error("Failed to initialize MPI.\n");
+      PMPI_Init_assert(argc, argv);
       pnmpi_init_done = 1;
     }
 
@@ -358,9 +356,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
           *required = max_level;
         }
 
-      pmpi_init_thread_(required, provided, ierr);
-      if (*ierr != MPI_SUCCESS)
-        PNMPI_Error("Failed to initialize MPI.\n");
+      pmpi_init_thread_assert_(required, provided, ierr);
       pnmpi_init_done = 1;
     }
 
@@ -467,8 +463,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
           required = max_level;
         }
 
-      if (PMPI_Init_thread(argc, argv, required, provided) != MPI_SUCCESS)
-        PNMPI_Error("Failed to initialize MPI.\n");
+      PMPI_Init_thread_assert(argc, argv, required, provided);
       pnmpi_init_done = 1;
     }
 

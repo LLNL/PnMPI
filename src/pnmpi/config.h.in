@@ -35,4 +35,17 @@
 #cmakedefine ENABLE_FORTRAN
 
 
+/* Note: As some values are still defined in pnmpi-config.h, there should be
+ * checks, if the following variables are defined yet. Itherwise the compiler
+ * will throw warnings. */
+
+#ifndef HAVE_MPI_INIT_THREAD_C
+#cmakedefine HAVE_MPI_INIT_THREAD_C
+#endif
+
+#ifndef HAVE_MPI_INIT_THREAD_Fortran
+#cmakedefine HAVE_MPI_INIT_THREAD_Fortran
+#endif
+
+
 #endif

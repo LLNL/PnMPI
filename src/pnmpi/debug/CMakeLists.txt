@@ -47,9 +47,9 @@ pnmpi_add_private_header(print.h)
 # Generate a new header for PMPI functions. This header may be used as shortcut
 # for calling the function and printing an error if the error code does not
 # match MPI_SUCCESS.
-add_wrapped_file("../header/pnmpi/private/pmpi.h" pmpi.h.w -s)
+add_wrapped_file("../header/pnmpi/private/pmpi_assert.h" pmpi_assert.h.w -s)
 add_custom_target(pnmpi_debug_pmpi
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/../header/pnmpi/private/pmpi.h")
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/../header/pnmpi/private/pmpi_assert.h")
 
 
 # Install the public man pages for this object.

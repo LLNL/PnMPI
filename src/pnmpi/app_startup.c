@@ -33,13 +33,13 @@
 #include <mpi.h>
 
 #include "core.h"
-#include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/config.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
+#include <pnmpi/private/pmpi_assert.h>
 
 
 #if defined(HAVE_MPI_INIT_THREAD_C) || defined(HAVE_MPI_INIT_THREAD_Fortran)
@@ -84,7 +84,6 @@ void pnmpi_app_startup(int argc, char **argv)
 
   /* Initialize MPI depending on the MPI interface used by the instrumented
    * application. */
-  int err;
   switch (pnmpi_get_mpi_interface(argv[0]))
     {
     case PNMPI_INTERFACE_C:
@@ -92,13 +91,12 @@ void pnmpi_app_startup(int argc, char **argv)
       PNMPI_Debug(PNMPI_DEBUG_INIT, "Initialize C MPI interface ...\n");
 
 #ifdef HAVE_MPI_INIT_THREAD_C
-      err = PMPI_Init_thread(&argc, &argv, required,
-                             &pnmpi_mpi_thread_level_provided);
-      if (err == MPI_SUCCESS)
-        PNMPI_Debug(PNMPI_DEBUG_INIT, "Provided threading level: %d\n",
-                    pnmpi_mpi_thread_level_provided);
+      PMPI_Init_thread_assert(&argc, &argv, required,
+                              &pnmpi_mpi_thread_level_provided);
+      PNMPI_Debug(PNMPI_DEBUG_INIT, "Provided threading level: %d\n",
+                  pnmpi_mpi_thread_level_provided);
 #else
-      err = PMPI_Init(&argc, &argv);
+      PMPI_Init_assert(&argc, &argv);
 #endif
       break;
 
@@ -108,13 +106,14 @@ void pnmpi_app_startup(int argc, char **argv)
     case PNMPI_INTERFACE_FORTRAN:
       PNMPI_Debug(PNMPI_DEBUG_INIT, "Initialize Fortran MPI interface ...\n");
 
+      int err;
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-      pmpi_init_thread_(&required, &pnmpi_mpi_thread_level_provided, &err);
-      if (err == MPI_SUCCESS)
-        PNMPI_Debug(PNMPI_DEBUG_INIT, "Provided threading level: %d\n",
-                    pnmpi_mpi_thread_level_provided);
+      pmpi_init_thread_assert_(&required, &pnmpi_mpi_thread_level_provided,
+                               &err);
+      PNMPI_Debug(PNMPI_DEBUG_INIT, "Provided threading level: %d\n",
+                  pnmpi_mpi_thread_level_provided);
 #else
-      pmpi_init_(&err);
+      pmpi_init_assert_(&err);
 #endif
       break;
 #endif
@@ -122,9 +121,6 @@ void pnmpi_app_startup(int argc, char **argv)
     default:
       PNMPI_Error("Automatic detection of the used MPI interface failed.\n");
     }
-
-  if (err != MPI_SUCCESS)
-    PNMPI_Error("MPI initialization failed.\n");
   pnmpi_init_done = 1;
 
 

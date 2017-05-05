@@ -34,6 +34,7 @@
 #include <mpi.h>
 #include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
+#include <pnmpi/private/pmpi_assert.h>
 #include <pnmpi/private/tls.h>
 #include <pnmpi/service.h>
 #include <pnmpi/xmpi.h>
@@ -252,16 +253,13 @@ int MPI_Finalize()
    * between the statistics output. */
   fflush(stdout);
   fflush(stderr);
-  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    PNMPI_Error("PMPI_Barrier failed.\n");
+  PMPI_Barrier_assert(MPI_COMM_WORLD);
 
 
   int rank, size;
 
-  if (PMPI_Comm_rank(MPI_COMM_WORLD, &rank) != MPI_SUCCESS)
-    PNMPI_Error("PMPI_Comm_rank failed.\n");
-  if (PMPI_Comm_size(MPI_COMM_WORLD, &size) != MPI_SUCCESS)
-    PNMPI_Error("PMPI_Comm_size failed.\n");
+  PMPI_Comm_rank_assert(MPI_COMM_WORLD, &rank);
+  PMPI_Comm_size_assert(MPI_COMM_WORLD, &size);
 
 
   /* First we iterate over all ranks to print the per-rank statistics. We'll do
@@ -282,8 +280,7 @@ int MPI_Finalize()
         }
       n++;
 
-      if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-        PNMPI_Error("PMPI_Barrier failed.\n");
+      PMPI_Barrier_assert(MPI_COMM_WORLD);
     }
 
 
@@ -293,10 +290,8 @@ int MPI_Finalize()
   init_counters(&tmp);
 
   {{forallfn fn_name}}
-  if (PMPI_Reduce(&(timing_storage.{{fn_name}}), &(tmp.{{fn_name}}), 1,
-                  MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD) !=
-                  MPI_SUCCESS)
-    PNMPI_Error("PMPI_Reduce failed for {{fn_name}} timer.\n");
+  PMPI_Reduce_assert(&(timing_storage.{{fn_name}}), &(tmp.{{fn_name}}), 1,
+                     MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
   {{endforallfn}}
 
   if (rank == 0)
