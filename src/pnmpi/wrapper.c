@@ -289,7 +289,7 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
   /* If the PNMPI_AppStartup hook is activated, we've initialized MPI before.
    * Restore the provided value, MPI_Init_thread gave us in the constructor. */
-  if (pnmpi_hook_activated("PNMPI_AppStartup"))
+  if (pnmpi_hook_activated("PNMPI_AppStartup", 0))
     *provided = pnmpi_mpi_thread_level_provided;
 
   inc_pnmpi_mpi_level();
@@ -568,8 +568,8 @@ int MPI_Finalize(void)
    * An extra check if the constructors are working is not required, as
    * pnmpi_fallback_init will abort PnMPI, if the destructors for this hook
    * wouldn't be called. */
-  if (pnmpi_hook_activated("PNMPI_AppShutdown") ||
-      pnmpi_hook_activated("PNMPI_AppShutdownOptional"))
+  if (pnmpi_hook_activated("PNMPI_AppShutdown", 0) ||
+      pnmpi_hook_activated("PNMPI_AppShutdownOptional", 0))
     return MPI_SUCCESS;
 
   inc_pnmpi_mpi_level();

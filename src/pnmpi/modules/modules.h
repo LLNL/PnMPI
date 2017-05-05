@@ -37,8 +37,8 @@
 
 int pnmpi_valid_modhandle(const PNMPI_modHandle_t);
 
-int pnmpi_hook_activated(const char *hook);
-void pnmpi_call_hook(const char *hook);
+int pnmpi_hook_activated(const char *hook, int all_modules);
+void pnmpi_call_hook(const char *hook, int all_modules);
 
 int pnmpi_max_module_threading_level();
 

@@ -97,5 +97,5 @@ void pnmpi_fallback_fini()
 
   /* Call the optional version of PNMPI_AppShutdown, that may be called at
    * initialization time. */
-  pnmpi_call_hook("PNMPI_AppShutdownOptional");
+  pnmpi_call_hook("PNMPI_AppShutdownOptional", 0);
 }

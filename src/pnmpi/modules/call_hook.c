@@ -33,46 +33,60 @@
 #include <pnmpi/private/attributes.h>
 
 
-/** \brief Call \p hook in all modules.
+/** \brief Call \p hook in loaded modules.
  *
- * \details This function iterates over all modules and calls the \p hook in all
- *  of them.
+ * \details This function iterates over the modules in the current stack and
+ *  calls the \p hook in all of them.
+ *
+ *
+ * \param hook Name of the hook to be called.
+ * \param all_modules If set to non-zero, \p hook will be called in all modules,
+ *  not just those in the current stack.
  *
  *
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_call_hook(const char *hook)
+void pnmpi_call_hook(const char *hook, int all_modules)
 {
+  PNMPI_Debug(PNMPI_DEBUG_MODULE, "Calling %s hook in %s.\n", hook,
+              all_modules ? "all modules" : "the current stack");
+
+
   /* Save the current PnMPI level to restore it later. */
   int pnmpi_level_restore = pnmpi_level;
 
+  /* If the hook should be called in all modules instead of just those in the
+   * current stack, reset the pnmpi_level to 0, so the following loop will start
+   * at the first module. */
+  if (all_modules)
+    pnmpi_level = 0;
 
-  /* Iterate over all modules in all stacks. */
-  size_t i;
-  for (i = 0; i < modules.num; i++)
+  /* Iterate over the array of modules. */
+  for (; pnmpi_level < modules.num; pnmpi_level++)
     {
-      /* Stack delimiter may be ignored: they are no real modules, so they can't
-       * have any hook functions defined. */
-      if (modules.module[i]->stack_delimiter)
-        continue;
-
-      void (*sym)() = (void (*)())find_symbol(modules.module[i], hook);
-      if (sym == NULL)
+      /* If the current level is a stack delimiter, this level should be
+       * ignored. If the hook should be called in all modules, we'll go to the
+       * next level, otherwise the loop will be exited. */
+      if (modules.module[pnmpi_level]->stack_delimiter)
         {
-          PNMPI_Debug(PNMPI_DEBUG_MODULE, "Module %s has no '%s' hook.\n",
-                      modules.module[i]->name, hook);
-          continue;
+          if (all_modules)
+            continue;
+          else
+            break;
+        };
+
+      /* Check if the module provides the required hook and call it if it's
+       * available. */
+      void (*sym)() =
+        (void (*)())find_symbol(modules.module[pnmpi_level], hook);
+      if (sym != NULL)
+        {
+          PNMPI_Debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n",
+                      hook, modules.module[pnmpi_level]->name);
+          sym();
         }
-
-      /* Call the hook's symbol. Before calling the hook, the PnMPI level will
-       * be adjusted, so the hooks function may use service functions. */
-      PNMPI_Debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n", hook,
-                  modules.module[i]->name);
-      pnmpi_level = i;
-      sym();
     }
-
 
   /* Restore PnMPI level. */
   pnmpi_level = pnmpi_level_restore;

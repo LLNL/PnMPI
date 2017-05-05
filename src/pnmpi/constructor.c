@@ -205,8 +205,8 @@ void pnmpi_fallback_init()
 
   /* Check if the user is using PNMPI_AppStartup or PNMPI_AppShutdown hooks, due
    * these are not supported in this scenario. */
-  if (pnmpi_hook_activated("PNMPI_AppStartup") ||
-      pnmpi_hook_activated("PNMPI_AppShutdown"))
+  if (pnmpi_hook_activated("PNMPI_AppStartup", 0) ||
+      pnmpi_hook_activated("PNMPI_AppShutdown", 0))
     PNMPI_Error("You are using modules which require the 'PNMPI_AppStartup' or "
                 "'PNMPI_AppShutdown' hooks, but your environment does not "
                 "support them. Please deactivate them or check your "
@@ -214,5 +214,5 @@ void pnmpi_fallback_init()
 
   /* Call the optional version of PNMPI_AppStartup, that may be called at
    * initialization time. */
-  pnmpi_call_hook("PNMPI_AppStartupOptional");
+  pnmpi_call_hook("PNMPI_AppStartupOptional", 0);
 }

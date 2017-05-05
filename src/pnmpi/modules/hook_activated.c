@@ -32,11 +32,15 @@
 #include <pnmpi/private/attributes.h>
 
 
-/** \brief Check if \p hook is activated in any module.
+/** \brief Check if \p hook is activated in loaded modules.
  *
- * \details This function iterates over all modules and checks, if \p hook is
- *  defined in any of them.
+ * \details This function iterates the modules in the current stack and checks,
+ *  if \p hook is defined in any of them.
  *
+ *
+ * \param hook Name of the hook.
+ * \param all_modules If set to non-zero, \p hook will be searched in all
+ *  modules, not just those in the current stack.
  *
  * \return If any module implements the \p hook, a non-zero value will be
  *  returned, otherwise zero.
@@ -45,15 +49,21 @@
  * \private
  */
 PNMPI_INTERNAL
-int pnmpi_hook_activated(const char *hook)
+int pnmpi_hook_activated(const char *hook, int all_modules)
 {
   size_t i;
-  for (i = 0; i < modules.num; i++)
+  for (i = (all_modules) ? 0 : pnmpi_level; i < modules.num; i++)
     {
-      /* Stack delimiter may be ignored: they are no real modules, so they can't
-       * have any hook functions defined. */
-      if (modules.module[i]->stack_delimiter)
-        continue;
+      /* If the current level is a stack delimiter, this level should be
+       * ignored. If the hook should be searched in all modules, we'll go to the
+       * next level, otherwise the loop will be exited. */
+      if (modules.module[pnmpi_level]->stack_delimiter)
+        {
+          if (all_modules)
+            continue;
+          else
+            break;
+        };
 
       if (find_symbol(modules.module[i], hook) != NULL)
         return 1;
