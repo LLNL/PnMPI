@@ -59,7 +59,8 @@ int main(int argc, char **argv)
  *
  * DEPENDS: testbin-mpi-wrapper
  * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@/../../src @MPI_C_INCLUDE_PATH@
- * LINK: @MPI_C_LINK_FLAGS@ @MPI_C_LIBRARIES@
+ * LINK: @MPI_C_LIBRARIES@
+ * LINK_FLAGS: @MPI_C_LINK_FLAGS@
  *
  * RUN: @PNMPIZE@ -c @PNMPICONF@ @BINARY@
  *

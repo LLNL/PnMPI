@@ -69,7 +69,8 @@ C     All ranks send their rank to rank 0 which then answers the sending rank.
 
 C COMPILE_INCLUDES: @MPI_Fortran_INCLUDE_PATH@
 C COMPILE_FLAGS: @MPI_Fortran_COMPILE_FLAGS@
-C LINK: @MPI_Fortran_LINK_FLAGS@ @MPI_Fortran_LIBRARIES@
+C LINK: @MPI_Fortran_LIBRARIES@
+C LINK_FLAGS: @MPI_Fortran_LINK_FLAGS@
 C
 C RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 2
 C RUN:     @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@

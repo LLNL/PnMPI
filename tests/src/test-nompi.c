@@ -44,5 +44,5 @@ int main(int argc, char **argv)
 }
 
 
-/* LSAN: true
+/* lsan_enabled: true
  */
