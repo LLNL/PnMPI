@@ -226,6 +226,16 @@ matrix:
       env:
         - OPTIMIZED
 
+    # Build with Python 3 instead of the default Python 2 installed in Travis.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DPYTHON_EXECUTABLE=$(which python3)"
+      env:
+        - PYTHON_3
+
     # Check release packaging. This will only package the current version,
     # unpack and change into this directory. The build will be done by the
     # default script below.
