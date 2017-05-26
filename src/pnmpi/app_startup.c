@@ -130,4 +130,8 @@ void pnmpi_app_startup(int argc, char **argv)
 
   pnmpi_call_hook("PNMPI_AppStartup", 0);
   pnmpi_call_hook("PNMPI_AppStartupOptional", 0);
+
+
+  /* PnMPI is initialized now and the MPI wrappers can be used. */
+  pnmpi_initialization_complete = 1;
 }
