@@ -41,6 +41,7 @@ PnMPI uses CMake for its build system.
 
 
 A1) Dependencies
+----------------
 
   * [CMake](http://www.cmake.org) (at least version 2.8.11.2 is required).
   * [binutils](https://www.gnu.org/software/binutils/) for the patcher utility
@@ -54,6 +55,14 @@ A1) Dependencies
     *(optional)*
   * An MPI implementation with header files. So far, PnMPI has been tested with
     MPICH, OpenMPI and IntelMPI.
+
+In addition, PnMPI uses git submodules for several CMake modules,
+[wrap](https://github.com/LLNL/wrap) and
+[adept-utils](https://github.com/LLNL/adept-utils). While the deploy source
+tarball includes all required submodules, git users need to checkout them with
+the following command in the root of the cloned repository:
+
+    git submodule update --init --recursive
 
 
 A2) Configure the project
