@@ -13,8 +13,7 @@ PnMPI is a dynamic MPI tool infrastructure that builds on top of the
 standardized PMPI interface. It allows the user to
 
   * run multiple PMPI tools concurrently
-  * activate PMPI tools without relinking by just changing a
-    configuration file
+  * activate PMPI tools without relinking by just changing a configuration file
   * multiplex toolsets during a single run
   * write cooperative PMPI tools
 
@@ -27,7 +26,7 @@ So far, this software has mainly been tested on Linux clusters with RHEL-based
 OS distributions as well as IBM's BG/P systems. Continuous integration tests run
 at Ubuntu 12.04 and 14.04, OSX El Capitan and macOS Sierra. Some preliminary
 experiments have also included SGI Altix systems. Ports to other platforms
-should be straightforward, but this is not extensively tested. Please fill an
+should be straightforward, but this is not extensively tested. Please file an
 [issue](https://github.com/LLNL/PnMPI/issues) if you run into problems porting
 PnMPI or if you successfully deployed PnMPI on a new platform.
 
@@ -96,7 +95,7 @@ into it, an run `cmake` there.  For example:
 
 Here, `<pnmpi>` is the top-level directory in the PnMPI tree. Note that when you
 run CMake this way, you need to supply the path to the PnMPI *source* directory
-as the last parameter.  Here, that's just `..` as we are building in a
+as the last parameter. Here, that's just `..` as we are building in a
 subdirectory of the source directory. Once you run CMake, simply run make and
 make install as before:
 
@@ -117,7 +116,7 @@ See the documentation in [FindMPI.cmake](cmakemodules/legacy/FindMPI.cmake) for
 more details on MPI build configuration options.
 
 If you have problems, you may want to build PnMPI in debug mode. You can do this
-by supplying an additional paramter to `cmake`, e.g.:
+by supplying an additional parameter to `cmake`, e.g.:
 
     cmake \
       -DCMAKE_INSTALL_PREFIX=/path/to/install/destination \
@@ -155,17 +154,17 @@ features by adding the following flags to the `cmake` configuration command.
     option only for performance optimization.*
   * `-DENABLE_DEMO=OFF`: Don't build the demo programs.
   * `-DENABLE_MODULES=OFF`: Don't build the built-in modules.
-  * `-DENABLE_TESTING=OFF`: Build the test cases and enable the `test` target.
+  * `-DENABLE_TESTING=ON`: Build the test cases and enable the `test` target.
   * `-DENABLE_THREAD_SAFETY=OFF`: Build PnMPI without thread safety. PnMPI will
     limit the MPI threading level if this option is enabled, so it still will be
     thread safe. *Disable this option only for performance optimization.*
   * [CMake-codecov](https://github.com/RWTH-HPC/CMake-codecov) provides the
-    additional `-DENABLE_COVERAGE=ON` flag to enable code coverage. You can
+    additional `-DENABLE_COVERAGE=ON` option to enable code coverage. You can
     generate coverage reports with the `gcov` and `lcov` targets. Read their
     [README](https://github.com/RWTH-HPC/CMake-codecov/blob/master/README.md)
     for more information.
   * [cmake-sanitizers](https://github.com/arsenm/sanitizers-cmake) provides
-    additional flags to enable sanitizers for all PnMPI targets. E.g. to enable
+    additional options to enable sanitizers for all PnMPI targets. E.g. for
     AddressSanitizer add `-DSANITIZE_ADDRESS=ON`. Read their
     [README](https://github.com/arsenm/sanitizers-cmake/blob/master/README.md)
     for more information.
@@ -221,9 +220,9 @@ A6) Environment setup
 -----------------------
 You will need to set one environment variable to run PnMPI:
 
-  * `PNMPI_LIB_PATH` should be set to the full path to the `lib/pnmpi-modules`
-    directory in your PnMPI installation directory. This enables the runtime to
-    find its modules.
+  * `PNMPI_LIB_PATH` should be set to the full path to the PnMPI modules
+    directory. If not set, the default path of your installation directory will
+    be used.
   * `PNMPI_CONF` should be set to the full to the path of the PnMPI
     configuration file to be used.
   * `PNMPI_BE_SILENT` will silence the PnMPI banner. For benchmark purposes you
@@ -262,21 +261,31 @@ flag.
 
 
     :~$ mpiexec -np 2 pnmpi -c pnmpi.conf a.out
-    0:
-    0:            ---------------------------
-    0:           | P^N-MPI Interface         |
-    0:           | Martin Schulz, 2005, LLNL |
-    0:            ---------------------------
-    0:
-    0: Number of modules: 4
-    0: Pcontrol Setting:  0
+      _____   _ __   __  __  _____   _____
+     |  __ \ | '_ \ |  \/  ||  __ \ |_   _|
+     | |__) || | | || \  / || |__) |  | |
+     |  ___/ |_| |_|| |\/| ||  ___/   | |
+     | |            | |  | || |      _| |_
+     |_|            |_|  |_||_|     |_____|
+
+
+     Application:
+      MPI interface: C
+
+     Global settings:
+      Pcontrol: 5
+
+     Loaded modules:
+      Stack default:
+        sample1 (Pcontrol: 1)
+      Stack foo:
     ...
 
 
 A7) RPATH settings
 -----------------------
 By default, the build adds the paths of all dependency libraries to the rpath of
-the installed PnMPI library.  This is the preferred behavior on LLNL systems,
+the installed PnMPI library. This is the preferred behavior on LLNL systems,
 where many packages are installed and `LD_LIBRARY_PATH` usage can become
 confusing.
 
@@ -301,7 +310,7 @@ If your application is dynamically linked against the MPI library, you may use
 PnMPI by simply preloading it via `LD_PRELOAD` (or `DYLD_INSERT_LIBRARIES` at
 macOS).
 
-Instead of manually preloading, you may use the PnMPI invocation tool at
+Instead of manually preloading, you may use the PnMPI invocation tool in
 `bin/pnmpi`.
 
 B2) Static linking
@@ -312,7 +321,7 @@ against the static MPI library.
 **Note:** By default the linker will only link functions used by your code, so
 most of the API functions would not get linked into your binary. PnMPI
 implements a helper function to force the linker to link all required functions
-into the binary. However there might be compilations, if not all functions
+into the binary. However there might be complications, if not all functions
 wrapped by the modules are used by the application. You should tell the linker
 to link the whole PnMPI archive explicitly:
 
@@ -441,7 +450,7 @@ The source for all modules is stored in separate directories inside the
   execution will be delayed up to `value` seconds, so you may attach with a
   debugger in that time.
 
-**Note:** All modules should be compiled with the same MPI as PnMPI is build
+**Note:** All modules must be compiled with the same MPI as PnMPI is build
 with. Modules should only be linked to their required libraries, except PnMPI
 and MPI, as these routines will be provided by PnMPI when the module will be
 loaded.
@@ -451,7 +460,7 @@ D) Building your own modules with CMake
 =======================================
 PnMPI installs CMake build files with its distribution to allow external
 projects to quickly build MPI tool modules. The build files allow external
-tools to use PnMPI, the pnmpi-patch utility, PnMPI's wrapper generator, and
+tools to use PnMPI, the `pnmpi-patch` utility, PnMPI's wrapper generator, and
 PnMPI's dependency libraries.
 
 To create a new PnMPI module, simply create a new project that looks something
@@ -467,7 +476,7 @@ another file called `wrapper.c`, which contains MPI interceptor functions for
 the tool library. `foo.c` is additional code needed for the tool library.
 `CMakeLists.txt` is the CMake build file.
 
-Your CMakeLists.txt file should start with something like this:
+Your `CMakeLists.txt` file should start with something like this:
 
 ```CMake
 project(my-module C)
@@ -529,13 +538,15 @@ module like so:
 This should find PnMPI on your system and build your module, assuming that you
 have your environment set up correctly.
 
+
 D2) Limiting the threading level
 --------------------------------
 If your module is not thread safe or is only able to process a limited amount of
 threading, it may provide a const integer named `PNMPI_SupportedThreadingLevel`
 to define the maximum provided threading level of this module.
 
-E.g. if your module supports no thread safety at all, your could be:
+E.g. if your module supports no thread safety at all, add the following lines to
+your module's code:
 
 ```C
 #include <mpi.h>
@@ -544,7 +555,7 @@ E.g. if your module supports no thread safety at all, your could be:
 const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SINGLE;
 ```
 
-Include the `pnmpi/hooks.h` header for type safety.
+*Note: Include the `pnmpi/hooks.h` header for type safety.*
 
 
 D3) Module hooks
@@ -812,7 +823,7 @@ I) Contact
 ==========
 For more information or in case of questions, please contact
 [Martin Schulz](schulzm@llnl.gov) or
-[fill out an issue](https://github.com/LLNL/PnMPI/issues/new).
+[file an issue](https://github.com/LLNL/PnMPI/issues/new).
 
 
 Copyright
