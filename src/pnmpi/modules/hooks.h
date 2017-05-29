@@ -86,20 +86,6 @@ extern const char *PNMPI_ModuleName;
  */
 void PNMPI_RegistrationPoint();
 
-/** \brief Called after all modules have been registered.
- *
- * \details As \ref PNMPI_RegistrationPoint this hook is called after the module
- *  has been loaded, but after all modules have registered itself. Modules may
- *  interact with other modules in this hook.
- *
- * \note MPI is not initialized when this hook is called. You MUST NOT use any
- *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
- *
- *
- * \memberof pnmpi_module_hooks
- */
-void PNMPI_RegistrationComplete();
-
 /** \brief Called just before the applications main is started.
  *
  * \details This hook will be called just before the applications main is

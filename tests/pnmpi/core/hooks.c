@@ -54,7 +54,6 @@ void HOOKNAME()
 
 
 /* CONFIGS: RegistrationPoint
- * CONFIGS: RegistrationComplete
  * CONFIGS: PNMPI_AppStartup PNMPI_AppStartupOptional
  * CONFIGS: PNMPI_AppShutdown PNMPI_AppShutdownOptional
  *
@@ -69,9 +68,6 @@ void HOOKNAME()
  *
  * COMPILE_FLAGS-RegistrationPoint: -DHOOKNAME=PNMPI_RegistrationPoint
  * PASS-RegistrationPoint: PNMPI_RegistrationPoint hit.
- *
- * COMPILE_FLAGS-RegistrationComplete: -DHOOKNAME=PNMPI_RegistrationComplete
- * PASS-RegistrationComplete: PNMPI_RegistrationComplete hit.
  *
  * COMPILE_FLAGS-PNMPI_AppStartup: -DHOOKNAME=PNMPI_AppStartup
  * PASS-PNMPI_AppStartup: PNMPI_AppStartup hit.

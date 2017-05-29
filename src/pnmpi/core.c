@@ -814,7 +814,4 @@ void pnmpi_PreInit()
   /* fix variables */
   pnmpi_max_level = modules.num;
   pnmpi_level = 0;
-
-  // Notify all modules that we are done initializing PnMPI
-  pnmpi_call_hook(PNMPI_INITCOMPLETE_POINT, 1);
 }

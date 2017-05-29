@@ -568,8 +568,6 @@ type safety. These hooks are:
 * `PNMPI_RegistrationPoint`: This hook will be called just after the module has
   been loaded. It may be used to register the name of the module, services
   provided by the module, etc. *(Called in all modules)*
-* `PNMPI_RegistrationComplete`: This hook will be called after PnMPI is
-  initialized and all modules have been registered. *(Called in all modules)*
 * `PNMPI_AppStartup`: If a module provides an `PNMPI_AppStartup` hook, PnMPI
   will initialize MPI in the applications constructor *before* `main` is started
   and call the hook. *(Called in the default stack)*
