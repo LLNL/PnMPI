@@ -40,7 +40,7 @@ include(GNUInstallDirs)
 # \param SYMBOL The name of a symbol in the module.
 #
 function (pnmpi_add_man MODULE SYMBOL)
-  if (NOT BUILD_DOC AND NOT BUILD_DOC_INTERNAL)
+  if (NOT BUILD_DOC)
     return()
   endif ()
 
@@ -94,7 +94,7 @@ endfunction ()
 # \param CLASS The class name used in Doxygen.
 #
 function (pnmpi_add_module_man MODNAME CLASS)
-  if (NOT BUILD_DOC AND NOT BUILD_DOC_INTERNAL)
+  if (NOT BUILD_DOC)
     return()
   endif ()
 

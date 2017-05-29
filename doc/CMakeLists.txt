@@ -30,21 +30,19 @@
 include(GNUInstallDirs)
 include(PnMPI_doc)
 
-find_package(Doxygen REQUIRED)
-
 
 #
 # Options
 #
 option("BUILD_DOC" "Build HTML documentation" Off)
-option("BUILD_DOC_INTERNAL"
-  "Build HTML documentation including private functions" Off)
-
+if (BUILD_DOC)
+  option("BUILD_DOC_INTERNAL" "Including private documentation." Off)
+endif ()
 
 #
 # Generate Doxygen docs.
 #
-if (BUILD_DOC OR BUILD_DOC_INTERNAL)
+if (BUILD_DOC)
   find_package(Doxygen REQUIRED)
 
   if (NOT DOXYGEN_DOT_EXECUTABLE)
