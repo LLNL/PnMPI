@@ -47,7 +47,8 @@
  *  hooks like \ref pnmpi_module_hooks::PNMPI_AppStartup.
  *
  *
- * \param hook Name of the hook to call.
+ * \param hook Name of the hook to call. Use \ref PNMPI_HOOK_SAME for recursing
+ *  in the current hook.
  *
  *
  * \ingroup PNMPI_Service_CallHook
@@ -66,7 +67,8 @@ void PNMPI_Service_CallHook(const char *hook)
  *  \ref PNMPI_Service_CallHook, except a \p stack to switch on can be defined.
  *
  *
- * \param hook Name of the hook to call.
+ * \param hook Name of the hook to call. Use \ref PNMPI_HOOK_SAME for recursing
+ *  in the current hook.
  * \param stack At which stack the hook should be called.
  *
  *

@@ -37,7 +37,7 @@
 
 
 #ifndef HOOK_NAME
-#define HOOK_NAME "PNMPI_AppStartup"
+#define HOOK_NAME PNMPI_HOOK_SAME
 #endif
 
 

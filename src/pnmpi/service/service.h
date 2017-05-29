@@ -114,6 +114,12 @@ typedef struct PNMPI_Service_descriptor_d
 } PNMPI_Service_descriptor_t;
 /// \}
 
+/** \addtogroup PNMPI_Service_CallHook
+ * \{
+ */
+#define PNMPI_HOOK_SAME __FUNCTION__
+/// \}
+
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
  * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
