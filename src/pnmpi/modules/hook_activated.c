@@ -30,6 +30,7 @@
 
 #include "core.h"
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/modules.h>
 
 
 /** \brief Check if \p hook is activated in loaded modules.
@@ -49,17 +50,19 @@
  * \private
  */
 PNMPI_INTERNAL
-int pnmpi_hook_activated(const char *hook, int all_modules)
+int pnmpi_hook_activated(const char *hook,
+                         enum pnmpi_call_hook_mode all_modules)
 {
   size_t i;
-  for (i = (all_modules) ? 0 : pnmpi_level; i < modules.num; i++)
+  for (i = (all_modules == PNMPI_CALL_HOOK_ALL_MODULES) ? 0 : pnmpi_level;
+       i < modules.num; i++)
     {
       /* If the current level is a stack delimiter, this level should be
        * ignored. If the hook should be searched in all modules, we'll go to the
        * next level, otherwise the loop will be exited. */
       if (modules.module[pnmpi_level]->stack_delimiter)
         {
-          if (all_modules)
+          if (all_modules == PNMPI_CALL_HOOK_ALL_MODULES)
             continue;
           else
             break;

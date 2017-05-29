@@ -568,6 +568,13 @@ type safety. These hooks are:
 * `PNMPI_RegistrationPoint`: This hook will be called just after the module has
   been loaded. It may be used to register the name of the module, services
   provided by the module, etc. *(Called in all modules)*
+
+In addition the following hooks will behave like the MPI function wrappers. They
+will be called in the first module providing them at the current stack and each
+module has to call `PNMPI_Service_CallHook()` to recurse into the next level.
+The stack may be changed with `PNMPI_Service_CallHook_NewStack()`. These hooks
+are:
+
 * `PNMPI_AppStartup`: If a module provides an `PNMPI_AppStartup` hook, PnMPI
   will initialize MPI in the applications constructor *before* `main` is started
   and call the hook *(in the default stack)*. If PnMPI is unable to call it
@@ -581,6 +588,9 @@ type safety. These hooks are:
   stack)*, MPI will be shut down. If PnMPI is unable to call the destructor, it
   will be called in the `MPI_Finalize` wrapper after calling all other modules
   but before shutting down the MPI environment.
+
+*Note: You can use `PNMPI_Service_CallHook()` to call custom hooks in your
+modules. Just pass a custom hook name as first parameter.*
 
 For a detailed description, see the Doxygen docs or man-pages for these
 functions.

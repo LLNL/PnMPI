@@ -127,5 +127,5 @@ void pnmpi_app_startup(int argc, char **argv)
   pnmpi_print_banner();
 
 
-  pnmpi_call_hook("PNMPI_AppStartup", 0);
+  pnmpi_call_hook("PNMPI_AppStartup", PNMPI_CALL_HOOK_NEXT_MODULE, 0);
 }

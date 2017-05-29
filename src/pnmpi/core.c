@@ -765,7 +765,7 @@ void pnmpi_PreInit()
    * Call the module registration point functions
    * (done now as to load arguments first)
    */
-  pnmpi_call_hook(PNMPI_REGISTRATION_POINT, 1);
+  pnmpi_call_hook(PNMPI_REGISTRATION_POINT, PNMPI_CALL_HOOK_ALL_MODULES, 0);
 
 /* if we are debugging, print the parsed information */
 

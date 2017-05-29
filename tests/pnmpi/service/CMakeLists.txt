@@ -44,3 +44,5 @@ easy_add_test(PREFIX "service_getArgumentSelf" SOURCES getArgumentSelf.c)
 
 easy_add_test(PREFIX "service_getPcontrol" SOURCES getPcontrol.c)
 easy_add_test(PREFIX "service_getPcontrolSelf" SOURCES getPcontrolSelf.c)
+
+easy_add_test(PREFIX "service_callHook" SOURCES callHook.c)

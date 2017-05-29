@@ -28,9 +28,12 @@
  * LLNL-CODE-402774
  */
 
+#include <assert.h>
+
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
+#include <pnmpi/private/modules.h>
 
 
 /** \brief Call \p hook in loaded modules.
@@ -42,35 +45,34 @@
  * \param hook Name of the hook to be called.
  * \param all_modules If set to non-zero, \p hook will be called in all modules,
  *  not just those in the current stack.
+ * \param start_level At which level to start looking for \p hook.
  *
  *
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_call_hook(const char *hook, int all_modules)
+void pnmpi_call_hook(const char *hook, enum pnmpi_call_hook_mode all_modules,
+                     PNMPI_modHandle_t start_level)
 {
-  PNMPI_Debug(PNMPI_DEBUG_MODULE, "Calling %s hook in %s.\n", hook,
-              all_modules ? "all modules" : "the current stack");
+  assert(hook);
+
+
+  PNMPI_Debug(PNMPI_DEBUG_MODULE, "Checking for %s hook in %s.\n", hook,
+              all_modules ? "all modules" : "the next available module");
 
 
   /* Save the current PnMPI level to restore it later. */
   int pnmpi_level_restore = pnmpi_level;
 
-  /* If the hook should be called in all modules instead of just those in the
-   * current stack, reset the pnmpi_level to 0, so the following loop will start
-   * at the first module. */
-  if (all_modules)
-    pnmpi_level = 0;
-
   /* Iterate over the array of modules. */
-  for (; pnmpi_level < modules.num; pnmpi_level++)
+  for (pnmpi_level = start_level; pnmpi_level < modules.num; pnmpi_level++)
     {
       /* If the current level is a stack delimiter, this level should be
        * ignored. If the hook should be called in all modules, we'll go to the
        * next level, otherwise the loop will be exited. */
       if (modules.module[pnmpi_level]->stack_delimiter)
         {
-          if (all_modules)
+          if (all_modules == PNMPI_CALL_HOOK_ALL_MODULES)
             continue;
           else
             break;
@@ -85,6 +87,12 @@ void pnmpi_call_hook(const char *hook, int all_modules)
           PNMPI_Debug(PNMPI_DEBUG_MODULE, "Calling %s hook in module '%s'.\n",
                       hook, modules.module[pnmpi_level]->name);
           sym();
+
+          /* If the hook should be called in all modules, don't break after the
+           * first invocation. Otherwise the hook has to call a service function
+           * for recursive hook invocations.  */
+          if (all_modules == PNMPI_CALL_HOOK_NEXT_MODULE)
+            break;
         }
     }
 

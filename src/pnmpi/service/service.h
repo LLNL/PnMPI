@@ -201,6 +201,18 @@ PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
                                          int *flag);
 int PNMPI_Service_GetPcontrolSelf();
 
+/** \defgroup PNMPI_Service_CallHook PNMPI_Service_CallHook
+ *
+ * \details These functions may be used to call hooks recursively in other
+ *  modules.
+ *
+ * \header{pnmpi/service.h}
+ */
+PNMPI_FUNCTION_ARG_NONNULL(1)
+void PNMPI_Service_CallHook(const char *hook);
+PNMPI_FUNCTION_ARG_NONNULL(1)
+void PNMPI_Service_CallHook_NewStack(const char *hook, PNMPI_modHandle_t stack);
+
 
 /** \defgroup PNMPI_Service_strerror PNMPI_Service_strerror
  *

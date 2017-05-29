@@ -69,7 +69,7 @@ void pnmpi_app_shutdown()
     return;
 
 
-  pnmpi_call_hook("PNMPI_AppShutdown", 0);
+  pnmpi_call_hook("PNMPI_AppShutdown", PNMPI_CALL_HOOK_NEXT_MODULE, 0);
 
 
 #ifdef COMPILE_FOR_FORTRAN

@@ -49,6 +49,7 @@
 #include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/private/pmpi_assert.h>
+#include <pnmpi/service.h>
 
 
 /* OSX does not support HOST_NAME_MAX in limits.h. We'll ensure that it'll be
@@ -112,4 +113,7 @@ void PNMPI_AppStartup()
       if (rank == 0)
         printf("Done waiting.\n");
     }
+
+  /* Call the hook in following modules. */
+  PNMPI_Service_CallHook("PNMPI_AppStartup");
 }
