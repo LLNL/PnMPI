@@ -570,20 +570,17 @@ type safety. These hooks are:
   provided by the module, etc. *(Called in all modules)*
 * `PNMPI_AppStartup`: If a module provides an `PNMPI_AppStartup` hook, PnMPI
   will initialize MPI in the applications constructor *before* `main` is started
-  and call the hook. *(Called in the default stack)*
-* `PNMPI_AppStartupOptional` is the light version of the above one: If PnMPI is
-  able to call it before `main`, it will be called *before*, otherwise in the
-  `MPI_Init` or `MPI_Init_thread` wrappers before calling any other module.
-  *(Called in the default stack)*
+  and call the hook *(in the default stack)*. If PnMPI is unable to call it
+  before `main`, it will be called in the `MPI_Init` or `MPI_Init_thread`
+  wrappers just after the MPI environment has been initialized, but before
+  calling any other module.
 * `PNMPI_AppShutdown`: If a module provides an `PNMPI_AppShutdown` hook, PnMPI
   will not call `PMPI_Finalize` in the `MPI_Finalize` wrapper, but keeps MPI
-  open until `main` has finished and calls the hook in the applications
-  destructor. After the hooks of all modules have been called, MPI will be shut
-  down. *(Called in the current stack at the time of finalization)*
-* `PNMPI_AppShutdownOptional` is the light version of the above one: PnMPI will
-  try to call this hook after `main` has finished, otherwise in the
-  `MPI_Finalize` wrapper, after all modules have been called. *(Called in the
-  current stack at the time of finalization)*
+  running until `main` has finished and calls the hook in the applications
+  destructor. After the hooks of all modules have been called *(in the default
+  stack)*, MPI will be shut down. If PnMPI is unable to call the destructor, it
+  will be called in the `MPI_Finalize` wrapper after calling all other modules
+  but before shutting down the MPI environment.
 
 For a detailed description, see the Doxygen docs or man-pages for these
 functions.

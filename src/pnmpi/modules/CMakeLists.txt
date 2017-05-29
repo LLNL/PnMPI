@@ -44,9 +44,7 @@ pnmpi_add_man(pnmpi_module_hooks PNMPI_SupportedThreadingLevel)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_ModuleName)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_RegistrationPoint)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_AppStartup)
-pnmpi_add_man(pnmpi_module_hooks PNMPI_AppStartupOptional)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_AppShutdown)
-pnmpi_add_man(pnmpi_module_hooks PNMPI_AppShutdownOptional)
 
 
 include_directories(
