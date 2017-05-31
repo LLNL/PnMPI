@@ -59,15 +59,6 @@
 PNMPI_INTERNAL
 void pnmpi_print_banner()
 {
-  /* Wait until all ranks have flushed their buffers to avoid output in between
-   * the PnMPI header. This is required, as PnMPI or the application itself may
-   * have printed messages before MPI_Init (e.g. debug options are enabled). */
-  fflush(stdout);
-  fflush(stderr);
-  if (MPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    PNMPI_Error("MPI_Barrier failed.\n");
-
-
   /* If we have printed the banner before, the process is not the first rank, or
    * PNMPI_BE_SILENT is set, the banner should not be printed. Return can't be
    * used here, as all ranks must meet at the barrier below to synchronize the
@@ -75,8 +66,21 @@ void pnmpi_print_banner()
    * If the header will be printed, save the printed state so future calls won't
    * print the banner a second time. */
   static int printed = 0;
-  if (printed || (pnmpi_get_rank() != 0) || (getenv("PNMPI_BE_SILENT") != NULL))
+  if (printed || (getenv("PNMPI_BE_SILENT") != NULL))
+    return;
+
+
+  /* Wait until all ranks have flushed their buffers to avoid output in between
+   * the PnMPI header. This is required, as PnMPI or the application itself may
+   * have printed messages before MPI_Init (e.g. debug options are enabled). */
+  fflush(stdout);
+  fflush(stderr);
+  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
+    PNMPI_Error("MPI_Barrier failed.\n");
+
+  if (pnmpi_get_rank() != 0)
     goto wait_header_printed;
+
 
   printed = 1;
 
@@ -189,6 +193,6 @@ wait_header_printed:
    * output in other functions, while rank 0 is printing the header. */
   fflush(stdout);
   fflush(stderr);
-  if (MPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
+  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
     PNMPI_Error("MPI_Barrier failed.\n");
 }

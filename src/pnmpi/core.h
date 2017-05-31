@@ -128,6 +128,7 @@ extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
 /** \brief \ref pnmpi_level is used to store the current level of MPI calls.
  */
 extern pnmpi_compiler_tls_keyword int pnmpi_level;
+extern pnmpi_compiler_tls_keyword int initial_thread;
 
 extern int pnmpi_max_level;
 extern int pnmpi_initialization_complete;

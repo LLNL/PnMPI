@@ -71,6 +71,8 @@ void pnmpi_app_shutdown()
 
   pnmpi_call_hook("PNMPI_AppShutdown", PNMPI_CALL_HOOK_NEXT_MODULE, 0);
 
+  if (!initial_thread)
+    return;
 
 #ifdef COMPILE_FOR_FORTRAN
   if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)

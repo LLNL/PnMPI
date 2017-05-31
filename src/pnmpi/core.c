@@ -77,6 +77,7 @@ int pnmpi_max_level;
 int pnmpi_initialization_complete;
 int pnmpi_init_done = 0;
 pnmpi_compiler_tls_keyword int pnmpi_level = 0;
+pnmpi_compiler_tls_keyword int initial_thread = 0;
 
 
 modules_t modules;

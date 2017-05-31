@@ -121,10 +121,10 @@ void pnmpi_app_startup(int argc, char **argv)
     default:
       PNMPI_Error("Automatic detection of the used MPI interface failed.\n");
     }
-  pnmpi_init_done = 1;
-
-
   pnmpi_print_banner();
+
+  pnmpi_init_done = 1;
+  initial_thread = 1;
 
 
   pnmpi_call_hook("PNMPI_AppStartup", PNMPI_CALL_HOOK_NEXT_MODULE, 0);
