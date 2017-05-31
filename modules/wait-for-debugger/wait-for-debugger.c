@@ -49,6 +49,7 @@
 #include <pnmpi/debug_io.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/private/pmpi_assert.h>
+#include <pnmpi/service.h>
 
 
 /* OSX does not support HOST_NAME_MAX in limits.h. We'll ensure that it'll be
@@ -62,17 +63,17 @@
 #endif
 
 
-/** \brief \ref pnmpi_module_hooks::PNMPI_AppStartupOptional module hook.
+/** \brief \ref pnmpi_module_hooks::PNMPI_AppStartup module hook.
  *
  * \details This hook will be called just before main starts (or just after \ref
- *  MPI_Init, if \ref pnmpi_module_hooks::PNMPI_AppStartup is unavailable) and
- *  prints the PID and (if it can be determined) the hostname of the rank.
+ *  MPI_Init, if constructors are unavailable) and prints the PID and (if it can
+ *  be determined) the hostname of the rank.
  *
  *
  * \memberof module_wait_for_debugger
  * \private
  */
-void PNMPI_AppStartupOptional()
+void PNMPI_AppStartup()
 {
   /* Get the rank of this process and print rank, hostname and PID of this rank
    * to stdout. */
@@ -112,4 +113,7 @@ void PNMPI_AppStartupOptional()
       if (rank == 0)
         printf("Done waiting.\n");
     }
+
+  /* Call the hook in following modules. */
+  PNMPI_Service_CallHook("PNMPI_AppStartup");
 }

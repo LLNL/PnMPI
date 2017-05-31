@@ -67,8 +67,7 @@ void pnmpi_app_startup(int argc, char **argv)
 {
   /* If no module provides the PNMPI_AppStartup hook, we can skip the execution
    * of this function. */
-  if (!pnmpi_hook_activated("PNMPI_AppStartup", 0) &&
-      !pnmpi_hook_activated("PNMPI_AppStartupOptional", 0))
+  if (!pnmpi_hook_activated("PNMPI_AppStartup", 0))
     return;
 
 
@@ -128,8 +127,7 @@ void pnmpi_app_startup(int argc, char **argv)
   pnmpi_print_banner();
 
 
-  pnmpi_call_hook("PNMPI_AppStartup", 0);
-  pnmpi_call_hook("PNMPI_AppStartupOptional", 0);
+  pnmpi_call_hook("PNMPI_AppStartup", PNMPI_CALL_HOOK_NEXT_MODULE, 0);
 
 
   /* PnMPI is initialized now and the MPI wrappers can be used. */

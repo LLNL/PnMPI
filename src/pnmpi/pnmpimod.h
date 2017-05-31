@@ -67,7 +67,6 @@
 #define PNMPI_MODULE_USERNAMELEN 256
 
 #define PNMPI_REGISTRATION_POINT "PNMPI_RegistrationPoint"
-#define PNMPI_INITCOMPLETE_POINT "PNMPI_RegistrationComplete"
 
 #define PNMPI_MAX_MOD 100000
 

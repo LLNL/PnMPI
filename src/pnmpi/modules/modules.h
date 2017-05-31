@@ -35,10 +35,27 @@
 #include <pnmpi/service.h>
 
 
+/** \brief Enum to control different modes of hook functions.
+ */
+enum pnmpi_call_hook_mode
+{
+  /** \brief Call the hook in the next module of the current stack, only. */
+  PNMPI_CALL_HOOK_NEXT_MODULE,
+
+  /** \brief Call the hook in all modules of all stacks. */
+  PNMPI_CALL_HOOK_ALL_MODULES,
+
+  /** \brief Call the hook in all modules of the current stack. */
+  PNMPI_CALL_HOOK_CURRENT_STACK
+};
+
+
 int pnmpi_valid_modhandle(const PNMPI_modHandle_t);
 
-int pnmpi_hook_activated(const char *hook, int all_modules);
-void pnmpi_call_hook(const char *hook, int all_modules);
+int pnmpi_hook_activated(const char *hook,
+                         enum pnmpi_call_hook_mode all_modules);
+void pnmpi_call_hook(const char *hook, enum pnmpi_call_hook_mode all_modules,
+                     PNMPI_modHandle_t start_level);
 
 int pnmpi_max_module_threading_level();
 

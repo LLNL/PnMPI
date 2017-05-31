@@ -308,6 +308,7 @@ int main(int argc, char **argv)
    * to LD_PRELOAD to load P^nMPI in front of libmpi. No path to the shared
    * object, but just the filename is required, as LD_PRELOAD searches in the
    * LD_LIBRARY_PATH for this file. */
+  appendenv("LD_LIBRARY_PATH", PNMPI_LIBRARY_PATH, 0);
   appendenv("LD_PRELOAD", PNMPI_LIBRARY_NAME ".so", 0);
 #endif
 

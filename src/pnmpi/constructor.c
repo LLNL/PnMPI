@@ -192,27 +192,12 @@ void _init()
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_fallback_init()
+void pnmpi_fallback_init(int argc, char **argv)
 {
   /* If any constructor (either the compiler specific or fallback one) has been
    * called before, execution of this function should be skipped. */
   if (pnmpi_constructor_called)
     return;
 
-  /* Call the regular constructors. */
-  pnmpi_PreInit();
-
-
-  /* Check if the user is using PNMPI_AppStartup or PNMPI_AppShutdown hooks, due
-   * these are not supported in this scenario. */
-  if (pnmpi_hook_activated("PNMPI_AppStartup", 0) ||
-      pnmpi_hook_activated("PNMPI_AppShutdown", 0))
-    PNMPI_Error("You are using modules which require the 'PNMPI_AppStartup' or "
-                "'PNMPI_AppShutdown' hooks, but your environment does not "
-                "support them. Please deactivate them or check your "
-                "environment.\n");
-
-  /* Call the optional version of PNMPI_AppStartup, that may be called at
-   * initialization time. */
-  pnmpi_call_hook("PNMPI_AppStartupOptional", 0);
+  pnmpi_constructor(argc, argv);
 }

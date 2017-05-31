@@ -84,7 +84,7 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 
   /* If the compiler does not support GCC's constructors, check if the fallback
    * constructor was called before this function. */
-  pnmpi_fallback_init();
+  pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
 
 
   int returnVal = MPI_SUCCESS;
@@ -281,7 +281,7 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
   /* If the compiler does not support GCC's constructors, check if the fallback
    * constructor was called before this function. */
-  pnmpi_fallback_init();
+  pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
 
 
   int returnVal = MPI_SUCCESS;
@@ -561,15 +561,10 @@ int MPI_Finalize(void)
    * the execution of main. */
   pnmpi_fallback_fini();
 
-  /* If the PNMPI_AppShutdown or PNMPI_AppShutdownOptional hook is provided by
-   * any module, do NOT call the original MPI_Finalize function, because it will
-   * be called in pnmpi_app_shutdown.
-   *
-   * An extra check if the constructors are working is not required, as
-   * pnmpi_fallback_init will abort PnMPI, if the destructors for this hook
-   * wouldn't be called. */
-  if (pnmpi_hook_activated("PNMPI_AppShutdown", 0) ||
-      pnmpi_hook_activated("PNMPI_AppShutdownOptional", 0))
+  /* If the PNMPI_AppShutdown hook is provided by any module, do NOT call the
+   * original MPI_Finalize function, because it will be called in
+   * pnmpi_app_shutdown. */
+  if (pnmpi_hook_activated("PNMPI_AppShutdown", 0))
     return MPI_SUCCESS;
 
   inc_pnmpi_mpi_level();

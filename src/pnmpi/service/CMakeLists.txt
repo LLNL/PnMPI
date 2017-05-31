@@ -60,6 +60,8 @@ pnmpi_add_man(PNMPI_Service_GetArgument "")
 pnmpi_add_man(PNMPI_Service_GetArgument PNMPI_Service_GetArgumentSelf)
 pnmpi_add_man(PNMPI_Service_GetPcontrol "")
 pnmpi_add_man(PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrolSelf)
+pnmpi_add_man(PNMPI_Service_CallHook "")
+pnmpi_add_man(PNMPI_Service_CallHook PNMPI_Service_CallHook_NewStack)
 pnmpi_add_man(PNMPI_Service_strerror "")
 pnmpi_add_man(PNMPI_status_t "")
 
@@ -73,6 +75,7 @@ include_directories(
 
 
 easy_add_library(pnmpi_service OBJECT
+  callHook.c
   changeStack.c
   getArgument.c
   getGlobalByName.c

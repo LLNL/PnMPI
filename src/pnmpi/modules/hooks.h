@@ -86,20 +86,6 @@ extern const char *PNMPI_ModuleName;
  */
 void PNMPI_RegistrationPoint();
 
-/** \brief Called after all modules have been registered.
- *
- * \details As \ref PNMPI_RegistrationPoint this hook is called after the module
- *  has been loaded, but after all modules have registered itself. Modules may
- *  interact with other modules in this hook.
- *
- * \note MPI is not initialized when this hook is called. You MUST NOT use any
- *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
- *
- *
- * \memberof pnmpi_module_hooks
- */
-void PNMPI_RegistrationComplete();
-
 /** \brief Called just before the applications main is started.
  *
  * \details This hook will be called just before the applications main is
@@ -110,34 +96,15 @@ void PNMPI_RegistrationComplete();
  *  setup before calling this hook, so one may use MPI calls to e.g. broadcast
  *  messages.
  *
- * \warning If none of PnMPIs constructors has been called before `MPI_Init` or
- *  `MPI_Init_thread`, PnMPI will abort the execution. If it's not really
- *  necessary to execute code before `main` but only a nice-to-have feature of
- *  your module, consider using \ref PNMPI_AppStartupOptional instead.
+ * \note If the environment is unable to call any constructor before `main`,
+ *  this hook will be called in the `MPI_Init` or `MPI_Init_thread` wrapper just
+ *  after the MPI environment has been initialized, but before any modules will
+ *  be called.
  *
  *
  * \memberof pnmpi_module_hooks
  */
 void PNMPI_AppStartup();
-
-/** \brief Optional version of \ref PNMPI_AppStartup.
- *
- * \details This hook has the same functionality as \ref PNMPI_AppStartup.
- *  However, if the environment is unable to call any constructor before `main`,
- *  this hook will be called in the `MPI_Init` or `MPI_Init_thread` wrapper just
- *  after the MPI environment has been initialized, but before any modules will
- *  be called.
- *
- * \note This hook will be called after \ref PNMPI_AppStartup.
- *
- * \warning Use this hook only, if the execution of your code before `main` is
- *  not mandatory, but only should happen as early as possible depending on the
- *  environment.
- *
- *
- * \memberof pnmpi_module_hooks
- */
-void PNMPI_AppStartupOptional();
 
 /** \brief Called just after the applications main has finished.
  *
@@ -149,33 +116,14 @@ void PNMPI_AppStartupOptional();
  *  be destoryed in MPI_Finalize but kept open until calls to this hook have
  *  been finished. This may be used to e.g. broadcast messages.
  *
- * \warning If PnMPI can't call any destructor, PnMPI will abort the execution
- *  in the `MPI_Init` wrapper. If it's not really necessary to execute code
- *  after `main` but only a nice-to-have feature of your module, consider using
- *  \ref PNMPI_AppShutdownOptional instead.
+ * \note If the environment is unable to call any destructors after `main`,
+ *  this hook will be called in the `MPI_Finalize` wrapper just before the MPI
+ *  environment will be destroyed, but after all modules have been called.
  *
  *
  * \memberof pnmpi_module_hooks
  */
 void PNMPI_AppShutdown();
-
-/** \brief Optional version of \ref PNMPI_AppShutdown.
- *
- * \details This hook has the same functionality as \ref PNMPI_AppShutdown.
- *  However, if the environment is unable to call any destructors after `main`,
- *  this hook will be called in the `MPI_Finalize` wrapper just before the MPI
- *  environment will be destroyed, but after all modules have been called.
- *
- * \note This hook will be called before \ref PNMPI_AppShutdown.
- *
- * \warning Use this hook only, if the execution of your code after `main` is
- *  not mandatory, but only should happen as late as possible depending on the
- *  environment.
- *
- *
- * \memberof pnmpi_module_hooks
- */
-void PNMPI_AppShutdownOptional();
 
 
 #ifdef __cplusplus
