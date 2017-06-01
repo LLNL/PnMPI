@@ -27,6 +27,8 @@
 #
 # LLNL-CODE-402774
 
+find_package(UnixCommands REQUIRED)
+
 
 ## \brief Add a native PnMPI module with XMPI calls.
 #
@@ -72,10 +74,10 @@ function (pnmpi_add_pmpi_module targetname)
   set(tmplib ${targetname}-unpatched.so)
 
   add_custom_command(TARGET ${targetname} POST_BUILD
-    COMMAND mv ARGS $<TARGET_FILE:${targetname}> ${tmplib}
+    COMMAND ${MV} ARGS $<TARGET_FILE:${targetname}> ${tmplib}
     COMMAND $<TARGET_FILE:pnmpi-patch>
       ARGS ${tmplib} $<TARGET_FILE:${targetname}>
-    COMMAND rm ARGS -f ${tmplib}
+    COMMAND ${RM} ARGS -f ${tmplib}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Patching ${targetname}"
     VERBATIM)
