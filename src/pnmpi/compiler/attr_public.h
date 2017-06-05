@@ -73,10 +73,8 @@
  *
  * \note This macro should be attached to the declaration in the header file.
  */
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #define PNMPI_FUNCTION_NORETURN __attribute__((noreturn))
-#elif defined(__clang__)
-#define PNMPI_FUNCTION_NORETURN _Noreturn
 #else
 #define PNMPI_FUNCTION_NORETURN
 #endif
