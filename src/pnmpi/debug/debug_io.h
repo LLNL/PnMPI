@@ -29,6 +29,9 @@
  */
 
 /** \defgroup pnmpi_debug_io Print debug messages, warnings and  errors.
+ *
+ *
+ * \header{pnmpi/debug_io.h}
  */
 
 #ifndef PNMPI_PRINT_H
@@ -81,27 +84,56 @@ typedef enum pnmpi_debug_level {
  *
  * \note If not set, the default value will be `PnMPI`.
  * \note This macro must be set \b before including any of PnMPI's headers.
+ *
+ *
+ * \ingroup pnmpi_debug_io
  */
 #ifndef PNMPI_MESSAGE_PREFIX
 #define PNMPI_MESSAGE_PREFIX "PnMPI"
 #endif
 
 
-/** \brief Macro to use for debug printing.
+/** \brief Disable all invocations of \ref PNMPI_Debug.
  *
- * \details To optimize the code for speed, debug printing can be disabled with
- *  the PNMPI_NO_DEBUG compile flag.
+ * \details If this macro is defined, \ref PNMPI_Debug will be defined as an
+ *  empty macro, increasing the performance of PnMPI, as debug messages won't be
+ *  compiled in the code.
  *
- * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
+ * \note \ref PNMPI_Warning and \ref PNMPI_Error will not be affected by this
+ *  macro.
  *
  *
  * \ingroup pnmpi_debug_io
  */
+#ifdef DOXYGEN
+#define PNMPI_NO_DEBUG
+#endif
+
+
+/** \brief Macro to use for debug printing.
+ *
+ * \note To optimize the code for speed, debug messages may be disabled by
+ *  defining \ref PNMPI_NO_DEBUG before including any of PnMPI's headers or
+ *  passing the flag to the preprocessor.
+ * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
+ *
+ *
+ * \param level \ref PNMPI_debug_level_t debug level of the message.
+ * \param format Printf-like format string.
+ * \param ... Optional arguments to be evaluated for \p format.
+ *
+ *
+ * \ingroup pnmpi_debug_io
+ */
+#ifdef DOXYGEN
+#define PNMPI_Debug(level, format, ...)
+#else
 #ifndef PNMPI_NO_DEBUG
 #define PNMPI_Debug(level, ...) \
   pnmpi_print_debug(level, "[" PNMPI_MESSAGE_PREFIX "] " __VA_ARGS__)
 #else
 #define PNMPI_Debug(...)
+#endif
 #endif
 
 
@@ -110,34 +142,50 @@ typedef enum pnmpi_debug_level {
  * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
  *
  *
+ * \param format Printf-like format string.
+ * \param ... Optional arguments to be evaluated for \p format.
+ *
+ *
  * \ingroup pnmpi_debug_io
  */
+#ifdef DOXYGEN
+#define PNMPI_Warning(format, ...)
+#else
 #define PNMPI_Warning(...) \
   pnmpi_print_warning("[" PNMPI_MESSAGE_PREFIX "] " __VA_ARGS__)
+#endif
 
 
-/** \brief Print an error message with file and line number and exit.
+/** \def PNMPI_Error(format, ...)
+ *
+ * \brief Print an error message with file and line number and exit.
  *
  * \details This macro is used as shortcut to print a warning with the current
  *  function and line number and exiting the program with an error code after
  *  printing the message.
  *
- * \internal Instead of directly putting calls to \ref PNMPI_Warning and exit in
- *  the macro, the wrapper-function \ref pnmpi_print_error is used, as non-GCC
+ * \internal
+ *  Instead of directly putting calls to \ref PNMPI_Warning and exit in the
+ *  macro, the wrapper-function \ref pnmpi_print_error is used, as non-GCC
  *  compilers don't understand \c \#\#__VA_ARGS__ to delete the comma after the
  *  format string if no other arguments are passed.
+ * \endinternal
  *
  * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
  *
  *
- * \param ... Arguments to be evaluated. First argument has to be the
- *  printf-like format string.
+ * \param format Printf-like format string.
+ * \param ... Optional arguments to be evaluated for \p format.
  *
  *
  * \ingroup pnmpi_debug_io
  */
+#ifdef DOXYGEN
+#define PNMPI_Error(format, ...)
+#else
 #define PNMPI_Error(...) \
   pnmpi_print_error(PNMPI_MESSAGE_PREFIX, __FUNCTION__, __LINE__, __VA_ARGS__);
+#endif
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"

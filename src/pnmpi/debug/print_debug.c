@@ -129,6 +129,7 @@ static int pnmpi_check_dbgnode()
  *
  * \hidecallergraph
  * \ingroup pnmpi_debug_io
+ * \private
  */
 void pnmpi_print_debug(const enum pnmpi_debug_level level, const char *format,
                        ...)
