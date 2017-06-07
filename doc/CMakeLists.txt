@@ -69,7 +69,7 @@ if (BUILD_DOC)
                        pnmpize
                        commsub-empty commsub-print
                        empty
-                       metrics-counter metrics-timing
+                       metrics-counter
                          ${PROJECT_SOURCE_DIR}/modules/metrics/doc.c
                        requests
                        sample1 sample2 sample3 sample4

@@ -31,5 +31,5 @@ include(FindPackageHandleStandardArgs)
 
 
 # Search for ln binary.
-find_program (LN NAMES ln)
+find_program(LN NAMES ln)
 find_package_handle_standard_args(ln FOUND_VAR LN_FOUND REQUIRED_VARS LN)

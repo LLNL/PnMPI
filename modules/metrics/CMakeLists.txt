@@ -54,7 +54,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${PNMPI_HEADER_DIR}
-  ${LLNL-HIRES-TIMERS_INCLUDE_DIR}
   ${PROJECT_BINARY_DIR}/
   ${PROJECT_BINARY_DIR}/src/pnmpi
   ${PROJECT_SOURCE_DIR}/src/pnmpi
@@ -72,21 +71,24 @@ add_sanitizers(metrics-counter)
 
 pnmpi_add_module_man(metrics-counter module_metrics_counter)
 
+install(TARGETS metrics-counter DESTINATION lib/pnmpi-modules)
+
 
 #
 # Add the timing module.
 #
-add_wrapped_file(timing.c timing.c.w -w)
+find_package(hires-timers)
+if (HIRES_TIMERS_FOUND)
+  add_wrapped_file(timing.c timing.c.w -w)
 
-# Set the RPATH for this module, so it can find LLNL-hires-timers.
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  include_directories(${HIRES_TIMERS_INCLUDE_DIRS})
 
-pnmpi_add_xmpi_module(metrics-timing "${CMAKE_CURRENT_BINARY_DIR}/timing.c")
-target_link_libraries(metrics-timing ${LLNL-HIRES-TIMERS_LIBRARY})
-add_coverage(metrics-timing)
-add_sanitizers(metrics-timing)
+  pnmpi_add_xmpi_module(metrics-timing "${CMAKE_CURRENT_BINARY_DIR}/timing.c")
+  target_link_libraries(metrics-timing ${HIRES_TIMERS_LIBRARIES})
+  add_coverage(metrics-timing)
+  add_sanitizers(metrics-timing)
 
-pnmpi_add_module_man(metrics-timing module_metrics_timing)
+  pnmpi_add_module_man(metrics-timing module_metrics_timing)
 
-
-install(TARGETS metrics-counter metrics-timing DESTINATION lib/pnmpi-modules)
+  install(TARGETS metrics-timing DESTINATION lib/pnmpi-modules)
+endif ()

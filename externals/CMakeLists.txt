@@ -91,25 +91,3 @@ else()
                             "   git submodule update --init --recursive")
     endif()
 endif()
-
-
-#
-# Set up LLNL hires-timers for usage in metrics-timing.
-#
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/llnl-hires-timers/CMakeLists.txt)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/llnl-hires-timers)
-
-  set(LLNL-HIRES-TIMERS_INCLUDE_DIR
-    "${PROJECT_SOURCE_DIR}/externals/llnl-hires-timers/src"
-    CACHE STRING "LLNL-hires-timers include path" FORCE)
-  set(LLNL-HIRES-TIMERS_LIBRARY "hires-timers"
-    CACHE STRING "LLNL-hires-timers library target" FORCE)
-  set(LLNL-HIRES-TIMERS_FOUND TRUE)
-
-  find_package_message(LLNL_HIRES_TIMERS "Found llnl-hires-timers as submodule."
-    "submodule")
-else ()
-  message(FATAL_ERROR "Subproject llnl-hires-timers not available.\n"
-                      "Try:\n"
-                      "  git submodule update --init --recursive")
-endif ()
