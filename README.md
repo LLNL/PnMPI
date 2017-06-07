@@ -158,6 +158,8 @@ features by adding the following flags to the `cmake` configuration command.
   * `-DENABLE_THREAD_SAFETY=OFF`: Build PnMPI without thread safety. PnMPI will
     limit the MPI threading level if this option is enabled, so it still will be
     thread safe. *Disable this option only for performance optimization.*
+  * `-DENABLE_ADEPT_UTILS=ON`: Enable support for adept-utils, to check the
+    module's symbols for their origin. *(Not supported with all compilers.)*
   * [CMake-codecov](https://github.com/RWTH-HPC/CMake-codecov) provides the
     additional `-DENABLE_COVERAGE=ON` option to enable code coverage. You can
     generate coverage reports with the `gcov` and `lcov` targets. Read their

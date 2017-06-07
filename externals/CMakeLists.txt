@@ -31,16 +31,17 @@ include(FindPackageMessage)
 
 
 #===================================
-#Check for adept_utils timers
+#Check for adept_utils
 #===================================
-
-find_package(adept_utils QUIET)
-if(adept_utils_FOUND)
+option(ENABLE_ADEPT_UTILS "Enable adept-utils support." false)
+if (ENABLE_ADEPT_UTILS)
+  find_package(adept_utils QUIET)
+  if(adept_utils_FOUND)
     find_package_message(adept_utils "Found adept_utils: ${adept_utils_DIR}"
                          "${adept_utils_DIR}")
     add_definitions(-DHAVE_ADEPT_UTILS)
     set(PnMPI_USE_adept_utils TRUE)
-else()
+  else()
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/adept-utils/CMakeLists.txt)
         ADD_SUBDIRECTORY (adept-utils)
         find_package_message(adept_utils "Found adept_utils as submodule."
@@ -56,12 +57,13 @@ else()
         set(PnMPI_USE_adept_utils TRUE)
         set(adept_utils_DIR ${adept-utils_BINARY_DIR})
     else()
-        find_package_message(adept_utils
-          "adept_utils package not found. Building without timing." "not found")
+        find_package_message(adept_utils "adept_utils package not found."
+                             "not found")
         # Set these for our PnMPIConfig.cmake file.
         set(adept_utils_INCLUDE_PATH adept_utils_INCLUDE_PATH-NOTFOUND)
         set(adept_utils_LIBRARIES    adept_utils_LIBRARIES-NOTFOUND)
     endif()
+  endif()
 endif()
 
 #======================================================

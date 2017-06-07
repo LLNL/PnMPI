@@ -213,6 +213,24 @@ matrix:
       env:
         - NO_FORTRAN
 
+    # Build with adept-utils.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
+      env:
+        - WITH_ADEPT
+    - os: osx
+      osx_image: xcode8.2
+      compiler: clang
+      before_install: *before_install
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
+      env:
+        - WITH_ADEPT
+
     # Build with optimized configuration.
     - os: linux
       dist: trusty

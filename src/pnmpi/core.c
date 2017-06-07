@@ -188,6 +188,9 @@ void *find_symbol(const module_def_p module, const char *symbol_name)
   void *symbol = dlsym(module->handle, symbol_name);
 
 #ifdef HAVE_ADEPT_UTILS
+  /* In some situations the found symbol is not part of the loaded module but
+   * one of its dependencies. If adept utils is available, check if the symbol
+   * is really in the module's symbol table. */
   struct link_map *module_lmap = get_module_by_full_path(module->path);
   struct link_map *symbol_lmap = get_module_for_address(symbol);
   if (symbol_lmap != module_lmap)
