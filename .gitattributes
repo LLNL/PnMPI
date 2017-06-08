@@ -1,5 +1,7 @@
-extra/license export-ignore
+extra/build/ci.sh export-ignore
+extra/license/* export-ignore
 extra/pack.sh export-ignore
+.clang-format export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
 .gitmodules* export-ignore

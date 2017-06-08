@@ -275,6 +275,8 @@ matrix:
         - ../extra/pack.sh
         - tar xfvz *.tar.gz
         - cd $(echo */)
+      script:
+        - ../../extra/build/ci.sh
 
     # Check coding convention.
     - os: linux
