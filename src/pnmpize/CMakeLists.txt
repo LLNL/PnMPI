@@ -29,10 +29,15 @@
 
 include(GNUInstallDirs)
 include(PnMPI_headers)
+include(CChelper)
 
 find_package(argp REQUIRED)
 find_package(help2man)
+find_package(C99)
 
+if (C99_FOUND)
+  add_definitions(${C99_FLAGS})
+endif ()
 
 # Set the PnMPI search paths for mac OS.
 #
