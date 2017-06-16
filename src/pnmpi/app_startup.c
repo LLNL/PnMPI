@@ -39,6 +39,7 @@
 #include <pnmpi/private/config.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
+#include <pnmpi/private/mpi_reentry.h>
 #include <pnmpi/private/pmpi.h>
 #include <pnmpi/private/pmpi_assert.h>
 
@@ -106,6 +107,14 @@ void pnmpi_app_startup(int argc, char **argv)
     case PNMPI_INTERFACE_FORTRAN:
       PNMPI_Debug(PNMPI_DEBUG_INIT, "Initialize Fortran MPI interface ...\n");
 
+      /* Enter the reentry-guarded wrapper section. If the section was already
+       * entered, this is an abnormal situation, as nobody should have called a
+       * MPI function before. This guard is neccessary, as some (older) MPI
+       * implementations send Fortran PMPI calls back to the C MPI interface, so
+       * the MPI_Init wrappers would get called without initializing MPI. */
+      if (PNMPI_REENTRY_ENTER())
+        abort();
+
       int err;
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
       pmpi_init_thread_assert_(&required, &pnmpi_mpi_thread_level_provided,
@@ -115,6 +124,8 @@ void pnmpi_app_startup(int argc, char **argv)
 #else
       pmpi_init_assert_(&err);
 #endif
+
+      PNMPI_REENTRY_EXIT();
       break;
 #endif
 
