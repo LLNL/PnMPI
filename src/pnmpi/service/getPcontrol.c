@@ -73,7 +73,7 @@ PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
  *
  * \ingroup PNMPI_Service_GetPcontrol
  */
-int PNMPI_Service_GetPcontrolSelf()
+int PNMPI_Service_GetPcontrolSelf(void)
 {
   return modules.module[pnmpi_level]->pcontrol;
 }

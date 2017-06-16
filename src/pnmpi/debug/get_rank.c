@@ -48,7 +48,7 @@
  * \private
  */
 PNMPI_INTERNAL
-int pnmpi_get_rank()
+int pnmpi_get_rank(void)
 {
   static int rank = -1;
 

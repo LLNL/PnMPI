@@ -207,7 +207,7 @@ void *find_symbol(const module_def_p module, const char *symbol_name)
 
 /* Core functionality for PNMPI */
 PNMPI_INTERNAL
-void pnmpi_PreInit()
+void pnmpi_PreInit(void)
 {
   path_array_t library_path;
   char *lib_path_string, *confdir;

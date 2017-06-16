@@ -49,7 +49,7 @@
  * \return The number of characters required.
  * \return 0 MPI is not initialized yet.
  */
-static int pnmpi_get_size_width()
+static int pnmpi_get_size_width(void)
 {
   static int width = -1;
 

@@ -57,7 +57,7 @@
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_print_banner()
+void pnmpi_print_banner(void)
 {
   /* If we have printed the banner before, the process is not the first rank, or
    * PNMPI_BE_SILENT is set, the banner should not be printed. Return can't be

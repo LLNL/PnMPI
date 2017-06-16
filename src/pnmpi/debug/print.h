@@ -41,7 +41,7 @@
 #include <pnmpi/attributes.h>
 
 
-int pnmpi_get_rank();
+int pnmpi_get_rank(void);
 
 PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_FUNCTION_ARG_NONNULL(2)

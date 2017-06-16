@@ -166,7 +166,7 @@ static void read_cmdline(int *argc, char ***argv)
  *  PNMPI_CONSTRUCTOR, the following fallback constructor will be used to call
  *  the independend constructors of PnMPI.
  */
-void _init()
+void _init(void)
 {
   int argc;
   char **argv;

@@ -44,7 +44,7 @@
  * \private
  */
 PNMPI_DESTRUCTOR(101)
-void pnmpi_destructor()
+void pnmpi_destructor(void)
 {
   pnmpi_app_shutdown();
 }
@@ -61,7 +61,7 @@ void pnmpi_destructor()
  *  legacy systems. If PnMPI has no compiler specific implementation of
  *  PNMPI_DESTRUCTOR for your compiler yet, please file an issue.
  */
-void _fini()
+void _fini(void)
 {
   pnmpi_destructor();
 }
@@ -87,7 +87,7 @@ void _fini()
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_fallback_fini()
+void pnmpi_fallback_fini(void)
 {
   /* If any constructor (either the compiler specific or fallback one) has been
    * called before, execution of this function should be skipped. */

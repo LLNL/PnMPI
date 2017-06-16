@@ -76,7 +76,7 @@ static int pnmpi_check_dbglevel(const enum pnmpi_debug_level level)
  * \return 0 The message should not be printed at this rank.
  * \return 1 The message should be printed  at this rank.
  */
-static int pnmpi_check_dbgnode()
+static int pnmpi_check_dbgnode(void)
 {
   static int print = -1;
 

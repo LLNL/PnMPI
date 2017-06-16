@@ -205,7 +205,7 @@ const char *PNMPI_Service_GetArgumentSelf(const char *name);
 PNMPI_FUNCTION_ARG_NONNULL(2)
 PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
                                          int *flag);
-int PNMPI_Service_GetPcontrolSelf();
+int PNMPI_Service_GetPcontrolSelf(void);
 
 /** \defgroup PNMPI_Service_CallHook PNMPI_Service_CallHook
  *

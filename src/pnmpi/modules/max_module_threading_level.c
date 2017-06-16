@@ -57,7 +57,7 @@
  * \private
  */
 PNMPI_INTERNAL
-int pnmpi_max_module_threading_level()
+int pnmpi_max_module_threading_level(void)
 {
   int max_level = PNMPI_MAX_THREAD_LEVEL;
 

@@ -153,7 +153,7 @@ extern pnmpi_functions_t pnmpi_function_ptrs;
 
 void *find_symbol(const module_def_p module, const char *symbol_name);
 
-void pnmpi_print_banner();
+void pnmpi_print_banner(void);
 
 
 // Helper to check for RTLDNEXT Availability
@@ -231,17 +231,17 @@ void pnmpi_print_banner();
   }
 
 
-static inline int get_pnmpi_mpi_level()
+static inline int get_pnmpi_mpi_level(void)
 {
   return pnmpi_mpi_level;
 }
 
-static inline int inc_pnmpi_mpi_level()
+static inline int inc_pnmpi_mpi_level(void)
 {
   return ++pnmpi_mpi_level;
 }
 
-static inline int dec_pnmpi_mpi_level()
+static inline int dec_pnmpi_mpi_level(void)
 {
   return --pnmpi_mpi_level;
 }

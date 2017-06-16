@@ -57,7 +57,7 @@ int pnmpi_hook_activated(const char *hook,
 void pnmpi_call_hook(const char *hook, enum pnmpi_call_hook_mode all_modules,
                      PNMPI_modHandle_t start_level);
 
-int pnmpi_max_module_threading_level();
+int pnmpi_max_module_threading_level(void);
 
 
 #endif

@@ -48,7 +48,7 @@
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_force_link()
+void pnmpi_force_link(void)
 {
   /* Con- and destructors. */
   void (*volatile ptr_ctor)() = pnmpi_constructor;

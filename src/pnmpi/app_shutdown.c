@@ -46,7 +46,7 @@
  *  all hooks have been called, the MPI environment will be destroyed.
  */
 PNMPI_INTERNAL
-void pnmpi_app_shutdown()
+void pnmpi_app_shutdown(void)
 {
   /* There are two conditions to execute this function:
    *
