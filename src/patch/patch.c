@@ -938,13 +938,11 @@ void copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
           l->obfd = output_bfd;
 
           *ptr = output_bfd;
-// Joachim: consulting the old and new header files: old_bfd->next =
-// new_bfd->archive_next
-#ifdef PNMPI_NEW_BFD_API
+#ifdef BFD_SUPPORTS_PLUGINS == 0
           ptr = &output_bfd->archive_next;
-#else  /*PNMPI_NEW_BFD_API*/
+#else // BFD_SUPPORTS_PLUGINS == 1
           ptr = &output_bfd->next;
-#endif /*PNMPI_NEW_BFD_API*/
+#endif
 
           last_element = this_element;
 

@@ -40,9 +40,6 @@
 /* Built with BFD support. */
 #cmakedefine PNMPI_HAVE_BFD 1
 
-/* Built with new BFD API. */
-#cmakedefine PNMPI_NEW_BFD_API 1
-
 /* Locations of PnMPI directories in the install tree */
 #define PNMPI_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 #define PNMPI_INCLUDE_DIR          "@CMAKE_INSTALL_PREFIX@/include"

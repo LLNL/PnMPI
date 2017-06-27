@@ -87,8 +87,3 @@ FOREACH (type ${HandleConvertMacros})
     check_mpi_function_exists(${type}_c2f "${variable}_C2F")
   endif ()
 ENDFOREACH (type)
-
-if (BFD_FOUND)
-  featureTest("ft_bfd_old_api.c" PNMPI_OLD_BFD_API)
-  featureTest("ft_bfd_new_api.c" PNMPI_NEW_BFD_API)
-endif ()
