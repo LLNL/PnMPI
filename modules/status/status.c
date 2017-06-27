@@ -155,14 +155,14 @@ int PNMPIMOD_Status_RequestStorage(int size)
 /*........................................................................*/
 /* Evaluate Status */
 
-int MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count)
+int MPI_Get_count(PNMPI_CONST MPI_Status *status, MPI_Datatype datatype, int *count)
 {
   int err;
   err=PMPI_Get_count(status, datatype, count);
   return err;
 }
 
-int MPI_Get_elements(MPI_Status *status, MPI_Datatype datatype, int *count)
+int MPI_Get_elements(PNMPI_CONST MPI_Status *status, MPI_Datatype datatype, int *count)
 {
   int err;
   err=PMPI_Get_elements(status, datatype, count);
@@ -201,7 +201,7 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype,
 /*........................................................................*/
 /* Send/Recv */
 
-int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
+int MPI_Sendrecv(PNMPI_CONST void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
 		 void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag,
 		 MPI_Comm comm, MPI_Status *status)
 {
