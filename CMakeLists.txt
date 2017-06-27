@@ -71,6 +71,13 @@ foreach (POL CMP0026 CMP0042)
 endforeach ()
 
 
+# Workaournd for this CMake issues:
+# https://cmake.org/pipermail/cmake/2010-November/040949.html
+if(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
+  set(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS "")
+endif()
+
+
 #======================================================================
 # RPATH setup.  Default is to rpath everything.  Set the option to
 # false if you don't want this behavior.
