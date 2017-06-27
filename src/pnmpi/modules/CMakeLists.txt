@@ -37,6 +37,7 @@ include(PnMPI_headers)
 # care about file locations after installation, especially if you use the
 # headers over multiple directories.
 pnmpi_add_private_header(modules.h)
+pnmpi_add_header(const.h)
 pnmpi_add_header(hooks.h)
 
 # Install the public man pages for this object.

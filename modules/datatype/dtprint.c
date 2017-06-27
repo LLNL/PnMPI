@@ -36,6 +36,7 @@
 #include <pnmpi/service.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 
 #define PNMPI_MODULE_DATATYPEPRINT "datatype-print"
@@ -96,13 +97,8 @@ int MPI_Init(int *argc, char ***argv)
 /*------------------------------------------------------------*/
 /* Isend */
 
-int MPI_Isend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
-  MPI_Request *req)
+int MPI_Isend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+              int tag, MPI_Comm comm, MPI_Request *req)
 {
   int done;
   PNMPIMOD_Datatype_Parameters_t ref;
@@ -149,12 +145,8 @@ int MPI_Isend(
 /*------------------------------------------------------------*/
 /* Send */
 
-int MPI_Send(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPI_Send(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+             int tag, MPI_Comm comm)
 {
   int done;
   PNMPIMOD_Datatype_Parameters_t ref;

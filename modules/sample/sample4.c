@@ -33,14 +33,11 @@
 
 #include <mpi.h>
 
-#include "pnmpi-config.h"
+#include <pnmpi/const.h>
 
-int MPI_Send(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int num, MPI_Datatype dtype, int node, int tag, MPI_Comm comm)
+
+int MPI_Send(PNMPI_CONST void *buf, int num, MPI_Datatype dtype, int node,
+             int tag, MPI_Comm comm)
 {
   int res;
 

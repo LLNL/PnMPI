@@ -28,26 +28,18 @@
  * LLNL-CODE-402774
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef PNMPI_CONST_H
+#define PNMPI_CONST_H
+
 
 #include <mpi.h>
 
-#include <pnmpi/const.h>
+
+#if MPI_VERSION == 3
+#define PNMPI_CONST const
+#else
+#define PNMPI_CONST
+#endif
 
 
-int MPI_Send(PNMPI_CONST void *buf, int num, MPI_Datatype dtype, int node,
-             int tag, MPI_Comm comm)
-{
-  int res;
-
-  printf("WRAPPER 2: Before send\n");
-  fflush(stdout);
-
-  res = PMPI_Send(buf, num, dtype, node, tag, comm);
-
-  printf("WRAPPER 2: After send\n");
-  fflush(stdout);
-
-  return res;
-}
+#endif
