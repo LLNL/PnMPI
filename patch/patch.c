@@ -992,9 +992,13 @@ copy_unknown_element:
 	  l->obfd = output_bfd;
 
 	  *ptr = output_bfd;
-	  //ptr = &output_bfd->next;
-	  ptr = &(output_bfd->link_next);	// new bfd?
-	  //	  output_bfd->id;
+
+#if BFD_SUPPORTS_PLUGINS==0
+	  //	  ptr = &output_bfd->next;
+	  ptr = &output_bfd->link_next;	// new bfd?
+#else // BFD_SUPPORTS_PLUGINS==1
+	  ptr = &(output_bfd->link.next);
+#endif
 
 	  
 
