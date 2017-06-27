@@ -113,6 +113,12 @@ typedef struct PNMPI_Global_descriptor_d
   PNMPI_Global_Addr_t addr;
 } PNMPI_Global_descriptor_t;
 
+#if MPI_VERSION==3
+#define PNMPI_CONST const
+#else
+#define PNMPI_CONST
+#endif
+
 
 /*.......................................................*/
 /* Functions */

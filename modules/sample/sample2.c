@@ -35,8 +35,9 @@ Boston, MA 02111-1307 USA
 #include <stdlib.h>
 
 #include <mpi.h>
+#include "pnmpimod.h"
 
-int MPI_Send(void* buf, int num, MPI_Datatype dtype, int node, 
+int MPI_Send(PNMPI_CONST void* buf, int num, MPI_Datatype dtype, int node, 
 	     int tag, MPI_Comm comm)
 {
   int res;
