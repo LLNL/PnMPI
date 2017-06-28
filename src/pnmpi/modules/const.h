@@ -35,6 +35,12 @@
 #include <mpi.h>
 
 
+/** \brief Placeholder for MPI-3 const qualifier.
+ *
+ * \details To get PnMPI portable for all versions, some functions need a const
+ *  qualifier for some parameters. This macro may be used instead of it and
+ *  expands to the const qualifier for supported MPI versions.
+ */
 #if MPI_VERSION == 3
 #define PNMPI_CONST const
 #else

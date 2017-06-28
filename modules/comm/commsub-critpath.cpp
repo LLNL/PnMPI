@@ -38,6 +38,8 @@
 #include <graphlib.h>
 #include <libunwind.h>
 
+#include <pnmpi/const.h>
+
 #define GLOBALTIME(t, n) ((n + 1) * 10000 + t)
 #define EXTRACTNODE(id) ((id / 10000) - 1)
 
@@ -234,23 +236,13 @@ void COMM_ALL_FINALIZE()
   graphlib_saveGraph(name, lgr);
 }
 
-void SEND_P2P_START(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype dt, int node, int tag, MPI_Comm comm, void **ptr,
-  int type)
+void SEND_P2P_START(PNMPI_CONST void *buf, int count, MPI_Datatype dt, int node,
+                    int tag, MPI_Comm comm, void **ptr, int type)
 {
 }
 
-void SEND_P2P_ASYNC_MID1(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype dt, int node, int tag, MPI_Comm comm, void **ptr,
-  int type)
+void SEND_P2P_ASYNC_MID1(PNMPI_CONST void *buf, int count, MPI_Datatype dt,
+                         int node, int tag, MPI_Comm comm, void **ptr, int type)
 {
   int old_timestamp;
   int pbdata[2];
@@ -280,13 +272,9 @@ void SEND_P2P_ASYNC_MID1(
   PMPI_Send(&pbdata, 1, MPI_INT, node, tag, comm);
 }
 
-void SEND_P2P_END(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype dt, int node, int tag, MPI_Comm comm, int err,
-  void **ptr, void **midptr, int type)
+void SEND_P2P_END(PNMPI_CONST void *buf, int count, MPI_Datatype dt, int node,
+                  int tag, MPI_Comm comm, int err, void **ptr, void **midptr,
+                  int type)
 {
   if (type != PNMPIMOD_COMM_ASYNC_P2P)
     {

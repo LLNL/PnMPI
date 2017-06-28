@@ -30,7 +30,6 @@
 include(CheckCSourceCompiles)
 include(CheckFortranMPIFunctionExists)
 include(CheckFunctionExists)
-include(CheckMPIConstCorrectness)
 include(CheckMPIFunctionExists)
 include(CheckMPISymbolExists)
 
@@ -61,9 +60,6 @@ IF (CMAKE_Fortran_COMPILER_WORKS)
   check_fortran_mpi_function_exists(MPI_INIT_THREAD
     HAVE_MPI_INIT_THREAD_Fortran)
 ENDIF (CMAKE_Fortran_COMPILER_WORKS)
-
-# MPI3 defines some args constant
-check_mpi_const_correctness(HAVE_MPI3_CONST_ARGS)
 
 check_mpi_function_exists(MPI_Type_create_indexed_block
   HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK)

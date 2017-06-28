@@ -29,6 +29,7 @@
  */
 
 #include <datatype.h>
+#include <pnmpi/const.h>
 #include <requests.h>
 
 #if 0
@@ -125,27 +126,14 @@ void COMM_ALL_PREINIT(int argc, char **argv);
 void PRE_COMM_ALL_INIT(int argc, char **argv);
 void COMM_ALL_FINALIZE();
 
-void SEND_P2P_START(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype dt, int node, int tag, MPI_Comm comm, void **ptr,
-  int type);
-void SEND_P2P_ASYNC_MID1(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype dt, int node, int tag, MPI_Comm comm, void **ptr,
-  int type);
-void SEND_P2P_END(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype dt, int node, int tag, MPI_Comm comm, int err,
-  void **ptr, void **midptr, int type);
+void SEND_P2P_START(PNMPI_CONST void *buf, int count, MPI_Datatype dt, int node,
+                    int tag, MPI_Comm comm, void **ptr, int type);
+void SEND_P2P_ASYNC_MID1(PNMPI_CONST void *buf, int count, MPI_Datatype dt,
+                         int node, int tag, MPI_Comm comm, void **ptr,
+                         int type);
+void SEND_P2P_END(PNMPI_CONST void *buf, int count, MPI_Datatype dt, int node,
+                  int tag, MPI_Comm comm, int err, void **ptr, void **midptr,
+                  int type);
 
 void RECV_P2P_START(void *buf, int count, MPI_Datatype dt, int node, int tag,
                     MPI_Comm comm, void **ptr, int type);

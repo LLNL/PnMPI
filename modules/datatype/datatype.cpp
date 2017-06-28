@@ -37,6 +37,7 @@
 #include <mpi.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 
 using namespace std;
@@ -539,13 +540,8 @@ int PNMPIMOD_Datatype_getSize(MPI_Datatype dt, int *sz)
 
 #ifdef INCLUDE_WRAPPERS
 
-int MPI_Isend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
-  MPI_Request *req)
+int MPI_Isend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+              int tag, MPI_Comm comm, MPI_Request *req)
 {
   int done;
   PNMPIMOD_Datatype_Parameters_t ref;
@@ -584,12 +580,8 @@ int MPI_Isend(
 }
 
 
-int MPI_Send(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPI_Send(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+             int tag, MPI_Comm comm)
 {
   int done;
   PNMPIMOD_Datatype_Parameters_t ref;

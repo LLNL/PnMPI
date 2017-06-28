@@ -34,6 +34,7 @@
 #include <pnmpi-config.h>
 #include <pnmpimod.h>
 
+#include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 
 #include "commsub.h"
@@ -85,27 +86,21 @@ void COMM_ALL_FINALIZE()
 }
 
 void SEND_P2P_START(
-#ifdef HAVE_MPI3_CONST_ARGS
-    const
-#endif // HAVE_MPI3_CONST_ARGS
+    PNMPI_CONST
     void *buf, int count, MPI_Datatype dt, int node, int tag,
 		    MPI_Comm comm, void **ptr, int type)
 {
 }
 
 void SEND_P2P_ASYNC_MID1(
-#ifdef HAVE_MPI3_CONST_ARGS
-    const
-#endif // HAVE_MPI3_CONST_ARGS
+    PNMPI_CONST
     void *buf, int count, MPI_Datatype dt, int node, int tag,
 			 MPI_Comm comm, void **ptr, int type)
 {
 }
 
 void SEND_P2P_END(
-#ifdef HAVE_MPI3_CONST_ARGS
-    const
-#endif // HAVE_MPI3_CONST_ARGS
+    PNMPI_CONST
     void *buf, int count, MPI_Datatype dt, int node, int tag,
 		  MPI_Comm comm, int err, void **ptr, void **midptr, int type)
 {
@@ -307,12 +302,8 @@ int MPI_Finalize(void)
 /*........................................................................*/
 /* Sync Sends */
 
-int MPI_Send(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPI_Send(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+             int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -324,12 +315,8 @@ int MPI_Send(
   return err;
 }
 
-int MPI_Bsend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPI_Bsend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+              int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -341,12 +328,8 @@ int MPI_Bsend(
   return err;
 }
 
-int MPI_Rsend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPI_Rsend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+              int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -358,12 +341,8 @@ int MPI_Rsend(
   return err;
 }
 
-int MPI_Ssend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPI_Ssend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+              int tag, MPI_Comm comm)
 {
   int err;
   void *ptr;
@@ -379,13 +358,8 @@ int MPI_Ssend(
 /*........................................................................*/
 /* Async Sends */
 
-int MPI_Isend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
-  MPI_Request *request)
+int MPI_Isend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
+              int tag, MPI_Comm comm, MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -398,13 +372,8 @@ int MPI_Isend(
   return err;
 }
 
-int MPI_Ibsend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
-  MPI_Request *request)
+int MPI_Ibsend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype,
+               int dest, int tag, MPI_Comm comm, MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -417,13 +386,8 @@ int MPI_Ibsend(
   return err;
 }
 
-int MPI_Irsend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
-  MPI_Request *request)
+int MPI_Irsend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype,
+               int dest, int tag, MPI_Comm comm, MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -436,13 +400,8 @@ int MPI_Irsend(
   return err;
 }
 
-int MPI_Issend(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
-  MPI_Request *request)
+int MPI_Issend(PNMPI_CONST void *buf, int count, MPI_Datatype datatype,
+               int dest, int tag, MPI_Comm comm, MPI_Request *request)
 {
   int err;
   void *ptr;
@@ -495,14 +454,10 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
 /*........................................................................*/
 /* Send/Recv */
 
-int MPI_Sendrecv(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf,
-  int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm,
-  MPI_Status *status)
+int MPI_Sendrecv(PNMPI_CONST void *sendbuf, int sendcount,
+                 MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf,
+                 int recvcount, MPI_Datatype recvtype, int source, int recvtag,
+                 MPI_Comm comm, MPI_Status *status)
 {
   int err;
   void *sptr = NULL, *rptr = NULL;
@@ -1054,13 +1009,9 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
 /*........................................................................*/
 /* Scatter */
 
-int MPI_Scatter(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
-  MPI_Datatype recvtype, int root, MPI_Comm comm)
+int MPI_Scatter(PNMPI_CONST void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
+                MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1178,21 +1129,9 @@ int MPI_Scatter(
 /*........................................................................*/
 /* Scatterv */
 
-int MPI_Scatterv(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *sendcounts,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *displs,
-  MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype,
-  int root, MPI_Comm comm)
+int MPI_Scatterv(PNMPI_CONST void *sendbuf, PNMPI_CONST int *sendcounts,
+                 PNMPI_CONST int *displs, MPI_Datatype sendtype, void *recvbuf,
+                 int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1309,13 +1248,9 @@ int MPI_Scatterv(
 /*........................................................................*/
 /* Gather */
 
-int MPI_Gather(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
-  MPI_Datatype recvtype, int root, MPI_Comm comm)
+int MPI_Gather(PNMPI_CONST void *sendbuf, int sendcount, MPI_Datatype sendtype,
+               void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
+               MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1433,21 +1368,10 @@ int MPI_Gather(
 /*........................................................................*/
 /* Gatherv */
 
-int MPI_Gatherv(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, void *recvbuf,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *recvcounts,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *displs,
-  MPI_Datatype recvtype, int root, MPI_Comm comm)
+int MPI_Gatherv(PNMPI_CONST void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                void *recvbuf, PNMPI_CONST int *recvcounts,
+                PNMPI_CONST int *displs, MPI_Datatype recvtype, int root,
+                MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1573,13 +1497,9 @@ int MPI_Gatherv(
 /*........................................................................*/
 /* Allgather */
 
-int MPI_Allgather(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
-  MPI_Datatype recvtype, MPI_Comm comm)
+int MPI_Allgather(PNMPI_CONST void *sendbuf, int sendcount,
+                  MPI_Datatype sendtype, void *recvbuf, int recvcount,
+                  MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1707,21 +1627,10 @@ int MPI_Allgather(
 /*........................................................................*/
 /* Allgatherv */
 
-int MPI_Allgatherv(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, void *recvbuf,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *recvcounts,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *displs,
-  MPI_Datatype recvtype, MPI_Comm comm)
+int MPI_Allgatherv(PNMPI_CONST void *sendbuf, int sendcount,
+                   MPI_Datatype sendtype, void *recvbuf,
+                   PNMPI_CONST int *recvcounts, PNMPI_CONST int *displs,
+                   MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1848,13 +1757,9 @@ int MPI_Allgatherv(
 /*........................................................................*/
 /* Alltoall */
 
-int MPI_Alltoall(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
-  MPI_Datatype recvtype, MPI_Comm comm)
+int MPI_Alltoall(PNMPI_CONST void *sendbuf, int sendcount,
+                 MPI_Datatype sendtype, void *recvbuf, int recvcount,
+                 MPI_Datatype recvtype, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -1979,29 +1884,11 @@ int MPI_Alltoall(
 /* alltoallv */
 // MPI_Alltoallv(const void *, const int *, const int *, MPI_Datatype={int},
 // void *, const int *, const int *, MPI_Datatype={int}, MPI_Comm={int}
-int MPI_Alltoallv(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *sendcounts,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *sdispls,
-  MPI_Datatype sendtype, void *recvbuf,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *recvcounts,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *rdispls,
-  MPI_Datatype recvtype, MPI_Comm comm)
+int MPI_Alltoallv(PNMPI_CONST void *sendbuf, PNMPI_CONST int *sendcounts,
+                  PNMPI_CONST int *sdispls, MPI_Datatype sendtype,
+                  void *recvbuf, PNMPI_CONST int *recvcounts,
+                  PNMPI_CONST int *rdispls, MPI_Datatype recvtype,
+                  MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2127,13 +2014,8 @@ int MPI_Alltoallv(
 /*........................................................................*/
 /* Reduce */
 
-int MPI_Reduce(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
-  MPI_Comm comm)
+int MPI_Reduce(PNMPI_CONST void *sendbuf, void *recvbuf, int count,
+               MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2217,12 +2099,8 @@ int MPI_Reduce(
 /*........................................................................*/
 /* allreduce */
 
-int MPI_Allreduce(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Allreduce(PNMPI_CONST void *sendbuf, void *recvbuf, int count,
+                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2309,17 +2187,9 @@ int MPI_Allreduce(
 /*........................................................................*/
 /* reduce/scatter */
 
-int MPI_Reduce_scatter(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  void *recvbuf,
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  int *recvcounts,
-  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Reduce_scatter(PNMPI_CONST void *sendbuf, void *recvbuf,
+                       PNMPI_CONST int *recvcounts, MPI_Datatype datatype,
+                       MPI_Op op, MPI_Comm comm)
 {
   int err;
   void *cptr;
@@ -2463,12 +2333,8 @@ int MPI_Reduce_scatter(
 /*........................................................................*/
 /* scan */
 
-int MPI_Scan(
-#ifdef HAVE_MPI3_CONST_ARGS
-  const
-#endif // HAVE_MPI3_CONST_ARGS
-  void *sendbuf,
-  void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Scan(PNMPI_CONST void *sendbuf, void *recvbuf, int count,
+             MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int err;
   void *cptr;
