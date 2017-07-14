@@ -40,6 +40,9 @@
  *  duplicate calls of the PnMPI wrappers, so the following variable may be used
  *  to detect these errornous redirections.
  *
+ * \note This value should not be changed directly by any function, but by using
+ *  the \ref pnmpi_reentry_enter and \ref pnmpi_reentry_exit functions.
+ *
  *
  * \private
  */

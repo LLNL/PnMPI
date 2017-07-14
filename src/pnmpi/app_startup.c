@@ -112,7 +112,7 @@ void pnmpi_app_startup(int argc, char **argv)
        * MPI function before. This guard is neccessary, as some (older) MPI
        * implementations send Fortran PMPI calls back to the C MPI interface, so
        * the MPI_Init wrappers would get called without initializing MPI. */
-      if (PNMPI_REENTRY_ENTER())
+      if (pnmpi_reentry_enter())
         abort();
 
       int err;
@@ -125,7 +125,7 @@ void pnmpi_app_startup(int argc, char **argv)
       pmpi_init_assert_(&err);
 #endif
 
-      PNMPI_REENTRY_EXIT();
+      pnmpi_reentry_exit();
       break;
 #endif
 

@@ -114,7 +114,7 @@ void mpi_init_(int *ierr)
    * wrappers. This is neccessary, as some (older) MPI implementations send
    * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
    * called twice. */
-  if (PNMPI_REENTRY_ENTER())
+  if (pnmpi_reentry_enter())
     {
       pmpi_init_(ierr);
       return;
@@ -197,7 +197,7 @@ void mpi_init_(int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init(&argc, &argv);
 
-  PNMPI_REENTRY_EXIT();
+  pnmpi_reentry_exit();
   return;
 }
 #endif
@@ -210,7 +210,7 @@ int MPI_Init(int *argc, char ***argv)
    * wrappers. This is neccessary, as some (older) MPI implementations send
    * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
    * called twice. */
-  if (PNMPI_REENTRY_ENTER())
+  if (pnmpi_reentry_enter())
     return PMPI_Init(argc, argv);
 
   /* Set the MPI interface language used to call MPI initialization. This will
@@ -230,7 +230,7 @@ int MPI_Init(int *argc, char ***argv)
 
   /* Exit the reentry-guarded wrapper section and return success of MPI
    * initialization. */
-  PNMPI_REENTRY_EXIT();
+  pnmpi_reentry_exit();
   return MPI_SUCCESS;
 }
 
@@ -320,7 +320,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
    * wrappers. This is neccessary, as some (older) MPI implementations send
    * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
    * called twice. */
-  if (PNMPI_REENTRY_ENTER())
+  if (pnmpi_reentry_enter())
     {
       pmpi_init_thread_(required, provided, ierr);
       return;
@@ -416,7 +416,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init_thread(&argc, &argv, *required, provided);
 
-  PNMPI_REENTRY_EXIT();
+  pnmpi_reentry_exit();
   return;
 }
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
@@ -430,7 +430,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
    * wrappers. This is neccessary, as some (older) MPI implementations send
    * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
    * called twice. */
-  if (PNMPI_REENTRY_ENTER())
+  if (pnmpi_reentry_enter())
     return PMPI_Init_thread(argc, argv, required, provided);
 
   /* Set the MPI interface language used to call MPI initialization. This will
@@ -466,7 +466,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 
   err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
 
-  PNMPI_REENTRY_EXIT();
+  pnmpi_reentry_exit();
   return err;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
@@ -539,7 +539,7 @@ int MPI_Finalize(void)
    * wrappers. This is neccessary, as some (older) MPI implementations send
    * Fortran PMPI calls back to the C MPI interface, so the wrappers would get
    * called twice. */
-  if (PNMPI_REENTRY_ENTER())
+  if (pnmpi_reentry_enter())
     return PMPI_Finalize();
 
 
@@ -576,7 +576,7 @@ int MPI_Finalize(void)
     err = PMPI_Finalize();
   dec_pnmpi_mpi_level();
 
-  PNMPI_REENTRY_EXIT();
+  pnmpi_reentry_exit();
   return err;
 }
 
