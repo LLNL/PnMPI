@@ -125,6 +125,7 @@ macro(easytest_hook_post_test TARGET CONFIG MAIN_SOURCE)
   set(PNMPI_MODULE_PATHS ${PROJECT_BINARY_DIR}/modules/comm
                          ${PROJECT_BINARY_DIR}/modules/datatype
                          ${PROJECT_BINARY_DIR}/modules/empty
+                         ${PROJECT_BINARY_DIR}/modules/limit-threading
                          ${PROJECT_BINARY_DIR}/modules/metrics
                          ${PROJECT_BINARY_DIR}/modules/requests
                          ${PROJECT_BINARY_DIR}/modules/sample

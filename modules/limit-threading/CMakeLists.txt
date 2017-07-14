@@ -27,7 +27,25 @@
 #
 # LLNL-CODE-402774
 
-# Recurse into subdirectories.
-add_subdirectory(limit-threading)
-add_subdirectory(metrics)
-add_subdirectory(wait-for-debugger)
+include(CheckMPIFunctionExists)
+
+
+# Check if MPI_Init_thread is available for C. Otherwise this module can't be
+# compiled and will be ignored.
+check_mpi_function_exists(MPI_Init_thread HAVE_MPI_INIT_THREAD_C)
+if (NOT HAVE_MPI_INIT_THREAD_C)
+  return()
+endif()
+
+
+include_directories(
+  ${PNMPI_HEADER_DIR}
+  ${MPI_C_INCLUDE_PATH})
+
+pnmpi_add_xmpi_module(limit-threading limit-threading.c)
+add_coverage(limit-threading)
+add_sanitizers(limit-threading)
+
+pnmpi_add_module_man(limit-threading module_limit_threading)
+
+install(TARGETS limit-threading DESTINATION lib/pnmpi-modules)

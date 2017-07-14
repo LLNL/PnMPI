@@ -27,7 +27,13 @@
 #
 # LLNL-CODE-402774
 
-# Recurse into subdirectories.
-add_subdirectory(limit-threading)
-add_subdirectory(metrics)
-add_subdirectory(wait-for-debugger)
+# As the limit-threading module is optional (because it depends on a MPI library
+# supporting MPI_Init_thread) check if the module has been built. Otherwise the
+# module can't be tested.
+if (NOT TARGET limit-threading)
+  return()
+endif()
+
+
+easy_add_test(PREFIX module_limit-threading SOURCES limit-threading.conf
+              NOBINARY)
