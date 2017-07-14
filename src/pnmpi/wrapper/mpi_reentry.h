@@ -32,6 +32,7 @@
 #define PNMPI_PRIVATE_MPI_REENTRY_H
 
 
+#include <pnmpi/private/attributes.h>
 #include <pnmpi/private/tls.h>
 
 
@@ -52,6 +53,7 @@ extern pnmpi_compiler_tls_keyword int pnmpi_mpi_reentry;
  *
  * \private
  */
+PNMPI_UNUSED
 static int pnmpi_reentry_enter(void)
 {
   return (pnmpi_mpi_reentry == 1 || pnmpi_mpi_reentry++);
@@ -63,6 +65,7 @@ static int pnmpi_reentry_enter(void)
  *
  * \private
  */
+PNMPI_UNUSED
 static void pnmpi_reentry_exit(void)
 {
   pnmpi_mpi_reentry = 0;
