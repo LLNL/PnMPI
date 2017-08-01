@@ -48,7 +48,7 @@ void hook_foo()
   printf("module %d: %s\n", h, __FUNCTION__);
 }
 
-void PNMPI_AppStartup()
+void PNMPI_Init(void)
 {
   PNMPI_modHandle_t h;
   PNMPI_Service_GetModuleSelf(&h);
@@ -78,11 +78,11 @@ void PNMPI_AppStartup()
  *
  * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  *
- * PASS-default_stack: module 0: PNMPI_AppStartup\nmodule 1: PNMPI_AppStartup\n
+ * PASS-default_stack: module 0: PNMPI_Init\nmodule 1: PNMPI_Init\n
  *
  * COMPILE_FLAGS-other_hook: -DHOOK_NAME=\"hook_foo\"
- * PASS-other_hook: module 0: PNMPI_AppStartup\nmodule 1: hook_foo\n
+ * PASS-other_hook: module 0: PNMPI_Init\nmodule 1: hook_foo\n
  *
  * COMPILE_FLAGS-newstack: -DNEWSTACK=\"foo\"
- * PASS-newstack: module 0: PNMPI_AppStartup\nmodule 3: PNMPI_AppStartup\n
+ * PASS-newstack: module 0: PNMPI_Init\nmodule 3: PNMPI_Init\n
  */

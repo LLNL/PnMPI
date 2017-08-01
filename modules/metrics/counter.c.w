@@ -99,11 +99,11 @@ static void init_counters(struct counter *c)
 }
 
 
-/** \brief PnMPI registration point.
+/** \brief PnMPI module initialization hook.
  *
  * \details This function sets all counters to zero.
  */
-void PNMPI_RegistrationPoint()
+void PNMPI_Init()
 {
   init_counters(&counters);
 }
@@ -148,10 +148,6 @@ int MPI_Pcontrol(const int level, ...)
  */
 int MPI_Finalize()
 {
-  /* Call original MPI_Finalize. */
-  int ret = XMPI_Finalize();
-
-
   /* Wait until all ranks have flushed their buffers to avoid rank output
    * between the statistics output. */
   fflush(stdout);
@@ -205,5 +201,6 @@ int MPI_Finalize()
   }
 
 
-  return ret;
+  /* Call original MPI_Finalize. */
+  return XMPI_Finalize();
 }

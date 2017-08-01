@@ -47,9 +47,8 @@
 #include <unistd.h>
 
 #include <pnmpi/debug_io.h>
-#include <pnmpi/hooks.h>
 #include <pnmpi/private/pmpi_assert.h>
-#include <pnmpi/service.h>
+#include <pnmpi/xmpi.h>
 
 
 /* OSX does not support HOST_NAME_MAX in limits.h. We'll ensure that it'll be
@@ -63,17 +62,17 @@
 #endif
 
 
-/** \brief \ref pnmpi_module_hooks::PNMPI_AppStartup module hook.
+/** \brief Print a message to stdout and wait for a specific time.
  *
- * \details This hook will be called just before main starts (or just after \ref
- *  MPI_Init, if constructors are unavailable) and prints the PID and (if it can
- *  be determined) the hostname of the rank.
+ * \details This function will be called by the \ref MPI_Init and \ref
+ *  MPI_Init_thread wrappers and prints the PID and (if it can be determined)
+ *  the hostname of the rank.
  *
  *
  * \memberof module_wait_for_debugger
  * \private
  */
-void PNMPI_AppStartup()
+static void wait_for_debugger()
 {
   /* Get the rank of this process and print rank, hostname and PID of this rank
    * to stdout. */
@@ -113,7 +112,24 @@ void PNMPI_AppStartup()
       if (rank == 0)
         printf("Done waiting.\n");
     }
+}
 
-  /* Call the hook in following modules. */
-  PNMPI_Service_CallHook("PNMPI_AppStartup");
+
+/** \brief MPI_Init wrapper.
+ */
+int MPI_Init(int *argc, char ***argv)
+{
+  int ret = XMPI_Init(argc, argv);
+  wait_for_debugger();
+  return ret;
+}
+
+
+/** \brief MPI_Init_thread wrapper.
+ */
+int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+{
+  int ret = XMPI_Init_thread(argc, argv, required, provided);
+  wait_for_debugger();
+  return ret;
 }

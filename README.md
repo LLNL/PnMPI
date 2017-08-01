@@ -230,17 +230,6 @@ You will need to set one environment variable to run PnMPI:
   * `PNMPI_BE_SILENT` will silence the PnMPI banner. For benchmark purposes you
     should also disable `ENABLE_DEBUG` in your CMake configuration. **Note:**
     Warnings on errors still will be printed.
-  * If you are using modules with the `PNMPI_AppStartup` hook, PnMPI trys to
-    detect the used MPI interface (C or Fortran) automatically by calling `nm`
-    on the instrumented application. However, you may set the MPI interface
-    language explictly with the `PNMPI_INTERFACE` environment variable or the
-    `--interface` flag of the PnMPI invocation tool.
-  * If you are using modules with the `PNMPI_AppStartup` hook, but your
-    application does not use the highest threading level, you may set the
-    requested MPI threading level via `PNMPI_THREADING_LEVEL` to decrease the
-    MPI overhead. *The level send by `MPI_Init_thread` will not be sufficient,
-    because MPI will be initialized in the constructors, if `PNMPI_AppStartup`
-    will be used.*
 
 
 A6a) Using the PnMPI invocation tool
@@ -544,20 +533,18 @@ have your environment set up correctly.
 D2) Limiting the threading level
 --------------------------------
 If your module is not thread safe or is only able to process a limited amount of
-threading, it may provide a const integer named `PNMPI_SupportedThreadingLevel`
-to define the maximum provided threading level of this module.
-
-E.g. if your module supports no thread safety at all, add the following lines to
-your module's code:
+threading, it should limit the required threading level in the `MPI_Init_thread`
+wrapper:
 
 ```C
-#include <mpi.h>
-#include <pnmpi/hooks.h>
+int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+{
+  if (required > MPI_THREAD_SINGLE)
+    required = MPI_THREAD_SINGLE;
 
-const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SINGLE;
+  return XMPI_Init_thread(argc, argv, required, provided);
+}
 ```
-
-*Note: Include the `pnmpi/hooks.h` header for type safety.*
 
 
 D3) Module hooks
@@ -565,31 +552,19 @@ D3) Module hooks
 At different points hooks will be called in all loaded modules. These can be
 used to trigger some functionality at a given time. All hooks have the return
 type `void` and are defined in `pnmpi/hooks.h`, which should be included for
-type safety. These hooks are:
+type safety. These following hooks will be called in all modules:
 
 * `PNMPI_RegistrationPoint`: This hook will be called just after the module has
   been loaded. It may be used to register the name of the module, services
-  provided by the module, etc. *(Called in all modules)*
-
-In addition the following hooks will behave like the MPI function wrappers. They
-will be called in the first module providing them at the current stack and each
-module has to call `PNMPI_Service_CallHook()` to recurse into the next level.
-The stack may be changed with `PNMPI_Service_CallHook_NewStack()`. These hooks
-are:
-
-* `PNMPI_AppStartup`: If a module provides an `PNMPI_AppStartup` hook, PnMPI
-  will initialize MPI in the applications constructor *before* `main` is started
-  and call the hook *(in the default stack)*. If PnMPI is unable to call it
-  before `main`, it will be called in the `MPI_Init` or `MPI_Init_thread`
-  wrappers just after the MPI environment has been initialized, but before
-  calling any other module.
-* `PNMPI_AppShutdown`: If a module provides an `PNMPI_AppShutdown` hook, PnMPI
-  will not call `PMPI_Finalize` in the `MPI_Finalize` wrapper, but keeps MPI
-  running until `main` has finished and calls the hook in the applications
-  destructor. After the hooks of all modules have been called *(in the default
-  stack)*, MPI will be shut down. If PnMPI is unable to call the destructor, it
-  will be called in the `MPI_Finalize` wrapper after calling all other modules
-  but before shutting down the MPI environment.
+  provided by the module, etc.
+* `PNMPI_UnregistrationPoint`: This hook will be called just before the module
+  will be unloaded. It may be used e.g. to free allocated memory.
+* `PNMPI_Init`: This hook will be called just after all modules have been
+  registered to initialize the module. It may be used to initialize the module's
+  to code and is communicate with other modules.
+* `PNMPI_Fini`: This hook will be called just before all modules will be
+  unregistered. The modules may communicate with each other and should execute
+  some final steps in here.
 
 *Note: You can use `PNMPI_Service_CallHook()` to call custom hooks in your
 modules. Just pass a custom hook name as first parameter.*

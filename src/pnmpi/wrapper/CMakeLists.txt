@@ -35,12 +35,14 @@ include(PnMPI_headers)
 # without getting conflicts about the used paths. Otherwise you'd have to take
 # care about file locations after installation, especially if you use the
 # headers over multiple directories.
+pnmpi_add_private_header(mpi_interface.h)
 pnmpi_add_private_header(mpi_reentry.h)
 
 
 include_directories(${PNMPI_HEADER_DIR})
 
 easy_add_library(pnmpi_wrapper OBJECT
+  mpi_interface.c
   mpi_reentry.c)
 
 foreach (target pnmpi_wrapper pnmpi_wrapper_pic)

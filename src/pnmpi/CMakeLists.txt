@@ -50,7 +50,6 @@ endif ()
 # errors, as easylib would select the static object library for the shared PnMPI
 # library.
 add_subdirectory(compiler)
-add_subdirectory(core)
 add_subdirectory(debug)
 add_subdirectory(modules)
 add_subdirectory(service)
@@ -73,7 +72,6 @@ install(FILES
           "${PNMPI_HEADER_DIR}/pnmpi/xmpi.h"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/pnmpi")
 
-pnmpi_add_private_header(app_hooks.h)
 pnmpi_add_private_header(config.h.in config.h)
 pnmpi_add_private_header(fallback_init.h)
 pnmpi_add_private_header(force_link.h)
@@ -114,11 +112,8 @@ set(PNMPI_LIB_SOURCES
 
   core.c
   wrapper.c
-  app_startup.c
-  app_shutdown.c
   print_banner.c
 
-  $<TARGET_OBJECTS:pnmpi_core>
   $<TARGET_OBJECTS:pnmpi_debug>
   $<TARGET_OBJECTS:pnmpi_modules>
   $<TARGET_OBJECTS:pnmpi_service>

@@ -32,9 +32,6 @@
  *
  * Note: This test cases check NOT, if the functionality of the specific hooks
  *       is correct, but only if they are called!
- *
- * Note: As PNMPI_AppStartup does initialize MPI, mpiexec must be used to not
- *       get OpenMPI into a deadlock.
  */
 
 #include <stdio.h> // printf
@@ -53,23 +50,24 @@ void HOOKNAME()
 }
 
 
-/* CONFIGS: RegistrationPoint PNMPI_AppStartup PNMPI_AppShutdown
+/* CONFIGS: RegistrationPoint UnregistrationPoint Init Fini
  *
  * MODTYPE: XMPI
  *
  * PNMPICONF: module @MODNAME@
  *
- * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
- * RUN:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
- * RUN:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  *
  *
  * COMPILE_FLAGS-RegistrationPoint: -DHOOKNAME=PNMPI_RegistrationPoint
  * PASS-RegistrationPoint: PNMPI_RegistrationPoint hit.
  *
- * COMPILE_FLAGS-PNMPI_AppStartup: -DHOOKNAME=PNMPI_AppStartup
- * PASS-PNMPI_AppStartup: PNMPI_AppStartup hit.
+ * COMPILE_FLAGS-UnregistrationPoint: -DHOOKNAME=PNMPI_UnregistrationPoint
+ * PASS-UnregistrationPoint: PNMPI_UnregistrationPoint hit.
  *
- * COMPILE_FLAGS-PNMPI_AppShutdown: -DHOOKNAME=PNMPI_AppShutdown
- * PASS-PNMPI_AppShutdown: PNMPI_AppShutdown hit.
+ * COMPILE_FLAGS-PNMPI_Init: -DHOOKNAME=PNMPI_Init
+ * PASS-PNMPI_Init: PNMPI_Init hit.
+ *
+ * COMPILE_FLAGS-PNMPI_Fini: -DHOOKNAME=PNMPI_Fini
+ * PASS-PNMPI_Fini: PNMPI_Fini hit.
  */

@@ -28,24 +28,24 @@
  * LLNL-CODE-402774
  */
 
-/* This test case checks, if PnMPI limits the threading level, if at least one
- * module does not support the full threading level of MPI. */
+#include <pnmpi/private/attributes.h>
+#include <pnmpi/private/modules.h>
 
-#include <pnmpi/hooks.h>
-
-#include <mpi.h>
-
-
-const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SINGLE;
-
-
-/* MODTYPE: XMPI
- * COMPILE_INCLUDES: @MPI_C_INCLUDE_PATH@
- * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
+/** \brief Unload all modules.
  *
- * PNMPICONF: module @MODNAME@
  *
- * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@
- * RUN:   @TESTBIN_MPI_C_THREADED@
- * PASS: provide a maximum of 0
+ * \private
  */
+PNMPI_INTERNAL
+void pnmpi_modules_unload(void)
+{
+  /* Trigger the PNMPI_Fini hook in all modules, so they may do some finaliza-
+   * tion steps before they will be unloaded. */
+  pnmpi_call_hook("PNMPI_Fini", PNMPI_CALL_HOOK_ALL_MODULES, 0);
+
+  /* Trigger the PNMPI_Unregister hook in all modules, so they may destruct
+   * initialized objects and free allocated memory. In constrast to the
+   * PNMPI_Fini hook above, the modules are not allowed to talk to each other in
+   * this hook, as there is no guaranty, that other hooks still exist. */
+  pnmpi_call_hook("PNMPI_UnregistrationPoint", PNMPI_CALL_HOOK_ALL_MODULES, 0);
+}

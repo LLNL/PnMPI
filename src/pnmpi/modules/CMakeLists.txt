@@ -58,7 +58,7 @@ include_directories(
 easy_add_library(pnmpi_modules OBJECT
   call_hook.c
   hook_activated.c
-  max_module_threading_level.c
+  unload.c
   valid_modhandle.c)
 
 foreach (target pnmpi_modules pnmpi_modules_pic)

@@ -37,7 +37,6 @@
 
 #include <mpi.h>
 
-#include "app_hooks.h"
 #include "core.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
@@ -90,7 +89,16 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   int returnVal = MPI_SUCCESS;
 
   inc_pnmpi_mpi_level();
-  if (IS_ACTIVATED(MPI_Init_ID))
+  if (NOT_ACTIVATED(MPI_Init_ID))
+    {
+#ifdef COMPILE_FOR_FORTRAN
+      if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN)
+        pmpi_init_(&returnVal);
+      else
+#endif
+        returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
+    }
+  else
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
 
   dec_pnmpi_mpi_level();
@@ -120,18 +128,9 @@ void mpi_init_(int *ierr)
       return;
     }
 
-  /* Set the MPI interface language used to call MPI initialization. This will
-   * be used as prefered method by pnmpi_get_mpi_interface. */
-  pnmpi_mpi_init_interface = PNMPI_INTERFACE_FORTRAN;
-
-  /* Initialize the MPI environment. This has to be done first, so the
-   * constructors can use this. If MPI has been initialized before (e.g. in
-   * pnmpi_app_startup), this won't be done a second time. */
-  if (!pnmpi_init_done)
-    {
-      pmpi_init_assert_(ierr);
-      pnmpi_init_done = 1;
-    }
+  /* Set the MPI interface language used to call MPI initialization, so NQJ_Init
+   * knows which MPI interface to initialize. */
+  pnmpi_set_mpi_interface_fortran();
 
 
   /* some code in here is taken from MPICH-1 */
@@ -197,8 +196,10 @@ void mpi_init_(int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init(&argc, &argv);
 
+  /* Exit the reentry-guarded wrapper section and reset the MPI interface used
+   * for this MPI call to the default one. */
   pnmpi_reentry_exit();
-  return;
+  pnmpi_reset_mpi_interface();
 }
 #endif
 
@@ -213,25 +214,15 @@ int MPI_Init(int *argc, char ***argv)
   if (pnmpi_reentry_enter())
     return PMPI_Init(argc, argv);
 
-  /* Set the MPI interface language used to call MPI initialization. This will
-   * be used as prefered method by pnmpi_get_mpi_interface. */
-  pnmpi_mpi_init_interface = PNMPI_INTERFACE_C;
+  /* Recurse into the MPI_Init wrapper. After the recursion reaches the bottom
+   * of the stack, the real PMPI_Init will be called and its return status
+   * returned. */
+  int status = PNMPI_Common_MPI_Init(argc, argv);
 
-  /* Initialize the MPI environment. This has to be done first, so the
-   * constructors can use this. If MPI has been initialized before (e.g. in
-   * pnmpi_app_startup), this won't be done a second time. */
-  if (!pnmpi_init_done)
-    {
-      PMPI_Init_assert(argc, argv);
-      pnmpi_init_done = 1;
-    }
-
-  PNMPI_Common_MPI_Init(argc, argv);
-
-  /* Exit the reentry-guarded wrapper section and return success of MPI
+  /* Exit the reentry-guarded wrapper section and return the status of the MPI
    * initialization. */
   pnmpi_reentry_exit();
-  return MPI_SUCCESS;
+  return status;
 }
 
 int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
@@ -262,6 +253,23 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
         }
     }
 
+  if (pnmpi_init_done)
+    {
+      DBGPRINT3("Duplicated: calling a original MPI in MPI_Init");
+      res = MPI_SUCCESS;
+    }
+  else
+    {
+      DBGPRINT3("Calling a original MPI in MPI_Init");
+#ifdef COMPILE_FOR_FORTRAN
+      if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN)
+        pmpi_init_(&res);
+      else
+#endif
+        res = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
+      pnmpi_init_done = 1;
+    }
+  DBGPRINT3("Done with original MPI in MPI_Init");
   pnmpi_level = start_level;
   return res;
 }
@@ -286,14 +294,18 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
   int returnVal = MPI_SUCCESS;
 
-
-  /* If the PNMPI_AppStartup hook is activated, we've initialized MPI before.
-   * Restore the provided value, MPI_Init_thread gave us in the constructor. */
-  if (pnmpi_hook_activated("PNMPI_AppStartup", 0))
-    *provided = pnmpi_mpi_thread_level_provided;
-
   inc_pnmpi_mpi_level();
-  if (IS_ACTIVATED(MPI_Init_thread_ID))
+  if (NOT_ACTIVATED(MPI_Init_thread_ID))
+    {
+#ifdef COMPILE_FOR_FORTRAN
+      if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN)
+        pmpi_init_thread_(&required, provided, &returnVal);
+      else
+#endif
+        returnVal =
+          PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+    }
+  else
     returnVal =
       Internal_XMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
 
@@ -326,32 +338,10 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
       return;
     }
 
-  /* Set the MPI interface language used to call MPI initialization. This will
-   * be used as prefered method by pnmpi_get_mpi_interface. */
-  pnmpi_mpi_init_interface = PNMPI_INTERFACE_FORTRAN;
+  /* Set the MPI interface language used to call MPI initialization, so
+   * NQJ_Init_thread knows which MPI interface to initialize. */
+  pnmpi_set_mpi_interface_fortran();
 
-  /* Initialize the MPI environment. This has to be done first, so the
-   * constructors can use this. If MPI has been initialized before (e.g. in
-   * pnmpi_app_startup), this won't be done a second time. */
-  if (!pnmpi_init_done)
-    {
-      /* Check the maximum threading level of all activated modules. If the
-       * application requires a higher threading level as the supported maximum
-       * level of all modules, the level will be downgraded. */
-      int max_level = pnmpi_max_module_threading_level();
-      if (*required > max_level)
-        {
-          PNMPI_Warning("The application requested a MPI threading level of "
-                        "%d, but the combination of the selected PnMPI modules "
-                        "provide a maximum of %d. The threading level will be "
-                        "downgraded.\n",
-                        *required, max_level);
-          *required = max_level;
-        }
-
-      pmpi_init_thread_assert_(required, provided, ierr);
-      pnmpi_init_done = 1;
-    }
 
   /* some code in here is taken from MPICH-1 */
 
@@ -416,8 +406,10 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init_thread(&argc, &argv, *required, provided);
 
+  /* Exit the reentry-guarded wrapper section and reset the MPI interface used
+   * for this MPI call to the default one. */
   pnmpi_reentry_exit();
-  return;
+  pnmpi_reset_mpi_interface();
 }
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
 #endif
@@ -433,39 +425,13 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
   if (pnmpi_reentry_enter())
     return PMPI_Init_thread(argc, argv, required, provided);
 
-  /* Set the MPI interface language used to call MPI initialization. This will
-   * be used as prefered method by pnmpi_get_mpi_interface. */
-  pnmpi_mpi_init_interface = PNMPI_INTERFACE_C;
+  /* Recurse into the MPI_Init wrapper. After the recursion reaches the bottom
+   * of the stack, the real PMPI_Init will be called and its return status
+   * returned. */
+  int err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
 
-  /* Initialize the MPI environment. This has to be done first, so the
-   * constructors can use this. If MPI has been initialized before (e.g. in
-   * pnmpi_app_startup), this won't be done a second time. */
-  if (!pnmpi_init_done)
-    {
-      /* Check the maximum threading level of all activated modules. If the
-       * application requires a higher threading level as the supported maximum
-       * level of all modules, the level will be downgraded. */
-      int max_level = pnmpi_max_module_threading_level();
-      if (required > max_level)
-        {
-          PNMPI_Warning("The application requested a MPI threading level of "
-                        "%d, but the combination of the selected PnMPI modules "
-                        "provide a maximum of %d. The threading level will be "
-                        "downgraded.\n",
-                        required, max_level);
-          required = max_level;
-        }
-
-      PMPI_Init_thread_assert(argc, argv, required, provided);
-      pnmpi_init_done = 1;
-    }
-
-  int err;
-
-  DBGPRINT3("Entering Old MPI_Init_thread at base level");
-
-  err = PNMPI_Common_MPI_Init_thread(argc, argv, required, provided);
-
+  /* Exit the reentry-guarded wrapper section and return the status of the MPI
+   * initialization. */
   pnmpi_reentry_exit();
   return err;
 }
@@ -514,7 +480,7 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
       DBGPRINT3("Calling a original MPI in MPI_Init_thread");
 #ifdef COMPILE_FOR_FORTRAN
 #ifdef HAVE_MPI_INIT_THREAD_Fortran
-      if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
+      if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN)
         pmpi_init_thread_(&_required, _provided, &res);
       else
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
@@ -548,34 +514,30 @@ int MPI_Finalize(void)
   DBGPRINT3("Entering Old MPI_Finalize at base level - Location = %px",
             &(MPI_Finalize));
 
+  inc_pnmpi_mpi_level();
   if (NOT_ACTIVATED(MPI_Finalize_ID))
     {
+#ifdef COMPILE_FOR_FORTRAN
+      if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN)
+        pmpi_finalize_(&err);
+      else
+#endif
+        err = PMPI_Finalize();
     }
   else
     {
       err = Internal_XMPI_Finalize();
     }
+  dec_pnmpi_mpi_level();
 
   /* Call the fallback destructor. If PnMI detects that its destructors wouldn't
    * be called, this function calls all, except those which MUST be called after
    * the execution of main. */
   pnmpi_fallback_fini();
 
-  /* If the PNMPI_AppShutdown hook is provided by any module, do NOT call the
-   * original MPI_Finalize function, because it will be called in
-   * pnmpi_app_shutdown. */
-  if (pnmpi_hook_activated("PNMPI_AppShutdown", 0))
-    return MPI_SUCCESS;
 
-  inc_pnmpi_mpi_level();
-#ifdef COMPILE_FOR_FORTRAN
-  if (pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN)
-    pmpi_finalize_(&err);
-  else
-#endif
-    err = PMPI_Finalize();
-  dec_pnmpi_mpi_level();
-
+  /* Exit the reentry-guarded wrapper section and return the status of the MPI
+   * finalization. */
   pnmpi_reentry_exit();
   return err;
 }
@@ -609,7 +571,12 @@ int NQJ_Finalize(void)
     }
 
   DBGPRINT3("Calling a original MPI in MPI_Finalize");
-  res = MPI_SUCCESS;
+#ifdef COMPILE_FOR_FORTRAN
+  if (pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN)
+    pmpi_finalize_(&res);
+  else
+#endif
+    res = PMPI_Finalize();
   DBGPRINT3("Done with original MPI in MPI_Finalize");
   pnmpi_level = start_level;
   return res;
@@ -618,8 +585,14 @@ int NQJ_Finalize(void)
 #ifdef COMPILE_FOR_FORTRAN
 void mpi_finalize_(int *ierr)
 {
+  /* Set the MPI interface language used to call MPI finalization, so
+   * MPI_Finalize and NQJ_Finalize know which MPI interface to finalize. */
+  pnmpi_set_mpi_interface_fortran();
+
   *ierr = MPI_Finalize();
-  return;
+
+  /* Reset the MPI interface used for this MPI call to the default one. */
+  pnmpi_reset_mpi_interface();
 }
 #endif
 

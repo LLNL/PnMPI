@@ -98,15 +98,10 @@ void pnmpi_print_banner(void)
 
   /* Print information about the instrumented application. */
   printf(" Application:\n  MPI interface: %s\n\n",
-         pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_C
-           ? "C"
 #ifdef ENABLE_FORTRAN
-           : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_FORTRAN
-               ? "Fortran"
+         pnmpi_get_mpi_interface() == PNMPI_INTERFACE_FORTRAN ? "Fortran" :
 #endif
-               : pnmpi_get_mpi_interface(NULL) == PNMPI_INTERFACE_NONE
-                   ? "none"
-                   : "unknown");
+                                                              "C");
 
 
   /* If no modules have been loaded, no information can be printed about them,

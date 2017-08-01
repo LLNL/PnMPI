@@ -36,7 +36,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "app_hooks.h"
 #include "core.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
@@ -770,6 +769,10 @@ void pnmpi_PreInit(void)
    * (done now as to load arguments first)
    */
   pnmpi_call_hook(PNMPI_REGISTRATION_POINT, PNMPI_CALL_HOOK_ALL_MODULES, 0);
+
+  /* After all hooks have been registered, call the module initialization hook.
+   * Modules may access other modules in this hook. */
+  pnmpi_call_hook("PNMPI_Init", PNMPI_CALL_HOOK_ALL_MODULES, 0);
 
 /* if we are debugging, print the parsed information */
 

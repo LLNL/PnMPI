@@ -28,39 +28,22 @@
  * LLNL-CODE-402774
  */
 
-/* The following test cases will be used to check if PnMPI detects the language
- * of the instrumented application right.
+#include <pnmpi/private/attributes.h>
+#include <pnmpi/private/mpi_interface.h>
+
+
+/** \brief MPI interface used for an MPI call.
  *
- * The AppStartup and AppShutdown hooks will be used to initialize and finalize
- * MPI, so this test case can be used with non-mpi applications, too. */
-
-#include <pnmpi/hooks.h>
-
-
-void PNMPI_AppStartup()
-{
-}
-
-void PNMPI_AppShutdown()
-{
-}
-
-
-/* CONFIGS: env nm
+ * \details This variable stores the MPI interface used by the application for
+ *  an MPI call. By default the interface is \ref PNMPI_INTERFACE_C, but by
+ *  entering a Fortran MPI wrapper function, this will be set to \ref
+ *  PNMPI_INTERFACE_FORTRAN.
  *
- * MODTYPE: XMPI
+ * \note This value should not be changed directly by any function, but by using
+ *  the \ref pnmpi_reentry_enter and \ref pnmpi_reentry_exit functions.
  *
- * PNMPICONF: module @MODNAME@
  *
- * RUN-env: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
- * RUN-env:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
- * RUN-env:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_NOMPI@
- * ENVIRONMENT-env: PNMPI_INTERFACE=Fortran
- * PASS-env: MPI interface: Fortran
- *
- * RUN-nm: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
- * RUN-nm:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
- * RUN-nm:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@
- * RUN-nm:   @TESTBIN_MPI_FORTRAN@
- * PASS-nm: MPI interface: Fortran
+ * \private
  */
+PNMPI_INTERNAL
+pnmpi_mpi_interface pnmpi_used_mpi_interface = PNMPI_INTERFACE_C;

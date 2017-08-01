@@ -44,7 +44,7 @@
  *
  * \warning Do not use this function in
  *  \ref pnmpi_module_hooks::PNMPI_RegistrationPoint, but only in recursive
- *  hooks like \ref pnmpi_module_hooks::PNMPI_AppStartup.
+ *  hooks like custom ones.
  *
  *
  * \param hook Name of the hook to call. Use \ref PNMPI_HOOK_SAME for recursing

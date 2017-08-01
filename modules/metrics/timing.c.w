@@ -106,11 +106,11 @@ static void init_counters(struct timing_storage *t)
 }
 
 
-/** \brief PnMPI registration point.
+/** \brief PnMPI module initialization hook.
  *
  * \details This function sets all counters to zero and initializes the module.
  */
-void PNMPI_RegistrationPoint()
+void PNMPI_Init()
 {
   init_counters(&timing_storage);
 
