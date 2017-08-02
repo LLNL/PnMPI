@@ -64,7 +64,7 @@ foreach (POL CMP0017 CMP0051)
   endif ()
 endforeach ()
 
-foreach (POL CMP0026 CMP0042)
+foreach (POL CMP0042)
   if (POLICY ${POL})
     cmake_policy(SET ${POL} OLD)
   endif ()
