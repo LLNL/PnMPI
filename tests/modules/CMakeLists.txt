@@ -27,6 +27,41 @@
 #
 # LLNL-CODE-402774
 
+# Custom post-test hook for the module tests.
+#
+# Set the PnMPI module path for the build and install directories, so the tests
+# may be executed before installation.
+macro(pnmpi_post_test TARGET CONFIG MAIN_SOURCE)
+  set(PNMPI_MODULE_PATHS ${PROJECT_BINARY_DIR}/modules/comm
+                         ${PROJECT_BINARY_DIR}/modules/datatype
+                         ${PROJECT_BINARY_DIR}/modules/empty
+                         ${PROJECT_BINARY_DIR}/modules/metrics
+                         ${PROJECT_BINARY_DIR}/modules/requests
+                         ${PROJECT_BINARY_DIR}/modules/sample
+                         ${PROJECT_BINARY_DIR}/modules/status
+                         ${PROJECT_BINARY_DIR}/modules/switch-matrix
+                         ${PROJECT_BINARY_DIR}/modules/timelapse
+                         ${PROJECT_BINARY_DIR}/modules/virtual
+                         ${PROJECT_BINARY_DIR}/modules/wait-for-debugger)
+  get_property(TMP TEST ${TARGET} PROPERTY ENVIRONMENT)
+  if (TMP)
+    foreach (VAR ${TMP})
+      if (VAR MATCHES "PNMPI_LIB_PATH=.*")
+        list(REMOVE_ITEM TMP "${VAR}")
+        set_property(TEST ${TARGET} PROPERTY ENVIRONMENT "${TMP}")
+
+        string(REPLACE "PNMPI_LIB_PATH=" "" VAR ${VAR})
+        string(REPLACE ":" ";" VAR "${VAR}")
+        list(APPEND PNMPI_MODULE_PATHS ${VAR})
+      endif ()
+    endforeach ()
+  endif ()
+  string(REPLACE ";" ":" PNMPI_MODULE_PATHS "${PNMPI_MODULE_PATHS}")
+  set_property(TEST ${TARGET} APPEND PROPERTY
+               ENVIRONMENT "PNMPI_LIB_PATH=${PNMPI_MODULE_PATHS}")
+endmacro()
+
+
 # Recurse into subdirectories.
 add_subdirectory(metrics)
 add_subdirectory(wait-for-debugger)

@@ -120,36 +120,6 @@ macro(easytest_hook_post_test TARGET CONFIG MAIN_SOURCE)
                  "PNMPI_PATH=${PROJECT_BINARY_DIR}/src/pnmpi")
   endif ()
 
-  # Set the PnMPI module path for the build and install directories, so the
-  # tests may be executed before installation.
-  set(PNMPI_MODULE_PATHS ${PROJECT_BINARY_DIR}/modules/comm
-                         ${PROJECT_BINARY_DIR}/modules/datatype
-                         ${PROJECT_BINARY_DIR}/modules/empty
-                         ${PROJECT_BINARY_DIR}/modules/metrics
-                         ${PROJECT_BINARY_DIR}/modules/requests
-                         ${PROJECT_BINARY_DIR}/modules/sample
-                         ${PROJECT_BINARY_DIR}/modules/status
-                         ${PROJECT_BINARY_DIR}/modules/switch-matrix
-                         ${PROJECT_BINARY_DIR}/modules/timelapse
-                         ${PROJECT_BINARY_DIR}/modules/virtual
-                         ${PROJECT_BINARY_DIR}/modules/wait-for-debugger)
-  get_property(TMP TEST ${TARGET} PROPERTY ENVIRONMENT)
-  if (TMP)
-    foreach (VAR ${TMP})
-      if (VAR MATCHES "PNMPI_LIB_PATH=.*")
-        list(REMOVE_ITEM TMP "${VAR}")
-        set_property(TEST ${TARGET} PROPERTY ENVIRONMENT "${TMP}")
-
-        string(REPLACE "PNMPI_LIB_PATH=" "" VAR ${VAR})
-        string(REPLACE ":" ";" VAR "${VAR}")
-        list(APPEND PNMPI_MODULE_PATHS ${VAR})
-      endif ()
-    endforeach ()
-  endif ()
-  string(REPLACE ";" ":" PNMPI_MODULE_PATHS "${PNMPI_MODULE_PATHS}")
-  set_property(TEST ${TARGET} APPEND PROPERTY
-               ENVIRONMENT "PNMPI_LIB_PATH=${PNMPI_MODULE_PATHS}")
-
   if (SANITIZE_ADDRESS)
     # OpenMPI does have memory leaks, which can't be suppressed by
     # LeakSanitizer, as they occur in an unknown module. If OpenMPI is used and
@@ -169,6 +139,12 @@ macro(easytest_hook_post_test TARGET CONFIG MAIN_SOURCE)
     # test file.
     set_property(TEST ${TARGET} APPEND PROPERTY FAIL_REGULAR_EXPRESSION
                  "LeakSanitizer" "AddressSanitizer")
+  endif ()
+
+  # If a test subdirectory defines a custom hook, this will be called after the
+  # regular post-processing.
+  if (COMMAND pnmpi_post_test)
+    pnmpi_post_test(${TARGET} "${CONFIG}" ${MAIN_SOURCE})
   endif ()
 endmacro ()
 
