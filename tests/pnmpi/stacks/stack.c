@@ -66,6 +66,8 @@ int MPI_Init(int *argc, char ***argv)
  * PNMPICONF: stack sample\n
  * PNMPICONF: module @MODNAME@
  *
- * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
+ * RUN:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  * PASS: Switching the stack.
  */

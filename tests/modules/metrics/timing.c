@@ -62,7 +62,9 @@ int main(int argc, char **argv)
  * LINK: @MPI_C_LIBRARIES@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
  *
- * RUN: @PNMPIZE@ -c @PNMPICONF@ @BINARY@
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
+ * RUN:   -c @PNMPICONF@ @BINARY@
  *
  * COMPILE_FLAGS-basic: @MPI_C_COMPILE_FLAGS@
  * PNMPICONF-basic: module metrics-timing

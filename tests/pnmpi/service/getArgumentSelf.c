@@ -73,7 +73,9 @@ void PNMPI_RegistrationPoint()
  * PNMPICONF: argument foo bar\n
  * PNMPICONF: argument bar foo\n
  *
- * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @PNMPIZE@ @MPIEXEC_POSTFLAGS@
+ * RUN:   -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
  *
  * PASS-found: GetArgument: foo=bar
  *

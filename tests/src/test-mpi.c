@@ -56,6 +56,9 @@ int main(int argc, char **argv)
  * LINK: @MPI_C_LIBRARIES@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
  *
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
+ *
  * DEPENDS-pnmpi-static: testbin-mpi-wrapper pnmpi_static
  * LINK-pnmpi-static: pnmpi_static @MPI_C_LIBRARIES@ dl m
  * PASS-pnmpi-static: No modules loaded.

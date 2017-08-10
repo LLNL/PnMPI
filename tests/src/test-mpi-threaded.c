@@ -61,5 +61,7 @@ int main(int argc, char **argv)
  * LINK: @MPI_C_LIBRARIES@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
  *
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
  * PASS: Required: [0-9]+ Provided: [0-9]+
  */
