@@ -158,6 +158,9 @@ features by adding the following flags to the `cmake` configuration command.
   * `-DENABLE_THREAD_SAFETY=OFF`: Build PnMPI without thread safety. PnMPI will
     limit the MPI threading level if this option is enabled, so it still will be
     thread safe. *Disable this option only for performance optimization.*
+  * `-DENABLE_PNMPIZE=OFF`: Don't build the PnMPI invocation tool and don't run
+    any tests for it. This option may be required when testing PnMPI at a
+    platform that doesn't support the `execvp()` syscall.
   * `-DENABLE_ADEPT_UTILS=ON`: Enable support for adept-utils, to check the
     module's symbols for their origin. *(Not supported with all compilers.)*
   * [CMake-codecov](https://github.com/RWTH-HPC/CMake-codecov) provides the
@@ -271,6 +274,10 @@ flag.
         sample1 (Pcontrol: 1)
       Stack foo:
     ...
+
+**Note:** The PnMPI invocation tool is not compatible with all platforms (e.g.
+BlueGene/Q), as it requires the `execvp()` function, which might not be
+supported.
 
 
 A7) RPATH settings

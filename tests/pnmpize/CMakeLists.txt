@@ -27,6 +27,31 @@
 #
 # LLNL-CODE-402774
 
+# If the PnMPIze tool will not be built, the following testcases can't be
+# executed.
+if (NOT ENABLE_PNMPIZE)
+  return()
+endif ()
+
+
+# Custom post-test hook for the PnMPIze tests.
+#
+macro(pnmpi_post_test TARGET CONFIG MAIN_SOURCE)
+  # Set the library path, so PnMPIze can find PnMPI even if it's not yet
+  # installed.
+  if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+      "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/pnmpi:$ENV{LD_LIBRARY_PATH}")
+  else ()
+    # As mac OS security features may delete the DYLD_LIBRARY_PATH and
+    # LD_LIBRARY_PATH variables under some circumstances, the alternate
+    # PNMPI_LIBRARY_PATH variable will be used in this case.
+    set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+                 "PNMPI_PATH=${PROJECT_BINARY_DIR}/src/pnmpi")
+  endif ()
+endmacro()
+
+
 easy_add_test(PREFIX pnmpize_exec SOURCES exec.conf NOBINARY)
 if (ENABLE_FORTRAN)
   easy_add_test(PREFIX pnmpize_exec_fortran SOURCES exec-fortran.conf NOBINARY)

@@ -38,10 +38,19 @@ C LLNL-CODE-402774
       end program firstmpi
 
 
+C CONFIGS: dynamic static
+C
 C COMPILE_INCLUDES: @MPI_Fortran_INCLUDE_PATH@
 C COMPILE_FLAGS: @MPI_Fortran_COMPILE_FLAGS@
-C LINK: @MPI_Fortran_LIBRARIES@
 C LINK_FLAGS: @MPI_Fortran_LINK_FLAGS@
 C
 C RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
 C RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
+C PASS: No modules loaded.
+C
+C
+C DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
+C LINK-dynamic: pnmpif @MPI_Fortran_LIBRARIES@
+C
+C DEPENDS-static: testbin-mpi-wrapper pnmpi_static
+C LINK-static: pnmpif_static @MPI_Fortran_LIBRARIES@ dl m

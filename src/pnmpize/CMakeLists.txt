@@ -27,6 +27,15 @@
 #
 # LLNL-CODE-402774
 
+# PnMPIze should be build by default. However, some platforms (like BlueGene/Q)
+# do not support switching the process with system calls like 'execvp', so the
+# PnMPIze tool can't be used at these platforms and may be disabled.
+option(ENABLE_PNMPIZE "Build the PnMPI invocation tool." on)
+if (NOT ENABLE_PNMPIZE)
+  return()
+endif ()
+
+
 include(GNUInstallDirs)
 include(PnMPI_headers)
 include(CChelper)
