@@ -62,224 +62,17 @@ before_install_tmpl: &before_install
   - brew link --overwrite gcc
 
 
-matrix:
+jobs:
   include:
-    # Ubuntu Precise (12.04 LTS) GCC builds.
-    - os: linux
-      compiler: gcc-4.4
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.4
-            - g++-4.4
-            - gfortran-4.4
-      before_script:
-      - export CC=gcc-4.4; export CXX=g++-4.4; export FC=gfortran-4.4
-    - os: linux
-      compiler: gcc-4.5
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.5
-            - g++-4.5
-            - gfortran-4.5
-      before_script:
-      - export CC=gcc-4.5; export CXX=g++-4.5; export FC=gfortran-4.5
-    - os: linux
-      compiler: gcc-4.6
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.6
-            - g++-4.6
-            - gfortran-4.6
-      before_script:
-      - export CC=gcc-4.6; export CXX=g++-4.6; export FC=gfortran-4.6
-
-    # Ubuntu Trusty (14.04 LTS) GCC builds.
-    - os: linux
-      dist: trusty
-      sudo: false
-      compiler: gcc-4.6-trusty
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.6
-            - g++-4.6
-            - gfortran-4.6
-      before_script:
-      - export CC=gcc-4.6; export CXX=g++-4.6; export FC=gfortran-4.6
-    - os: linux
-      dist: trusty
-      sudo: false
-      compiler: gcc-4.7
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.7
-            - g++-4.7
-            - gfortran-4.7
-      before_script:
-      - export CC=gcc-4.7; export CXX=g++-4.7; export FC=gfortran-4.7
-    - os: linux
-      dist: trusty
-      sudo: false
-      compiler: gcc-4.8
-      before_script:
-      - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
-
-    # Clang builds for Precise and Trusty.
-    - os: linux
-      compiler: clang-3.4
-      sudo: false
-      before_script:
-        - export CC=clang; export CXX=clang++
-    - os: linux
-      dist: trusty
-      sudo: false
-      compiler: clang-3.5
-      before_script:
-        - export CC=clang; export CXX=clang++
-
-    # OSX builds.
-    - os: osx
-      osx_image: xcode7.3.1
-      compiler: clang
-      before_install: *before_install
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      before_install: *before_install
-    - os: osx
-      osx_image: xcode8.1
-      compiler: clang
-      before_install: *before_install
-    - os: osx
-      osx_image: xcode8.2
-      compiler: clang
-      before_install: *before_install
-
-    # OpenMPI builds.
-    - os: osx
-      osx_image: xcode8.2
-      compiler: gcc
-      before_install: *before_install
-      before_script:
-        - brew unlink mpich
-        - brew install openmpi
-        - export CC=$(ls /usr/local/bin/gcc-[0-9]*);
-          export CXX=$(ls /usr/local/bin/g++-[0-9]*)
-        - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
-          mkdir -p $TMPDIR
-      env:
-        - OpenMPI
-    - os: osx
-      osx_image: xcode8.2
-      compiler: clang
-      before_install: *before_install
-      before_script:
-        - brew unlink mpich
-        - brew install openmpi
-        - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
-          mkdir -p $TMPDIR
-      env:
-        - OpenMPI
-
-    # Build without Fortran.
-    - os: linux
-      dist: trusty
-      compiler: gcc
-      sudo: false
-      before_script:
-        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
-      env:
-        - NO_FORTRAN
-    - os: osx
-      osx_image: xcode8.2
-      compiler: clang
-      before_install: *before_install
-      before_script:
-        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
-      env:
-        - NO_FORTRAN
-
-    # Build with adept-utils.
-    - os: linux
-      dist: trusty
-      compiler: gcc
-      sudo: false
-      before_script:
-        - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
-      env:
-        - WITH_ADEPT
-    - os: osx
-      osx_image: xcode8.2
-      compiler: clang
-      before_install: *before_install
-      before_script:
-        - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
-      env:
-        - WITH_ADEPT
-
-    # Build with optimized configuration.
-    - os: linux
-      dist: trusty
-      compiler: gcc
-      sudo: false
-      before_script:
-        - export CMAKE_EXTRA_FLAGS="
-            -DENABLE_DEBUG=OFF
-            -DENABLE_THREAD_SAFETY=OFF
-          "
-      env:
-        - OPTIMIZED
-
-    # Build with Python 3 instead of the default Python 2 installed in Travis.
-    - os: linux
-      dist: trusty
-      compiler: gcc
-      sudo: false
-      before_script:
-        - export CMAKE_EXTRA_FLAGS="-DPYTHON_EXECUTABLE=$(which python3)"
-      env:
-        - PYTHON_3
-
-    # Check release packaging. This will only package the current version,
-    # unpack and change into this directory. The build will be done by the
-    # default script below.
-    - os: linux
-      dist: trusty
-      sudo: false
-      compiler: gcc-4.8
-      env:
-        - DEPLOY
-      before_script:
-        - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
-        - export PWD_SAVE=$PWD
-        - git clone https://github.com/Kentzo/git-archive-all.git
-            ../git-archive-all
-        - ln -s ../git-archive-all/git_archive_all.py
-            ../git-archive-all/git-archive-all
-        - export PATH="$PATH:$PWD/../git-archive-all"
-        - mkdir package && cd package
-        - ../extra/pack.sh
-        - tar xfvz *.tar.gz
-        - cd $(echo */)
-      script:
-        - ../../extra/build/ci.sh
+    # Compiliance checks
+    #
+    # Check the compiliance of the code first. If the code doesn't follow the
+    # coding standards, there is no sense in checking it, as the commit will be
+    # rejected anyway.
 
     # Check coding convention.
-    - os: linux
+    - stage: compiliance
+      os: linux
       dist: trusty
       sudo: false
       env:
@@ -313,7 +106,7 @@ matrix:
     # Check license in all files.
     - os: linux
       env:
-        LICENSE
+        LICENSE_HEADER
       addons:
         apt:
       git:
@@ -364,6 +157,250 @@ matrix:
               test \! -f error ;
           ' --tag-name-filter cat origin/master~1..HEAD
       after_success:
+
+
+    # Regular builds for OpenMPI.
+    #
+    # Check PnMPI builds for numerous versions of Linux and osx / mac OS with
+    # OpenMPI.
+
+    # Ubuntu Precise (12.04 LTS) GCC builds.
+    - stage: build OpenMPI
+      os: linux
+      compiler: gcc-4.4
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - gcc-4.4
+            - g++-4.4
+            - gfortran-4.4
+      before_script:
+      - export CC=gcc-4.4; export CXX=g++-4.4; export FC=gfortran-4.4
+    - os: linux
+      compiler: gcc-4.5
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - gcc-4.5
+            - g++-4.5
+            - gfortran-4.5
+      before_script:
+      - export CC=gcc-4.5; export CXX=g++-4.5; export FC=gfortran-4.5
+
+    # Ubuntu Trusty (14.04 LTS) GCC builds.
+    - os: linux
+      dist: trusty
+      sudo: false
+      compiler: gcc-4.6
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - gcc-4.6
+            - g++-4.6
+            - gfortran-4.6
+      before_script:
+      - export CC=gcc-4.6; export CXX=g++-4.6; export FC=gfortran-4.6
+    - os: linux
+      dist: trusty
+      sudo: false
+      compiler: gcc-4.7
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - gcc-4.7
+            - g++-4.7
+            - gfortran-4.7
+      before_script:
+      - export CC=gcc-4.7; export CXX=g++-4.7; export FC=gfortran-4.7
+    - os: linux
+      dist: trusty
+      sudo: false
+      compiler: gcc-4.8
+      before_script:
+      - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
+
+    # Clang builds for Precise and Trusty.
+    - os: linux
+      compiler: clang-3.4
+      sudo: false
+      before_script:
+        - export CC=clang; export CXX=clang++
+    - os: linux
+      dist: trusty
+      sudo: false
+      compiler: clang-3.5
+      before_script:
+        - export CC=clang; export CXX=clang++
+
+    # mac OS builds.
+    #
+    # Only XCode 8.2 will be tested, as the versions installed by homebrew
+    # should be representive for all osx / mac OS versions. Detailed testing
+    # will be done in the MPICH tests below.
+    - os: osx
+      osx_image: xcode8.2
+      compiler: gcc
+      before_install: *before_install
+      before_script:
+        - brew unlink mpich
+        - brew install openmpi
+        - export CC=$(ls /usr/local/bin/gcc-[0-9]*);
+          export CXX=$(ls /usr/local/bin/g++-[0-9]*)
+        - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
+          mkdir -p $TMPDIR
+    - os: osx
+      osx_image: xcode8.2
+      compiler: clang
+      before_install: *before_install
+      before_script:
+        - brew unlink mpich
+        - brew install openmpi
+        - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
+          mkdir -p $TMPDIR
+
+
+    # Regular builds for MPICH.
+    #
+    # Check PnMPI builds for numerous versions of osx / mac OS with MPICH. As
+    # MPICH is not available for Linux in Travis CI at the moment, this cannot
+    # be tested right now.
+
+    # OSX builds.
+    - stage: build MPICH
+      os: osx
+      osx_image: xcode7.3.1
+      compiler: clang
+      before_install: *before_install
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      before_install: *before_install
+    - os: osx
+      osx_image: xcode8.1
+      compiler: clang
+      before_install: *before_install
+    - os: osx
+      osx_image: xcode8.2
+      compiler: clang
+      before_install: *before_install
+
+
+    # Specialized builds.
+    #
+    # Test some special configurations for PnMPI that influence the behaviour of
+    # PnMPI and its testcases.
+
+    # Build without Fortran.
+    - stage: build specialized
+      os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
+      env:
+        - NO_FORTRAN
+    - os: osx
+      compiler: clang
+      before_install: *before_install
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
+      env:
+        - NO_FORTRAN
+
+    # Build with adept-utils.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
+      env:
+        - WITH_ADEPT
+    - os: osx
+      compiler: clang
+      before_install: *before_install
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
+      env:
+        - WITH_ADEPT
+
+    # Build without PnMPIze.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_PNMPIZE=off"
+      env:
+        - WITHOUT_PNMPIZE
+    - os: osx
+      compiler: clang
+      before_install: *before_install
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DENABLE_PNMPIZE=off"
+      env:
+        - WITHOUT_PNMPIZE
+
+    # Build with optimized configuration.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="
+            -DENABLE_DEBUG=OFF
+            -DENABLE_THREAD_SAFETY=OFF
+            -DCMAKE_BUILD_TYPE=Release
+          "
+      env:
+        - OPTIMIZED
+
+    # Build with Python 3 instead of the default Python 2 installed in Travis.
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: false
+      before_script:
+        - export CMAKE_EXTRA_FLAGS="-DPYTHON_EXECUTABLE=$(which python3)"
+      env:
+        - PYTHON_3
+
+
+    # Deploy checks
+    #
+    # Check release packaging. This will only package the current version,
+    # unpack and change into this directory. The build will be done by the
+    # default script below.
+    - stage: deploy
+      os: linux
+      dist: trusty
+      sudo: false
+      compiler: gcc-4.8
+      env:
+        - DEPLOY
+      before_script:
+        - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
+        - export PWD_SAVE=$PWD
+        - git clone https://github.com/Kentzo/git-archive-all.git
+            ../git-archive-all
+        - ln -s ../git-archive-all/git_archive_all.py
+            ../git-archive-all/git-archive-all
+        - export PATH="$PATH:$PWD/../git-archive-all"
+        - mkdir package && cd package
+        - ../extra/pack.sh
+        - tar xfvz *.tar.gz
+        - cd $(echo */)
+      script:
+        - ../../extra/build/ci.sh
 
 
 
