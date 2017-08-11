@@ -201,6 +201,21 @@ void mpi_init_(int *ierr)
   pnmpi_reentry_exit();
   pnmpi_reset_mpi_interface();
 }
+
+void MPI_INIT(int *ierr)
+{
+  mpi_init_(ierr);
+}
+
+void mpi_init(int *ierr)
+{
+  mpi_init_(ierr);
+}
+
+void mpi_init__(int *ierr)
+{
+  mpi_init_(ierr);
+}
 #endif
 
 
@@ -411,6 +426,22 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
   pnmpi_reentry_exit();
   pnmpi_reset_mpi_interface();
 }
+
+void MPI_INIT_THREAD(int *required, int *provided, int *ierr)
+{
+  mpi_init_thread_(required, provided, ierr);
+}
+
+void mpi_init_thread(int *required, int *provided, int *ierr)
+{
+  mpi_init_thread_(required, provided, ierr);
+}
+
+void mpi_init_thread__(int *required, int *provided, int *ierr)
+{
+  mpi_init_thread_(required, provided, ierr);
+}
+
 #endif /*HAVE_MPI_INIT_THREAD_Fortran*/
 #endif
 
@@ -593,6 +624,21 @@ void mpi_finalize_(int *ierr)
 
   /* Reset the MPI interface used for this MPI call to the default one. */
   pnmpi_reset_mpi_interface();
+}
+
+void MPI_FINALIZE(int *ierr)
+{
+  mpi_finalize_(ierr);
+}
+
+void mpi_finalize(int *ierr)
+{
+  mpi_finalize_(ierr);
+}
+
+void mpi_finalize__(int *ierr)
+{
+  mpi_finalize_(ierr);
 }
 #endif
 
@@ -880,6 +926,7 @@ int MPI_Pcontrol(int level, ...)
 }
 
 
+#ifdef COMPILE_FOR_FORTRAN
 void mpi_pcontrol_(int *level, int *ierr)
 {
   int i, ret;
@@ -920,6 +967,21 @@ void mpi_pcontrol_(int *level, int *ierr)
   return;
 }
 
+void MPI_PCONTROL(int *level, int *ierr)
+{
+  mpi_pcontrol_(level, ierr);
+}
+
+void mpi_pcontrol(int *level, int *ierr)
+{
+  mpi_pcontrol_(level, ierr);
+}
+
+void mpi_pcontrol__(int *level, int *ierr)
+{
+  mpi_pcontrol_(level, ierr);
+}
+
 /*-------------------------------------------------------------------*/
 /* special case for FORTRAN timing routines */
 
@@ -934,6 +996,22 @@ double mpi_wtick_(void)
     return Internal_XMPI_Wtick();
 }
 
+double MPI_WTICK(void)
+{
+  return mpi_wtick_();
+}
+
+double mpi_wtick(void)
+{
+  return mpi_wtick_();
+}
+
+double mpi_wtick__(void)
+{
+  return mpi_wtick_();
+}
+
+
 double mpi_wtime_(void)
 {
   DBGPRINT3("Entering Old Fortran mpi_wtime_ at base level - Location = %px",
@@ -945,6 +1023,22 @@ double mpi_wtime_(void)
     return Internal_XMPI_Wtime();
 }
 
+double MPI_WTIME(void)
+{
+  return mpi_wtime_();
+}
+
+double mpi_wtime(void)
+{
+  return mpi_wtime_();
+}
+
+double mpi_wtime__(void)
+{
+  return mpi_wtime_();
+}
+
+#endif
 
 /*-------------------------------------------------------------------*/
 /* The End. */
