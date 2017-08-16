@@ -47,6 +47,7 @@
 #include <pnmpi/private/mpi_reentry.h>
 #include <pnmpi/private/pmpi.h>
 #include <pnmpi/private/pmpi_assert.h>
+#include <pnmpi/private/tls.h>
 
 
 /* Map the old debug macros to the new debug functions and macros.
@@ -306,6 +307,19 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
    * constructor was called before this function. */
   pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
 
+
+#ifdef PNMPI_COMPILER_NO_TLS
+  /* If PnMPI has no thread local storage, it can't be used thread safe and the
+   * max. allowed thread level of MPI has to be limited. */
+  if (required > MPI_THREAD_SERIALIZED)
+    {
+      PNMPI_Warning("The application requested a MPI threading level of %d, "
+                    "but PnMPI is not compiled thread safe. MPI threading will "
+                    "be limited to 'MPI_THREAD_SERIALIZED'.\n",
+                    required);
+      required = MPI_THREAD_SERIALIZED;
+    }
+#endif
 
   int returnVal = MPI_SUCCESS;
 
