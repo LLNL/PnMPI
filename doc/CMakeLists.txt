@@ -60,24 +60,20 @@ if (BUILD_DOC)
   set(DOXYGEN_HTML_INDEX "${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
 
 
+  set(DOXYGEN_DEPENDENCIES pnmpi pnmpi-modules)
+  if (ENABLE_PNMPIZE)
+    list(APPEND DOXYGEN_DEPENDENCIES pnmpize)
+  endif ()
+  if (ENABLE_MODULES)
+    list(APPEND DOXYGEN_DEPENDENCIES
+         "${PROJECT_SOURCE_DIR}/modules/metrics/doc.c")
+  endif ()
+
   add_custom_command(OUTPUT ${DOXYGEN_HTML_INDEX}
                      COMMAND ${DOXYGEN_EXECUTABLE} ${PNMPI_DOXYFILE}
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      MAIN_DEPENDENCY ${PNMPI_DOXYFILE}
-                     DEPENDS
-                       pnmpi
-                       pnmpize
-                       commsub-empty commsub-print
-                       empty
-                       metrics-counter
-                         ${PROJECT_SOURCE_DIR}/modules/metrics/doc.c
-                       requests
-                       sample1 sample2 sample3 sample4
-                       status
-                       switch-matrix
-                       timelapse
-                       virtual
-                       wait-for-debugger
+                     DEPENDS ${DOXYGEN_DEPENDENCIES}
                      COMMENT "Generating documentation")
   add_custom_target(doc ALL DEPENDS ${DOXYGEN_HTML_INDEX})
 

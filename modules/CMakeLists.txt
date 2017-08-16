@@ -31,6 +31,20 @@ include(PnMPI_headers)
 include(PnMPI_modules)
 
 
+# Add a custom target to bundle all module targets. This target may be either
+# used by the user, but will be used especially for building the Doxygen
+# documentation, so the documentation will be rebuild, if any module changes.
+add_custom_target(pnmpi-modules)
+
+# Wrap calls to pnmpi_add_xmpi_module to add the module's target to the global
+# pnmpi-modules target. This can't be done directly in the original function, as
+# external projects and the testcases don't require this behaviour.
+macro(pnmpi_add_xmpi_module TARGET)
+  _pnmpi_add_xmpi_module(${ARGV})
+  add_dependencies(pnmpi-modules ${TARGET})
+endmacro()
+
+
 # Include directories for all modules.
 include_directories(${PNMPI_HEADER_DIR})
 

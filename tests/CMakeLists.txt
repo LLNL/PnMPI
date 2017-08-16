@@ -29,6 +29,7 @@
 
 include(easytest)
 include(PnMPI_headers)
+include(PnMPI_modules)
 
 find_package(codecov)
 find_package(MPI REQUIRED)
