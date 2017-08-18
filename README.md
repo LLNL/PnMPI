@@ -43,11 +43,11 @@ A1) Dependencies
 ----------------
 
   * [CMake](http://www.cmake.org) (at least version 2.8.11.2 is required).
-  * [binutils](https://www.gnu.org/software/binutils/) for the patcher utility
   * [argp](https://www.gnu.org/software/libc/manual/html_node/Argp.html) is
     usually included in glibc. However at macOS you have to install it from
     homebrew as `argp-standalone` package.
-  * libbfd and libiberty for pnmpi-patch. *(optional)*
+  * [binutils](https://www.gnu.org/software/binutils/) and libiberty for the
+    patcher utility *(optional)*
   * [Doxygen](www.doxygen.org) for generating the docs and man-pages.
     *(optional)*
   * [help2man](https://www.gnu.org/software/help2man/) for generating man-pages.
