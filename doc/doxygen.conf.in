@@ -55,8 +55,7 @@ PROJECT_NUMBER = "@PNMPI_VERSION@"
 # Note that you can specify absolute paths here, but also relative paths, which
 # will be relative from the directory where doxygen is started. This tag
 # requires that the tag FULL_PATH_NAMES is set to YES.
-STRIP_FROM_PATH = @PROJECT_SOURCE_DIR@ \
-                  @PROJECT_BINARY_DIR@/src/pnmpi
+STRIP_FROM_PATH = @PROJECT_SOURCE_DIR@ @PROJECT_BINARY_DIR@
 
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. Doxygen
 # uses this value to replace tabs by spaces in code fragments.
@@ -135,8 +134,14 @@ RECURSIVE = YES
 #
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
-EXCLUDE_PATTERNS = */CMakeLists.txt */*.cmake \
-                   @PROJECT_SOURCE_DIR@/src/pnmpi/*.h
+EXCLUDE_PATTERNS = */CMakeLists.txt */*.cmake                     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/compiler/*.h    \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/debug/*.h       \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/modules/*.h     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/service/*.h     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/wrapper/*.h     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/fallback_init.h \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/force_link.h
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
