@@ -309,7 +309,7 @@ void pnmpi_PreInit(void)
           return;
         }
 
-      sprintf(filename, "%s/%s", confdir, CONFNAME);
+      snprintf(filename, PNMPI_MODULE_FILENAMELEN, "%s/%s", confdir, CONFNAME);
       free(confdir);
       conffile = fopen(filename, "r");
       if (conffile == NULL)
@@ -344,7 +344,7 @@ void pnmpi_PreInit(void)
           return;
         }
 
-      sprintf(filename, "%s/%s", confdir, CONFNAME);
+      snprintf(filename, PNMPI_MODULE_FILENAMELEN, "%s/%s", confdir, CONFNAME);
       conffile = fopen(filename, "r");
       if (conffile == NULL)
         {
@@ -513,9 +513,9 @@ void pnmpi_PreInit(void)
                       WARNPRINT("Stack name too long - shortening it");
                     }
                   strncpy(modules.module[modules.num]->name, cmdargv[1],
-                          PNMPI_MODULE_FILENAMELEN);
+                          PNMPI_MODULE_FILENAMELEN - 4);
                   modules.module[modules.num]
-                    ->name[PNMPI_MODULE_FILENAMELEN - 1] = (char)0;
+                    ->name[PNMPI_MODULE_FILENAMELEN - 5] = (char)0;
 
                   /* I don't think we need this - seems copy and paste error
                      sprintf(modname,"%s/%s.so",libdir,modules.module[modules.num]->name);
@@ -572,10 +572,11 @@ void pnmpi_PreInit(void)
                       WARNPRINT("Module name too long - shortening it");
                     }
                   strncpy(modules.module[modules.num]->name, cmdargv[1],
-                          PNMPI_MODULE_FILENAMELEN);
+                          PNMPI_MODULE_FILENAMELEN - 4);
                   modules.module[modules.num]
-                    ->name[PNMPI_MODULE_FILENAMELEN - 1] = (char)0;
-                  sprintf(modname, "%s.so", modules.module[modules.num]->name);
+                    ->name[PNMPI_MODULE_FILENAMELEN - 5] = (char)0;
+                  snprintf(modname, PNMPI_MODULE_FILENAMELEN, "%s.so",
+                           modules.module[modules.num]->name);
 
                   /* The first module gets the pcontrol by default */
 

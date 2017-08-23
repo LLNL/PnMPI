@@ -94,7 +94,7 @@ typedef struct module_arg_d
 typedef struct module_def_d *module_def_p;
 typedef struct module_def_d
 {
-  module_name_t name;
+  char name[PNMPI_MODULE_FILENAMELEN - 4];
   module_name_t path;
   char username[PNMPI_MODULE_USERNAMELEN];
   int registered;
