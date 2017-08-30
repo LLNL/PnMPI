@@ -66,6 +66,13 @@ int *TotalStatusExtension;
                         *TotalStatusExtension, type, count, num)
 
 
+/* The MPI-2 standard deprecated a number of routines because MPI-2 provides
+ * better versions. The following macros will replace calls to the old functions
+ * by calls to the new ones. */
+#if MPI_VERSION >= 2
+#define PMPI_Type_extent(sendtype, e) PMPI_Type_get_extent(sendtype, NULL, e)
+#endif
+
 
 /*==========================================================================*/
 /* Actual Macros */
