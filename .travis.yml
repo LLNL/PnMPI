@@ -51,12 +51,12 @@ addons:
 # Install all required packages for OS X builds. The following solution was
 # inspired by http://stackoverflow.com/a/20802381
 before_install_tmpl: &before_install
-  - brew update --quiet >& /dev/null
+  - travis_retry brew update --quiet >& /dev/null
   - for pkg in gcc cmake mpich argp-standalone help2man doxygen; do
       if brew list -1 | grep -q "^${pkg}\$"; then
-        brew outdated $pkg || brew upgrade $pkg;
+        brew outdated $pkg || travis_retry brew upgrade $pkg;
       else
-        brew install $pkg;
+        travis_retry brew install $pkg;
       fi
     done
   - brew link --overwrite gcc
@@ -251,7 +251,7 @@ jobs:
       before_install: *before_install
       before_script:
         - brew unlink mpich
-        - brew install openmpi
+        - travis_retry brew install openmpi
         - export CC=$(ls /usr/local/bin/gcc-[0-9]*);
           export CXX=$(ls /usr/local/bin/g++-[0-9]*)
         - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
@@ -262,7 +262,7 @@ jobs:
       before_install: *before_install
       before_script:
         - brew unlink mpich
-        - brew install openmpi
+        - travis_retry brew install openmpi
         - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
           mkdir -p $TMPDIR
 
