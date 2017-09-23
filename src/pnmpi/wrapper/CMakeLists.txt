@@ -37,13 +37,15 @@ include(PnMPI_headers)
 # headers over multiple directories.
 pnmpi_add_private_header(mpi_interface.h)
 pnmpi_add_private_header(mpi_reentry.h)
+pnmpi_add_private_header(return_address.h)
 
 
 include_directories(${PNMPI_HEADER_DIR})
 
 easy_add_library(pnmpi_wrapper OBJECT
   mpi_interface.c
-  mpi_reentry.c)
+  mpi_reentry.c
+  return_address.c)
 
 foreach (target pnmpi_wrapper pnmpi_wrapper_pic)
   add_coverage(${target})

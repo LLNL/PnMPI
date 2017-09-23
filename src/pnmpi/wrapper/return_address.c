@@ -28,13 +28,23 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_PRIVATE_COMPILER_FEATURES_H
-#define PNMPI_PRIVATE_COMPILER_FEATURES_H
+#include <pnmpi/private/attributes.h>
+#include <pnmpi/private/return_address.h>
 
 
-#cmakedefine C11_THREAD_LOCAL_FOUND
-#cmakedefine THREADKEYWORD_FOUND
-#cmakedefine HAVE_BUILTIN_RETURN_ADDRESS
-
-
-#endif
+/** \brief The application's return address.
+ *
+ * \details This variable stores the application's return address. With
+ *  additional tools like `addr2line` this address may be translated into the
+ *  position in the source-code, where the application called the MPI call, e.g.
+ *  to print warnings to the user.
+ *
+ * \note This value should not be changed directly by any function, but by using
+ *  the \ref pnmpi_return_address_set and \ref pnmpi_return_address_reset
+ *  functions.
+ *
+ *
+ * \private
+ */
+PNMPI_INTERNAL
+pnmpi_compiler_tls_keyword void *pnmpi_return_address = NULL;

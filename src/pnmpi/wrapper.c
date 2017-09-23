@@ -47,6 +47,7 @@
 #include <pnmpi/private/mpi_reentry.h>
 #include <pnmpi/private/pmpi.h>
 #include <pnmpi/private/pmpi_assert.h>
+#include <pnmpi/private/return_address.h>
 #include <pnmpi/private/tls.h>
 
 
@@ -133,6 +134,10 @@ void mpi_init_(int *ierr)
    * knows which MPI interface to initialize. */
   pnmpi_set_mpi_interface_fortran();
 
+  /* Store the return address to the application, so modules may check the
+   * origin of this MPI call. */
+  pnmpi_return_address_set();
+
 
   /* some code in here is taken from MPICH-1 */
 
@@ -197,10 +202,11 @@ void mpi_init_(int *ierr)
 
   *ierr = PNMPI_Common_MPI_Init(&argc, &argv);
 
-  /* Exit the reentry-guarded wrapper section and reset the MPI interface used
-   * for this MPI call to the default one. */
+  /* Exit the reentry-guarded wrapper section, reset the MPI interface used for
+   * this MPI call and the return address to the default ones. */
   pnmpi_reentry_exit();
   pnmpi_reset_mpi_interface();
+  pnmpi_return_address_reset();
 }
 
 void MPI_INIT(int *ierr)
@@ -230,14 +236,19 @@ int MPI_Init(int *argc, char ***argv)
   if (pnmpi_reentry_enter())
     return PMPI_Init(argc, argv);
 
+  /* Store the return address to the application, so modules may check the
+   * origin of this MPI call. */
+  pnmpi_return_address_set();
+
   /* Recurse into the MPI_Init wrapper. After the recursion reaches the bottom
    * of the stack, the real PMPI_Init will be called and its return status
    * returned. */
   int status = PNMPI_Common_MPI_Init(argc, argv);
 
-  /* Exit the reentry-guarded wrapper section and return the status of the MPI
-   * initialization. */
+  /* Exit the reentry-guarded wrapper section, reset the return address of this
+   * MPI call and return the status of the MPI initialization. */
   pnmpi_reentry_exit();
+  pnmpi_return_address_reset();
   return status;
 }
 
@@ -371,6 +382,10 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
    * NQJ_Init_thread knows which MPI interface to initialize. */
   pnmpi_set_mpi_interface_fortran();
 
+  /* Store the return address to the application, so modules may check the
+   * origin of this MPI call. */
+  pnmpi_return_address_set();
+
 
   /* some code in here is taken from MPICH-1 */
 
@@ -439,6 +454,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
    * for this MPI call to the default one. */
   pnmpi_reentry_exit();
   pnmpi_reset_mpi_interface();
+  pnmpi_return_address_reset();
 }
 
 void MPI_INIT_THREAD(int *required, int *provided, int *ierr)
@@ -470,6 +486,10 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
   if (pnmpi_reentry_enter())
     return PMPI_Init_thread(argc, argv, required, provided);
 
+  /* Store the return address to the application, so modules may check the
+   * origin of this MPI call. */
+  pnmpi_return_address_set();
+
   /* Recurse into the MPI_Init wrapper. After the recursion reaches the bottom
    * of the stack, the real PMPI_Init will be called and its return status
    * returned. */
@@ -478,6 +498,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
   /* Exit the reentry-guarded wrapper section and return the status of the MPI
    * initialization. */
   pnmpi_reentry_exit();
+  pnmpi_return_address_reset();
   return err;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
@@ -553,6 +574,10 @@ int MPI_Finalize(void)
   if (pnmpi_reentry_enter())
     return PMPI_Finalize();
 
+  /* Store the return address to the application, so modules may check the
+   * origin of this MPI call. */
+  pnmpi_return_address_set();
+
 
   int err = MPI_ERR_UNKNOWN;
 
@@ -584,6 +609,7 @@ int MPI_Finalize(void)
   /* Exit the reentry-guarded wrapper section and return the status of the MPI
    * finalization. */
   pnmpi_reentry_exit();
+  pnmpi_return_address_reset();
   return err;
 }
 

@@ -27,6 +27,7 @@
 #
 # LLNL-CODE-402774
 
+include(CheckCSourceCompiles)
 include(PnMPI_headers)
 
 
@@ -44,6 +45,14 @@ if (NOT ENABLE_THREAD_SAFETY)
   set(C11_THREAD_LOCAL_FOUND false)
   set(THREADKEYWORD_FOUND false)
 endif ()
+
+# Check if the compiler supports getting the return address.
+check_c_source_compiles("
+  int main ()
+  {
+    void *p = __builtin_return_address(0);
+  }
+  " HAVE_BUILTIN_RETURN_ADDRESS)
 
 
 # Install and manage the public and private header files of the PnMPI sources.

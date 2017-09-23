@@ -28,13 +28,34 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_PRIVATE_COMPILER_FEATURES_H
-#define PNMPI_PRIVATE_COMPILER_FEATURES_H
+#include <assert.h>
+
+#include <pnmpi/private/compiler_features.h>
+#include <pnmpi/private/return_address.h>
+#include <pnmpi/service.h>
 
 
-#cmakedefine C11_THREAD_LOCAL_FOUND
-#cmakedefine THREADKEYWORD_FOUND
-#cmakedefine HAVE_BUILTIN_RETURN_ADDRESS
-
-
+/** \brief Get the application's return address.
+ *
+ * \details When entering a wrapped MPI function, PnMPI will store the return
+ *  address. Modules may use this address by calling this function to get the
+ *  origin of the error.
+ *
+ *
+ * \param [out] ptr Pointer where to store the return address.
+ *
+ * \return \ref PNMPI_SUCCESS The return address has been stored into \p ptr.
+ * \return \ref PNMPI_NOT_IMPLEMENTED This service is not implemented.
+ *
+ *
+ * \ingroup PNMPI_Service_GetReturnAddress
+ */
+PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr)
+{
+#ifdef HAVE_BUILTIN_RETURN_ADDRESS
+  *ptr = pnmpi_return_address_get();
+  return PNMPI_SUCCESS;
+#else
+  return PNMPI_NOT_IMPLEMENTED;
 #endif
+}

@@ -32,6 +32,8 @@
 #define PNMPI_SERVICE_H
 
 
+#include <stdint.h>
+
 #include <pnmpi/attributes.h>
 
 
@@ -55,7 +57,7 @@ typedef int PNMPI_modHandle_t;
 /// \brief PnMPI error codes.
 typedef enum pnmpi_status {
   PNMPI_SUCCESS = 0,    ///< Everything ok.
-  PNMPI_NOT_INIT = -1,  ///< Unused.
+  PNMPI_FAILURE = -1,   ///< An error occured.
   PNMPI_NOMEM = -2,     ///< Not enough memory to perform action.
   PNMPI_NOMODULE = -3,  ///< Requested module not found.
   PNMPI_NOSERVICE = -4, ///< Requested service not found.
@@ -63,7 +65,8 @@ typedef enum pnmpi_status {
   PNMPI_SIGNATURE = -6, /**< Signature is invalid or no global or service with a
                              matching signature can be found. */
   PNMPI_NOARG = -7,     ///< Requested argument not found.
-  PNMPI_NOSTACK = -8    ///< Requested stack not found.
+  PNMPI_NOSTACK = -8,   ///< Requested stack not found.
+  PNMPI_NOT_IMPLEMENTED = INT8_MIN ///< Service not implemented.
 } PNMPI_status_t;
 /// \}
 
@@ -206,6 +209,15 @@ PNMPI_FUNCTION_ARG_NONNULL(2)
 PNMPI_status_t PNMPI_Service_GetPcontrol(const PNMPI_modHandle_t handle,
                                          int *flag);
 int PNMPI_Service_GetPcontrolSelf(void);
+
+/** \defgroup PNMPI_Service_GetReturnAddress PNMPI_Service_GetReturnAddress
+ *
+ * \details These functions may be used to query debug information of the
+ *  application's MPI call.
+ *
+ * \header{pnmpi/service.h}
+ */
+PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr);
 
 /** \defgroup PNMPI_Service_CallHook PNMPI_Service_CallHook
  *
