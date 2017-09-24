@@ -27,22 +27,29 @@
 #
 # LLNL-CODE-402774
 
+# If PnMPI is built without modules, the following tests and subdirectories
+# should be skipped.
+if (NOT ENABLE_MODULES)
+  return()
+endif ()
+
+
 # Custom post-test hook for the module tests.
 #
 # Set the PnMPI module path for the build and install directories, so the tests
 # may be executed before installation.
 macro(pnmpi_post_test TARGET CONFIG MAIN_SOURCE)
-  set(PNMPI_MODULE_PATHS ${PROJECT_BINARY_DIR}/modules/comm
-                         ${PROJECT_BINARY_DIR}/modules/datatype
-                         ${PROJECT_BINARY_DIR}/modules/empty
-                         ${PROJECT_BINARY_DIR}/modules/metrics
-                         ${PROJECT_BINARY_DIR}/modules/requests
-                         ${PROJECT_BINARY_DIR}/modules/sample
-                         ${PROJECT_BINARY_DIR}/modules/status
-                         ${PROJECT_BINARY_DIR}/modules/switch-matrix
-                         ${PROJECT_BINARY_DIR}/modules/timelapse
-                         ${PROJECT_BINARY_DIR}/modules/virtual
-                         ${PROJECT_BINARY_DIR}/modules/wait-for-debugger)
+  set(PNMPI_MODULE_PATHS ${PROJECT_BINARY_DIR}/src/modules/comm
+                         ${PROJECT_BINARY_DIR}/src/modules/datatype
+                         ${PROJECT_BINARY_DIR}/src/modules/empty
+                         ${PROJECT_BINARY_DIR}/src/modules/metrics
+                         ${PROJECT_BINARY_DIR}/src/modules/requests
+                         ${PROJECT_BINARY_DIR}/src/modules/sample
+                         ${PROJECT_BINARY_DIR}/src/modules/status
+                         ${PROJECT_BINARY_DIR}/src/modules/switch-matrix
+                         ${PROJECT_BINARY_DIR}/src/modules/timelapse
+                         ${PROJECT_BINARY_DIR}/src/modules/virtual
+                         ${PROJECT_BINARY_DIR}/src/modules/wait-for-debugger)
   get_property(TMP TEST ${TARGET} PROPERTY ENVIRONMENT)
   if (TMP)
     foreach (VAR ${TMP})

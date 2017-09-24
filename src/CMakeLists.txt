@@ -27,6 +27,7 @@
 #
 # LLNL-CODE-402774
 
+add_subdirectory(modules)
 add_subdirectory(patch)
 add_subdirectory(pnmpi)
 add_subdirectory(pnmpize)

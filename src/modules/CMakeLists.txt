@@ -27,8 +27,18 @@
 #
 # LLNL-CODE-402774
 
+# Modules will be built by default. However, one may disable building the
+# modules, e.g. if only the PnMPI infrastructure is required.
+option(ENABLE_MODULES "Selects whether PnMPI modules are built." TRUE)
+if (NOT ENABLE_MODULES)
+  return()
+endif ()
+
+
 include(PnMPI_headers)
 include(PnMPI_modules)
+
+find_package(Sanitizers)
 
 
 # Add a custom target to bundle all module targets. This target may be either

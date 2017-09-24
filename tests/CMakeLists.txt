@@ -171,7 +171,4 @@ endif ()
 # should be to test components used by other tests first to find bugs early.
 add_subdirectory(pnmpize)
 add_subdirectory(pnmpi)
-
-if (ENABLE_MODULES)
-  add_subdirectory(modules)
-endif ()
+add_subdirectory(modules)

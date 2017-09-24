@@ -162,11 +162,6 @@ add_subdirectory(doc)
 add_subdirectory(externals)
 add_subdirectory(src)
 
-option(ENABLE_MODULES "Selects whether PnMPI modules are built." TRUE)
-if (ENABLE_MODULES)
-  add_subdirectory(modules)
-endif (ENABLE_MODULES)
-
 option(ENABLE_DEMO "Selects whether demo biraries are built." TRUE)
 if (ENABLE_DEMO)
   # The demos require the sample modules to be built. If they will not be built,
