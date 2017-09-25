@@ -34,7 +34,4 @@ pnmpi_add_pmpi_module(requests requests.cpp)
 install(FILES requests.h DESTINATION include)
 install(TARGETS requests DESTINATION lib/pnmpi-modules)
 
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_SOURCE_DIR}/src/modules/status
-  ${PROJECT_BINARY_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/src/modules/status)

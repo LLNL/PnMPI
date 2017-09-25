@@ -30,7 +30,6 @@
 
 #include "requests.h"
 #include <mpi.h>
-#include <pnmpimod.h>
 #include <status.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,6 +39,7 @@
 #include <map>
 
 #include <pnmpi/hooks.h>
+#include <pnmpi/service.h>
 
 using namespace std;
 
@@ -196,7 +196,7 @@ int allocate_new_reqtable()
   reqtable.reqs = (Req_Int_t *)realloc(
     reqtable.reqs, sizeof(Req_Int_t) * (reqtable.size + TABLE_SEGMENT_SIZE));
   if (reqtable.reqs == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
 
   if (reqtable.storage_stride > 0)
     {
@@ -204,7 +204,7 @@ int allocate_new_reqtable()
         (char *)realloc(reqtable.data, reqtable.storage_stride *
                                          (reqtable.size + TABLE_SEGMENT_SIZE));
       if (reqtable.data == NULL)
-        return MPI_ERROR_MEM;
+        return MPI_ERR_NO_MEM;
       for (i = 0; i < reqtable.size + TABLE_SEGMENT_SIZE; i++)
         reqtable.reqs[i].param.data =
           &(reqtable.data[i * reqtable.storage_stride]);
@@ -556,7 +556,7 @@ int MPI_Waitany(int count, MPI_Request *array_of_requests, int *index,
   check = CHECK_COPY(status);
   ra = (MPI_Request *)malloc(count * sizeof(MPI_Request));
   if (ra == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
   for (i = 0; i < count; i++)
     {
       ra[i] = array_of_requests[i];
@@ -587,7 +587,7 @@ int MPI_Testany(int count, MPI_Request *array_of_requests, int *index,
   check = CHECK_COPY(status);
   ra = (MPI_Request *)malloc(count * sizeof(MPI_Request));
   if (ra == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
   for (i = 0; i < count; i++)
     {
       ra[i] = array_of_requests[i];
@@ -621,7 +621,7 @@ int MPI_Waitall(int count, MPI_Request *array_of_requests,
   check = CHECK_COPY(array_of_statuses);
   ra = (MPI_Request *)malloc(count * sizeof(MPI_Request));
   if (ra == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
   for (i = 0; i < count; i++)
     {
       ra[i] = array_of_requests[i];
@@ -655,7 +655,7 @@ int MPI_Testall(int count, MPI_Request *array_of_requests, int *flag,
   check = CHECK_COPY(array_of_statuses);
   ra = (MPI_Request *)malloc(count * sizeof(MPI_Request));
   if (ra == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
   for (i = 0; i < count; i++)
     {
       ra[i] = array_of_requests[i];
@@ -692,7 +692,7 @@ int MPI_Waitsome(int count, MPI_Request *array_of_requests, int *outcount,
   check = CHECK_COPY(array_of_statuses);
   ra = (MPI_Request *)malloc(count * sizeof(MPI_Request));
   if (ra == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
   for (i = 0; i < count; i++)
     {
       ra[i] = array_of_requests[i];
@@ -729,7 +729,7 @@ int MPI_Testsome(int incount, MPI_Request *array_of_requests, int *outcount,
   check = CHECK_COPY(array_of_statuses);
   ra = (MPI_Request *)malloc(incount * sizeof(MPI_Request));
   if (ra == NULL)
-    return MPI_ERROR_MEM;
+    return MPI_ERR_NO_MEM;
   for (i = 0; i < incount; i++)
     {
       ra[i] = array_of_requests[i];
