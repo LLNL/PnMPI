@@ -38,7 +38,15 @@ C LLNL-CODE-402774
       end program firstmpi
 
 
-C CONFIGS: preload dynamic static
+C Note: There is no special test for preloading PnMPI by environment variables,
+C       as different MPI implementations handle environment variables in
+C       different ways and the setting the variables for the whole test
+C       environment interferres with additional tools like AddressSanitizer, as
+C       it would be preloaded for mpiexec, too. However, preloading is
+C       indirectly tested by the PnMPIze tests.
+C
+C
+C CONFIGS: dynamic static
 C
 C COMPILE_INCLUDES: @MPI_Fortran_INCLUDE_PATH@
 C COMPILE_FLAGS: @MPI_Fortran_COMPILE_FLAGS@
@@ -49,10 +57,6 @@ C RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
 C RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
 C PASS: No modules loaded.
 C
-C
-C ENVIRONMENT-preload: LD_PRELOAD=@LIBPNMPIF@
-C ENVIRONMENT-preload: DYLD_INSERT_LIBRARIES=@LIBPNMPIF@
-C ENVIRONMENT-preload: DYLD_FORCE_FLAT_NAMESPACE=1
 C
 C DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
 C LINK-dynamic: pnmpif @MPI_Fortran_LIBRARIES@
