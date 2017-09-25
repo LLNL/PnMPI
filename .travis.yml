@@ -164,35 +164,9 @@ jobs:
     # Check PnMPI builds for numerous versions of Linux and osx / mac OS with
     # OpenMPI.
 
-    # Ubuntu Precise (12.04 LTS) GCC builds.
+    # Ubuntu Trusty (14.04 LTS) GCC builds.
     - stage: build OpenMPI
       os: linux
-      compiler: gcc-4.4
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.4
-            - g++-4.4
-            - gfortran-4.4
-      before_script:
-      - export CC=gcc-4.4; export CXX=g++-4.4; export FC=gfortran-4.4
-    - os: linux
-      compiler: gcc-4.5
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - gcc-4.5
-            - g++-4.5
-            - gfortran-4.5
-      before_script:
-      - export CC=gcc-4.5; export CXX=g++-4.5; export FC=gfortran-4.5
-
-    # Ubuntu Trusty (14.04 LTS) GCC builds.
-    - os: linux
       dist: trusty
       sudo: false
       compiler: gcc-4.6
@@ -229,8 +203,9 @@ jobs:
 
     # Clang builds for Precise and Trusty.
     - os: linux
-      compiler: clang-3.4
+      dist: trusty
       sudo: false
+      compiler: clang-3.4
       before_script:
         - export CC=clang; export CXX=clang++
     - os: linux
