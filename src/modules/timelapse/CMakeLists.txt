@@ -28,13 +28,8 @@
 # LLNL-CODE-402774
 
 #Use macro to: add target for module, version it, install it, patch it
-pnmpi_add_pmpi_module(timelapse timelapse.c)
+pnmpi_add_xmpi_module(timelapse timelapse.c)
 
 #Add header to intermediate include dir
 install(FILES timelapse.h DESTINATION include)
 install(TARGETS timelapse DESTINATION lib/pnmpi-modules)
-
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-)

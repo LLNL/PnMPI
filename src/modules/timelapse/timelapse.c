@@ -30,11 +30,12 @@
 
 #include "timelapse.h"
 #include <mpi.h>
-#include <pnmpimod.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <pnmpi/hooks.h>
+#include <pnmpi/service.h>
+#include <pnmpi/xmpi.h>
 
 
 
@@ -77,22 +78,6 @@ void PNMPI_RegistrationPoint()
   _timelapse_off = PMPI_Wtime();
 }
 
-
-/*.......................................................*/
-/* Init */
-
-int MPI_Init(int *argc, char ***argv)
-{
-  int err;
-
-  err = PMPI_Init(argc, argv);
-
-  /* initial state is off */
-
-  return err;
-}
-
-
 /*------------------------------------------------------------*/
 /* External service routines */
 /* Comment: this routine is NOT thread safe, since it can
@@ -107,13 +92,13 @@ int PNMPIMOD_Timelapse_Switch(int onoff)
         {
           double diff;
           /* turned on now */
-          diff = PMPI_Wtime_NewStack(PNMPI_MAX_MOD) - _timelapse_off;
+          diff = PMPI_Wtime() - _timelapse_off;
           _timelapse_correct += diff;
         }
       else
         {
           /* turned off now */
-          _timelapse_off = PMPI_Wtime();
+          _timelapse_off = XMPI_Wtime();
         }
       _timelapse_status = onoff;
     }
@@ -128,7 +113,7 @@ int PNMPIMOD_Timelapse_Switch(int onoff)
 double MPI_Wtime()
 {
   if (_timelapse_status)
-    return PMPI_Wtime() - _timelapse_correct;
+    return XMPI_Wtime() - _timelapse_correct;
   else
     return _timelapse_off;
 }
