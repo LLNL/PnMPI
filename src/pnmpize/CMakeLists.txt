@@ -38,7 +38,6 @@ endif ()
 
 include(GNUInstallDirs)
 include(PnMPI_headers)
-include(CChelper)
 
 find_package(argp REQUIRED)
 find_package(help2man)
