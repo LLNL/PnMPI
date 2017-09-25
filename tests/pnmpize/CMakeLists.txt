@@ -52,6 +52,15 @@ macro(pnmpi_post_test TARGET CONFIG MAIN_SOURCE)
 endmacro()
 
 
+# Set an PNMPIZE variable for all test cases, so they may use it for calling
+# PnMPIze. If AddressSanitizer is enabled, an extra wrapper will be used, so
+# AddressSanitizer will be initialized.
+set(PNMPIZE "$<TARGET_FILE:pnmpize>")
+if (SANITIZE_ADDRESS)
+  set(PNMPIZE "${ASan_WRAPPER} ${PNMPIZE}")
+endif ()
+
+
 easy_add_test(PREFIX pnmpize_exec SOURCES exec.conf NOBINARY)
 if (ENABLE_FORTRAN)
   easy_add_test(PREFIX pnmpize_exec_fortran SOURCES exec-fortran.conf NOBINARY)

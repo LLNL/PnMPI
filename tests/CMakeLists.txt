@@ -157,16 +157,6 @@ endforeach ()
 # directory and common variables set (in the scope of this file).
 add_subdirectory(src)
 
-# Set an PNMPIZE variable for all test cases, so they may use it for calling
-# PnMPIze. If AddressSanitizer is enabled, an extra wrapper will be used, so
-# AddressSanitizer will be initialized.
-set(PNMPIZE "$<TARGET_FILE:pnmpize>")
-if (SANITIZE_ADDRESS)
-  set(PNMPIZE "${ASan_WRAPPER} ${PNMPIZE}")
-endif ()
-
-
-
 # Recurse into subdirectories with test cases. The order of the test cases
 # should be to test components used by other tests first to find bugs early.
 add_subdirectory(pnmpize)

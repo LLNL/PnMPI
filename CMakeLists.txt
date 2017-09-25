@@ -162,16 +162,6 @@ add_subdirectory(doc)
 add_subdirectory(externals)
 add_subdirectory(src)
 
-option(ENABLE_DEMO "Selects whether demo biraries are built." TRUE)
-if (ENABLE_DEMO)
-  # The demos require the sample modules to be built. If they will not be built,
-  # don't build the demos.
-  if (ENABLE_MODULES)
-    enable_testing()
-    add_subdirectory(demo)
-  endif (ENABLE_MODULES)
-endif (ENABLE_DEMO)
-
 option(ENABLE_TESTS "Selects whether tests are built." false)
 if (ENABLE_TESTS)
   enable_testing()

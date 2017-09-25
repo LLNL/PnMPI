@@ -48,18 +48,23 @@ int main(int argc, char **argv)
 }
 
 
-/* CONFIGS: dynamic static
+/* CONFIGS: preload dynamic static
+ * DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
  *
  * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
  * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
+ * LINK: @MPI_C_LIBRARIES@
  *
  * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
  * RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
  * PASS: No modules loaded.
  *
  *
- * DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
+ * ENVIRONMENT-preload: LD_PRELOAD=@LIBPNMPI@
+ * ENVIRONMENT-preload: DYLD_INSERT_LIBRARIES=@LIBPNMPI@
+ * ENVIRONMENT-preload: DYLD_FORCE_FLAT_NAMESPACE=1
+ *
  * LINK-dynamic: pnmpi @MPI_C_LIBRARIES@
  *
  * DEPENDS-static: testbin-mpi-wrapper pnmpi_static

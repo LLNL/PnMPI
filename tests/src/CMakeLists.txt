@@ -34,6 +34,13 @@ add_wrapped_file(mpi_errors.h mpi_errors.h.w -s)
 add_custom_target(testbin-mpi-wrapper
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mpi_errors.h)
 
+# Set an LIBPNMPI variable for the following test cases, so they may use it for
+# preloading PnMPI. If Fortran is enabled, LIBPNMPIF will also be set.
+set(LIBPNMPI "$<TARGET_FILE:pnmpi>")
+if (ENABLE_FORTRAN)
+  set(LIBPNMPIF "$<TARGET_FILE:pnmpif>")
+endif ()
+
 
 # The following executable may be used to check the general functionality of a
 # test case. It does not call any MPI functions, so it is useful for checking
