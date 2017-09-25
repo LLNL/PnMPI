@@ -27,7 +27,6 @@
 #
 # LLNL-CODE-402774
 
-include(CheckCSourceCompiles)
 include(PnMPI_doc)
 include(PnMPI_headers)
 
@@ -64,10 +63,7 @@ include_directories(
 # Add the counter module
 #
 add_wrapped_file(counter.c counter.c.w -w)
-
 pnmpi_add_xmpi_module(metrics-counter "${CMAKE_CURRENT_BINARY_DIR}/counter.c")
-add_coverage(metrics-counter)
-add_sanitizers(metrics-counter)
 
 pnmpi_add_module_man(metrics-counter module_metrics_counter)
 
@@ -79,14 +75,11 @@ install(TARGETS metrics-counter DESTINATION lib/pnmpi-modules)
 #
 find_package(hires-timers)
 if (HIRES_TIMERS_FOUND)
-  add_wrapped_file(timing.c timing.c.w -w)
-
   include_directories(${HIRES_TIMERS_INCLUDE_DIRS})
 
+  add_wrapped_file(timing.c timing.c.w -w)
   pnmpi_add_xmpi_module(metrics-timing "${CMAKE_CURRENT_BINARY_DIR}/timing.c")
   target_link_libraries(metrics-timing ${HIRES_TIMERS_LIBRARIES})
-  add_coverage(metrics-timing)
-  add_sanitizers(metrics-timing)
 
   pnmpi_add_module_man(metrics-timing module_metrics_timing)
 

@@ -29,7 +29,6 @@
 
 #Use macro to: add target for module, version it, install it, patch it
 pnmpi_add_pmpi_module(requests requests.cpp)
-add_coverage(requests)
 
 #Add header to intermediate include dir
 install(FILES requests.h DESTINATION include)

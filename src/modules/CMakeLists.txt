@@ -49,9 +49,19 @@ add_custom_target(pnmpi-modules)
 # Wrap calls to pnmpi_add_xmpi_module to add the module's target to the global
 # pnmpi-modules target. This can't be done directly in the original function, as
 # external projects and the testcases don't require this behaviour.
+#
+# Note: The PMPI version of this macro doesn't need to be patched, as it calls
+#       this macro internaly.
 macro(pnmpi_add_xmpi_module TARGET)
+  # Call the original macro to add a new target for the module to be built and
+  # add it to the global pnmpi-modules target.
   _pnmpi_add_xmpi_module(${ARGV})
   add_dependencies(pnmpi-modules ${TARGET})
+
+  # Add code coverage and sanitizers for the module. These can be enabled on-
+  # demand at configuration time.
+  add_coverage(${TARGET})
+  add_sanitizers(${TARGET})
 endmacro()
 
 

@@ -37,7 +37,6 @@ foreach(mod ${SUBMODULES})
     # Use macro to: add target for module, version it, install it, patch it
     set(modulename ${PREFIX}-${mod})
     pnmpi_add_pmpi_module(${modulename} ${modulename}.cpp comm.c)
-    add_coverage(${modulename})
 
     #  Add the submodname define as a flag
     ## TODO: Martin, please have a look at the "SUBMODNAME" define, is that what you want ???

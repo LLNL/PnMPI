@@ -36,10 +36,7 @@ include_directories(
   ${MPI_C_INCLUDE_PATH})
 
 pnmpi_add_xmpi_module(wait-for-debugger wait-for-debugger.c)
-add_coverage(wait-for-debugger)
-add_sanitizers(wait-for-debugger)
-
-install(TARGETS wait-for-debugger DESTINATION lib/pnmpi-modules)
-
 
 pnmpi_add_module_man(wait-for-debugger module_wait_for_debugger)
+
+install(TARGETS wait-for-debugger DESTINATION lib/pnmpi-modules)
