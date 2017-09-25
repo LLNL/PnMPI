@@ -33,9 +33,9 @@
 #include <string.h>
 
 #include <mpi.h>
-#include <pnmpimod.h>
 
 #include <pnmpi/hooks.h>
+#include <pnmpi/service.h>
 
 MPI_Comm Reserve_Smaller_Comm = MPI_COMM_WORLD;
 

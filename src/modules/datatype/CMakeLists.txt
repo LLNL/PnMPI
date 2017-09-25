@@ -33,9 +33,3 @@ pnmpi_add_pmpi_module(dtprint dtprint.c)
 #Add header to intermediate include dir
 install(FILES datatype.h DESTINATION include)
 install(TARGETS datatype dtprint DESTINATION lib/pnmpi-modules)
-
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})

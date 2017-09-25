@@ -52,11 +52,7 @@ configure_file(config.h.in config.h)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
-  ${PNMPI_HEADER_DIR}
-  ${PROJECT_BINARY_DIR}/
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${MPI_C_INCLUDE_PATH})
+)
 
 
 #

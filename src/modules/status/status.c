@@ -30,12 +30,12 @@
 
 #include "status.h"
 #include <mpi.h>
-#include <pnmpimod.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
+#include <pnmpi/service.h>
 
 #ifdef AIX
 #pragma alloca

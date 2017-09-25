@@ -66,7 +66,10 @@ endmacro()
 
 
 # Include directories for all modules.
-include_directories(${PNMPI_HEADER_DIR})
+include_directories(
+  ${MPI_C_INCLUDE_PATH}
+  ${PNMPI_HEADER_DIR}
+)
 
 
 # Recurse to sub-directories

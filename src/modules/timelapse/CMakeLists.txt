@@ -36,6 +36,5 @@ install(TARGETS timelapse DESTINATION lib/pnmpi-modules)
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}/src/pnmpi
   ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})
+)

@@ -33,9 +33,3 @@ pnmpi_add_pmpi_module(status status.c)
 #Add header to intermediate include dir
 install(FILES status.h DESTINATION include)
 install(TARGETS status DESTINATION lib/pnmpi-modules)
-
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})

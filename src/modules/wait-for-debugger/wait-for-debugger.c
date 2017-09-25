@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <mpi.h>
+
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/pmpi_assert.h>
 #include <pnmpi/xmpi.h>

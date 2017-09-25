@@ -31,10 +31,6 @@ include(PnMPI_doc)
 include(PnMPI_headers)
 
 
-include_directories(
-  ${PNMPI_HEADER_DIR}
-  ${MPI_C_INCLUDE_PATH})
-
 pnmpi_add_xmpi_module(wait-for-debugger wait-for-debugger.c)
 
 pnmpi_add_module_man(wait-for-debugger module_wait_for_debugger)

@@ -36,7 +36,5 @@ install(TARGETS requests DESTINATION lib/pnmpi-modules)
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_SOURCE_DIR}/modules/status
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})
+  ${PROJECT_SOURCE_DIR}/src/modules/status
+  ${PROJECT_BINARY_DIR})

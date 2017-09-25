@@ -46,10 +46,7 @@ foreach(mod ${SUBMODULES})
 endforeach()
 
 include_directories(
-  ${PROJECT_BINARY_DIR}/
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_SOURCE_DIR}/modules/datatype
-  ${PROJECT_SOURCE_DIR}/modules/requests
-  ${PROJECT_SOURCE_DIR}/modules/status
-  ${MPI_C_INCLUDE_PATH})
+  ${PROJECT_SOURCE_DIR}/src/modules/datatype
+  ${PROJECT_SOURCE_DIR}/src/modules/requests
+  ${PROJECT_SOURCE_DIR}/src/modules/status
+)

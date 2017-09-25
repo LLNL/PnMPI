@@ -41,9 +41,3 @@ endforeach()
 # Used as part of the demo to show simple preloading of PMPI libraries.
 add_library(sample1-non-patched SHARED sample1.c)
 target_link_libraries(sample1-non-patched ${MPI_C_LIBRARIES})
-
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}/src/pnmpi
-  ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})

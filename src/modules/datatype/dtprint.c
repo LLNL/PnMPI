@@ -33,11 +33,10 @@
 
 #include "datatype.h"
 #include <mpi.h>
-#include <pnmpi/service.h>
-#include <pnmpimod.h>
 
 #include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
+#include <pnmpi/service.h>
 
 #define PNMPI_MODULE_DATATYPEPRINT "datatype-print"
 
