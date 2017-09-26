@@ -58,6 +58,7 @@ int main(int argc, char **argv)
  *
  * CONFIGS: dynamic static
  *
+ * DEPENDS: testbin-mpi-wrapper
  * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
  * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
@@ -67,9 +68,7 @@ int main(int argc, char **argv)
  * PASS: No modules loaded.
  *
  *
- * DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
  * LINK-dynamic: pnmpi @MPI_C_LIBRARIES@
  *
- * DEPENDS-static: testbin-mpi-wrapper pnmpi_static
  * LINK-static: pnmpi_static @MPI_C_LIBRARIES@ dl m
  */

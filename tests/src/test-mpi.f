@@ -58,8 +58,6 @@ C RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
 C PASS: No modules loaded.
 C
 C
-C DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
 C LINK-dynamic: pnmpif @MPI_Fortran_LIBRARIES@
 C
-C DEPENDS-static: testbin-mpi-wrapper pnmpi_static
 C LINK-static: pnmpif_static @MPI_Fortran_LIBRARIES@ dl m
