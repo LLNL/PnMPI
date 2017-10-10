@@ -32,6 +32,7 @@
 #define PNMPI_PRIVATE_MPI_REENTRY_H
 
 
+#include <pnmpi/private/attributes.h>
 #include <pnmpi/private/tls.h>
 
 
@@ -40,21 +41,35 @@ extern pnmpi_compiler_tls_keyword int pnmpi_mpi_reentry;
 
 /** \brief Try to enter the reentry-guarded section.
  *
- * \details This macro trys to enter the reentry-guarded section. It may be used
- *  inside an if-expression to execute code depending on the returned status.
- *  The default would be to call the PMPI function, if entering the section
- *  fails.
+ * \details This function trys to enter the reentry-guarded section. It may be
+ *  used inside an if-expression to execute code depending on the returned
+ *  status. The default would be to call the PMPI function, if entering the
+ *  section fails.
  *
  *
  * \return If the section could be entered, this expression will be zero,
  *  otherwise one.
+ *
+ *
+ * \private
  */
-#define PNMPI_REENTRY_ENTER() (pnmpi_mpi_reentry == 1 || pnmpi_mpi_reentry++)
+PNMPI_UNUSED
+static int pnmpi_reentry_enter(void)
+{
+  return (pnmpi_mpi_reentry == 1 || pnmpi_mpi_reentry++);
+}
 
 
 /** \brief Leave the reentry-guarded section.
+ *
+ *
+ * \private
  */
-#define PNMPI_REENTRY_EXIT() pnmpi_mpi_reentry = 0;
+PNMPI_UNUSED
+static void pnmpi_reentry_exit(void)
+{
+  pnmpi_mpi_reentry = 0;
+}
 
 
 #endif

@@ -27,6 +27,40 @@
 #
 # LLNL-CODE-402774
 
+# If the PnMPIze tool will not be built, the following testcases can't be
+# executed.
+if (NOT ENABLE_PNMPIZE)
+  return()
+endif ()
+
+
+# Custom post-test hook for the PnMPIze tests.
+#
+macro(pnmpi_post_test TARGET CONFIG MAIN_SOURCE)
+  # Set the library path, so PnMPIze can find PnMPI even if it's not yet
+  # installed.
+  if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+      "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/pnmpi:$ENV{LD_LIBRARY_PATH}")
+  else ()
+    # As mac OS security features may delete the DYLD_LIBRARY_PATH and
+    # LD_LIBRARY_PATH variables under some circumstances, the alternate
+    # PNMPI_LIBRARY_PATH variable will be used in this case.
+    set_property(TEST ${TARGET} APPEND PROPERTY ENVIRONMENT
+                 "PNMPI_PATH=${PROJECT_BINARY_DIR}/src/pnmpi")
+  endif ()
+endmacro()
+
+
+# Set an PNMPIZE variable for all test cases, so they may use it for calling
+# PnMPIze. If AddressSanitizer is enabled, an extra wrapper will be used, so
+# AddressSanitizer will be initialized.
+set(PNMPIZE "$<TARGET_FILE:pnmpize>")
+if (SANITIZE_ADDRESS)
+  set(PNMPIZE "${ASan_WRAPPER} ${PNMPIZE}")
+endif ()
+
+
 easy_add_test(PREFIX pnmpize_exec SOURCES exec.conf NOBINARY)
 if (ENABLE_FORTRAN)
   easy_add_test(PREFIX pnmpize_exec_fortran SOURCES exec-fortran.conf NOBINARY)
@@ -34,4 +68,3 @@ endif ()
 
 easy_add_test(PREFIX pnmpize_config SOURCES config.c)
 easy_add_test(PREFIX pnmpize_debug SOURCES debug.conf NOBINARY)
-easy_add_test(PREFIX pnmpize_interface SOURCES interface.conf NOBINARY)

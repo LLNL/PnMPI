@@ -48,15 +48,27 @@ int main(int argc, char **argv)
 }
 
 
-/* CONFIGS: plain pnmpi-static
+/* Note: There is no special test for preloading PnMPI by environment variables,
+ *       as different MPI implementations handle environment variables in
+ *       different ways and the setting the variables for the whole test
+ *       environment interferres with additional tools like AddressSanitizer, as
+ *       it would be preloaded for mpiexec, too. However, preloading is
+ *       indirectly tested by the PnMPIze tests.
+ *
+ *
+ * CONFIGS: dynamic static
  *
  * DEPENDS: testbin-mpi-wrapper
  * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
  * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
- * LINK: @MPI_C_LIBRARIES@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
  *
- * DEPENDS-pnmpi-static: testbin-mpi-wrapper pnmpi_static
- * LINK-pnmpi-static: pnmpi_static @MPI_C_LIBRARIES@ dl m
- * PASS-pnmpi-static: No modules loaded.
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
+ * PASS: No modules loaded.
+ *
+ *
+ * LINK-dynamic: pnmpi @MPI_C_LIBRARIES@
+ *
+ * LINK-static: pnmpi_static @MPI_C_LIBRARIES@ dl m
  */

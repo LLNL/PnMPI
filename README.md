@@ -43,11 +43,11 @@ A1) Dependencies
 ----------------
 
   * [CMake](http://www.cmake.org) (at least version 2.8.11.2 is required).
-  * [binutils](https://www.gnu.org/software/binutils/) for the patcher utility
   * [argp](https://www.gnu.org/software/libc/manual/html_node/Argp.html) is
     usually included in glibc. However at macOS you have to install it from
     homebrew as `argp-standalone` package.
-  * libbfd and libiberty for pnmpi-patch. *(optional)*
+  * [binutils](https://www.gnu.org/software/binutils/) and libiberty for the
+    patcher utility *(optional)*
   * [Doxygen](www.doxygen.org) for generating the docs and man-pages.
     *(optional)*
   * [help2man](https://www.gnu.org/software/help2man/) for generating man-pages.
@@ -131,15 +131,15 @@ A3) Configuring with/without Fortran
 ------------------------------------
 By default PnMPI is configured to work with C/C++ and Fortran codes. However, on
 systems where Fortran is not available, the system should auto-detect this and
-not build the Fortran libraries and demo codes. It can also be manually turned
+not build the Fortran libraries and test cases. It can also be manually turned
 off by adding
 
     -DENABLE_FORTRAN=OFF
 
 to the `cmake` configuration command.
 
-The PnMPI distribution contains demo codes for C and for Fortran that allow you
-to test the correct linkage.
+The PnMPI distribution contains test cases for C and Fortran that allow you to
+test the correct linkage.
 
 
 A3a) Optional configuration options
@@ -152,12 +152,14 @@ features by adding the following flags to the `cmake` configuration command.
     PnMPI internal documentation. *(requires Doxygen and help2man)*
   * `-DENABLE_DEBUG=OFF`: Disable PnMPI on-demand debug logging. *Disable this
     option only for performance optimization.*
-  * `-DENABLE_DEMO=OFF`: Don't build the demo programs.
   * `-DENABLE_MODULES=OFF`: Don't build the built-in modules.
   * `-DENABLE_TESTING=ON`: Build the test cases and enable the `test` target.
   * `-DENABLE_THREAD_SAFETY=OFF`: Build PnMPI without thread safety. PnMPI will
     limit the MPI threading level if this option is enabled, so it still will be
     thread safe. *Disable this option only for performance optimization.*
+  * `-DENABLE_PNMPIZE=OFF`: Don't build the PnMPI invocation tool and don't run
+    any tests for it. This option may be required when testing PnMPI at a
+    platform that doesn't support the `execvp()` syscall.
   * `-DENABLE_ADEPT_UTILS=ON`: Enable support for adept-utils, to check the
     module's symbols for their origin. *(Not supported with all compilers.)*
   * [CMake-codecov](https://github.com/RWTH-HPC/CMake-codecov) provides the
@@ -213,9 +215,9 @@ install tree looks like this:
     share/
       cmake/               CMake files to support tool module builds
 
-Test programs are not installed, but in the [demo](demo) folder of the build
-directory, there should also be test programs built with PnMPI. See below for
-details on running these to test your PnMPI installation.
+Test programs are not installed, but in the [tests/src](tests/src) folder of the
+build directory, there should also be test programs built with PnMPI. See below
+for details on running these to test your PnMPI installation.
 
 
 A6) Environment setup
@@ -230,17 +232,6 @@ You will need to set one environment variable to run PnMPI:
   * `PNMPI_BE_SILENT` will silence the PnMPI banner. For benchmark purposes you
     should also disable `ENABLE_DEBUG` in your CMake configuration. **Note:**
     Warnings on errors still will be printed.
-  * If you are using modules with the `PNMPI_AppStartup` hook, PnMPI trys to
-    detect the used MPI interface (C or Fortran) automatically by calling `nm`
-    on the instrumented application. However, you may set the MPI interface
-    language explictly with the `PNMPI_INTERFACE` environment variable or the
-    `--interface` flag of the PnMPI invocation tool.
-  * If you are using modules with the `PNMPI_AppStartup` hook, but your
-    application does not use the highest threading level, you may set the
-    requested MPI threading level via `PNMPI_THREADING_LEVEL` to decrease the
-    MPI overhead. *The level send by `MPI_Init_thread` will not be sufficient,
-    because MPI will be initialized in the constructors, if `PNMPI_AppStartup`
-    will be used.*
 
 
 A6a) Using the PnMPI invocation tool
@@ -282,6 +273,10 @@ flag.
         sample1 (Pcontrol: 1)
       Stack foo:
     ...
+
+**Note:** The PnMPI invocation tool is not compatible with all platforms (e.g.
+BlueGene/Q), as it requires the `execvp()` function, which might not be
+supported.
 
 
 A7) RPATH settings
@@ -379,8 +374,7 @@ The source for all modules is stored in separate directories inside the
 `module/` directory. There are:
 
 * **sample:**
-  a set of example modules that show how to wrap send and receive operations.
-  These modules are used in the demo codes described below.
+  A set of example modules that show how to wrap send and receive operations.
 
 * **empty:**
   A transparent module that simply wraps all calls without executing any code.
@@ -544,20 +538,18 @@ have your environment set up correctly.
 D2) Limiting the threading level
 --------------------------------
 If your module is not thread safe or is only able to process a limited amount of
-threading, it may provide a const integer named `PNMPI_SupportedThreadingLevel`
-to define the maximum provided threading level of this module.
-
-E.g. if your module supports no thread safety at all, add the following lines to
-your module's code:
+threading, it should limit the required threading level in the `MPI_Init_thread`
+wrapper:
 
 ```C
-#include <mpi.h>
-#include <pnmpi/hooks.h>
+int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+{
+  if (required > MPI_THREAD_SINGLE)
+    required = MPI_THREAD_SINGLE;
 
-const int PNMPI_SupportedThreadingLevel = MPI_THREAD_SINGLE;
+  return XMPI_Init_thread(argc, argv, required, provided);
+}
 ```
-
-*Note: Include the `pnmpi/hooks.h` header for type safety.*
 
 
 D3) Module hooks
@@ -565,31 +557,19 @@ D3) Module hooks
 At different points hooks will be called in all loaded modules. These can be
 used to trigger some functionality at a given time. All hooks have the return
 type `void` and are defined in `pnmpi/hooks.h`, which should be included for
-type safety. These hooks are:
+type safety. These following hooks will be called in all modules:
 
 * `PNMPI_RegistrationPoint`: This hook will be called just after the module has
   been loaded. It may be used to register the name of the module, services
-  provided by the module, etc. *(Called in all modules)*
-
-In addition the following hooks will behave like the MPI function wrappers. They
-will be called in the first module providing them at the current stack and each
-module has to call `PNMPI_Service_CallHook()` to recurse into the next level.
-The stack may be changed with `PNMPI_Service_CallHook_NewStack()`. These hooks
-are:
-
-* `PNMPI_AppStartup`: If a module provides an `PNMPI_AppStartup` hook, PnMPI
-  will initialize MPI in the applications constructor *before* `main` is started
-  and call the hook *(in the default stack)*. If PnMPI is unable to call it
-  before `main`, it will be called in the `MPI_Init` or `MPI_Init_thread`
-  wrappers just after the MPI environment has been initialized, but before
-  calling any other module.
-* `PNMPI_AppShutdown`: If a module provides an `PNMPI_AppShutdown` hook, PnMPI
-  will not call `PMPI_Finalize` in the `MPI_Finalize` wrapper, but keeps MPI
-  running until `main` has finished and calls the hook in the applications
-  destructor. After the hooks of all modules have been called *(in the default
-  stack)*, MPI will be shut down. If PnMPI is unable to call the destructor, it
-  will be called in the `MPI_Finalize` wrapper after calling all other modules
-  but before shutting down the MPI environment.
+  provided by the module, etc.
+* `PNMPI_UnregistrationPoint`: This hook will be called just before the module
+  will be unloaded. It may be used e.g. to free allocated memory.
+* `PNMPI_Init`: This hook will be called just after all modules have been
+  registered to initialize the module. It may be used to initialize the module's
+  to code and is communicate with other modules.
+* `PNMPI_Fini`: This hook will be called just before all modules will be
+  unregistered. The modules may communicate with each other and should execute
+  some final steps in here.
 
 *Note: You can use `PNMPI_Service_CallHook()` to call custom hooks in your
 modules. Just pass a custom hook name as first parameter.*
@@ -643,50 +623,44 @@ output to a single rank.
 
 F) Configuration and Demo codes
 ===============================
-The PnMPI distribution includes demo codes (in C and Fortran). They can be used
+The PnMPI distribution includes test cases (in C and Fortran). They can be used
 to experiment with the basic PnMPI functionalities and to test the system setup.
 The following describes the C version (the F77 version works similarly):
 
-1. Change into the [demo](demo) directory.
-2. The program [simple.c](demo/simple.c), which sends a message from any task
-   with ID>0 to task 0, was compiled into three binaries:
+1. Change into the [tests/src](tests/src) directory.
+2. The program [test-mpi.c](tests/src/test-mpi.c), which only initializes and
+   then finalizes MPI, was compiled into three binaries:
 
-    * simple    (plain MPI code)
-    * simple-pn (linked with PnMPI)
-    * simple-s1 (plain code linked with sample1.so)
+    * `testbin-binary_mpi_c-preload` (plain MPI code)
+    * `testbin-binary_mpi_c-dynamic` (linked dynamically against PnMPI)
+    * `testbin-binary_mpi_c-static` (linked statically against PnMPI)
 
-3. Executing simple will run as usual.
-   The program output (for 2 nodes) will be:
+3. Executing the `*-preload` binary will not print any output, but the binaries
+   linked against PnMPI will print the PnMPI header, indicating PnMPI is loaded
+   before MPI.
 
-       GOT 1
-
-4. By relinking the code, one can use any of the original (unpatched) modules
-   with this codes. The unpatched modules are in modules/sample
-
-   Examples: simplest-s1 linked with sample1
-
-5. PnMPI is configured through a configuration file that lists all modules to be
+4. PnMPI is configured through a configuration file that lists all modules to be
    load by PnMPI as well as optional arguments. The name for this file can be
    specified by the environment variable `PNMPI_CONF`. If this variable is not
    set or the file specified can not be found, PnMPI looks for a file called
    `.pnmpi_conf` in the current working directory, and if not found, in the
    user's home directory.
 
-   By default the file in the demo directory is named `.pnmpi_conf` and looks as
-   follows:
+   A simple configuration file may look as follows:
 
        module sample1
        module sample2
        module sample3
        module sample4
 
-  (plus some additional lines starting with #, which indicates comments)
+  (plus some additional lines starting with `#`, which indicates comments)
 
   This configuration causes these four modules to be loaded in the specified
   order. PnMPI will look for the corresponding modules (.so shared library
   files) in `PNMPI_LIB_PATH`.
 
-6. Running simple-pn will load all four modules in the specified order and
+5. Running the `testbin-binary_mpi_sendrecv` (a simple test sending messages
+   between the ranks) will load all four modules in the specified order and
    intercept all MPI calls included in these modules:
 
     * sample1: send and receive
@@ -697,13 +671,16 @@ The following describes the C version (the F77 version works similarly):
   The program output (for 2 nodes) will be:
 
   ```
-     _____   _ __   __  __  _____   _____
-    |  __ \ | '_ \ |  \/  ||  __ \ |_   _|
-    | |__) || | | || \  / || |__) |  | |
-    |  ___/ |_| |_|| |\/| ||  ___/   | |
-    | |            | |  | || |      _| |_
-    |_|            |_|  |_||_|     |_____|
+    _____   _ __   __  __  _____   _____
+   |  __ \ | '_ \ |  \/  ||  __ \ |_   _|
+   | |__) || | | || \  / || |__) |  | |
+   |  ___/ |_| |_|| |\/| ||  ___/   | |
+   | |            | |  | || |      _| |_
+   |_|            |_|  |_||_|     |_____|
 
+
+   Application:
+    MPI interface: C
 
    Global settings:
     Pcontrol: 5
@@ -716,37 +693,38 @@ The following describes the C version (the F77 version works similarly):
       sample4
 
   WRAPPER 1: Before recv
-  WRAPPER 3: Before recv
   WRAPPER 1: Before send
-  WRAPPER 4: Before recv
   WRAPPER 2: Before send
   WRAPPER 4: Before send
   WRAPPER 4: After send
-  WRAPPER 4: After recv
-  WRAPPER 3: After recv
-  WRAPPER 1: After recv
-  WRAPPER 1: Before send
   WRAPPER 2: After send
-  WRAPPER 2: Before send
   WRAPPER 1: After send
-  WRAPPER 4: Before send
   WRAPPER 1: Before recv
-  WRAPPER 4: After send
-  WRAPPER 2: After send
-  WRAPPER 1: After send
-  GOT 1
+  WRAPPER 3: Before recv
+  WRAPPER 4: Before recv
   WRAPPER 3: Before recv
   WRAPPER 4: Before recv
   WRAPPER 4: After recv
   WRAPPER 3: After recv
   WRAPPER 1: After recv
+  Got 1 from rank 1.
+  WRAPPER 1: Before send
+  WRAPPER 2: Before send
+  WRAPPER 4: Before send
+  WRAPPER 4: After send
+  WRAPPER 4: After recv
+  WRAPPER 3: After recv
+  WRAPPER 1: After recv
+  Got 1 from rank 0.
+  WRAPPER 2: After send
+  WRAPPER 1: After send
   ```
 
   When running on a BG/P systems, it is necessary to explicitly export some
   environment variables. Here is an example:
 
         mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH \
-          -cwd $PWD simple-pn
+          -cwd $PWD testbin-binary_mpi_sendrecv
 
 
 G) Using `MPI_Pcontrol`

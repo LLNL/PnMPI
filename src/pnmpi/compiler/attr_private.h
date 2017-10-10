@@ -110,4 +110,18 @@
 #endif
 
 
+/** \brief Mark function as possibly unused.
+ *
+ * \details When defining static functions inside a header, possibly not all
+ *  functions will be used by all source files including this header. By using
+ *  this macro, the compiler knows about this and will not print a warning about
+ *  an unused function.
+ */
+#ifdef __GNUC__
+#define PNMPI_UNUSED __attribute__((unused))
+#else
+#define PNMPI_UNUSED
+#endif
+
+
 #endif

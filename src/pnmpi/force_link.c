@@ -30,9 +30,9 @@
 
 #include "core.h"
 #include <pnmpi/debug_io.h>
-#include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/fallback_init.h>
+#include <pnmpi/private/force_link.h>
 #include <pnmpi/service.h>
 
 

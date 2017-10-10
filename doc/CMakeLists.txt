@@ -31,58 +31,83 @@ include(GNUInstallDirs)
 include(PnMPI_doc)
 
 
+## \brief Convert booleans for Doxygen config.
 #
+# \details This macro converts CMake booleans to the accepted values of Doxygen
+#  `YES` and `NO`.
+#
+#
+# \param VAR Output variable name, will be prefixed by `DOXYGEN_`.
+# \param INPUT Name of the variable to be converted.
+#
+macro(doxygen_convert_bool VAR INPUT)
+  set("DOXYGEN_${VAR}" "NO")
+  if (${INPUT})
+    set("DOXYGEN_${VAR}" "YES")
+  endif ()
+endmacro()
+
+
 # Options
 #
-option("BUILD_DOC" "Build HTML documentation" Off)
+option("BUILD_DOC" "Build documentation." Off)
 if (BUILD_DOC)
-  option("BUILD_DOC_INTERNAL" "Including private documentation." Off)
+  option("BUILD_DOC_INTERNAL" "Include private documentation." Off)
+  option("BUILD_DOC_HTML" "Generate a HTML documentation." On)
 endif ()
 
-#
+
 # Generate Doxygen docs.
 #
 if (BUILD_DOC)
   find_package(Doxygen REQUIRED)
 
+  # Generate the Doxygen configuration file. Some variables need to be converted
+  # before their contents can be substitured into the file, as Doxygen doesn't
+  # understand the default CMake booleans and empty values.
+  doxygen_convert_bool(DOC_INTERNAL BUILD_DOC_INTERNAL)
+  doxygen_convert_bool(DOC_HTML BUILD_DOC_HTML)
   if (NOT DOXYGEN_DOT_EXECUTABLE)
     set(DOXYGEN_DOT_EXECUTABLE "")
-  endif ()
-
-  set(DOXYGEN_DOC_INTERNAL "NO")
-  if (BUILD_DOC_INTERNAL)
-    set(DOXYGEN_DOC_INTERNAL "YES")
   endif ()
 
   set(PNMPI_DOXYFILE "${PROJECT_BINARY_DIR}/doc/doxygen.conf")
   configure_file(doxygen.conf.in ${PNMPI_DOXYFILE} @ONLY)
 
-  set(DOXYGEN_HTML_INDEX "${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
 
+  # Generate a list of dependencies for Doxygen. This list is required, so the
+  # documentation will be rebuild, when a target needs to be rebuild, too. The
+  # list of dependencies depends on the current configuration of PnMPI.
+  set(DOXYGEN_DEPENDENCIES pnmpi pnmpi-modules)
+  if (ENABLE_PNMPIZE)
+    list(APPEND DOXYGEN_DEPENDENCIES pnmpize)
+  endif ()
+  if (ENABLE_MODULES)
+    list(APPEND DOXYGEN_DEPENDENCIES
+         "${PROJECT_SOURCE_DIR}/modules/metrics/doc.c")
+  endif ()
 
-  add_custom_command(OUTPUT ${DOXYGEN_HTML_INDEX}
+  # Generate the documentation with Doxygen. The output file will be a main
+  # manpage, as manpages will be build in any case, but HTML docs may be
+  # disabled.
+  set(DOXYGEN_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/man/man3/pnmpi.h.3")
+  add_custom_command(OUTPUT ${DOXYGEN_OUTPUT_FILE}
                      COMMAND ${DOXYGEN_EXECUTABLE} ${PNMPI_DOXYFILE}
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      MAIN_DEPENDENCY ${PNMPI_DOXYFILE}
-                     DEPENDS
-                       pnmpi
-                       pnmpize
-                       commsub-empty commsub-print
-                       empty
-                       metrics-counter
-                         ${PROJECT_SOURCE_DIR}/modules/metrics/doc.c
-                       requests
-                       sample1 sample2 sample3 sample4
-                       status
-                       switch-matrix
-                       timelapse
-                       virtual
-                       wait-for-debugger
+                     DEPENDS ${DOXYGEN_DEPENDENCIES}
                      COMMENT "Generating documentation")
-  add_custom_target(doc ALL DEPENDS ${DOXYGEN_HTML_INDEX})
+  add_custom_target(doc ALL DEPENDS ${DOXYGEN_OUTPUT_FILE})
 
 
-  # install documentation
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
-          DESTINATION ${CMAKE_INSTALL_DOCDIR})
+  if (BUILD_DOC_HTML)
+    # Install HTML documentation only, if the user wishes to install it, as it
+    # will be used by internal developers most of the time and doesn't need to
+    # be installed most of the time.
+    option("INSTALL_DOC_HTML" "Install the generated HTML documentation." Off)
+    if (INSTALL_DOC_HTML)
+      install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
+              DESTINATION ${CMAKE_INSTALL_DOCDIR})
+    endif ()
+  endif ()
 endif ()

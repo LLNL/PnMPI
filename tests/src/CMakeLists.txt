@@ -34,6 +34,13 @@ add_wrapped_file(mpi_errors.h mpi_errors.h.w -s)
 add_custom_target(testbin-mpi-wrapper
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mpi_errors.h)
 
+# Set an LIBPNMPI variable for the following test cases, so they may use it for
+# preloading PnMPI. If Fortran is enabled, LIBPNMPIF will also be set.
+set(LIBPNMPI "$<TARGET_FILE:pnmpi>")
+if (ENABLE_FORTRAN)
+  set(LIBPNMPIF "$<TARGET_FILE:pnmpif>")
+endif ()
+
 
 # The following executable may be used to check the general functionality of a
 # test case. It does not call any MPI functions, so it is useful for checking
@@ -48,8 +55,8 @@ set(TESTBIN_NOMPI "$<TARGET_FILE:testbin-binary_nompi>" PARENT_SCOPE)
 # will be called in MPI_Init, this should be enogh to check anything except the
 # wrapper functions.
 easy_add_test(PREFIX binary_mpi_c SOURCES test-mpi.c)
-set(TESTBIN_MPI_C "$<TARGET_FILE:testbin-binary_mpi_c-plain>" PARENT_SCOPE)
-set(TESTBIN_MPI_C_STATIC "$<TARGET_FILE:testbin-binary_mpi_c-pnmpi-static>"
+set(TESTBIN_MPI_C "$<TARGET_FILE:testbin-binary_mpi_c-dynamic>" PARENT_SCOPE)
+set(TESTBIN_MPI_C_STATIC "$<TARGET_FILE:testbin-binary_mpi_c-static>"
     PARENT_SCOPE)
 
 # The following target may be used to check general PnMPI functionality for
@@ -75,7 +82,7 @@ if (ENABLE_FORTRAN)
   # As all PnMPI core routines will be called in MPI_Init, this should be enogh
   # to check anything except the wrapper functions.
   easy_add_test(PREFIX binary_mpi_fortran SOURCES test-mpi.f)
-  set(TESTBIN_MPI_FORTRAN "$<TARGET_FILE:testbin-binary_mpi_fortran>"
+  set(TESTBIN_MPI_FORTRAN "$<TARGET_FILE:testbin-binary_mpi_fortran-dynamic>"
       PARENT_SCOPE)
 
   # The following target may be used to check general PnMPI functionality for

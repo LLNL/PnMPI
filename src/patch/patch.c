@@ -938,9 +938,10 @@ void copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
           l->obfd = output_bfd;
 
           *ptr = output_bfd;
-#ifdef BFD_SUPPORTS_PLUGINS == 0
+// This define was introduced in the commit following the interface change.
+#ifdef bfd_mach_cr16
           ptr = &output_bfd->archive_next;
-#else // BFD_SUPPORTS_PLUGINS == 1
+#else
           ptr = &output_bfd->next;
 #endif
 

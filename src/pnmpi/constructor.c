@@ -34,7 +34,6 @@
 
 #include "core.h"
 #include <pnmpi/debug_io.h>
-#include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/fallback_init.h>
 #include <pnmpi/private/modules.h>
@@ -76,14 +75,13 @@ void pnmpi_constructor(int argc, char **argv)
 
   /* Call all constructors. */
   pnmpi_PreInit();
-  pnmpi_app_startup(argc, argv);
 }
 
 
 /* If no compiler specific implementation of PNMPI_CONSTRUCTOR is available, the
  * fallback constructor has to be used.
  *
- * Note: Using _init is obsolute, dangerous and is only a fallback for legacy
+ * Note: Using _init is obsolete, dangerous and is only a fallback for legacy
  *       systems. If PnMPI has no compiler specific implementation of
  *       PNMPI_CONSTRUCTOR for your compiler yet, please file an issue. */
 #ifdef PNMPI_HAVE_NO_CONSTRUCTOR
@@ -183,10 +181,6 @@ void _init(void)
  * \details If the compiler does not support an implementation for \ref
  *  PNMPI_CONSTRUCTOR nor does \ref _init get called by the dynamic loader, this
  *  function will be called by \ref MPI_Init as a backup.
- *
- * \note This function can't call all of the constructor functions, as some of
- *  them, especially \ref pnmpi_app_startup, must be called before the execution
- *  of `main`.
  *
  *
  * \private

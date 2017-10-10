@@ -44,14 +44,16 @@ void PNMPI_RegistrationPoint()
  *
  * MODTYPE: XMPI
  *
- * RUN: @PNMPIZE@ -m @CMAKE_CURRENT_BINARY_DIR@ -c @PNMPICONF@ @TESTBIN_MPI_C@
+ * ENVIRONMENT: PNMPI_LIB_PATH=@CMAKE_CURRENT_BINARY_DIR@
+ * ENVIRONMENT: PNMPI_CONF=@PNMPICONF@
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @TESTBIN_MPI_C@ @MPIEXEC_POSTFLAGS@
  *
  *
- * RUN-mpi_interface: @PNMPIZE@ @TESTBIN_MPI_C@
+ * ENVIRONMENT-mpi_interface:
  * PASS-mpi_interface: MPI interface: .*
  *
- *
- * RUN-no_module: @PNMPIZE@ @TESTBIN_MPI_C@
+ * ENVIRONMENT-no_module:
  * PASS-no_module: No modules loaded
  *
  * PNMPICONF-one_module: module @MODNAME@

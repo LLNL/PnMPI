@@ -28,7 +28,6 @@
  * LLNL-CODE-402774
  */
 
-#include <pnmpi/private/app_hooks.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/fallback_init.h>
 #include <pnmpi/private/modules.h>
@@ -46,7 +45,7 @@
 PNMPI_DESTRUCTOR(101)
 void pnmpi_destructor(void)
 {
-  pnmpi_app_shutdown();
+  pnmpi_modules_unload();
 }
 
 
@@ -74,15 +73,6 @@ void _fini(void)
  *  PNMPI_DESTRUCTOR nor does \ref _fini get called by the dynamic loader, this
  *  function will be called by \ref MPI_Finalize as a backup.
  *
- * \note This function can't call all of the destructor functions, as some of
- *  them, especially \ref pnmpi_app_shutdown, must be called before the
- *  execution of `main`.
- *
- *
- * \return If the regular destructors will be called, zero will be returned.
- *  Otherwise the return value will be non-zero, indicating the MPI environment
- *  must be shutdown in \ref MPI_Finalize.
- *
  *
  * \private
  */
@@ -90,7 +80,8 @@ PNMPI_INTERNAL
 void pnmpi_fallback_fini(void)
 {
   /* If any constructor (either the compiler specific or fallback one) has been
-   * called before, execution of this function should be skipped. */
+   * called before, execution of this function should be skipped, as the
+   * destructor will be called without any fallback mechanism. */
   if (pnmpi_constructor_called)
     return;
 

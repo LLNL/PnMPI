@@ -55,8 +55,7 @@ PROJECT_NUMBER = "@PNMPI_VERSION@"
 # Note that you can specify absolute paths here, but also relative paths, which
 # will be relative from the directory where doxygen is started. This tag
 # requires that the tag FULL_PATH_NAMES is set to YES.
-STRIP_FROM_PATH = @PROJECT_SOURCE_DIR@ \
-                  @PROJECT_BINARY_DIR@/src/pnmpi
+STRIP_FROM_PATH = @PROJECT_SOURCE_DIR@ @PROJECT_BINARY_DIR@
 
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. Doxygen
 # uses this value to replace tabs by spaces in code fragments.
@@ -117,11 +116,11 @@ QUIET = YES
 # directories like /usr/src/myproject. Separate the files or directories with
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
-INPUT = @PROJECT_SOURCE_DIR@/src                       \
-        @PROJECT_SOURCE_DIR@/modules                   \
-        @PROJECT_SOURCE_DIR@/src/pnmpi/core.h          \
-        @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpi.h         \
-        @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpimod.h      \
+INPUT = @PROJECT_SOURCE_DIR@/src                  \
+        @PROJECT_SOURCE_DIR@/modules              \
+        @PROJECT_SOURCE_DIR@/src/pnmpi/core.h     \
+        @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpi.h    \
+        @PROJECT_SOURCE_DIR@/src/pnmpi/pnmpimod.h \
         @PROJECT_BINARY_DIR@/src/pnmpi/header
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
@@ -135,8 +134,14 @@ RECURSIVE = YES
 #
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
-EXCLUDE_PATTERNS = */CMakeLists.txt */*.cmake \
-                   @PROJECT_SOURCE_DIR@/src/pnmpi/*.h
+EXCLUDE_PATTERNS = */CMakeLists.txt */*.cmake                     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/compiler/*.h    \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/debug/*.h       \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/modules/*.h     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/service/*.h     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/wrapper/*.h     \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/fallback_init.h \
+                   @PROJECT_SOURCE_DIR@/src/pnmpi/force_link.h
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -147,6 +152,10 @@ EXCLUDE_PATTERNS = */CMakeLists.txt */*.cmake \
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 EXCLUDE_SYMBOLS = _GNU_SOURCE main __pad*__ args
+
+# If the GENERATE_HTML tag is set to YES, doxygen will generate HTML output
+# The default value is: YES.
+GENERATE_HTML = @DOXYGEN_DOC_HTML@
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a

@@ -36,7 +36,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "app_hooks.h"
 #include "core.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
@@ -310,7 +309,7 @@ void pnmpi_PreInit(void)
           return;
         }
 
-      sprintf(filename, "%s/%s", confdir, CONFNAME);
+      snprintf(filename, PNMPI_MODULE_FILENAMELEN, "%s/%s", confdir, CONFNAME);
       free(confdir);
       conffile = fopen(filename, "r");
       if (conffile == NULL)
@@ -345,7 +344,7 @@ void pnmpi_PreInit(void)
           return;
         }
 
-      sprintf(filename, "%s/%s", confdir, CONFNAME);
+      snprintf(filename, PNMPI_MODULE_FILENAMELEN, "%s/%s", confdir, CONFNAME);
       conffile = fopen(filename, "r");
       if (conffile == NULL)
         {
@@ -514,9 +513,9 @@ void pnmpi_PreInit(void)
                       WARNPRINT("Stack name too long - shortening it");
                     }
                   strncpy(modules.module[modules.num]->name, cmdargv[1],
-                          PNMPI_MODULE_FILENAMELEN);
+                          PNMPI_MODULE_FILENAMELEN - 4);
                   modules.module[modules.num]
-                    ->name[PNMPI_MODULE_FILENAMELEN - 1] = (char)0;
+                    ->name[PNMPI_MODULE_FILENAMELEN - 5] = (char)0;
 
                   /* I don't think we need this - seems copy and paste error
                      sprintf(modname,"%s/%s.so",libdir,modules.module[modules.num]->name);
@@ -573,10 +572,11 @@ void pnmpi_PreInit(void)
                       WARNPRINT("Module name too long - shortening it");
                     }
                   strncpy(modules.module[modules.num]->name, cmdargv[1],
-                          PNMPI_MODULE_FILENAMELEN);
+                          PNMPI_MODULE_FILENAMELEN - 4);
                   modules.module[modules.num]
-                    ->name[PNMPI_MODULE_FILENAMELEN - 1] = (char)0;
-                  sprintf(modname, "%s.so", modules.module[modules.num]->name);
+                    ->name[PNMPI_MODULE_FILENAMELEN - 5] = (char)0;
+                  snprintf(modname, PNMPI_MODULE_FILENAMELEN, "%s.so",
+                           modules.module[modules.num]->name);
 
                   /* The first module gets the pcontrol by default */
 
@@ -770,6 +770,10 @@ void pnmpi_PreInit(void)
    * (done now as to load arguments first)
    */
   pnmpi_call_hook(PNMPI_REGISTRATION_POINT, PNMPI_CALL_HOOK_ALL_MODULES, 0);
+
+  /* After all hooks have been registered, call the module initialization hook.
+   * Modules may access other modules in this hook. */
+  pnmpi_call_hook("PNMPI_Init", PNMPI_CALL_HOOK_ALL_MODULES, 0);
 
 /* if we are debugging, print the parsed information */
 

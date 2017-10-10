@@ -31,18 +31,6 @@ find_package(MPI REQUIRED)
 
 
 easy_add_test(PREFIX core_banner SOURCES banner.c)
-
-easy_add_test(PREFIX core_get_mpi_interface SOURCES get_mpi_interface.c)
-if (ENABLE_FORTRAN)
-  easy_add_test(PREFIX core_get_mpi_interface_fortran
-                SOURCES get_mpi_interface_fortran.c)
-endif ()
-
 easy_add_test(PREFIX core_hooks SOURCES hooks.c)
 easy_add_test(PREFIX core_module_name SOURCES module_name.c)
 easy_add_test(PREFIX core_static_linked SOURCES static_linked.c)
-
-
-if (HAVE_MPI_INIT_THREAD_C)
-  easy_add_test(PREFIX core_threading_downgrade SOURCES threading_downgrade.c)
-endif ()

@@ -49,18 +49,6 @@ extern "C" {
  */
 
 
-/** \brief Limit the threading level the module supports.
- *
- * \details Usually it is assumed, that a module is thread safe. However if it
- *  is not, you may set this variable to the highest MPI threading level your
- *  module supports. PnMPI will ensure, that MPI_Init_thread will be called with
- *  the highest available thread level, all modules support.
- *
- *
- * \memberof pnmpi_module_hooks
- */
-extern const int PNMPI_SupportedThreadingLevel;
-
 /** \brief Name of the module.
  *
  * \details Instead of registering the module name in \ref
@@ -86,44 +74,48 @@ extern const char *PNMPI_ModuleName;
  */
 void PNMPI_RegistrationPoint();
 
-/** \brief Called just before the applications main is started.
+/** \brief Called just before the module will be unloaded.
  *
- * \details This hook will be called just before the applications main is
- *  started and may be used to e.g. print a message or start a timer for the
- *  runtime of main.
+ * \details This hook will be called just before the module will be unloaded. It
+ *  may be used to free allocated memory.
  *
- * \note If any loaded module supports this hook, the MPI environment will be
- *  setup before calling this hook, so one may use MPI calls to e.g. broadcast
- *  messages.
- *
- * \note If the environment is unable to call any constructor before `main`,
- *  this hook will be called in the `MPI_Init` or `MPI_Init_thread` wrapper just
- *  after the MPI environment has been initialized, but before any modules will
- *  be called.
+ * \note MPI is not initialized anymore when this hook is called. You MUST NOT
+ *  use any MPI routines (except MPI_Initialized and MPI_Finalized) in your
+ *  hook.
  *
  *
  * \memberof pnmpi_module_hooks
  */
-void PNMPI_AppStartup();
+void PNMPI_UnregistrationPoint(void);
 
-/** \brief Called just after the applications main has finished.
+/** \brief Called just after the modules have been registered.
  *
- * \details This hook is the counterpart of \ref PNMPI_AppStartup. It will be
- *  called just after the applications main has finished and may be used to e.g.
- *  print a message or stop timers.
+ * \details This hook will be called just after all modules have been registered
+ *  to initialize the module. It may be used to initialize the module's code and
+ *  to communicate with other modules.
  *
- * \note If any loaded module supports this hook, the MPI environment will not
- *  be destoryed in MPI_Finalize but kept open until calls to this hook have
- *  been finished. This may be used to e.g. broadcast messages.
- *
- * \note If the environment is unable to call any destructors after `main`,
- *  this hook will be called in the `MPI_Finalize` wrapper just before the MPI
- *  environment will be destroyed, but after all modules have been called.
+ * \note MPI is not initialized when this hook is called. You MUST NOT use any
+ *  MPI routines (except MPI_Initialized and MPI_Finalized) in your hook.
  *
  *
  * \memberof pnmpi_module_hooks
  */
-void PNMPI_AppShutdown();
+void PNMPI_Init(void);
+
+/** \brief Called just before the module will be unregistered.
+ *
+ * \details This hook will be called just before all modules will be
+ *  unregistered. The modules may communicate with each other and should execute
+ *  some final steps in here.
+ *
+ * \note MPI is not initialized anymore when this hook is called. You MUST NOT
+ *  use any MPI routines (except MPI_Initialized and MPI_Finalized) in your
+ *  hook.
+ *
+ *
+ * \memberof pnmpi_module_hooks
+ */
+void PNMPI_Fini(void);
 
 
 #ifdef __cplusplus

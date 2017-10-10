@@ -80,10 +80,11 @@ function (help2man TARGET)
     set(install_opt "")
     if (OPT_RENAME)
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}
-        DESTINATION ${CMAKE_INSTALL_MANDIR}/man${SECTION} RENAME ${OPT_RENAME})
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man${OPT_SECTION}
+        RENAME ${OPT_RENAME})
     else ()
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}
-        DESTINATION ${CMAKE_INSTALL_MANDIR}/man${SECTION})
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man${OPT_SECTION})
     endif ()
   endif ()
 endfunction ()

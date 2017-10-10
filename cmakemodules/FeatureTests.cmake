@@ -34,17 +34,6 @@ include(CheckMPIFunctionExists)
 include(CheckMPISymbolExists)
 
 
-# \brief Helper maco to execute a feature test.
-#
-# \param file Source file (will be searched in cmakemodules/FeatureTests)
-# \param var Variable where the feature test result will be stored in
-#
-macro(featureTest file var)
-  file(READ "${PROJECT_SOURCE_DIR}/cmakemodules/FeatureTests/${file}" SOURCE)
-  check_c_source_compiles("${SOURCE}" ${var})
-endmacro()
-
-
 ###Run all feature tests that influence config.h
 #MPI-2 constants
 check_mpi_symbol_exists(MPI_STATUS_IGNORE HAVE_MPI_STATUS_IGNORE)

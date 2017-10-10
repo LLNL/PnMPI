@@ -45,4 +45,8 @@ int main(int argc, char **argv)
 
 
 /* lsan_enabled: true
+ *
+ * RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
+ * RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
+ * Pass: Hello World!
  */

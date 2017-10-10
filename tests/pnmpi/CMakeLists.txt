@@ -29,6 +29,5 @@
 
 add_subdirectory(core)
 add_subdirectory(debug)
-add_subdirectory(app_hooks)
 add_subdirectory(service)
 add_subdirectory(stacks)
