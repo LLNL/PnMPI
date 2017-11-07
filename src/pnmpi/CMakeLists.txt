@@ -73,8 +73,8 @@ install(FILES
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/pnmpi")
 
 pnmpi_add_private_header(config.h.in config.h)
-pnmpi_add_private_header(fallback_init.h)
 pnmpi_add_private_header(force_link.h)
+pnmpi_add_private_header(initialization.h)
 
 
 if (ENABLE_FORTRAN)
@@ -107,8 +107,8 @@ endif()
 #       containing a constructor must be listed in the order they should be
 #       executed.
 set(PNMPI_LIB_SOURCES
-  constructor.c
-  destructor.c
+  initialize.c
+  finalize.c
 
   core.c
   wrapper.c

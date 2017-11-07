@@ -40,8 +40,8 @@
 #include "core.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
-#include <pnmpi/private/fallback_init.h>
 #include <pnmpi/private/force_link.h>
+#include <pnmpi/private/initialization.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
@@ -82,9 +82,12 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   pnmpi_force_link();
 #endif
 
-  /* If the compiler does not support GCC's constructors, check if the fallback
-   * constructor was called before this function. */
-  pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
+  /* Initialize PnMPI before using any of the PnMPI functions. This will load
+   * the configuration and the defined modules.
+   *
+   * Note: Duplicated calls to the initialization function will be ignored, so
+   *       this doesn't need to be checked. */
+  pnmpi_initialize();
 
 
   int returnVal = MPI_SUCCESS;
@@ -303,9 +306,12 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
   pnmpi_force_link();
 #endif
 
-  /* If the compiler does not support GCC's constructors, check if the fallback
-   * constructor was called before this function. */
-  pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
+  /* Initialize PnMPI before using any of the PnMPI functions. This will load
+   * the configuration and the defined modules.
+   *
+   * Note: Duplicated calls to the initialization function will be ignored, so
+   *       this doesn't need to be checked. */
+  pnmpi_initialize();
 
 
 #ifdef PNMPI_COMPILER_NO_TLS
@@ -575,10 +581,12 @@ int MPI_Finalize(void)
     }
   dec_pnmpi_mpi_level();
 
-  /* Call the fallback destructor. If PnMI detects that its destructors wouldn't
-   * be called, this function calls all, except those which MUST be called after
-   * the execution of main. */
-  pnmpi_fallback_fini();
+  /* Finalize PnMPI. This will unload the configuration and the defined modules
+   * and frees allocated memory.
+   *
+   * Note: Duplicated calls to the finalization function will be ignored, so
+   *       this doesn't need to be checked. */
+  pnmpi_finalize();
 
 
   /* Exit the reentry-guarded wrapper section and return the status of the MPI
