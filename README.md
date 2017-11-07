@@ -371,7 +371,7 @@ This package includes a set of modules that can be used both to create other
 tools using their services and as templates for new modules.
 
 The source for all modules is stored in separate directories inside the
-`module/` directory. There are:
+`src/modules/` directory. There are:
 
 * **sample:**
   A set of example modules that show how to wrap send and receive operations.
@@ -402,6 +402,12 @@ The source for all modules is stored in separate directories inside the
   Note: this module relies on the status, requests, and datatype modules. A more
   detailed description on how to implemented submodules is included in the comm
   directory as a separate README.
+
+* **limit-threading**
+  This PnMPI specific module limits the MPI threading level to the value set in
+  the `PNMPI_THREADING_LEVEL` environment variable. It may be used to check the
+  behaviour of an application, if the MPI environment doesn't support a specific
+  threading level.
 
 * **metrics-counter**
   This PnMPI specific module counts the MPI call invocations. Add the module at
