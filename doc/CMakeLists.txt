@@ -84,7 +84,7 @@ if (BUILD_DOC)
   endif ()
   if (ENABLE_MODULES)
     list(APPEND DOXYGEN_DEPENDENCIES
-         "${PROJECT_SOURCE_DIR}/modules/metrics/doc.c")
+         "${PROJECT_SOURCE_DIR}/src/modules/metrics/doc.c")
   endif ()
 
   # Generate the documentation with Doxygen. The output file will be a main
