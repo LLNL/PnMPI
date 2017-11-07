@@ -31,7 +31,6 @@
 #include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
-#include <pnmpi/private/fallback_init.h>
 #include <pnmpi/private/force_link.h>
 #include <pnmpi/service.h>
 
@@ -50,10 +49,6 @@
 PNMPI_INTERNAL
 void pnmpi_force_link(void)
 {
-  /* Con- and destructors. */
-  void (*volatile ptr_ctor)() = pnmpi_constructor;
-  void (*volatile ptr_dtor)() = pnmpi_destructor;
-
   /* Module service functions. */
   PNMPI_status_t (*volatile ptr_service_01)(const char *name) =
     PNMPI_Service_RegisterModule;
@@ -99,8 +94,7 @@ void pnmpi_force_link(void)
 
   /* This if-clause has no special meaning, except keeping the compiler silent,
    * not to warn about unused variables. */
-  if (ptr_ctor || ptr_dtor ||
-      (ptr_service_01 || ptr_service_02 || ptr_service_03 || ptr_service_04 ||
+  if ((ptr_service_01 || ptr_service_02 || ptr_service_03 || ptr_service_04 ||
        ptr_service_05 || ptr_service_06 || ptr_service_07 || ptr_service_08 ||
        ptr_service_09 || ptr_service_10 || ptr_service_11 || ptr_service_12 ||
        ptr_service_13 || ptr_service_14) ||

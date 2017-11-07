@@ -28,18 +28,14 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_FALLBACK_INIT_H
-#define PNMPI_FALLBACK_INIT_H
+#ifndef PNMPI_PRIVATE_INITIALIZATION_H
+#define PNMPI_PRIVATE_INITIALIZATION_H
 
 
-extern int pnmpi_constructor_called;
+extern int pnmpi_initialized;
 
-
-void pnmpi_constructor(int argc, char **argv);
-void pnmpi_destructor(void);
-
-void pnmpi_fallback_init(int argc, char **argv);
-void pnmpi_fallback_fini(void);
+void pnmpi_initialize(void);
+void pnmpi_finalize(void);
 
 
 #endif

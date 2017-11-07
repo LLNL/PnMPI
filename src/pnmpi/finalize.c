@@ -28,44 +28,48 @@
  * LLNL-CODE-402774
  */
 
-/** \file
+#include <pnmpi/private/attributes.h>
+#include <pnmpi/private/initialization.h>
+#include <pnmpi/private/modules.h>
+
+
+/** \brief Finalize PnMPI.
  *
- * \details This file contains compiler-dependent macros, which set function or
- *  variable attributes for the compiler, if they are supported.
+ * \note This function must be called as many times as \ref pnmpi_initialize.
+ *
+ * \warning PnMPI API functions **MUST NOT** be used after calling this
+ * function.
  *
  *
- * \privatesection
+ * \private
  */
+void pnmpi_finalize(void)
+{
+  /* Ignore any call to this function except the last call. This will be achived
+   * by decreasing the initialization counter. If it's zero after decreaing,
+   * this is the last call to the finalization function and PnMPI needs to be
+   * finalized now. */
+  if (--pnmpi_initialized)
+    return;
+
+  /* Call the PnMPI finalization functions. These will unload the PnMPI modules
+   * and free allocated memory. */
+  pnmpi_modules_unload();
+}
 
 
-#ifndef PNMPI_PRIVATE_ATTRIBUTES_H
-#define PNMPI_PRIVATE_ATTRIBUTES_H
-
-
-/** \brief Mark function as internal.
- *
- * \details This macro will be used to mark functions as internal functions,
- *  which will be hidden for global exports.
- */
 #ifdef __GNUC__
-#define PNMPI_INTERNAL __attribute__((visibility("hidden")))
-#else
-#define PNMPI_INTERNAL
-#endif
-
-
-/** \brief Mark function as possibly unused.
+/** \brief The PnMPI destructor.
  *
- * \details When defining static functions inside a header, possibly not all
- *  functions will be used by all source files including this header. By using
- *  this macro, the compiler knows about this and will not print a warning about
- *  an unused function.
+ * \details If the compiler supports destructors, finalize PnMPI in the
+ *  destructor, just before the application finishes.
+ *
+ *
+ * \private
  */
-#ifdef __GNUC__
-#define PNMPI_UNUSED __attribute__((unused))
-#else
-#define PNMPI_UNUSED
-#endif
-
-
+PNMPI_INTERNAL
+__attribute__((destructor)) void pnmpi_destructor(void)
+{
+  pnmpi_finalize();
+}
 #endif
