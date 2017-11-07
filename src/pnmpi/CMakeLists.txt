@@ -27,7 +27,6 @@
 #
 # LLNL-CODE-402774
 
-include(CheckSymbolExists)
 include(easylib)
 include(PnMPI_headers)
 
@@ -125,11 +124,6 @@ if (ENABLE_FORTRAN)
 endif ()
 
 
-check_symbol_exists("PNMPI_HAVE_NO_CONSTRUCTOR"
-                    "${PNMPI_HEADER_DIR}/pnmpi/private/attributes.h"
-                    HAVE_NO_CONSTRUCTOR)
-
-
 # PnMPI shared library
 easy_add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
 add_dependencies(pnmpi generate pnmpi_debug_pmpi)
@@ -142,10 +136,6 @@ target_link_libraries(pnmpi
 set_target_properties(pnmpi PROPERTIES VERSION
   ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
   SOVERSION ${PNMPI_MAJOR_VERSION})
-
-if(HAVE_NO_CONSTRUCTOR)
-  set_property(TARGET pnmpi APPEND PROPERTY LINK_FLAGS " -nostartfiles")
-endif()
 
  if(APPLE)
     get_target_property(TEMP_FLAG pnmpi LINK_FLAGS)
@@ -182,10 +172,6 @@ if (CMAKE_Fortran_COMPILER_WORKS)
   set_target_properties(pnmpif PROPERTIES VERSION
     ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
     SOVERSION ${PNMPI_MAJOR_VERSION})
-
-  if(HAVE_NO_CONSTRUCTOR)
-    set_property(TARGET pnmpif APPEND PROPERTY LINK_FLAGS " -nostartfiles")
-  endif()
 
   if(CMAKE_Fortran_COMPILER_WORKS)
     get_target_property(TEMP_FLAG pnmpif COMPILE_FLAGS)
