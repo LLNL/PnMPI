@@ -362,11 +362,10 @@ jobs:
       os: linux
       dist: trusty
       sudo: false
-      compiler: gcc-4.8
+      compiler: gcc
       env:
       - DEPLOY
       before_script:
-      - export CC=gcc-4.8; export CXX=g++-4.8; export FC=gfortran-4.8
       - export PWD_SAVE=$PWD
       - git clone https://github.com/Kentzo/git-archive-all.git
           ../git-archive-all
