@@ -109,7 +109,11 @@ function travis_nanoseconds() {
 }
 
 echo_info() {
-  echo -e "\033[33;1m$@\033[0m\n"
+  echo -e "\033[33;1mINFO: $@\033[0m"
+}
+
+minify_args() {
+    echo $1 | tr "\n" " " | sed 's/[[:space:]]+/ /g'
 }
 
 
@@ -119,6 +123,19 @@ echo_info() {
 if [ -n "$CI" ]
 then
   travis_fold script.0 'Preparation' 'mkdir travis; cd travis'
+
+# If the 'CI' environment variable is not availble, this script is run
+# interactively. Gather some information about the system, which would be
+# provided by Travis if run in CI.
+else
+  export TRAVIS_OS_NAME=$(uname | sed 's/Darwin/osx/g' \
+                                | tr '[:upper:]' '[:lower:]')
+
+  if [ -z "$CC" ]
+  then
+    export CC=$(which cc || which gcc || which clang)
+    export CXX=$(which c++ || which g++ || which clang++)
+  fi
 fi
 
 
@@ -127,14 +144,24 @@ fi
 #
 fold_start script.1 'Configuration'
 
-if [ "$TRAVIS_OS_NAME" != "osx" ] && [[ "$CC" != clang* ]];
+COMMON_FLAGS="-pipe
+              -fstack-protector
+              -Werror -Wall
+             "
+
+export CFLAGS=$(minify_args "$COMMON_FLAGS $CFLAGS")
+export CPPFLAGS=$(minify_args "$COMMON_FLAGS $CPPFLAGS")
+export FFLAGS=$(minify_args "$COMMON_FLAGS $FFLAGS")
+
+
+if [ "$TRAVIS_OS_NAME" != "osx" ] && [[ "$CC" != *clang* ]];
 then
   SANITIZE_FLAGS="-DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On"
 else
   echo_info "Address Sanitizer is disabled for OSX and clang builds."
 fi
 
-if [[ "$CC" != clang* ]];
+if [[ "$CC" != *clang* ]];
 then
   COVERAGE_FLAGS="-DENABLE_COVERAGE=On"
 else

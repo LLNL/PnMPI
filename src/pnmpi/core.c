@@ -213,7 +213,7 @@ void pnmpi_PreInit(void)
   module_name_t filename, modname;
   FILE *conffile = NULL;
   char line[MAX_LINE], c, lastc;
-  int pos, err;
+  int pos;
   char *cmdargv[MAX_CMDARGS + 1];
   int cmdargc, comment, i;
 

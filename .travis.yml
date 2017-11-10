@@ -295,12 +295,17 @@ jobs:
       - NO_FORTRAN
 
     # Build with adept-utils.
+    #
+    # NOTE: Some of the compiler warnings will not be converted to errors, as
+    #       they origin from third-party code of adept-utils. However, PnMPI
+    #       will be checked with the all compiler flags in the other jobs.
     - os: linux
       dist: trusty
       compiler: gcc
       sudo: false
       before_script:
       - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
+      - export CFLAGS="-Wno-error=format -Wno-error=return-type"
       env:
       - WITH_ADEPT
     - os: osx
@@ -308,6 +313,7 @@ jobs:
       install: *macos_install
       before_script:
       - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
+      - export CFLAGS="-Wno-error=format"
       env:
       - WITH_ADEPT
 
