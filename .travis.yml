@@ -269,6 +269,10 @@ jobs:
       osx_image: xcode8.2
       compiler: clang
       install: *macos_install
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      install: *macos_install
 
 
     # Specialized builds.
