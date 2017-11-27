@@ -149,23 +149,25 @@ COMMON_FLAGS="-pipe
               -Werror -Wall
              "
 
-export CFLAGS=$(minify_args "$COMMON_FLAGS $CFLAGS")
-export CPPFLAGS=$(minify_args "$COMMON_FLAGS $CPPFLAGS")
-export FFLAGS=$(minify_args "$COMMON_FLAGS $FFLAGS")
+if [ "$CC" == gcc* ] || [ "$CC" == clang* ] || [ "$CC" == icc* ]
+then
+  export CFLAGS=$(minify_args "$COMMON_FLAGS $CFLAGS")
+  export CPPFLAGS=$(minify_args "$COMMON_FLAGS $CPPFLAGS")
+  export FFLAGS=$(minify_args "$COMMON_FLAGS $FFLAGS")
+fi
 
-
-if [ "$TRAVIS_OS_NAME" != "osx" ] && [[ "$CC" != *clang* ]];
+if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CC" == gcc* ]
 then
   SANITIZE_FLAGS="-DSANITIZE_ADDRESS=On -DSANITIZE_UNDEFINED=On"
 else
-  echo_info "Address Sanitizer is disabled for OSX and clang builds."
+  echo_info "Address Sanitizer is supported for Linux GCC builds only."
 fi
 
-if [[ "$CC" != *clang* ]];
+if [ "$CC" == gcc* ]
 then
   COVERAGE_FLAGS="-DENABLE_COVERAGE=On"
 else
-  echo_info "Code coverage is disabled for clang."
+  echo_info "Code coverage is disabled for $CC."
 fi
 
 echo "\$ cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Debug" \
