@@ -77,7 +77,7 @@ easy_target_link_libraries(pnmpi_debug ${MPI_C_LIBRARIES} m)
 
 foreach (target pnmpi_debug pnmpi_debug_pic)
   add_dependencies(${target} pnmpi_debug_pmpi)
-
-  add_coverage(${target})
-  add_sanitizers(${target})
 endforeach ()
+
+add_coverage(pnmpi_debug_pic)
+add_sanitizers(pnmpi_debug_pic)

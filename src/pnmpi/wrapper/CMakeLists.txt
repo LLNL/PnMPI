@@ -45,7 +45,5 @@ easy_add_library(pnmpi_wrapper OBJECT
   mpi_interface.c
   mpi_reentry.c)
 
-foreach (target pnmpi_wrapper pnmpi_wrapper_pic)
-  add_coverage(${target})
-  add_sanitizers(${target})
-endforeach ()
+add_coverage(pnmpi_wrapper_pic)
+add_sanitizers(pnmpi_wrapper_pic)

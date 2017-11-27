@@ -63,7 +63,7 @@ easy_add_library(pnmpi_modules OBJECT
 
 foreach (target pnmpi_modules pnmpi_modules_pic)
   add_dependencies(${target} generate)
-
-  add_coverage(${target})
-  add_sanitizers(${target})
 endforeach ()
+
+add_coverage(pnmpi_modules_pic)
+add_sanitizers(pnmpi_modules_pic)

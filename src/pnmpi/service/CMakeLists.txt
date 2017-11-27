@@ -93,7 +93,7 @@ easy_target_link_libraries(pnmpi_service ${MPI_C_LIBRARIES})
 
 foreach (target pnmpi_service pnmpi_service_pic)
   add_dependencies(${target} generate)
-
-  add_coverage(${target})
-  add_sanitizers(${target})
 endforeach ()
+
+add_coverage(pnmpi_service_pic)
+add_sanitizers(pnmpi_service_pic)
