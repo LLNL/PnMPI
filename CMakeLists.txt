@@ -169,20 +169,37 @@ if (ENABLE_TESTS)
 endif (ENABLE_TESTS)
 
 
+# Install CMake project files
+#
+# Additional files will be installed, so other CMake projects are able to find
+# (and use) PnMPI by simply calling 'find_package(PnMPI)'.
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+write_basic_package_version_file(
+  ${PROJECT_BINARY_DIR}/PnMPIConfigVersion.cmake
+  VERSION ${PNMPI_VERSION_MAJOR}.${PNMPI_VERSION_MINOR}.${PNMPI_VERSION_PATCH}
+  COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(
+  PnMPIConfig.cmake.in
+  PnMPIConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
+
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/PnMPIConfigVersion.cmake
+    ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
+    cmakemodules/PnMPI_modules.cmake
+  DESTINATION
+    ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
+)
+
+
 #===================================
 #Other install stuff (which is not handled in the sub-dirs)
 #===================================
-#Install includes (collected and copied during build process)
-install(DIRECTORY ${INCLUDE_OUTPUT_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-# Install configuration file so that other projects can use PnMPI
-configure_file(${PROJECT_SOURCE_DIR}/PnMPIConfig.cmake.in ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake @ONLY)
-configure_file(${PROJECT_SOURCE_DIR}/pnmpi-vars.cmake.in  ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake  @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/PnMPIConfig.cmake
-              ${PROJECT_BINARY_DIR}/pnmpi-vars.cmake
-              ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPIModules.cmake
-              ${PROJECT_SOURCE_DIR}/cmakemodules/PnMPI_modules.cmake
-              DESTINATION share/cmake/PnMPI)
 
 # Configure a header file with the full build configuration.  Include the CMake file
 # first so that the header can include build parameters.

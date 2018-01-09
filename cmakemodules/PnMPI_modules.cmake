@@ -27,9 +27,6 @@
 #
 # LLNL-CODE-402774
 
-find_package(UnixCommands REQUIRED)
-
-
 ## \brief Add a native PnMPI module with XMPI calls.
 #
 # \details This function adds a new module \p targetname. The module will not be
@@ -65,6 +62,7 @@ function (pnmpi_add_pmpi_module targetname)
     message(FATAL_ERROR "add_pnmpi_pmpi_module() called with no source files!")
   endif ()
 
+  find_package(UnixCommands REQUIRED)
 
   pnmpi_add_xmpi_module(${targetname} ${ARGN})
 

@@ -27,24 +27,120 @@
 #
 # LLNL-CODE-402774
 
-# This includes the following imported targets:
-#  - pnmpi           PnMPI library
-#  - pnmpi_static    PnMPI static library
-#  - pnmpif          PnMPI Fortran library
-#  - pnmpif_static   PnMPI static Fortran library
-set(PnMPI_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/share/cmake/PnMPI)
-set(wrap_CMAKE_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/share/cmake/wrap)
+@PACKAGE_INIT@
 
-include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-libs.cmake)
 
-# This includes PnMPI build variables.
-include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-vars.cmake)
+# Basic PnMPI configuration.
+#
+# The following variables store the basic PnMPI configuration and may be used to
+# check if basic conditions are met or where to find dependencies.
 
-# Allow other projects to use the pnmpi-patch target
-include(${PnMPI_CMAKE_INCLUDE_DIR}/pnmpi-patch.cmake)
+set(PnMPI_VERSION       "@PNMPI_VERSION@")
+set(PnMPI_VERSION_MAJOR "@PNMPI_VERSION_MAJOR@")
+set(PnMPI_VERSION_MINOR "@PNMPI_VERSION_MINOR@")
+set(PnMPI_VERSION_PATCH "@PNMPI_VERSION_PATCH@")
 
-# Allow other projects to use the wrap utility
-include(${wrap_CMAKE_INCLUDE_DIR}/wrap-config.cmake)
+set_and_check(PnMPI_INCLUDE_DIR "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
+set_and_check(PnMPI_LIBRARY_DIR "@CMAKE_INSTALL_FULL_LIBDIR@")
+set_and_check(PnMPI_MODULES_DIR "${PnMPI_LIBRARY_DIR}/pnmpi-modules")
 
-# Allow other projects to build PnMPI modules
-include(${PnMPI_CMAKE_INCLUDE_DIR}/PnMPIModules.cmake)
+set(PnMPI_INCLUDE_PATH "${PnMPI_INCLUDE_DIR}")
+
+
+# Component configuration.
+#
+# PnMPI has optional components, which will be configured in the following
+# section. find_package() provides capabilities to check wheter a module has a
+# specific component or not.
+
+set(PnMPI_PnMPIze_FOUND @ENABLE_PNMPIZE@)
+
+
+# Handle arguments of 'find_package()'.
+#
+# If 'find_package()' is used to find PnMPI, check its arguments and required
+# components.
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PnMPI
+  REQUIRED_VARS
+    PnMPI_VERSION
+    PnMPI_INCLUDE_DIR
+    PnMPI_LIBRARY_DIR
+    PnMPI_MODULES_DIR
+  HANDLE_COMPONENTS
+)
+
+
+# Include PnMPI targets as imported targets.
+#
+# By including the following files, PnMPI targets will be imported to be used by
+# the project including this file.
+include(${PACKAGE_PREFIX_DIR}/pnmpi-libs.cmake)
+include(${PACKAGE_PREFIX_DIR}/pnmpi-patch.cmake)
+if (${PnMPI_PnMPIZE_FOUND})
+  include(${PACKAGE_PREFIX_DIR}/pnmpize.cmake)
+endif ()
+
+# Set aliasses for PnMPI libraries and executables.
+#
+# These variables may be used to link against the PnMPI libraries. However, the
+# path to the library itself is not stored in these variables, but the names of
+# the targets imported above.
+
+# Basic PnMPI library. Default for most people.
+set(PnMPI_LIBRARIES pnmpi)
+
+# Language-specific PnMPI library targets to link against.
+set(PnMPI_C_LIBRARIES              pnmpi)
+set(PnMPI_C_STATIC_LIBRARIES       pnmpi_static)
+
+set(PnMPI_CXX_LIBRARIES            pnmpi)
+set(PnMPI_CXX_STATIC_LIBRARIES     pnmpi_static)
+
+set(PnMPI_Fortran_LIBRARIES        pnmpif)
+set(PnMPI_Fortran_STATIC_LIBRARIES pnmpif_static)
+
+# PnMPI specific binaries.
+set(PnMPI_PATCHER pnmpi-patch)
+if (${PnMPI_PnMPIZE_FOUND})
+  set(PnMPI_PnMPIZE pnmpize)
+endif ()
+
+
+# Include PnMPI specific CMake functions.
+#
+# PnMPI uses additional CMake functions to easily add targets for PnMPI modules.
+# These will be installed along with the PnMPI configuration.
+include(${PACKAGE_PREFIX_DIR}/PnMPI_modules.cmake)
+
+# Wrapper for pnmpi_add_pmpi_module
+#
+# The PnMPI module add function implements a new API. This function maps the new
+# function to the legacy API, so code using the PnMPI module doesn't get broken.
+#
+# NOTE: This function is DEPRECATED. New code should use the new API, as this
+#       function will be removed in future commits.
+function (add_pnmpi_module)
+  pnmpi_add_pmpi_module(${ARGV})
+endfunction ()
+
+
+# Include configuration of PnMPI dependencies.
+#
+# PnMPI may be build with optional dependencies. The following variables store
+# the used configuration, so projects know how PnMPI was build and how to access
+# its dependencies.
+
+# These variables allow client libraries to use the same adept_utils as PnMPI
+set(PnMPI_USE_adept_utils           @PnMPI_USE_adept_utils@)
+set(adept_utils_DIR	"@adept_utils_DIR@")
+if (PnMPI_USE_adept_utils)
+  find_package(adept_utils)
+endif()
+
+# These variables allow client libraries to use the same BFD library as PnMPI
+set(PnMPI_USE_BFD                  @BFD_FOUND@)
+set(PnMPI_BFD_INCLUDE_PATH         @BFD_INCLUDE_PATH@)
+set(PnMPI_BFD_LIBRARIES            @BFD_LIBRARIES@)
+set(PnMPI_IBERTY_INCLUDE_PATH      @IBERTY_INCLUDE_PATH@)
+set(PnMPI_IBERTY_LIBRARIES         @IBERTY_LIBRARIES@)

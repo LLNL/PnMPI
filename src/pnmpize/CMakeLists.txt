@@ -84,8 +84,8 @@ add_sanitizers(pnmpize)
 target_link_libraries(pnmpize ${ARGP_LIBRARIES})
 set_target_properties(pnmpize PROPERTIES OUTPUT_NAME pnmpi)
 
-install(TARGETS pnmpize EXPORT pnmpi DESTINATION ${CMAKE_INSTALL_BINDIR})
-
+install(TARGETS pnmpize EXPORT pnmpize DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(EXPORT pnmpize DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI)
 
 # If help2man could be found, generate a man-page for pnmpize. The help2man
 # command will install this man-page, too.

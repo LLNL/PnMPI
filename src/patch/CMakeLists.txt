@@ -27,6 +27,8 @@
 #
 # LLNL-CODE-402774
 
+include(GNUInstallDirs)
+
 find_package(Sanitizers)
 
 #Add the target for the patcher
@@ -44,10 +46,18 @@ if (BFD_FOUND)
   target_link_libraries(${targetName} ${BFD_LIBRARIES})
   target_link_libraries(${targetName} ${IBERTY_LIBRARIES})
 endif()
-install(TARGETS ${targetName} EXPORT ${targetName} RUNTIME DESTINATION bin)
+install(
+  TARGETS ${targetName}
+  EXPORT ${targetName}
+  RUNTIME
+  DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
 # Allow patch target to be used by subprojects.
-install(EXPORT ${targetName} DESTINATION share/cmake/PnMPI)
+install(
+  EXPORT ${targetName}
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
+)
 
 include_directories(${PROJECT_BINARY_DIR})
 

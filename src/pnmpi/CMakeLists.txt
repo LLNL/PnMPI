@@ -134,8 +134,8 @@ target_link_libraries(pnmpi
   -ldl)
 
 set_target_properties(pnmpi PROPERTIES VERSION
-  ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-  SOVERSION ${PNMPI_MAJOR_VERSION})
+  ${PNMPI_VERSION_MAJOR}.${PNMPI_VERSION_MINOR}.${PNMPI_VERSION_PATCH}
+  SOVERSION ${PNMPI_VERSION_MAJOR})
 
  if(APPLE)
     get_target_property(TEMP_FLAG pnmpi LINK_FLAGS)
@@ -170,8 +170,8 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     -ldl)
 
   set_target_properties(pnmpif PROPERTIES VERSION
-    ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-    SOVERSION ${PNMPI_MAJOR_VERSION})
+    ${PNMPI_VERSION_MAJOR}.${PNMPI_VERSION_MINOR}.${PNMPI_VERSION_PATCH}
+    SOVERSION ${PNMPI_VERSION_MAJOR})
 
   if(CMAKE_Fortran_COMPILER_WORKS)
     get_target_property(TEMP_FLAG pnmpif COMPILE_FLAGS)
@@ -203,7 +203,10 @@ if (CMAKE_Fortran_COMPILER_WORKS)
 endif()
 
 # file to export pnmpi-libs
-install(EXPORT pnmpi-libs DESTINATION share/cmake/PnMPI)
+install(
+  EXPORT pnmpi-libs
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
+)
 
 # Extra directories to include from when building.
 include_directories(
