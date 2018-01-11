@@ -176,9 +176,13 @@ endif (ENABLE_TESTS)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+string(CONCAT PNMPI_VERSION_CONCAT "${PNMPI_VERSION_MAJOR}."
+                                   "${PNMPI_VERSION_MINOR}."
+                                   "${PNMPI_VERSION_PATCH}."
+                                   "${PNMPI_VERSION_TWEAK}")
 write_basic_package_version_file(
   ${PROJECT_BINARY_DIR}/PnMPIConfigVersion.cmake
-  VERSION ${PNMPI_VERSION_MAJOR}.${PNMPI_VERSION_MINOR}.${PNMPI_VERSION_PATCH}
+  VERSION ${PNMPI_VERSION_CONCAT}
   COMPATIBILITY SameMajorVersion
 )
 configure_package_config_file(
