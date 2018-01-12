@@ -31,4 +31,4 @@
 pnmpi_add_pmpi_module(switch-matrix switch-matrix.c)
 add_wrapped_file(switch-matrix.c switch-matrix.w -w)
 
-install(TARGETS switch-matrix DESTINATION lib/pnmpi-modules)
+install(TARGETS switch-matrix DESTINATION ${PnMPI_MODULES_DIR})

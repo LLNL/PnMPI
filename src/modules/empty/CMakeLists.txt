@@ -30,6 +30,6 @@
 pnmpi_add_pmpi_module(empty empty.c)
 add_wrapped_file(empty.c empty.w -w)
 
-install(TARGETS empty DESTINATION lib/pnmpi-modules)
+install(TARGETS empty DESTINATION ${PnMPI_MODULES_DIR})
 
 include_directories(${MPI_C_INCLUDE_PATH})

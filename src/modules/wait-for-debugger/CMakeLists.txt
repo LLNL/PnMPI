@@ -35,4 +35,4 @@ pnmpi_add_xmpi_module(wait-for-debugger wait-for-debugger.c)
 
 pnmpi_add_module_man(wait-for-debugger module_wait_for_debugger)
 
-install(TARGETS wait-for-debugger DESTINATION lib/pnmpi-modules)
+install(TARGETS wait-for-debugger DESTINATION ${PnMPI_MODULES_DIR})

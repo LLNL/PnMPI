@@ -42,7 +42,7 @@ foreach(mod ${SUBMODULES})
     ## TODO: Martin, please have a look at the "SUBMODNAME" define, is that what you want ???
     set_source_files_properties(${modulename}.cpp COMPILE_FLAGS "-DSUBMODNAME='\"${mod}\"'")
 
-    install(TARGETS ${modulename} DESTINATION lib/pnmpi-modules)
+    install(TARGETS ${modulename} DESTINATION ${PnMPI_MODULES_DIR})
 endforeach()
 
 include_directories(

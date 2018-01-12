@@ -63,7 +63,7 @@ pnmpi_add_xmpi_module(metrics-counter "${CMAKE_CURRENT_BINARY_DIR}/counter.c")
 
 pnmpi_add_module_man(metrics-counter module_metrics_counter)
 
-install(TARGETS metrics-counter DESTINATION lib/pnmpi-modules)
+install(TARGETS metrics-counter DESTINATION ${PnMPI_MODULES_DIR})
 
 
 #
@@ -79,5 +79,5 @@ if (HIRES_TIMERS_FOUND)
 
   pnmpi_add_module_man(metrics-timing module_metrics_timing)
 
-  install(TARGETS metrics-timing DESTINATION lib/pnmpi-modules)
+  install(TARGETS metrics-timing DESTINATION ${PnMPI_MODULES_DIR})
 endif ()

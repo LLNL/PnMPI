@@ -37,6 +37,7 @@ endif ()
 
 include(PnMPI_headers)
 include(PnMPI_modules)
+include(GNUInstallDirs)
 
 find_package(Sanitizers)
 
@@ -63,6 +64,13 @@ macro(pnmpi_add_xmpi_module TARGET)
   add_coverage(${TARGET})
   add_sanitizers(${TARGET})
 endmacro()
+
+
+# Use a common path where the PnMPI modules get installed. Modules should use
+# this variable instead of hardcoding a path. Similar modules may be grouped
+# in subdirectories.
+set(PnMPI_MODULES_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/pnmpi-modules"
+                      CACHE PATH "PnMPI module install path")
 
 
 # Include directories for all modules.

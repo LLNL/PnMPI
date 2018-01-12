@@ -31,4 +31,4 @@
 pnmpi_add_pmpi_module(virtual virtual.c)
 add_wrapped_file(virtual.c virtual.w -w)
 
-install(TARGETS virtual DESTINATION lib/pnmpi-modules)
+install(TARGETS virtual DESTINATION ${PnMPI_MODULES_DIR})

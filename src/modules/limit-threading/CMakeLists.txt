@@ -41,4 +41,4 @@ pnmpi_add_xmpi_module(limit-threading limit-threading.c)
 
 pnmpi_add_module_man(limit-threading module_limit_threading)
 
-install(TARGETS limit-threading DESTINATION lib/pnmpi-modules)
+install(TARGETS limit-threading DESTINATION ${PnMPI_MODULES_DIR})

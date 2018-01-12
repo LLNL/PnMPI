@@ -27,9 +27,12 @@
 #
 # LLNL-CODE-402774
 
+include(GNUInstallDirs)
+
+
 pnmpi_add_pmpi_module(datatype datatype.cpp)
 pnmpi_add_pmpi_module(dtprint dtprint.c)
 
 #Add header to intermediate include dir
-install(FILES datatype.h DESTINATION include)
-install(TARGETS datatype dtprint DESTINATION lib/pnmpi-modules)
+install(FILES datatype.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS datatype dtprint DESTINATION ${PnMPI_MODULES_DIR})

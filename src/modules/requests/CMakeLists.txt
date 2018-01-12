@@ -27,11 +27,14 @@
 #
 # LLNL-CODE-402774
 
+include(GNUInstallDirs)
+
+
 #Use macro to: add target for module, version it, install it, patch it
 pnmpi_add_pmpi_module(requests requests.cpp)
 
 #Add header to intermediate include dir
-install(FILES requests.h DESTINATION include)
-install(TARGETS requests DESTINATION lib/pnmpi-modules)
+install(FILES requests.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS requests DESTINATION ${PnMPI_MODULES_DIR})
 
 include_directories(${PROJECT_SOURCE_DIR}/src/modules/status)
