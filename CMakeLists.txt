@@ -58,15 +58,9 @@ endif ()
 #===================================
 #Policies
 #===================================
-foreach (POL CMP0017 CMP0051)
+foreach (POL CMP0017 CMP0042 CMP0051)
   if (POLICY ${POL})
     cmake_policy(SET ${POL} NEW)
-  endif ()
-endforeach ()
-
-foreach (POL CMP0042)
-  if (POLICY ${POL})
-    cmake_policy(SET ${POL} OLD)
   endif ()
 endforeach ()
 
