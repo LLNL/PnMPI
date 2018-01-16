@@ -27,6 +27,14 @@
 #
 # LLNL-CODE-402774
 
+# Search for dependencies required by PnMPI. These are required for compiling
+# code which uses PnMPI.
+#
+# NOTE: Other packages need to be searched before this package is initialized,
+#       as other packages may overwrite the PACKAGE_PREFIX_DIR of this package.
+find_package(MPI REQUIRED)
+
+
 @PACKAGE_INIT@
 
 
@@ -57,7 +65,10 @@ else ()
                         "@PROJECT_BINARY_DIR@")
 endif ()
 
-set(PnMPI_INCLUDE_PATH ${PnMPI_INCLUDE_DIR} CACHE PATH "PnMPI include paths")
+set(PnMPI_INCLUDE_PATH
+    ${PnMPI_INCLUDE_DIR}
+    ${MPI_C_INCLUDE_PATH}
+  CACHE PATH "PnMPI include paths")
 set(PnMPI_MODULES_PATH ${PnMPI_MODULES_DIR} CACHE PATH "PnMPI modules location")
 
 
