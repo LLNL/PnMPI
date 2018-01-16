@@ -35,17 +35,30 @@
 # The following variables store the basic PnMPI configuration and may be used to
 # check if basic conditions are met or where to find dependencies.
 
-set(PnMPI_VERSION       "@PNMPI_VERSION@")
-set(PnMPI_VERSION_MAJOR "@PNMPI_VERSION_MAJOR@")
-set(PnMPI_VERSION_MINOR "@PNMPI_VERSION_MINOR@")
-set(PnMPI_VERSION_PATCH "@PNMPI_VERSION_PATCH@")
-set(PnMPI_VERSION_TWEAK "@PNMPI_VERSION_TWEAK@")
+set(PnMPI_VERSION       "@PNMPI_VERSION@"       CACHE INTERNAL "")
+set(PnMPI_VERSION_MAJOR "@PNMPI_VERSION_MAJOR@" CACHE INTERNAL "")
+set(PnMPI_VERSION_MINOR "@PNMPI_VERSION_MINOR@" CACHE INTERNAL "")
+set(PnMPI_VERSION_PATCH "@PNMPI_VERSION_PATCH@" CACHE INTERNAL "")
+set(PnMPI_VERSION_TWEAK "@PNMPI_VERSION_TWEAK@" CACHE INTERNAL "")
 
-set_and_check(PnMPI_INCLUDE_DIR "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
-set_and_check(PnMPI_LIBRARY_DIR "@CMAKE_INSTALL_FULL_LIBDIR@")
-set(PnMPI_MODULES_DIR "@PnMPI_MODULE_DIR@")
 
-set(PnMPI_INCLUDE_PATH "${PnMPI_INCLUDE_DIR}")
+# Set dependent PnMPI configuration.
+#
+# Some of PnMPI's configuration variables depend on how PnMPI is included into
+# other projects (via find_package() or add_subdirectory()). These variables
+# will be set depending on the include mode and cached later if neccessary.
+if (NOT PnMPI_IS_SUBPROJECT)
+  set_and_check(PnMPI_INCLUDE_DIR "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
+  set_and_check(PnMPI_MODULES_DIR "@PnMPI_MODULES_DIR@")
+else ()
+  include(PnMPI_headers)
+  set(PnMPI_INCLUDE_DIR "${PNMPI_HEADER_DIR}"
+                        "@PROJECT_SOURCE_DIR@/src/pnmpi"
+                        "@PROJECT_BINARY_DIR@")
+endif ()
+
+set(PnMPI_INCLUDE_PATH ${PnMPI_INCLUDE_DIR} CACHE PATH "PnMPI include paths")
+set(PnMPI_MODULES_PATH ${PnMPI_MODULES_DIR} CACHE PATH "PnMPI modules location")
 
 
 # Component configuration.
@@ -54,7 +67,7 @@ set(PnMPI_INCLUDE_PATH "${PnMPI_INCLUDE_DIR}")
 # section. find_package() provides capabilities to check wheter a module has a
 # specific component or not.
 
-set(PnMPI_PnMPIze_FOUND @ENABLE_PNMPIZE@)
+set(PnMPI_PnMPIze_FOUND @ENABLE_PNMPIZE@ CACHE INTERNAL "")
 
 
 # Handle arguments of 'find_package()'.
@@ -65,10 +78,14 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PnMPI
   REQUIRED_VARS
     PnMPI_VERSION
-    PnMPI_INCLUDE_DIR
-    PnMPI_LIBRARY_DIR
-    PnMPI_MODULES_DIR
+    PnMPI_INCLUDE_PATH
+    PnMPI_MODULES_PATH
   HANDLE_COMPONENTS
+)
+
+mark_as_advanced(
+  PnMPI_INCLUDE_PATH
+  PnMPI_MODULES_PATH
 )
 
 
@@ -76,10 +93,15 @@ find_package_handle_standard_args(PnMPI
 #
 # By including the following files, PnMPI targets will be imported to be used by
 # the project including this file.
-include(${PACKAGE_PREFIX_DIR}/pnmpi-libs.cmake)
-include(${PACKAGE_PREFIX_DIR}/pnmpi-patch.cmake)
-if (${PnMPI_PnMPIZE_FOUND})
-  include(${PACKAGE_PREFIX_DIR}/pnmpize.cmake)
+#
+# NOTE: This is not neccessary, if PnMPI is included via 'add_subdirectory()',
+#       as PnMPI's native targets are available.
+if (NOT PnMPI_IS_SUBPROJECT)
+  include(${PACKAGE_PREFIX_DIR}/pnmpi-libs.cmake)
+  include(${PACKAGE_PREFIX_DIR}/pnmpi-patch.cmake)
+  if (PnMPI_PnMPIZE_FOUND)
+    include(${PACKAGE_PREFIX_DIR}/pnmpize.cmake)
+  endif ()
 endif ()
 
 # Set aliasses for PnMPI libraries and executables.
@@ -89,22 +111,22 @@ endif ()
 # the targets imported above.
 
 # Basic PnMPI library. Default for most people.
-set(PnMPI_LIBRARIES pnmpi)
+set(PnMPI_LIBRARIES pnmpi CACHE INTERNAL "")
 
 # Language-specific PnMPI library targets to link against.
-set(PnMPI_C_LIBRARIES              pnmpi)
-set(PnMPI_C_STATIC_LIBRARIES       pnmpi_static)
+set(PnMPI_C_LIBRARIES              pnmpi         CACHE INTERNAL "")
+set(PnMPI_C_STATIC_LIBRARIES       pnmpi_static  CACHE INTERNAL "")
 
-set(PnMPI_CXX_LIBRARIES            pnmpi)
-set(PnMPI_CXX_STATIC_LIBRARIES     pnmpi_static)
+set(PnMPI_CXX_LIBRARIES            pnmpi         CACHE INTERNAL "")
+set(PnMPI_CXX_STATIC_LIBRARIES     pnmpi_static  CACHE INTERNAL "")
 
-set(PnMPI_Fortran_LIBRARIES        pnmpif)
-set(PnMPI_Fortran_STATIC_LIBRARIES pnmpif_static)
+set(PnMPI_Fortran_LIBRARIES        pnmpif        CACHE INTERNAL "")
+set(PnMPI_Fortran_STATIC_LIBRARIES pnmpif_static CACHE INTERNAL "")
 
 # PnMPI specific binaries.
-set(PnMPI_PATCHER pnmpi-patch)
-if (${PnMPI_PnMPIZE_FOUND})
-  set(PnMPI_PnMPIZE pnmpize)
+set(PnMPI_PATCHER pnmpi-patch CACHE INTERNAL "")
+if (PnMPI_PnMPIZE_FOUND)
+  set(PnMPI_PnMPIZE pnmpize CACHE INTERNAL "")
 endif ()
 
 
@@ -112,7 +134,11 @@ endif ()
 #
 # PnMPI uses additional CMake functions to easily add targets for PnMPI modules.
 # These will be installed along with the PnMPI configuration.
-include(${PACKAGE_PREFIX_DIR}/PnMPI_modules.cmake)
+if (NOT PnMPI_IS_SUBPROJECT)
+  include(${PACKAGE_PREFIX_DIR}/PnMPI_modules.cmake)
+else ()
+  include(PnMPI_modules)
+endif ()
 
 # Wrapper for pnmpi_add_pmpi_module
 #

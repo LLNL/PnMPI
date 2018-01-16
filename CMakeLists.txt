@@ -169,6 +169,13 @@ if (ENABLE_TESTS)
 endif (ENABLE_TESTS)
 
 
+# Evaluate coverage data.
+#
+# Coverage data needs to be evaluated after all binary targets have been added,
+# as coverage_evaluate() can't handle targets defined in the future.
+coverage_evaluate()
+
+
 # Install CMake project files
 #
 # Additional files will be installed, so other CMake projects are able to find
@@ -201,6 +208,18 @@ install(
 )
 
 
+# Populate cache with PnMPI configuration.
+#
+# If PnMPI is included into other projects via add_subdirectory(), additional
+# variables need to be populated in the cache, so PnMPI is able to be used from
+# the parent directories.
+if (NOT PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(PnMPI_FOUND         true PARENT_SCOPE)
+  set(PnMPI_IS_SUBPROJECT true)
+  include("${CMAKE_CURRENT_BINARY_DIR}/PnMPIConfig.cmake")
+endif ()
+
+
 #===================================
 #Other install stuff (which is not handled in the sub-dirs)
 #===================================
@@ -212,9 +231,3 @@ SET(PnMPI_INSTALL_PREFIX )
 set(PNMPI_HAVE_FORTRAN ${ENABLE_FORTRAN})
 configure_file(${PROJECT_SOURCE_DIR}/pnmpi-config.h.in ${PROJECT_BINARY_DIR}/pnmpi-config.h @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/pnmpi-config.h DESTINATION include)
-
-
-#
-# Evaluate coverage data.
-#
-coverage_evaluate()
