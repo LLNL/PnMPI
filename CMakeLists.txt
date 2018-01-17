@@ -156,11 +156,21 @@ add_subdirectory(doc)
 add_subdirectory(externals)
 add_subdirectory(src)
 
+# Add PnMPI test cases.
+#
+# PnMPI test cases will be managed in the 'tests/' subdirectory. As
+# 'enable_testing()' needs to be called in the project's root directory,
+# including the directory and related options will be managed here instead of
+# inside the directory.
+#
+# NOTE: If PnMPI is included into other projects via 'add_subdirectory()',
+#       testing will be disabled by CMake. Therefore, this directory doesn't
+#       need to be included to avoid test binaries to be built.
 option(ENABLE_TESTS "Selects whether tests are built." false)
-if (ENABLE_TESTS)
+if (ENABLE_TESTS AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
   enable_testing()
   add_subdirectory(tests)
-endif (ENABLE_TESTS)
+endif ()
 
 
 # Evaluate coverage data.
