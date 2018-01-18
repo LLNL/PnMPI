@@ -30,7 +30,6 @@
 include(GNUInstallDirs)
 
 find_package(BFD)
-find_package(Sanitizers)
 
 
 # Generate the patcher's configuration.

@@ -27,13 +27,7 @@
 #
 # LLNL-CODE-402774
 
-include(easylib)
 include(PnMPI_doc)
-include(PnMPI_headers)
-
-find_package(codecov)
-find_package(MPI REQUIRED)
-find_package(Sanitizers)
 
 
 # Install and manage the public and private header files of the PnMPI sources.

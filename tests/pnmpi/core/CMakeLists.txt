@@ -27,9 +27,6 @@
 #
 # LLNL-CODE-402774
 
-find_package(MPI REQUIRED)
-
-
 easy_add_test(PREFIX core_banner SOURCES banner.c)
 easy_add_test(PREFIX core_hooks SOURCES hooks.c)
 easy_add_test(PREFIX core_module_name SOURCES module_name.c)

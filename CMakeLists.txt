@@ -28,15 +28,46 @@
 # LLNL-CODE-402774
 
 cmake_minimum_required(VERSION 2.8.11.2)
+
+
+#===================================
+# Policies
+#===================================
+foreach (POL CMP0017 CMP0042 CMP0051)
+  if (POLICY ${POL})
+    cmake_policy(SET ${POL} NEW)
+  endif ()
+endforeach ()
+
+
+#===================================
+# Basic initialization
+#===================================
 project(pnmpi C CXX)
 
+# Set the module search path to include local modules.
+set(CMAKE_MODULE_PATH
+  "${PROJECT_SOURCE_DIR}/cmakemodules"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-CChelper/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-codecov/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-easytest/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
+  "${PROJECT_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
+  ${CMAKE_MODULE_PATH})
 
-# Otional Fortran support.
+# Get the version info from git.
+find_package(GitInfo REQUIRED)
+git_version_info(PNMPI)
+
+# Optional Fortran support.
 #
 # By default PnMPI will be build with the Fortran interface. If PnMPI should not
 # be build with the Fortran interface or no Fortran compiler could be found, the
 # Fortran interface will be disabled.
-option(ENABLE_FORTRAN "Enable PnMPI Fortran interface." on)
+option(ENABLE_FORTRAN "Enable PnMPI Fortran interface." ON)
 if (ENABLE_FORTRAN)
   # Workaround for this CMake issue:
   #  http://public.kitware.com/Bug/view.php?id=9220
@@ -52,82 +83,25 @@ if (ENABLE_FORTRAN)
     message(STATUS "No working Fortran compiler found: PnMPI will be build "
       "without Fortran interface.")
   endif ()
+
+  # Workaournd for this CMake issues:
+  # https://cmake.org/pipermail/cmake/2010-November/040949.html
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
+    set(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS "")
+  endif()
 endif ()
 
 
 #===================================
-#Policies
-#===================================
-foreach (POL CMP0017 CMP0042 CMP0051)
-  if (POLICY ${POL})
-    cmake_policy(SET ${POL} NEW)
-  endif ()
-endforeach ()
-
-
-# Workaournd for this CMake issues:
-# https://cmake.org/pipermail/cmake/2010-November/040949.html
-if(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
-  set(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS "")
-endif()
-
-
-#======================================================================
-# RPATH setup.  Default is to rpath everything.  Set the option to
-# false if you don't want this behavior.
-#======================================================================
-option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." TRUE)
-
-#===================================
-# Basic initialization
+# Compiler options
 #===================================
 
-# Set the module search path to include local modules.
-set(CMAKE_MODULE_PATH
-  "${PROJECT_SOURCE_DIR}/cmakemodules"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-argp/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-CChelper/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-codecov/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-easylib/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-easytest/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-gitinfo/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-MPIhelper/cmake"
-  "${PROJECT_SOURCE_DIR}/externals/CMake-sanitizers/cmake"
-  ${CMAKE_MODULE_PATH}
-  "${PROJECT_SOURCE_DIR}/cmakemodules/legacy")
-
-
-# Get the version info from git.
-find_package(GitInfo REQUIRED)
-git_version_info(PNMPI)
-
-
-#===================================
-#System inspection
-#===================================
-# TODO
-#     currently hardcoded, should be put into find modules:
-#     * detect gawk, tcsh, sort, uniq, sed
-#     * dl open lib detection
-find_package(MPI)
-
-# Search for C11 compiler support.
+# RPATH setup.
 #
-# Some of the modules and the PnMPI library try to use C11 features. Instead of
-# searching for them in each module this will be done here, so the message gets
-# only printed once.
-find_package(C11 OPTIONAL_COMPONENTS ATOMICS THREAD_LOCAL)
-
-
-#Run feature tests
-INCLUDE (FeatureTests)
-
-
-#
-# Add code coverage for the sourcecode.
-#
-find_package(codecov)
-
+# By default rpath will be used for all targets, so the binary's dependent
+# libraries will be found without adjusting the loader's environment. This
+# feature may be disabled to use the linker's search paths instead.
+option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Add rpath for all dependencies." ON)
 
 # Set MPI skip flags for C++ code
 #
@@ -148,7 +122,7 @@ string(REPLACE ";" " " CMAKE_CXX_FLAGS
 #===================================
 # Performance optimizations
 #===================================
-option(ENABLE_DEBUG "Enable PnMPI debug logging and assertions." on)
+option(ENABLE_DEBUG "Enable PnMPI debug logging and assertions." ON)
 if (NOT ENABLE_DEBUG)
   # For performance, assertions and debug logging may be disabled in PnMPI to
   # reduce the overhead in the PnMPI stack. This will not change the PnMPI API,
@@ -156,6 +130,29 @@ if (NOT ENABLE_DEBUG)
   # any debug information nor check any parameters.
   add_definitions("-DNDEBUG" "-DPNMPI_NO_DEBUG")
 endif ()
+
+
+#===================================
+# System inspection
+#===================================
+
+# Find general packages required by most of the targets.
+#
+# NOTE: Packages used by a specific target only should be searched in the
+#       CMakeLists.txt file defining the target.
+find_package(codecov)
+find_package(MPI REQUIRED)
+find_package(Sanitizers)
+
+# Search for C11 compiler support.
+#
+# Some of the modules and the PnMPI library try to use C11 features. Instead of
+# searching for them in each module this will be done here, so the message gets
+# printed only once.
+find_package(C11 OPTIONAL_COMPONENTS ATOMICS THREAD_LOCAL)
+
+# Run feature tests
+include(FeatureTests)
 
 
 #===================================
@@ -175,7 +172,7 @@ add_subdirectory(src)
 # NOTE: If PnMPI is included into other projects via 'add_subdirectory()',
 #       testing will be disabled by CMake. Therefore, this directory doesn't
 #       need to be included to avoid test binaries to be built.
-option(ENABLE_TESTS "Selects whether tests are built." false)
+option(ENABLE_TESTS "Selects whether tests are built." OFF)
 if (ENABLE_TESTS AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
   enable_testing()
   add_subdirectory(tests)

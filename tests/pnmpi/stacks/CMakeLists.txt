@@ -27,7 +27,4 @@
 #
 # LLNL-CODE-402774
 
-find_package(MPI REQUIRED)
-
-
 easy_add_test(PREFIX stack SOURCES stack.c)

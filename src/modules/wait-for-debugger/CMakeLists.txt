@@ -28,7 +28,6 @@
 # LLNL-CODE-402774
 
 include(PnMPI_doc)
-include(PnMPI_headers)
 
 
 pnmpi_add_xmpi_module(wait-for-debugger wait-for-debugger.c)

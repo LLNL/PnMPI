@@ -28,7 +28,6 @@
 # LLNL-CODE-402774
 
 include(PnMPI_doc)
-include(PnMPI_headers)
 
 
 # Add C11 flags, if C11 is available.

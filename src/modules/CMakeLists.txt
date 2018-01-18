@@ -39,8 +39,6 @@ include(PnMPI_headers)
 include(PnMPI_modules)
 include(GNUInstallDirs)
 
-find_package(Sanitizers)
-
 
 # Add a custom target to bundle all module targets. This target may be either
 # used by the user, but will be used especially for building the Doxygen

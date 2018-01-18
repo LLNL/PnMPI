@@ -28,7 +28,6 @@
 # LLNL-CODE-402774
 
 include(PnMPI_doc)
-include(PnMPI_headers)
 
 
 # Install and manage the public and private header files of the PnMPI sources.

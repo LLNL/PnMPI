@@ -27,9 +27,6 @@
 #
 # LLNL-CODE-402774
 
-include(PnMPI_headers)
-
-
 # Check if thread local storage is available for thread safe variables in PnMPI
 # and modules. First we try to use C11 _Thread_local, next the compiler-specific
 # builtin __thread keyword.

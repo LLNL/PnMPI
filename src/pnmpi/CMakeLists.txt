@@ -30,8 +30,6 @@
 include(easylib)
 include(PnMPI_headers)
 
-find_package(Sanitizers)
-
 
 # If C11 was found, add the C11 compiler flags, so C11 thread local storage can
 # be used by PnMPI. Separate flags for the subdirectories are not required, as
