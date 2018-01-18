@@ -36,6 +36,8 @@ find_program (HELP2MAN_BIN NAMES help2man)
 find_package_handle_standard_args(help2man
   FOUND_VAR HELP2MAN_FOUND REQUIRED_VARS HELP2MAN_BIN)
 
+mark_as_advanced(HELP2MAN_BIN)
+
 if (NOT HELP2MAN_BIN)
   return()
 endif ()
