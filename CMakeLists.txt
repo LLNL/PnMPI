@@ -110,9 +110,6 @@ git_version_info(PNMPI)
 #     * detect gawk, tcsh, sort, uniq, sed
 #     * dl open lib detection
 find_package(MPI)
-set(MPI_CXX_SKIP_FLAGS
-    -DMPI_NO_CPPBIND -DOMPI_SKIP_MPICXX -D_MPICC_H -DMPICH_SKIP_MPICXX -DMPIBULL_SKIP_MPICXX
-    CACHE STRING "Default skip-flags used (for SGI, OpenMPI, HP-MPI, MPICH, BULL-MPI)")
 
 # BFD is used by the patch utility.
 find_package(BFD)
@@ -134,6 +131,22 @@ INCLUDE (FeatureTests)
 # Add code coverage for the sourcecode.
 #
 find_package(codecov)
+
+
+# Set MPI skip flags for C++ code
+#
+# Some MPI implementations use a legacy C++ header for mapping MPI C calls to
+# C++ methods. Sometimes, code compiled with this "automatic feature" fails when
+# executed due unresolvable symbols. The following flags will disable this
+# "feature" entirely for all C++ code compiled in this project.
+set(MPI_CXX_SKIP_FLAGS "-DMPI_NO_CPPBIND"      # SGI
+                       "-DOMPI_SKIP_MPICXX"    # OpenMPI
+                       "-D_MPICC_H"            # HP-MPI
+                       "-DMPICH_SKIP_MPICXX"   # MPICH
+                       "-DMPIBULL_SKIP_MPICXX" # BUll-MPI
+    CACHE STRING "Flags to skip C++ MPI")
+string(REPLACE ";" " " CMAKE_CXX_FLAGS
+       "${CMAKE_CXX_FLAGS} ${MPI_CXX_SKIP_FLAGS}")
 
 
 #===================================
