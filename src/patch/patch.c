@@ -65,7 +65,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <pnmpi-config.h>
+#include "config.h"
 
 #ifdef PNMPI_HAVE_BFD
 #include <bfd.h>

@@ -37,9 +37,6 @@
 /* Built with Adept Utils. */
 #define PNMPI_HAVE_ADEPT_UTILS @PnMPI_USE_adept_utils@
 
-/* Built with BFD support. */
-#cmakedefine PNMPI_HAVE_BFD 1
-
 /* Locations of PnMPI directories in the install tree */
 #define PNMPI_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 #define PNMPI_INCLUDE_DIR          "@CMAKE_INSTALL_PREFIX@/include"

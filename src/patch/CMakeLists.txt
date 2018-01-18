@@ -29,7 +29,17 @@
 
 include(GNUInstallDirs)
 
+find_package(BFD)
 find_package(Sanitizers)
+
+
+# Generate the patcher's configuration.
+#
+# Depending on the packages CMake found, a configuration header file will be
+# generated for the patcher.
+configure_file(config.h.in config.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 
 #Add the target for the patcher
 SET (PATCHER_FRONTEND_COMPILER "" CACHE FILEPATH "If this is a frontend/backend build use the backend compiler as CMake compilers and specify a frontend compiler here to create a frontend-operating version of the PnMPI patcher.")
@@ -59,6 +69,5 @@ install(
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
 )
 
-include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(frontend)

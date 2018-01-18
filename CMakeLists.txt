@@ -111,10 +111,6 @@ git_version_info(PNMPI)
 #     * dl open lib detection
 find_package(MPI)
 
-# BFD is used by the patch utility.
-find_package(BFD)
-
-
 # Search for C11 compiler support.
 #
 # Some of the modules and the PnMPI library try to use C11 features. Instead of
