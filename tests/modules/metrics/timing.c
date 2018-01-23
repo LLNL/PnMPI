@@ -68,7 +68,7 @@ int main(int argc, char **argv)
  *
  * COMPILE_FLAGS-basic: @MPI_C_COMPILE_FLAGS@
  * PNMPICONF-basic: module metrics-timing
- * PASS-basic: Timing stats:\nRank 0:\n.*MPI_Init\n.*Total:.*MPI_Init
+ * PASS-basic: Timing stats:\n\n Rank 0:.*MPI_Init.*Total:.*MPI_Init
  *
  * COMPILE_FLAGS-pcontrol_invalid: @MPI_C_COMPILE_FLAGS@ -DWITH_PCONTROL
  * PNMPICONF-pcontrol_invalid: module metrics-timing
@@ -81,5 +81,5 @@ int main(int argc, char **argv)
  * PNMPICONF-pcontrol: pcontrol on\n
  * PNMPICONF-pcontrol: module metrics-timing\n
  * PNMPICONF-pcontrol: pcontrol on
- * PASS-pcontrol: Timing stats:\nRank 0:\n.*MPI_Pcontrol\n.*Total:.*MPI_Pcontrol
+ * PASS-pcontrol: Timing stats:\n\n Rank 0:.*MPI_Pcontrol.*Total:.*MPI_Pcontrol
  */

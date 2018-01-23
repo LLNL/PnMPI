@@ -148,11 +148,13 @@ int MPI_Pcontrol(const int level, ...)
  */
 int MPI_Finalize()
 {
-  /* Wait until all ranks have flushed their buffers to avoid rank output
-   * between the statistics output. */
+  /* Flush the buffers to avoid fragments in the outout.
+   *
+   * NOTE: This can't fully prevent buffered output being displayed between
+   *       fresh one, as there's no guaranty the MPI sends the buffers back
+   *       to the host immediately. */
   fflush(stdout);
   fflush(stderr);
-  PMPI_Barrier_assert(MPI_COMM_WORLD);
 
 
   int rank, size;
@@ -160,43 +162,50 @@ int MPI_Finalize()
   PMPI_Comm_rank_assert(MPI_COMM_WORLD, &rank);
   PMPI_Comm_size_assert(MPI_COMM_WORLD, &size);
 
-  /* Iterate over all ranks and tell one rank after another to print his
-   * statistics. The per-rank statistics will be reduced to rank 0 to get the
-   * total stats. */
-  struct counter tmp;
-  init_counters(&tmp);
-
-  int n = 0;
-  while (n < size)
+  /* The entire output will be handled by rank 0 to avoid output collisions, as
+   * the individual ranks can't sync their output being displayed at the
+   * frontend. Therefore, rank 0 prints a header and its counters first. */
+  if (rank == 0)
     {
-      if (rank == n)
-        {
-          if (rank == 0)
-            printf("\n\nStats:\n");
-
-          printf("Rank %d:\n", rank);
-          print_counters(&counters);
-          fflush(stdout);
-        }
-
-      n++;
-
-      /* Wait until all ranks have finished processing rank n.
-       *
-       * This solution was inspired by: http://stackoverflow.com/a/5310506 */
-      PMPI_Barrier_assert(MPI_COMM_WORLD);
+      printf("\n\n################################\n\n"
+             "MPI call stats:\n\n"
+             " Rank 0:\n");
+      print_counters(&counters);
     }
 
+  /* Rank 0 should receive the counters from other ranks now, to display those.
+   * These will be summed up for the total counters printed below, to cache the
+   * counters instead of using a reduction for receiving the counters of all
+   * ranks a second time. */
+  struct counter tmp;
+  init_counters(&tmp);
+  int n;
+  for (n = 1; n < size; n++)
+    {
+      {{forallfn fn_name MPI_Finalize}}
+        if (rank > 0)
+          PMPI_Send(&(counters.{{fn_name}}), 1, MPI_UNSIGNED_LONG, 0, 0,
+                    MPI_COMM_WORLD);
+        else
+          {
+            PMPI_Recv(&(tmp.{{fn_name}}), 1, MPI_UNSIGNED_LONG, n, 0,
+                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            counters.{{fn_name}} += tmp.{{fn_name}};
+          }
+      {{endforallfn}}
 
-  /* Reduce statistics of all ranks to rank 0. */
-  {{forallfn fn_name MPI_Finalize}}
-    PMPI_Reduce_assert(&(counters.{{fn_name}}), &(tmp.{{fn_name}}), 1,
-                       MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-  {{endforallfn}}
+      if (rank == 0)
+        {
+          printf("\n Rank %d:\n", n);
+          print_counters(&tmp);
+        }
+    }
 
+  /* Print the total counters. These have been summed up in the counter struct
+   * of rank 0, so these have not to be received a second time. */
   if (rank == 0) {
-    printf("Total:\n");
-    print_counters(&tmp);
+    printf("\n Total:\n");
+    print_counters(&counters);
     fflush(stdout);
   }
 

@@ -101,6 +101,8 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
       else
 #endif
         returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
+
+      pnmpi_print_banner();
     }
   else
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
@@ -112,8 +114,6 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 
   // Mpi is initialized now
   pnmpi_initialization_complete = 1;
-
-  pnmpi_print_banner();
 
   return returnVal;
 }
@@ -290,6 +290,9 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
     }
   DBGPRINT3("Done with original MPI in MPI_Init");
   pnmpi_level = start_level;
+
+  pnmpi_print_banner();
+
   return res;
 }
 
@@ -339,6 +342,8 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 #endif
         returnVal =
           PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+
+      pnmpi_print_banner();
     }
   else
     returnVal =
@@ -351,8 +356,6 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
   // Mpi is initialized now
   pnmpi_initialization_complete = 1;
-
-  pnmpi_print_banner();
 
   return returnVal;
 }
@@ -542,6 +545,9 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
     }
   DBGPRINT3("Done with original MPI in MPI_Init_thread");
   pnmpi_level = start_level;
+
+  pnmpi_print_banner();
+
   return res;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
