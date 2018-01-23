@@ -90,18 +90,13 @@ static void wait_for_debugger()
 
   printf("Rank %i%s%s has pid %i.\n", rank, (hostname[0] != '\0') ? " at " : "",
          (hostname[0] != '\0') ? hostname : "", getpid());
+  fflush(stdout);
 
 
   /* If the WAIT_AT_STARTUP variable is defined, the number of seconds defined
    * will be waited, so one may attach with a debuger in this time. */
   if (getenv("WAIT_AT_STARTUP") != NULL)
     {
-      /* Wait at this barrier, so all ranks may flush their buffers now. This
-       * will prevent for ugly output at stdout. */
-      fflush(stdout);
-      PMPI_Barrier_assert(MPI_COMM_WORLD);
-
-
       int wait = atoi(getenv("WAIT_AT_STARTUP"));
       if (rank == 0)
         {
