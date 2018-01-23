@@ -28,3 +28,6 @@
 [submodule "externals/CMake-easytest"]
 	path = externals/CMake-easytest
 	url = git://github.com/RWTH-HPC/CMake-easytest.git
+[submodule "externals/CMake-gitpack"]
+	path = externals/CMake-gitpack
+	url = git://github.com/RWTH-HPC/CMake-gitpack.git

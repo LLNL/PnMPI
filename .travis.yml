@@ -377,16 +377,11 @@ jobs:
       env:
       - DEPLOY
       before_script:
-      - export PWD_SAVE=$PWD
-      - git clone https://github.com/Kentzo/git-archive-all.git
-          ../git-archive-all
-      - ln -s ../git-archive-all/git_archive_all.py
-          ../git-archive-all/git-archive-all
-      - export PATH="$PATH:$PWD/../git-archive-all"
-      - mkdir package && cd package
-      - ../extra/pack.sh
+      - mkdir build && cd build
+      - cmake ..
+      - make package_deploy
       - tar xfvz *.tar.gz
-      - cd $(echo */)
+      - cd $(echo PnMPI-*)
       script:
       - ../../extra/build/ci.sh
 
