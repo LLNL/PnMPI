@@ -194,10 +194,9 @@ coverage_evaluate()
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-string(CONCAT PNMPI_VERSION_CONCAT "${PNMPI_VERSION_MAJOR}."
-                                   "${PNMPI_VERSION_MINOR}."
-                                   "${PNMPI_VERSION_PATCH}."
-                                   "${PNMPI_VERSION_TWEAK}")
+set(PNMPI_VERSION_CONCAT "${PNMPI_VERSION_MAJOR}" "${PNMPI_VERSION_MINOR}"
+                         "${PNMPI_VERSION_PATCH}" "${PNMPI_VERSION_TWEAK}")
+string(REPLACE ";" "." PNMPI_VERSION_CONCAT "${PNMPI_VERSION_CONCAT}")
 write_basic_package_version_file(
   ${PROJECT_BINARY_DIR}/PnMPIConfigVersion.cmake
   VERSION ${PNMPI_VERSION_CONCAT}
