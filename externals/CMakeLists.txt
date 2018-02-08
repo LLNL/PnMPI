@@ -76,15 +76,12 @@ else()
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/wrap/CMakeLists.txt)
         ADD_SUBDIRECTORY (wrap)
         find_package_message(wrap "Found warp as submodule." "submodule")
-        set(WRAP ${PROJECT_SOURCE_DIR}/externals/wrap/wrap.py)
-	set(GETSTATUSSIZE ${PROJECT_SOURCE_DIR}/externals/wrap/getStatusSize.f)
-        configure_file(
-        #  ${PROJECT_SOURCE_DIR}/wrap/WrapConfig.cmake.in
-        #  ${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake @ONLY)
-        #include(${PROJECT_BINARY_DIR}/wrap/WrapBuildConfig.cmake)
-        ${PROJECT_SOURCE_DIR}/externals/wrap/wrap-config.cmake.in
-        ${PROJECT_BINARY_DIR}/wrap-config.cmake @ONLY)
-        include(${PROJECT_BINARY_DIR}/wrap-config.cmake)
+        set(WRAP ${CMAKE_CURRENT_SOURCE_DIR}/wrap/wrap.py)
+        set(GETSTATUSSIZE ${CMAKE_CURRENT_SOURCE_DIR}/wrap/getStatusSize.f)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wrap/wrap-config.cmake.in
+                       ${CMAKE_CURRENT_BINARY_DIR}/wrap-config.cmake
+                       @ONLY)
+        include(${CMAKE_CURRENT_BINARY_DIR}/wrap-config.cmake)
     else()
         message(FATAL_ERROR "Subproject wrap not available, CMake will exit.\n"
                             "Try:\n"
