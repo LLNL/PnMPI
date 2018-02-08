@@ -110,7 +110,7 @@ mark_as_advanced(
 if (NOT PnMPI_IS_SUBPROJECT)
   include(${PACKAGE_PREFIX_DIR}/pnmpi-libs.cmake)
   include(${PACKAGE_PREFIX_DIR}/pnmpi-patch.cmake)
-  if (PnMPI_PnMPIZE_FOUND)
+  if (PnMPI_PnMPIze_FOUND)
     include(${PACKAGE_PREFIX_DIR}/pnmpize.cmake)
   endif ()
 endif ()
@@ -136,8 +136,8 @@ set(PnMPI_Fortran_STATIC_LIBRARIES pnmpif_static CACHE INTERNAL "")
 
 # PnMPI specific binaries.
 set(PnMPI_PATCHER pnmpi-patch CACHE INTERNAL "")
-if (PnMPI_PnMPIZE_FOUND)
-  set(PnMPI_PnMPIZE pnmpize CACHE INTERNAL "")
+if (PnMPI_PnMPIze_FOUND)
+  set(PnMPI_PnMPIze pnmpize CACHE INTERNAL "")
 endif ()
 
 
