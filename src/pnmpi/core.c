@@ -71,7 +71,7 @@
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
 
-int pnmpi_mpi_level = 0;
+pnmpi_compiler_tls_keyword int pnmpi_mpi_level = 0;
 int pnmpi_max_level;
 int pnmpi_initialization_complete;
 int pnmpi_init_done = 0;
