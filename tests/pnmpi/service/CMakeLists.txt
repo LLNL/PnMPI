@@ -46,3 +46,14 @@ easy_add_test(PREFIX "service_getPcontrol" SOURCES getPcontrol.c)
 easy_add_test(PREFIX "service_getPcontrolSelf" SOURCES getPcontrolSelf.c)
 
 easy_add_test(PREFIX "service_callHook" SOURCES callHook.c)
+
+if (HAVE_BUILTIN_RETURN_ADDRESS)
+  easy_add_test(PREFIX "service_getReturnAddress"
+                SOURCES getReturnAddress.c
+                CONFIGS C_Init C_Send)
+  if (ENABLE_FORTRAN)
+    easy_add_test(PREFIX "service_getReturnAddress"
+                  SOURCES getReturnAddress.c
+                  CONFIGS Fortran_Init Fortran_Send)
+  endif ()
+endif ()
