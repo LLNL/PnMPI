@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -50,6 +50,15 @@ macro(pnmpi_post_test TARGET CONFIG MAIN_SOURCE)
                  "PNMPI_PATH=${PROJECT_BINARY_DIR}/src/pnmpi")
   endif ()
 endmacro()
+
+
+# Set an PNMPIZE variable for all test cases, so they may use it for calling
+# PnMPIze. If AddressSanitizer is enabled, an extra wrapper will be used, so
+# AddressSanitizer will be initialized.
+set(PNMPIZE "$<TARGET_FILE:pnmpize>")
+if (SANITIZE_ADDRESS)
+  set(PNMPIZE "${ASan_WRAPPER} ${PNMPIZE}")
+endif ()
 
 
 easy_add_test(PREFIX pnmpize_exec SOURCES exec.conf NOBINARY)

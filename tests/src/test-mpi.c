@@ -1,9 +1,9 @@
 /* This file is part of P^nMPI.
  *
  * Copyright (c)
- *  2008-2017 Lawrence Livermore National Laboratories, United States of America
- *  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
- *  2013-2017 RWTH Aachen University, Federal Republic of Germany
+ *  2008-2018 Lawrence Livermore National Laboratories, United States of America
+ *  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2013-2018 RWTH Aachen University, Federal Republic of Germany
  *
  *
  * P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -48,8 +48,17 @@ int main(int argc, char **argv)
 }
 
 
-/* CONFIGS: dynamic static
+/* Note: There is no special test for preloading PnMPI by environment variables,
+ *       as different MPI implementations handle environment variables in
+ *       different ways and the setting the variables for the whole test
+ *       environment interferres with additional tools like AddressSanitizer, as
+ *       it would be preloaded for mpiexec, too. However, preloading is
+ *       indirectly tested by the PnMPIze tests.
  *
+ *
+ * CONFIGS: dynamic static
+ *
+ * DEPENDS: testbin-mpi-wrapper
  * COMPILE_INCLUDES: @CMAKE_CURRENT_BINARY_DIR@ @MPI_C_INCLUDE_PATH@
  * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
  * LINK_FLAGS: @MPI_C_LINK_FLAGS@
@@ -59,9 +68,7 @@ int main(int argc, char **argv)
  * PASS: No modules loaded.
  *
  *
- * DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
  * LINK-dynamic: pnmpi @MPI_C_LIBRARIES@
  *
- * DEPENDS-static: testbin-mpi-wrapper pnmpi_static
  * LINK-static: pnmpi_static @MPI_C_LIBRARIES@ dl m
  */

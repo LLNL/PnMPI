@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -33,6 +33,13 @@
 add_wrapped_file(mpi_errors.h mpi_errors.h.w -s)
 add_custom_target(testbin-mpi-wrapper
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mpi_errors.h)
+
+# Set an LIBPNMPI variable for the following test cases, so they may use it for
+# preloading PnMPI. If Fortran is enabled, LIBPNMPIF will also be set.
+set(LIBPNMPI "$<TARGET_FILE:pnmpi>")
+if (ENABLE_FORTRAN)
+  set(LIBPNMPIF "$<TARGET_FILE:pnmpif>")
+endif ()
 
 
 # The following executable may be used to check the general functionality of a

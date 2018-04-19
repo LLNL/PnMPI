@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -27,6 +27,7 @@
 #
 # LLNL-CODE-402774
 
+add_subdirectory(modules)
 add_subdirectory(patch)
 add_subdirectory(pnmpi)
 add_subdirectory(pnmpize)

@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -35,6 +35,8 @@ include(GNUInstallDirs)
 find_program (HELP2MAN_BIN NAMES help2man)
 find_package_handle_standard_args(help2man
   FOUND_VAR HELP2MAN_FOUND REQUIRED_VARS HELP2MAN_BIN)
+
+mark_as_advanced(HELP2MAN_BIN)
 
 if (NOT HELP2MAN_BIN)
   return()

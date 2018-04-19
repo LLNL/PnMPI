@@ -1,9 +1,9 @@
 /* This file is part of P^nMPI.
  *
  * Copyright (c)
- *  2008-2017 Lawrence Livermore National Laboratories, United States of America
- *  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
- *  2013-2017 RWTH Aachen University, Federal Republic of Germany
+ *  2008-2018 Lawrence Livermore National Laboratories, United States of America
+ *  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2013-2018 RWTH Aachen University, Federal Republic of Germany
  *
  *
  * P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -40,8 +40,8 @@
 #include "core.h"
 #include "pnmpi-config.h"
 #include <pnmpi/debug_io.h>
-#include <pnmpi/private/fallback_init.h>
 #include <pnmpi/private/force_link.h>
+#include <pnmpi/private/initialization.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/private/mpi_interface.h>
 #include <pnmpi/private/mpi_reentry.h>
@@ -83,9 +83,12 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
   pnmpi_force_link();
 #endif
 
-  /* If the compiler does not support GCC's constructors, check if the fallback
-   * constructor was called before this function. */
-  pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
+  /* Initialize PnMPI before using any of the PnMPI functions. This will load
+   * the configuration and the defined modules.
+   *
+   * Note: Duplicated calls to the initialization function will be ignored, so
+   *       this doesn't need to be checked. */
+  pnmpi_initialize();
 
 
   int returnVal = MPI_SUCCESS;
@@ -99,6 +102,8 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
       else
 #endif
         returnVal = PMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
+
+      pnmpi_print_banner();
     }
   else
     returnVal = Internal_XMPI_Init(_pnmpi_arg_0, _pnmpi_arg_1);
@@ -110,8 +115,6 @@ static int PNMPI_Common_MPI_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
 
   // Mpi is initialized now
   pnmpi_initialization_complete = 1;
-
-  pnmpi_print_banner();
 
   return returnVal;
 }
@@ -298,6 +301,9 @@ int NQJ_Init(int *_pnmpi_arg_0, char ***_pnmpi_arg_1)
     }
   DBGPRINT3("Done with original MPI in MPI_Init");
   pnmpi_level = start_level;
+
+  pnmpi_print_banner();
+
   return res;
 }
 
@@ -314,9 +320,12 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
   pnmpi_force_link();
 #endif
 
-  /* If the compiler does not support GCC's constructors, check if the fallback
-   * constructor was called before this function. */
-  pnmpi_fallback_init(*_pnmpi_arg_0, *_pnmpi_arg_1);
+  /* Initialize PnMPI before using any of the PnMPI functions. This will load
+   * the configuration and the defined modules.
+   *
+   * Note: Duplicated calls to the initialization function will be ignored, so
+   *       this doesn't need to be checked. */
+  pnmpi_initialize();
 
 
 #ifdef PNMPI_COMPILER_NO_TLS
@@ -344,6 +353,8 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 #endif
         returnVal =
           PMPI_Init_thread(_pnmpi_arg_0, _pnmpi_arg_1, required, provided);
+
+      pnmpi_print_banner();
     }
   else
     returnVal =
@@ -356,8 +367,6 @@ static int PNMPI_Common_MPI_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1,
 
   // Mpi is initialized now
   pnmpi_initialization_complete = 1;
-
-  pnmpi_print_banner();
 
   return returnVal;
 }
@@ -557,6 +566,9 @@ int NQJ_Init_thread(int *_pnmpi_arg_0, char ***_pnmpi_arg_1, int _required,
     }
   DBGPRINT3("Done with original MPI in MPI_Init_thread");
   pnmpi_level = start_level;
+
+  pnmpi_print_banner();
+
   return res;
 }
 #endif /*HAVE_MPI_INIT_THREAD_C*/
@@ -600,10 +612,12 @@ int MPI_Finalize(void)
     }
   dec_pnmpi_mpi_level();
 
-  /* Call the fallback destructor. If PnMI detects that its destructors wouldn't
-   * be called, this function calls all, except those which MUST be called after
-   * the execution of main. */
-  pnmpi_fallback_fini();
+  /* Finalize PnMPI. This will unload the configuration and the defined modules
+   * and frees allocated memory.
+   *
+   * Note: Duplicated calls to the finalization function will be ignored, so
+   *       this doesn't need to be checked. */
+  pnmpi_finalize();
 
 
   /* Exit the reentry-guarded wrapper section and return the status of the MPI

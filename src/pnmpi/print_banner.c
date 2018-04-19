@@ -1,9 +1,9 @@
 /* This file is part of P^nMPI.
  *
  * Copyright (c)
- *  2008-2017 Lawrence Livermore National Laboratories, United States of America
- *  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
- *  2013-2017 RWTH Aachen University, Federal Republic of Germany
+ *  2008-2018 Lawrence Livermore National Laboratories, United States of America
+ *  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2013-2018 RWTH Aachen University, Federal Republic of Germany
  *
  *
  * P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -59,29 +59,21 @@
 PNMPI_INTERNAL
 void pnmpi_print_banner(void)
 {
-  /* If we have printed the banner before, the process is not the first rank, or
-   * PNMPI_BE_SILENT is set, the banner should not be printed. Return can't be
-   * used here, as all ranks must meet at the barrier below to synchronize the
-   * header output.
-   * If the header will be printed, save the printed state so future calls won't
-   * print the banner a second time. */
-  static int printed = 0;
-  if (printed || (getenv("PNMPI_BE_SILENT") != NULL))
-    return;
-
-
-  /* Wait until all ranks have flushed their buffers to avoid output in between
-   * the PnMPI header. This is required, as PnMPI or the application itself may
-   * have printed messages before MPI_Init (e.g. debug options are enabled). */
+  /* Flush the buffers of ALL ranks to avoid fragments in the outout.
+   *
+   * NOTE: This can't fully prevent buffered output being displayed between
+   *       fresh one, as there's no guaranty the MPI sends the buffers back
+   *       to the host immediately. */
   fflush(stdout);
   fflush(stderr);
-  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    PNMPI_Error("MPI_Barrier failed.\n");
 
-  if (pnmpi_get_rank() != 0)
-    goto wait_header_printed;
-
-
+  /* This function should be executed by rank 0 only and just executed once.
+   * Also, if the banner has been printed before or PNMPI_BE_SILENT is set, the
+   * banner should not be printed. If the conditions are not met, this function
+   * will be exited. */
+  static int printed = 0;
+  if ((getenv("PNMPI_BE_SILENT") != NULL) || (pnmpi_get_rank() != 0) || printed)
+    return;
   printed = 1;
 
 
@@ -109,7 +101,7 @@ void pnmpi_print_banner(void)
   if (modules.num == 0)
     {
       printf(" No modules loaded.\n\n");
-      goto wait_header_printed;
+      return;
     }
 
 
@@ -183,11 +175,10 @@ void pnmpi_print_banner(void)
   printf("\n");
 
 
-wait_header_printed:
-  /* Wait until rank 0 has flushed its buffers to avoid other ranks printing
-   * output in other functions, while rank 0 is printing the header. */
-  fflush(stdout);
-  fflush(stderr);
-  if (PMPI_Barrier(MPI_COMM_WORLD) != MPI_SUCCESS)
-    PNMPI_Error("MPI_Barrier failed.\n");
+  /* NOTE: There's no safe way to call a barrier on all ranks, because not all
+   *       ranks might reach this function and the stack can't be used to get
+   *       the update MPI_COMM_WORLD without potentially affecting the
+   *       application's state. Therefore, there's no barrier at the end of this
+   *       function to prevent other ranks to wait for the banner being printed,
+   *       so these might print fragments in between of the banner. */
 }

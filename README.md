@@ -131,15 +131,15 @@ A3) Configuring with/without Fortran
 ------------------------------------
 By default PnMPI is configured to work with C/C++ and Fortran codes. However, on
 systems where Fortran is not available, the system should auto-detect this and
-not build the Fortran libraries and demo codes. It can also be manually turned
+not build the Fortran libraries and test cases. It can also be manually turned
 off by adding
 
     -DENABLE_FORTRAN=OFF
 
 to the `cmake` configuration command.
 
-The PnMPI distribution contains demo codes for C and for Fortran that allow you
-to test the correct linkage.
+The PnMPI distribution contains test cases for C and Fortran that allow you to
+test the correct linkage.
 
 
 A3a) Optional configuration options
@@ -152,7 +152,6 @@ features by adding the following flags to the `cmake` configuration command.
     PnMPI internal documentation. *(requires Doxygen and help2man)*
   * `-DENABLE_DEBUG=OFF`: Disable PnMPI on-demand debug logging. *Disable this
     option only for performance optimization.*
-  * `-DENABLE_DEMO=OFF`: Don't build the demo programs.
   * `-DENABLE_MODULES=OFF`: Don't build the built-in modules.
   * `-DENABLE_TESTING=ON`: Build the test cases and enable the `test` target.
   * `-DENABLE_THREAD_SAFETY=OFF`: Build PnMPI without thread safety. PnMPI will
@@ -216,9 +215,9 @@ install tree looks like this:
     share/
       cmake/               CMake files to support tool module builds
 
-Test programs are not installed, but in the [demo](demo) folder of the build
-directory, there should also be test programs built with PnMPI. See below for
-details on running these to test your PnMPI installation.
+Test programs are not installed, but in the [tests/src](tests/src) folder of the
+build directory, there should also be test programs built with PnMPI. See below
+for details on running these to test your PnMPI installation.
 
 
 A6) Environment setup
@@ -372,11 +371,10 @@ This package includes a set of modules that can be used both to create other
 tools using their services and as templates for new modules.
 
 The source for all modules is stored in separate directories inside the
-`module/` directory. There are:
+`src/modules/` directory. There are:
 
 * **sample:**
-  a set of example modules that show how to wrap send and receive operations.
-  These modules are used in the demo codes described below.
+  A set of example modules that show how to wrap send and receive operations.
 
 * **empty:**
   A transparent module that simply wraps all calls without executing any code.
@@ -404,6 +402,12 @@ The source for all modules is stored in separate directories inside the
   Note: this module relies on the status, requests, and datatype modules. A more
   detailed description on how to implemented submodules is included in the comm
   directory as a separate README.
+
+* **limit-threading**
+  This PnMPI specific module limits the MPI threading level to the value set in
+  the `PNMPI_THREADING_LEVEL` environment variable. It may be used to check the
+  behaviour of an application, if the MPI environment doesn't support a specific
+  threading level.
 
 * **metrics-counter**
   This PnMPI specific module counts the MPI call invocations. Add the module at
@@ -625,50 +629,44 @@ output to a single rank.
 
 F) Configuration and Demo codes
 ===============================
-The PnMPI distribution includes demo codes (in C and Fortran). They can be used
+The PnMPI distribution includes test cases (in C and Fortran). They can be used
 to experiment with the basic PnMPI functionalities and to test the system setup.
 The following describes the C version (the F77 version works similarly):
 
-1. Change into the [demo](demo) directory.
-2. The program [simple.c](demo/simple.c), which sends a message from any task
-   with ID>0 to task 0, was compiled into three binaries:
+1. Change into the [tests/src](tests/src) directory.
+2. The program [test-mpi.c](tests/src/test-mpi.c), which only initializes and
+   then finalizes MPI, was compiled into three binaries:
 
-    * simple    (plain MPI code)
-    * simple-pn (linked with PnMPI)
-    * simple-s1 (plain code linked with sample1.so)
+    * `testbin-binary_mpi_c-preload` (plain MPI code)
+    * `testbin-binary_mpi_c-dynamic` (linked dynamically against PnMPI)
+    * `testbin-binary_mpi_c-static` (linked statically against PnMPI)
 
-3. Executing simple will run as usual.
-   The program output (for 2 nodes) will be:
+3. Executing the `*-preload` binary will not print any output, but the binaries
+   linked against PnMPI will print the PnMPI header, indicating PnMPI is loaded
+   before MPI.
 
-       GOT 1
-
-4. By relinking the code, one can use any of the original (unpatched) modules
-   with this codes. The unpatched modules are in modules/sample
-
-   Examples: simplest-s1 linked with sample1
-
-5. PnMPI is configured through a configuration file that lists all modules to be
+4. PnMPI is configured through a configuration file that lists all modules to be
    load by PnMPI as well as optional arguments. The name for this file can be
    specified by the environment variable `PNMPI_CONF`. If this variable is not
    set or the file specified can not be found, PnMPI looks for a file called
    `.pnmpi_conf` in the current working directory, and if not found, in the
    user's home directory.
 
-   By default the file in the demo directory is named `.pnmpi_conf` and looks as
-   follows:
+   A simple configuration file may look as follows:
 
        module sample1
        module sample2
        module sample3
        module sample4
 
-  (plus some additional lines starting with #, which indicates comments)
+  (plus some additional lines starting with `#`, which indicates comments)
 
   This configuration causes these four modules to be loaded in the specified
   order. PnMPI will look for the corresponding modules (.so shared library
   files) in `PNMPI_LIB_PATH`.
 
-6. Running simple-pn will load all four modules in the specified order and
+5. Running the `testbin-binary_mpi_sendrecv` (a simple test sending messages
+   between the ranks) will load all four modules in the specified order and
    intercept all MPI calls included in these modules:
 
     * sample1: send and receive
@@ -679,13 +677,16 @@ The following describes the C version (the F77 version works similarly):
   The program output (for 2 nodes) will be:
 
   ```
-     _____   _ __   __  __  _____   _____
-    |  __ \ | '_ \ |  \/  ||  __ \ |_   _|
-    | |__) || | | || \  / || |__) |  | |
-    |  ___/ |_| |_|| |\/| ||  ___/   | |
-    | |            | |  | || |      _| |_
-    |_|            |_|  |_||_|     |_____|
+    _____   _ __   __  __  _____   _____
+   |  __ \ | '_ \ |  \/  ||  __ \ |_   _|
+   | |__) || | | || \  / || |__) |  | |
+   |  ___/ |_| |_|| |\/| ||  ___/   | |
+   | |            | |  | || |      _| |_
+   |_|            |_|  |_||_|     |_____|
 
+
+   Application:
+    MPI interface: C
 
    Global settings:
     Pcontrol: 5
@@ -698,37 +699,38 @@ The following describes the C version (the F77 version works similarly):
       sample4
 
   WRAPPER 1: Before recv
-  WRAPPER 3: Before recv
   WRAPPER 1: Before send
-  WRAPPER 4: Before recv
   WRAPPER 2: Before send
   WRAPPER 4: Before send
   WRAPPER 4: After send
-  WRAPPER 4: After recv
-  WRAPPER 3: After recv
-  WRAPPER 1: After recv
-  WRAPPER 1: Before send
   WRAPPER 2: After send
-  WRAPPER 2: Before send
   WRAPPER 1: After send
-  WRAPPER 4: Before send
   WRAPPER 1: Before recv
-  WRAPPER 4: After send
-  WRAPPER 2: After send
-  WRAPPER 1: After send
-  GOT 1
+  WRAPPER 3: Before recv
+  WRAPPER 4: Before recv
   WRAPPER 3: Before recv
   WRAPPER 4: Before recv
   WRAPPER 4: After recv
   WRAPPER 3: After recv
   WRAPPER 1: After recv
+  Got 1 from rank 1.
+  WRAPPER 1: Before send
+  WRAPPER 2: Before send
+  WRAPPER 4: Before send
+  WRAPPER 4: After send
+  WRAPPER 4: After recv
+  WRAPPER 3: After recv
+  WRAPPER 1: After recv
+  Got 1 from rank 0.
+  WRAPPER 2: After send
+  WRAPPER 1: After send
   ```
 
   When running on a BG/P systems, it is necessary to explicitly export some
   environment variables. Here is an example:
 
         mpirun -np 4 -exp_env LD_LIBRARY_PATH -exp_env PNMPI_LIB_PATH \
-          -cwd $PWD simple-pn
+          -cwd $PWD testbin-binary_mpi_sendrecv
 
 
 G) Using `MPI_Pcontrol`
@@ -817,10 +819,10 @@ For more information or in case of questions, please contact
 
 Copyright
 ===========
-Copyright &copy; 2008-2017 Lawrence Livermore National Security, LLC.<br/>
-Copyright &copy; 2011-2017 ZIH, Technische Universitaet Dresden, Federal
+Copyright &copy; 2008-2018 Lawrence Livermore National Security, LLC.<br/>
+Copyright &copy; 2011-2016 ZIH, Technische Universitaet Dresden, Federal
 Republic of Germany<br/>
-Copyright &copy; 2013-2017 RWTH Aachen University, Federal Republic of Germany
+Copyright &copy; 2013-2018 RWTH Aachen University, Federal Republic of Germany
 
 All rights reserved - please read the information in the [LICENSE](LICENSE)
 file.

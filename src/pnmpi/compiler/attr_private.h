@@ -1,9 +1,9 @@
 /* This file is part of P^nMPI.
  *
  * Copyright (c)
- *  2008-2017 Lawrence Livermore National Laboratories, United States of America
- *  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
- *  2013-2017 RWTH Aachen University, Federal Republic of Germany
+ *  2008-2018 Lawrence Livermore National Laboratories, United States of America
+ *  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2013-2018 RWTH Aachen University, Federal Republic of Germany
  *
  *
  * P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -40,62 +40,6 @@
 
 #ifndef PNMPI_PRIVATE_ATTRIBUTES_H
 #define PNMPI_PRIVATE_ATTRIBUTES_H
-
-
-/** \brief Constructor macro.
- *
- * \details Constructors are a GNU extension, that is not supported by all
- *  compilers. This macros value will be set depending on the compatibility of
- *  the compiler.
- *
- * \note The function will be marked as \ref PNMPI_INTERNAL.
- *
- *
- * \param priority Priority of the constructor. Priorities 0-100 are reserved by
- *  the implementation.
- */
-#ifdef __GNUC__
-#ifndef __APPLE__
-#define PNMPI_CONSTRUCTOR(priority) \
-  PNMPI_INTERNAL                    \
-  __attribute__((constructor(priority)))
-#else
-#define PNMPI_CONSTRUCTOR(priority) \
-  PNMPI_INTERNAL                    \
-  __attribute__((constructor))
-#endif
-#else
-#define PNMPI_CONSTRUCTOR(priority) PNMPI_INTERNAL
-#define PNMPI_HAVE_NO_CONSTRUCTOR ///< Compiler has no constructor support.
-#endif
-
-
-/** \brief Destructor macro.
- *
- * \details Destructors are a GNU extension, that is not supported by all
- *  compilers. This macros value will be set depending on the compatibility of
- *  the compiler.
- *
- * \note The function will be marked as \ref PNMPI_INTERNAL.
- *
- *
- * \param priority Priority of the destructor. Priorities 0-100 are reserved by
- *  the implementation.
- */
-#ifdef __GNUC__
-#ifndef __APPLE__
-#define PNMPI_DESTRUCTOR(priority) \
-  PNMPI_INTERNAL                   \
-  __attribute__((destructor(priority)))
-#else
-#define PNMPI_DESTRUCTOR(priority) \
-  PNMPI_INTERNAL                   \
-  __attribute__((destructor))
-#endif
-#else
-#define PNMPI_DESTRUCTOR(priority) PNMPI_INTERNAL
-#define PNMPI_HAVE_NO_DESTRUCTOR ///< Compiler has no destructor support.
-#endif
 
 
 /** \brief Mark function as internal.

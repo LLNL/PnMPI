@@ -39,3 +39,10 @@ find_package_handle_standard_args(BFD
 if (BFD_FOUND)
     SET (PNMPI_HAVE_BFD ${BFD_FOUND} CACHE INTERNAL "")
 endif ()
+
+mark_as_advanced(
+  BFD_INCLUDE_PATH
+  BFD_LIBRARIES
+  IBERTY_INCLUDE_PATH
+  IBERTY_LIBRARIES
+)

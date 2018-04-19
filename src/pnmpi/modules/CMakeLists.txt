@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -28,7 +28,6 @@
 # LLNL-CODE-402774
 
 include(PnMPI_doc)
-include(PnMPI_headers)
 
 
 # Install and manage the public and private header files of the PnMPI sources.
@@ -63,7 +62,7 @@ easy_add_library(pnmpi_modules OBJECT
 
 foreach (target pnmpi_modules pnmpi_modules_pic)
   add_dependencies(${target} generate)
-
-  add_coverage(${target})
-  add_sanitizers(${target})
 endforeach ()
+
+add_coverage(pnmpi_modules_pic)
+add_sanitizers(pnmpi_modules_pic)

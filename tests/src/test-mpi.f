@@ -1,9 +1,9 @@
 C This file is part of P^nMPI.
 C
 C Copyright (c)
-C  2008-2017 Lawrence Livermore National Laboratories, United States of America
-C  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-C  2013-2017 RWTH Aachen University, Federal Republic of Germany
+C  2008-2018 Lawrence Livermore National Laboratories, United States of America
+C  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+C  2013-2018 RWTH Aachen University, Federal Republic of Germany
 C
 C
 C P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -38,19 +38,26 @@ C LLNL-CODE-402774
       end program firstmpi
 
 
+C Note: There is no special test for preloading PnMPI by environment variables,
+C       as different MPI implementations handle environment variables in
+C       different ways and the setting the variables for the whole test
+C       environment interferres with additional tools like AddressSanitizer, as
+C       it would be preloaded for mpiexec, too. However, preloading is
+C       indirectly tested by the PnMPIze tests.
+C
+C
 C CONFIGS: dynamic static
 C
 C COMPILE_INCLUDES: @MPI_Fortran_INCLUDE_PATH@
 C COMPILE_FLAGS: @MPI_Fortran_COMPILE_FLAGS@
 C LINK_FLAGS: @MPI_Fortran_LINK_FLAGS@
+C LINK: @MPI_Fortran_LIBRARIES@
 C
 C RUN: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
 C RUN:   @MPIEXEC_PREFLAGS@ @BINARY@ @MPIEXEC_POSTFLAGS@
 C PASS: No modules loaded.
 C
 C
-C DEPENDS-dynamic: testbin-mpi-wrapper pnmpi
 C LINK-dynamic: pnmpif @MPI_Fortran_LIBRARIES@
 C
-C DEPENDS-static: testbin-mpi-wrapper pnmpi_static
 C LINK-static: pnmpif_static @MPI_Fortran_LIBRARIES@ dl m

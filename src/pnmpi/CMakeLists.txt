@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -27,11 +27,8 @@
 #
 # LLNL-CODE-402774
 
-include(CheckSymbolExists)
 include(easylib)
 include(PnMPI_headers)
-
-find_package(Sanitizers)
 
 
 # If C11 was found, add the C11 compiler flags, so C11 thread local storage can
@@ -73,8 +70,8 @@ install(FILES
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/pnmpi")
 
 pnmpi_add_private_header(config.h.in config.h)
-pnmpi_add_private_header(fallback_init.h)
 pnmpi_add_private_header(force_link.h)
+pnmpi_add_private_header(initialization.h)
 
 
 if (ENABLE_FORTRAN)
@@ -107,8 +104,8 @@ endif()
 #       containing a constructor must be listed in the order they should be
 #       executed.
 set(PNMPI_LIB_SOURCES
-  constructor.c
-  destructor.c
+  initialize.c
+  finalize.c
 
   core.c
   wrapper.c
@@ -125,11 +122,6 @@ if (ENABLE_FORTRAN)
 endif ()
 
 
-check_symbol_exists("PNMPI_HAVE_NO_CONSTRUCTOR"
-                    "${PNMPI_HEADER_DIR}/pnmpi/private/attributes.h"
-                    HAVE_NO_CONSTRUCTOR)
-
-
 # PnMPI shared library
 easy_add_library(pnmpi SHARED ${PNMPI_LIB_SOURCES})
 add_dependencies(pnmpi generate pnmpi_debug_pmpi)
@@ -140,12 +132,8 @@ target_link_libraries(pnmpi
   -ldl)
 
 set_target_properties(pnmpi PROPERTIES VERSION
-  ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-  SOVERSION ${PNMPI_MAJOR_VERSION})
-
-if(HAVE_NO_CONSTRUCTOR)
-  set_property(TARGET pnmpi APPEND PROPERTY LINK_FLAGS " -nostartfiles")
-endif()
+  ${PNMPI_VERSION_MAJOR}.${PNMPI_VERSION_MINOR}.${PNMPI_VERSION_PATCH}
+  SOVERSION ${PNMPI_VERSION_MAJOR})
 
  if(APPLE)
     get_target_property(TEMP_FLAG pnmpi LINK_FLAGS)
@@ -180,12 +168,8 @@ if (CMAKE_Fortran_COMPILER_WORKS)
     -ldl)
 
   set_target_properties(pnmpif PROPERTIES VERSION
-    ${PNMPI_MAJOR_VERSION}.${PNMPI_MINOR_VERSION}.${PNMPI_PATCH_VERSION}
-    SOVERSION ${PNMPI_MAJOR_VERSION})
-
-  if(HAVE_NO_CONSTRUCTOR)
-    set_property(TARGET pnmpif APPEND PROPERTY LINK_FLAGS " -nostartfiles")
-  endif()
+    ${PNMPI_VERSION_MAJOR}.${PNMPI_VERSION_MINOR}.${PNMPI_VERSION_PATCH}
+    SOVERSION ${PNMPI_VERSION_MAJOR})
 
   if(CMAKE_Fortran_COMPILER_WORKS)
     get_target_property(TEMP_FLAG pnmpif COMPILE_FLAGS)
@@ -217,7 +201,10 @@ if (CMAKE_Fortran_COMPILER_WORKS)
 endif()
 
 # file to export pnmpi-libs
-install(EXPORT pnmpi-libs DESTINATION share/cmake/PnMPI)
+install(
+  EXPORT pnmpi-libs
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
+)
 
 # Extra directories to include from when building.
 include_directories(

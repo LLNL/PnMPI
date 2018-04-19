@@ -1,9 +1,9 @@
 # This file is part of P^nMPI.
 #
 # Copyright (c)
-#  2008-2017 Lawrence Livermore National Laboratories, United States of America
-#  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-#  2013-2017 RWTH Aachen University, Federal Republic of Germany
+#  2008-2018 Lawrence Livermore National Laboratories, United States of America
+#  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#  2013-2018 RWTH Aachen University, Federal Republic of Germany
 #
 #
 # P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -27,7 +27,18 @@
 #
 # LLNL-CODE-402774
 
-find_package(Sanitizers)
+include(GNUInstallDirs)
+
+find_package(BFD)
+
+
+# Generate the patcher's configuration.
+#
+# Depending on the packages CMake found, a configuration header file will be
+# generated for the patcher.
+configure_file(config.h.in config.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 
 #Add the target for the patcher
 SET (PATCHER_FRONTEND_COMPILER "" CACHE FILEPATH "If this is a frontend/backend build use the backend compiler as CMake compilers and specify a frontend compiler here to create a frontend-operating version of the PnMPI patcher.")
@@ -44,11 +55,18 @@ if (BFD_FOUND)
   target_link_libraries(${targetName} ${BFD_LIBRARIES})
   target_link_libraries(${targetName} ${IBERTY_LIBRARIES})
 endif()
-install(TARGETS ${targetName} EXPORT ${targetName} RUNTIME DESTINATION bin)
+install(
+  TARGETS ${targetName}
+  EXPORT ${targetName}
+  RUNTIME
+  DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
 # Allow patch target to be used by subprojects.
-install(EXPORT ${targetName} DESTINATION share/cmake/PnMPI)
+install(
+  EXPORT ${targetName}
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
+)
 
-include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(frontend)
