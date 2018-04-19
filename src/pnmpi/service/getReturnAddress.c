@@ -30,7 +30,6 @@
 
 #include <assert.h>
 
-#include <pnmpi/private/compiler_features.h>
 #include <pnmpi/private/return_address.h>
 #include <pnmpi/service.h>
 
@@ -52,6 +51,15 @@
  */
 PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr)
 {
+  assert(ptr);
+
+
+/* If the compiler does support accessing the return address, it has been saved
+ * by accessing the PnMPI wrappers before. Copy the saved return address into
+ * the pointer supported by the callee and return success.
+ *
+ * However, if the compiler doesn't, return an error status code to tell the
+ * callee this feature isn't implemented. */
 #ifdef HAVE_BUILTIN_RETURN_ADDRESS
   *ptr = pnmpi_return_address_get();
   return PNMPI_SUCCESS;

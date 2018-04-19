@@ -27,8 +27,10 @@
 #
 # LLNL-CODE-402774
 
-include(CheckCSourceCompiles)
-
+# NOTE: Compiler features checked inside this directory should be general
+#       purpose, i.e. reusable at several places inside of PnMPI's source code.
+#       Compiler features related to a specific function should be tested in the
+#       relating CMakeLists file instead!
 
 # Check if thread local storage is available for thread safe variables in PnMPI
 # and modules. First we try to use C11 _Thread_local, next the compiler-specific
@@ -44,14 +46,6 @@ if (NOT ENABLE_THREAD_SAFETY)
   set(C11_THREAD_LOCAL_FOUND false)
   set(THREADKEYWORD_FOUND false)
 endif ()
-
-# Check if the compiler supports getting the return address.
-check_c_source_compiles("
-  int main ()
-  {
-    void *p = __builtin_return_address(0);
-  }
-  " HAVE_BUILTIN_RETURN_ADDRESS)
 
 
 # Install and manage the public and private header files of the PnMPI sources.

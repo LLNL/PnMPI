@@ -38,6 +38,16 @@
 #include <pnmpi/private/tls.h>
 
 
+/* The following macro will be defined, if CMake has successfully checked the
+ * compiler has the builtin function __builtin_return_address().
+ *
+ * NOTE: Usually cmakefines should be placed in a separate header file. However,
+ *       as this file is private and the macro will be used in this file and the
+ *       related service function only, it'll be placed here.
+ */
+#cmakedefine HAVE_BUILTIN_RETURN_ADDRESS
+
+
 extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
 
 
@@ -51,15 +61,25 @@ extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
  *  the C wrappers internal. Remember to reset the return address before exiting
  *  the wrapper.
  *
+ * \note If the compiler doesn't support a builtin function to get the return
+ *  address, this macro will be empty and no commands will be executed.
+ *
  *
  * \private
  */
+#if defined(DOXYGEN) || !defined(HAVE_BUILTIN_RETURN_ADDRESS)
+#define pnmpi_return_address_set()
+#else
 #define pnmpi_return_address_set()  \
   if (pnmpi_return_address == NULL) \
     pnmpi_return_address = __builtin_return_address(0);
+#endif
 
 
 /** \brief Get the return address.
+ *
+ *
+ * \return The return address of the function call currently wrapped.
  *
  *
  * \private
@@ -69,6 +89,7 @@ static void *pnmpi_return_address_get(void)
 {
   return pnmpi_return_address;
 }
+
 
 /** \brief Reset the return address.
  *

@@ -34,7 +34,6 @@
 
 #cmakedefine C11_THREAD_LOCAL_FOUND
 #cmakedefine THREADKEYWORD_FOUND
-#cmakedefine HAVE_BUILTIN_RETURN_ADDRESS
 
 
 #endif
