@@ -870,10 +870,19 @@ int MPI_Pcontrol(int level, ...)
               /* yes, we need to call this Pcontrol */
               ret = pnmpi_function_ptrs.pnmpi_int_MPI_Pcontrol[i](level);
               if (ret != MPI_SUCCESS)
-                return ret;
+                {
+                  /* Reset the return address to the default one and return the
+                   * status code. */
+                  pnmpi_return_address_reset();
+                  return ret;
+                }
             }
         }
       pnmpi_level = curr_pnmpi_level;
+
+      /* Reset the return address to the default one and return with success
+       * status code. */
+      pnmpi_return_address_reset();
       return MPI_SUCCESS;
     }
 
@@ -932,21 +941,39 @@ int MPI_Pcontrol(int level, ...)
                 }
 
               if (ret != MPI_SUCCESS)
-                return ret;
+                {
+                  /* Reset the return address to the default one and return the
+                   * status code. */
+                  pnmpi_return_address_reset();
+                  return ret;
+                }
             }
         }
       pnmpi_level = curr_pnmpi_level;
 
+      /* Reset the return address to the default one and return with success
+       * status code. */
+      pnmpi_return_address_reset();
       return MPI_SUCCESS;
     }
 
 
   if (modules.pcontrol == PNMPI_PCONTROL_OFF)
-    return MPI_SUCCESS;
+    {
+      /* Reset the return address to the default one and return with success
+       * status code. */
+      pnmpi_return_address_reset();
+      return MPI_SUCCESS;
+    }
 
   if ((modules.pcontrol == PNMPI_PCONTROL_PNMPI) &&
       (level != PNMPI_PCONTROL_LEVEL))
-    return PNMPI_ERROR;
+    {
+      /* Reset the return address to the default one and return with error
+       * status code. */
+      pnmpi_return_address_reset();
+      return PNMPI_ERROR;
+    }
 
   /* start processing the variable list arguments */
 
@@ -1024,6 +1051,9 @@ int MPI_Pcontrol(int level, ...)
 
       va_end(va_alist);
 
+      /* Reset the return address to the default one and return with error
+       * status code. */
+      pnmpi_return_address_reset();
       return error;
     }
   else
@@ -1076,6 +1106,9 @@ int MPI_Pcontrol(int level, ...)
 #endif /*else EXPERIMENTAL_UNWIND*/
       va_end(va_alist);
 
+      /* Reset the return address to the default one and return with error
+       * status code. */
+      pnmpi_return_address_reset();
       return error;
     }
 
@@ -1098,7 +1131,7 @@ void mpi_pcontrol_(int *level, int *ierr)
   if (modules.pcontrol == PNMPI_PCONTROL_OFF)
     {
       *ierr = MPI_SUCCESS;
-      return;
+      goto fin;
     }
   if ((modules.pcontrol == PNMPI_PCONTROL_PNMPI) ||
       (modules.pcontrol == PNMPI_PCONTROL_TYPED) ||
@@ -1107,7 +1140,7 @@ void mpi_pcontrol_(int *level, int *ierr)
     {
       /* can't do that in Fortran */
       *ierr = PNMPI_ERROR;
-      return;
+      goto fin;
     }
 
   *ierr = MPI_SUCCESS;
@@ -1126,6 +1159,7 @@ void mpi_pcontrol_(int *level, int *ierr)
         }
     }
 
+fin:
   /* Reset the return address to the default one. */
   pnmpi_return_address_reset();
 }

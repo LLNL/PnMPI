@@ -67,10 +67,6 @@
 
 {{fnall fn_name MPI_Init MPI_Init_thread MPI_Pcontrol MPI_Finalize MPI_Wtick MPI_Wtime}}
 {
-  /* Store the return address to the application, so modules may check the
-   * origin of this MPI call. */
-  pnmpi_return_address_set();
-
   WRAP_MPI_CALL_PREFIX
   DBGPRINT3("Entering Old {{fn_name}} at base level - Location = %px",&({{fn_name}}));
   WRAP_MPI_CALL_POSTFIX
@@ -93,13 +89,17 @@
   }
   else
     {
+    /* Store the return address to the application, so modules may check the
+     * origin of this MPI call. */
+    pnmpi_return_address_set();
+
     WRAP_MPI_CALL_PREFIX
     {{ret_val}}=Internal_X{{fn_name}}({{args}});
     WRAP_MPI_CALL_POSTFIX
-        }
 
-  /* Reset the return address to the default one. */
-  pnmpi_return_address_reset();
+    /* Reset the return address to the default one. */
+    pnmpi_return_address_reset();
+  }
 }
 {{endfnall}}
 
@@ -134,4 +134,3 @@
   return returnVal;
 }
 {{endforallfn}}
-
