@@ -35,10 +35,10 @@
 #include <stdio.h>
 
 #include <mpi.h>
+#include <pnmpi/const.h>
 #include <pnmpi/debug_io.h>
 #include <pnmpi/service.h>
 #include <pnmpi/xmpi.h>
-
 
 
 /** \brief Print the return address of the wrapped call.
@@ -63,7 +63,7 @@ int MPI_Init(int *argc, char ***argv)
 
 #elif TESTCASE_SEND
 
-int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest,
+int MPI_Send(PNMPI_CONST void *buf, int count, MPI_Datatype datatype, int dest,
              int tag, MPI_Comm comm)
 {
   print_return_address();
@@ -81,6 +81,11 @@ int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest,
  *
  * PNMPICONF: module @MODNAME@
  *
+ *
+ * COMPILE_INCLUDES: @MPI_C_INCLUDE_PATH@
+ * COMPILE_FLAGS: @MPI_C_COMPILE_FLAGS@
+ *
+ *
  * ENVIRONMENT: PNMPI_LIB_PATH=@CMAKE_CURRENT_BINARY_DIR@
  * ENVIRONMENT: PNMPI_CONF=@PNMPICONF@
  *
@@ -88,7 +93,7 @@ int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest,
  * RUN-C_Init: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
  * RUN-C_Init:   @MPIEXEC_PREFLAGS@ @TESTBIN_MPI_C@ @MPIEXEC_POSTFLAGS@
  *
- * COMPILE_FLAGS-C_Send: -DTESTCASE_SEND
+ * COMPILE_FLAGS-C_Send: @MPI_C_COMPILE_FLAGS@ -DTESTCASE_SEND
  * RUN-C_Send: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 2
  * RUN-C_Send:   @MPIEXEC_PREFLAGS@ @TESTBIN_MPI_C_SENDRECV@ @MPIEXEC_POSTFLAGS@
  *
@@ -96,7 +101,7 @@ int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest,
  * RUN-Fortran_Init: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1
  * RUN-Fortran_Init:   @MPIEXEC_PREFLAGS@ @TESTBIN_MPI_C@ @MPIEXEC_POSTFLAGS@
  *
- * COMPILE_FLAGS-Fortran_Send: -DTESTCASE_SEND
+ * COMPILE_FLAGS-Fortran_Send: @MPI_C_COMPILE_FLAGS@ -DTESTCASE_SEND
  * RUN-Fortran_Send: @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 2
  * RUN-Fortran_Send:   @MPIEXEC_PREFLAGS@ @TESTBIN_MPI_FORTRAN_SENDRECV@
  * RUN-Fortran_Send:   @MPIEXEC_POSTFLAGS@
