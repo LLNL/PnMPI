@@ -27,6 +27,20 @@
 #
 # LLNL-CODE-402774
 
+include(CheckCSourceCompiles)
+
+
+# Check if the compiler supports getting the return address, required by
+# pnmpi_return_address_set().
+check_c_source_compiles("
+  int main ()
+  {
+    void *p = __builtin_return_address(0);
+    return 0;
+  }
+  " HAVE_BUILTIN_RETURN_ADDRESS)
+
+
 # Install and manage the public and private header files of the PnMPI sources.
 # This has to be done to use the same headers for the PnMPI sources and the API
 # without getting conflicts about the used paths. Otherwise you'd have to take
@@ -34,13 +48,15 @@
 # headers over multiple directories.
 pnmpi_add_private_header(mpi_interface.h)
 pnmpi_add_private_header(mpi_reentry.h)
+pnmpi_add_private_header(return_address.h.in return_address.h)
 
 
 include_directories(${PNMPI_HEADER_DIR})
 
 easy_add_library(pnmpi_wrapper OBJECT
   mpi_interface.c
-  mpi_reentry.c)
+  mpi_reentry.c
+  return_address.c)
 
 add_coverage(pnmpi_wrapper_pic)
 add_sanitizers(pnmpi_wrapper_pic)
