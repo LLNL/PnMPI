@@ -28,12 +28,13 @@
  * LLNL-CODE-402774
  */
 
-#include <alloca.h>
 #include <ctype.h>
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <alloca.h>
+#include <dlfcn.h>
 #include <unistd.h>
 
 #include "core.h"

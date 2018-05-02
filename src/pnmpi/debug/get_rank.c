@@ -32,7 +32,6 @@
 #include <stdlib.h>
 
 #include <mpi.h>
-
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/print.h>

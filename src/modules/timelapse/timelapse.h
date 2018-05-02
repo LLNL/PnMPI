@@ -28,10 +28,12 @@
  * LLNL-CODE-402774
  */
 
-#include <mpi.h>
-
 #ifndef _PNMPI_MOD_TIMELAPSE
 #define _PNMPI_MOD_TIMELAPSE
+
+
+#include <mpi.h>
+
 
 /*------------------------------------------------------------*/
 /* Note: this module must be loaded into the stack before

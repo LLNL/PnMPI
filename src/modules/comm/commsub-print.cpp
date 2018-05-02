@@ -29,10 +29,11 @@
  */
 
 #include "commsub.h"
-#include <mpi.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <mpi.h>
 #include <pnmpi/const.h>
 
 

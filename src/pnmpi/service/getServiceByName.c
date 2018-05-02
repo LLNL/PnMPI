@@ -30,10 +30,9 @@
 
 #include <assert.h>
 
+#include "core.h"
 #include <pnmpi/private/modules.h>
 #include <pnmpi/service.h>
-
-#include "core.h"
 
 
 /** \brief Get a modules service function.

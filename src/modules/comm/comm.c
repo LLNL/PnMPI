@@ -33,12 +33,12 @@
 #include <stdlib.h>
 
 #include <mpi.h>
-
 #include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
 
 #include "commsub.h"
+
 
 #define PNMPI_MODULE_COMM "communication-tracker"
 

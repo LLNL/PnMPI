@@ -28,17 +28,11 @@
  * LLNL-CODE-402774
  */
 
-/* Special wrappers not covered by the generator */
-#ifdef EXPERIMENTAL_UNWIND
-#define UNW_LOCAL_ONLY
-#include <libunwind.h>
-#endif
 #include <stdarg.h>
-
-#include <mpi.h>
 
 #include "core.h"
 #include "pnmpi-config.h"
+#include <mpi.h>
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/force_link.h>
 #include <pnmpi/private/initialization.h>
@@ -49,6 +43,12 @@
 #include <pnmpi/private/pmpi_assert.h>
 #include <pnmpi/private/return_address.h>
 #include <pnmpi/private/tls.h>
+
+/* Special wrappers not covered by the generator */
+#ifdef EXPERIMENTAL_UNWIND
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+#endif
 
 
 /* Map the old debug macros to the new debug functions and macros.

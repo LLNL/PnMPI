@@ -31,12 +31,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "datatype.h"
 #include <mpi.h>
-
 #include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
+
+#include "datatype.h"
+
 
 #define PNMPI_MODULE_DATATYPEPRINT "datatype-print"
 

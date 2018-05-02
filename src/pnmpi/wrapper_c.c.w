@@ -30,6 +30,7 @@
 
 #include "core.h"
 
+
 {{forallfn fn_name MPI_Pcontrol MPI_Init MPI_Init_thread MPI_Finalize}}
 {{ret_type}} {{sub {{fn_name}} '^MPI_' NQJ_}}({{formals}})
 {

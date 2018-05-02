@@ -34,8 +34,9 @@
 #include <argp.h>
 #include <unistd.h>
 
-#include "config.h"
 #include <pnmpi/debug_io.h>
+
+#include "config.h"
 
 
 /* Define the P^nMPI library to use for preloading. If Fortran is supported, the

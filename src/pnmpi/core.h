@@ -31,6 +31,7 @@
 #ifndef PNMPI_CORE_H
 #define PNMPI_CORE_H
 
+
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -40,9 +41,8 @@
 
 #include "pnmpi.h"
 #include "pnmpimod.h"
-#include <mpi.h>
-
 #include "wrapper.h"
+#include <mpi.h>
 #include <pnmpi/private/tls.h>
 
 

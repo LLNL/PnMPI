@@ -31,10 +31,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/service.h>
-
-#include "core.h"
 
 
 /** \brief Register a service.

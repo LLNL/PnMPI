@@ -30,11 +30,10 @@
 
 #include <assert.h>
 
+#include "core.h"
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/modules.h>
 #include <pnmpi/service.h>
-
-#include "core.h"
 
 
 /** \brief Get the Pcontrol value of module \p handle.

@@ -29,13 +29,15 @@
  */
 
 #include "status.h"
-#include <mpi.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <mpi.h>
 #include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
+
 
 #ifdef AIX
 #pragma alloca

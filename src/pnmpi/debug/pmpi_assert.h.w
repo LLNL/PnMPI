@@ -46,7 +46,6 @@
 
 
 #include <mpi.h>
-
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/config.h>
 

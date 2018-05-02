@@ -28,11 +28,12 @@
  * LLNL-CODE-402774
  */
 
-#include <mpi.h>
-#include <status.h>
-
 #ifndef _PNMPI_MOD_REQUESTS
 #define _PNMPI_MOD_REQUESTS
+
+
+#include <mpi.h>
+#include <status.h>
 
 
 /*------------------------------------------------------------*/

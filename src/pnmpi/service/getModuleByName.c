@@ -30,9 +30,8 @@
 
 #include <assert.h>
 
-#include <pnmpi/service.h>
-
 #include "core.h"
+#include <pnmpi/service.h>
 
 
 /** \brief Find a module by name.

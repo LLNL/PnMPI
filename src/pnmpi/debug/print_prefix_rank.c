@@ -35,7 +35,6 @@
 #include <string.h>
 
 #include <mpi.h>
-
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/print.h>
 

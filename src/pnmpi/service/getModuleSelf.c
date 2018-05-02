@@ -28,9 +28,8 @@
  * LLNL-CODE-402774
  */
 
-#include <pnmpi/service.h>
-
 #include "core.h"
+#include <pnmpi/service.h>
 
 
 /** \brief Get handle of own module.
