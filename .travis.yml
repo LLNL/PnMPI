@@ -48,19 +48,6 @@ addons:
     - doxygen
     - help2man
 
-# Install all required packages for OS X builds. The following solution was
-# inspired by http://stackoverflow.com/a/20802381
-macos_install: &macos_install
-- travis_retry brew update --quiet >& /dev/null
-- for pkg in gcc cmake mpich argp-standalone help2man doxygen; do
-    if brew list -1 | grep -q "^${pkg}\$"; then
-      brew outdated $pkg || travis_retry brew upgrade $pkg;
-    else
-      travis_retry brew install $pkg;
-    fi
-  done
-- brew link --overwrite gcc
-
 
 jobs:
   include:
@@ -163,8 +150,7 @@ jobs:
 
     # Regular builds for OpenMPI.
     #
-    # Check PnMPI builds for numerous versions of Linux and osx / mac OS with
-    # OpenMPI.
+    # Check PnMPI builds for numerous versions of Linux with OpenMPI.
 
     # Ubuntu Trusty (14.04 LTS) GCC builds.
     - stage: build OpenMPI
@@ -217,63 +203,6 @@ jobs:
       before_script:
       - export CC=clang; export CXX=clang++
 
-    # mac OS builds.
-    #
-    # Only XCode 8.2 will be tested, as the versions installed by homebrew
-    # should be representive for all osx / mac OS versions. Detailed testing
-    # will be done in the MPICH tests below.
-    - os: osx
-      osx_image: xcode8.2
-      compiler: gcc
-      before_install: *macos_install
-      install:
-      - brew unlink mpich
-      - travis_retry brew install openmpi
-      - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
-        mkdir -p $TMPDIR
-      before_script:
-      - export CC=$(ls /usr/local/bin/gcc-[0-9]*);
-        export CXX=$(ls /usr/local/bin/g++-[0-9]*)
-    - os: osx
-      osx_image: xcode8.2
-      compiler: clang
-      before_install: *macos_install
-      install:
-      - brew unlink mpich
-      - travis_retry brew install openmpi
-      - export TMPDIR="/tmp/$TRAVIS_REPO_SLUG/$TRAVIS_JOB_NUMBER";
-        mkdir -p $TMPDIR
-
-
-    # Regular builds for MPICH.
-    #
-    # Check PnMPI builds for numerous versions of osx / mac OS with MPICH. As
-    # MPICH is not available for Linux in Travis CI at the moment, this cannot
-    # be tested right now.
-
-    # OSX builds.
-    - stage: build MPICH
-      os: osx
-      osx_image: xcode7.3.1
-      compiler: clang
-      install: *macos_install
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      install: *macos_install
-    - os: osx
-      osx_image: xcode8.1
-      compiler: clang
-      install: *macos_install
-    - os: osx
-      osx_image: xcode8.2
-      compiler: clang
-      install: *macos_install
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
-      install: *macos_install
-
 
     # Specialized builds.
     #
@@ -286,13 +215,6 @@ jobs:
       dist: trusty
       compiler: gcc
       sudo: false
-      before_script:
-      - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
-      env:
-      - NO_FORTRAN
-    - os: osx
-      compiler: clang
-      install: *macos_install
       before_script:
       - export CMAKE_EXTRA_FLAGS="-DENABLE_FORTRAN=off"
       env:
@@ -312,27 +234,12 @@ jobs:
       - export CFLAGS="-Wno-error=format -Wno-error=return-type"
       env:
       - WITH_ADEPT
-    - os: osx
-      compiler: clang
-      install: *macos_install
-      before_script:
-      - export CMAKE_EXTRA_FLAGS="-DENABLE_ADEPT_UTILS=on"
-      - export CFLAGS="-Wno-error=format"
-      env:
-      - WITH_ADEPT
 
     # Build without PnMPIze.
     - os: linux
       dist: trusty
       compiler: gcc
       sudo: false
-      before_script:
-      - export CMAKE_EXTRA_FLAGS="-DENABLE_PNMPIZE=off"
-      env:
-      - WITHOUT_PNMPIZE
-    - os: osx
-      compiler: clang
-      install: *macos_install
       before_script:
       - export CMAKE_EXTRA_FLAGS="-DENABLE_PNMPIZE=off"
       env:
