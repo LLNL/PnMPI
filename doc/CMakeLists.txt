@@ -63,7 +63,7 @@ if (BUILD_DOC)
   find_package(Doxygen REQUIRED)
 
   # Generate the Doxygen configuration file. Some variables need to be converted
-  # before their contents can be substitured into the file, as Doxygen doesn't
+  # before their contents can be substituted into the file, as Doxygen doesn't
   # understand the default CMake booleans and empty values.
   doxygen_convert_bool(DOC_INTERNAL BUILD_DOC_INTERNAL)
   doxygen_convert_bool(DOC_HTML BUILD_DOC_HTML)
@@ -88,7 +88,7 @@ if (BUILD_DOC)
   endif ()
 
   # Generate the documentation with Doxygen. The output file will be a main
-  # manpage, as manpages will be build in any case, but HTML docs may be
+  # man page, as man pages will be build in any case, but HTML docs may be
   # disabled.
   set(DOXYGEN_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/man/man3/pnmpi.h.3")
   add_custom_command(OUTPUT ${DOXYGEN_OUTPUT_FILE}

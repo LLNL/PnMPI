@@ -43,7 +43,7 @@ if (NOT HELP2MAN_BIN)
 endif ()
 
 
-# Helper function to generate a manpage for a binary.
+# Helper function to generate a man page for a binary.
 function (help2man TARGET)
   list(REMOVE_AT ARGV 0)
 
@@ -64,7 +64,7 @@ function (help2man TARGET)
   endif ()
 
 
-  # Generate manpage
+  # Generate man page
   set(HELP2MAN_ARGS "")
   if (OPT_NOINFO)
     list(APPEND HELP2MAN_ARGS "-N")

@@ -47,10 +47,10 @@ add_custom_target(pnmpi-modules)
 
 # Wrap calls to pnmpi_add_xmpi_module to add the module's target to the global
 # pnmpi-modules target. This can't be done directly in the original function, as
-# external projects and the testcases don't require this behaviour.
+# external projects and the test cases don't require this behavior.
 #
 # Note: The PMPI version of this macro doesn't need to be patched, as it calls
-#       this macro internaly.
+#       this macro internally.
 macro(pnmpi_add_xmpi_module TARGET)
   # Call the original macro to add a new target for the module to be built and
   # add it to the global pnmpi-modules target.

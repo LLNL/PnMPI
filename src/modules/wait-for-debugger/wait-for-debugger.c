@@ -94,7 +94,7 @@ static void wait_for_debugger()
 
 
   /* If the WAIT_AT_STARTUP variable is defined, the number of seconds defined
-   * will be waited, so one may attach with a debuger in this time. */
+   * will be waited, so one may attach with a debugger in this time. */
   if (getenv("WAIT_AT_STARTUP") != NULL)
     {
       int wait = atoi(getenv("WAIT_AT_STARTUP"));

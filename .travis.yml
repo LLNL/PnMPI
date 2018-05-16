@@ -51,9 +51,9 @@ addons:
 
 jobs:
   include:
-    # Compiliance checks
+    # Compliance checks
     #
-    # Check the compiliance of the code first. If the code doesn't follow the
+    # Check the compliance of the code first. If the code doesn't follow the
     # coding standards, there is no sense in checking it, as the commit will be
     # rejected anyway.
 
@@ -206,8 +206,8 @@ jobs:
 
     # Specialized builds.
     #
-    # Test some special configurations for PnMPI that influence the behaviour of
-    # PnMPI and its testcases.
+    # Test some special configurations for PnMPI that influence the behavior of
+    # PnMPI and its test cases.
 
     # Build without Fortran.
     - stage: build specialized

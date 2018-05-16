@@ -55,7 +55,7 @@ extern pnmpi_mpi_interface pnmpi_used_mpi_interface;
 /** \brief Set the MPI interface used for the current MPI call to Fortran.
  *
  * \details Some parts of PnMPI (and maybe some modules, too) depend on the
- *  interface used to call a MPI function. E.g. when initalizing MPI, the
+ *  interface used to call a MPI function. E.g. when initializing MPI, the
  *  wrapper has to call the PMPI function for the right interface.
  *
  *  By default interface to use is \ref PNMPI_INTERFACE_C, but it may be changed
@@ -75,8 +75,8 @@ static void pnmpi_set_mpi_interface_fortran()
 /** \brief Reset the MPI interface used for the current MPI call.
  *
  * \details This function will reset the MPI interface for the current MPI call
- *  to its inital value \ref PNMPI_INTERFACE_C. It should be called when leaving
- *  a Fortran MPI wrapper function.
+ *  to its initial value \ref PNMPI_INTERFACE_C. It should be called when
+ *  leaving a Fortran MPI wrapper function.
  *
  *
  * \private

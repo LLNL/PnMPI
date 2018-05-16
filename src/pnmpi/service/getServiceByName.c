@@ -88,7 +88,7 @@ PNMPI_status_t PNMPI_Service_GetServiceByName(const PNMPI_modHandle_t handle,
           else
             /* A global with matching name was found, but the signatures did not
              * match. If no global with matching signature will be found, this
-             * error code indicates the missmatch for the user. */
+             * error code indicates the mismatch for the user. */
             err = PNMPI_SIGNATURE;
         }
     }

@@ -45,10 +45,10 @@
  */
 void pnmpi_finalize(void)
 {
-  /* Ignore any call to this function except the last call. This will be achived
-   * by decreasing the initialization counter. If it's zero after decreaing,
-   * this is the last call to the finalization function and PnMPI needs to be
-   * finalized now. */
+  /* Ignore any call to this function except the last call. This will be
+   * achieved by decreasing the initialization counter. If it's zero after
+   * decreasing, this is the last call to the finalization function and PnMPI
+   * needs to be finalized now. */
   if (--pnmpi_initialized)
     return;
 

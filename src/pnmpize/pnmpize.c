@@ -68,7 +68,7 @@
  *
  * Argp is used to parse command line options. It handles the most common
  * options like --help and --version, so that a manual coding of getopt code is
- * not required anymore. For detailed information about the varaibles below, see
+ * not required anymore. For detailed information about the variables below, see
  * the argp documentation.
  */
 const char *argp_program_version = "P^nMPI " PNMPI_VERSION;
@@ -124,7 +124,7 @@ static int appendenv(const char *name, const char *value, const int prepend)
   char *temp = getenv(name);
 
   /* If variable name is not present in environment, set it as new variable in
-   * the environment and reutrn the return value. */
+   * the environment and return the return value. */
   if (temp == NULL)
     return setenv(name, value, 0);
 
@@ -185,7 +185,7 @@ static void set_dbglevel(const struct argp_state *state, const char *name)
 /** \brief Search for a library in the search paths of the dynamic linker.
  *
  * \details This function searches for \p library in the search path of the
- *  dynamic linker. Its use is to get the same behaviour as for `LD_PRELOAD`,
+ *  dynamic linker. Its use is to get the same behavior as for `LD_PRELOAD`,
  *  that the library doesn't have to be at a fixed place.
  *
  *
@@ -268,7 +268,7 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
     /* If we have parsed all options, iterate through all non-options in argv.
      * If at there are no non-options in our arguments (argv), the user
      * specified no utility to call, so we'll print the argp usage here, which
-     * will exit pnmpize immediatly after printing the usage message. */
+     * will exit pnmpize immediately after printing the usage message. */
     case ARGP_KEY_END:
       if (state->arg_num == 0)
         argp_usage(state);
@@ -284,11 +284,11 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
 int main(int argc, char **argv)
 {
   /* Parse our arguments: Options will be parsed until the first non-option is
-   * found. Parsed arguments will manipulate the current environment to initial-
-   * ize it for use with P^nMPI. If there are no additional non-options in our
-   * arguments, argp_parse will print the usage message and exit immediatly, no
-   * extra evaluation is required here. The index of the first non-option will
-   * be stored in ind. */
+   * found. Parsed arguments will manipulate the current environment to
+   * initialize it for use with P^nMPI. If there are no additional non-options
+   * in our arguments, argp_parse will print the usage message and exit
+   * immediately, no extra evaluation is required here. The index of the first
+   * non-option will be stored in ind. */
   int ind;
   argp_parse(&argp, argc, argv, ARGP_IN_ORDER, &ind, NULL);
 
@@ -311,7 +311,7 @@ int main(int argc, char **argv)
   appendenv("LD_PRELOAD", PNMPI_LIBRARY_NAME ".so", 0);
 #endif
 
-  /* Execute the utility. If the utility could be started, pnmpize will exit
+  /* Execute the utility. If the utility could be started, PnMPIze will exit
    * here. In any other case, the following error processing will be called. */
   if (execvp(argv[ind], argv + ind) < 0)
     {

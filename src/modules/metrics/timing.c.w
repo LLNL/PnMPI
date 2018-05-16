@@ -230,7 +230,7 @@ int MPI_Finalize()
    * other threads.
    *
    * This variable also will be used to indicate, if the timer is active. If the
-   * timer is 0, it is inactive, otherise it is active. */
+   * timer is 0, it is inactive, otherwise it is active. */
   static pnmpi_compiler_tls_keyword timing_t timer = 0;
 
   metric_atomic_add(timing_storage.MPI_Finalize, start_stop_timer(&timer));
@@ -249,7 +249,7 @@ int MPI_Finalize()
     return ret;
 
 
-  /* Flush the buffers to avoid fragments in the outout.
+  /* Flush the buffers to avoid fragments in the output.
    *
    * NOTE: This can't fully prevent buffered output being displayed between
    *       fresh one, as there's no guaranty the MPI sends the buffers back

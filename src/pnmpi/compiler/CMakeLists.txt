@@ -39,9 +39,9 @@ if (NOT C11_THREAD_LOCAL_FOUND)
   find_package(ThreadKeyword)
 endif ()
 
-# PnMPI will be built threadsafe by default. For performance improvements thread
-# local storage may be disabled.
-option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." TRUE)
+# PnMPI will be built thread safe by default. For performance improvements
+# thread local storage may be disabled.
+option(ENABLE_THREAD_SAFETY "Selects whether PnMPI is built thread safe." TRUE)
 if (NOT ENABLE_THREAD_SAFETY)
   set(C11_THREAD_LOCAL_FOUND false)
   set(THREADKEYWORD_FOUND false)

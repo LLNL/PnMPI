@@ -36,10 +36,10 @@
 
 int main(int argc, char **argv)
 {
-  /* Initalize and finalize MPI. This should be enough to call all PnMPI setup
+  /* Initialize and finalize MPI. This should be enough to call all PnMPI setup
    * routines for threading support except the wrapper functions.
    *
-   * The highes possible MPI threading level will be requested, so a possible
+   * The highest possible MPI threading level will be requested, so a possible
    * limiting of the threading level by PnMPI may be checked. */
   int provided;
   MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);

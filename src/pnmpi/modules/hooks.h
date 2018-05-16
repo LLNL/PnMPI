@@ -33,7 +33,7 @@
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
- * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
+ * stanza to avoid name mangling. Otherwise PnMPI modules would not find PnMPI
  * API functions. */
 #ifdef __cplusplus
 extern "C" {

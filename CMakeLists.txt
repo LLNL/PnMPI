@@ -85,7 +85,7 @@ if (ENABLE_FORTRAN)
       "without Fortran interface.")
   endif ()
 
-  # Workaournd for this CMake issues:
+  # Workaround for this CMake issues:
   # https://cmake.org/pipermail/cmake/2010-November/040949.html
   if(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
     set(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS "")

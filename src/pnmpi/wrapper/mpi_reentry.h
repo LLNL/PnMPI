@@ -41,7 +41,7 @@ extern pnmpi_compiler_tls_keyword int pnmpi_mpi_reentry;
 
 /** \brief Try to enter the reentry-guarded section.
  *
- * \details This function trys to enter the reentry-guarded section. It may be
+ * \details This function tries to enter the reentry-guarded section. It may be
  *  used inside an if-expression to execute code depending on the returned
  *  status. The default would be to call the PMPI function, if entering the
  *  section fails.

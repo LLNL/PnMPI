@@ -42,7 +42,7 @@
 /** \brief Return the size needed to represent the highest rank.
  *
  * \details This function returns the number of characters required to represent
- *  the highes available rank, so the message output may be aligned.
+ *  the highest available rank, so the message output may be aligned.
  *
  *
  * \return The number of characters required.

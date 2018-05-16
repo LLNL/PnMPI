@@ -36,7 +36,7 @@
 
 
 /* Note: As some values are still defined in pnmpi-config.h, there should be
- * checks, if the following variables are defined yet. Itherwise the compiler
+ * checks, if the following variables are defined yet. Otherwise the compiler
  * will throw warnings. */
 
 #ifndef HAVE_MPI_INIT_THREAD_C

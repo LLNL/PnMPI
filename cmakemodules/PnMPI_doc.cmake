@@ -47,14 +47,14 @@ function (pnmpi_add_man MODULE SYMBOL)
   endif ()
 
 
-  # Add a new target dependend on the doc target for the required man page.
+  # Add a new target dependent on the doc target for the required man page.
   if (NOT TARGET ${MODULE}.3)
     set(MANFILE "${PROJECT_BINARY_DIR}/doc/man/man3/${MODULE}.3")
     add_custom_command(OUTPUT ${MANFILE} DEPENDS doc)
     add_custom_target(${MODULE}.3 ALL DEPENDS ${MANFILE})
   endif ()
 
-  # Install the manpage and a link for SYMBOL.
+  # Install the man page and a link for SYMBOL.
   install(FILES ${MANFILE}
           DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
   if(CMAKE_HOST_UNIX)
@@ -100,7 +100,7 @@ function (pnmpi_add_module_man MODNAME CLASS)
     return()
   endif ()
 
-  # Add a new target dependend on the doc target for the required class and
+  # Add a new target dependent on the doc target for the required class and
   # install it.
   set(TARGET_FILE "pnmpi-module-${MODNAME}.1")
   if (NOT TARGET ${MODULE}.3)

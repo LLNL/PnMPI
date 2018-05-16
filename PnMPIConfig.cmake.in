@@ -54,7 +54,7 @@ set(PnMPI_VERSION_TWEAK "@PNMPI_VERSION_TWEAK@" CACHE INTERNAL "")
 #
 # Some of PnMPI's configuration variables depend on how PnMPI is included into
 # other projects (via find_package() or add_subdirectory()). These variables
-# will be set depending on the include mode and cached later if neccessary.
+# will be set depending on the include mode and cached later if necessary.
 if (NOT PnMPI_IS_SUBPROJECT)
   set_and_check(PnMPI_INCLUDE_DIR "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
   set_and_check(PnMPI_MODULES_DIR "@PnMPI_MODULES_DIR@")
@@ -75,7 +75,7 @@ set(PnMPI_MODULES_PATH ${PnMPI_MODULES_DIR} CACHE PATH "PnMPI modules location")
 # Component configuration.
 #
 # PnMPI has optional components, which will be configured in the following
-# section. find_package() provides capabilities to check wheter a module has a
+# section. find_package() provides capabilities to check whether a module has a
 # specific component or not.
 
 set(PnMPI_PnMPIze_FOUND @ENABLE_PNMPIZE@ CACHE INTERNAL "")
@@ -105,7 +105,7 @@ mark_as_advanced(
 # By including the following files, PnMPI targets will be imported to be used by
 # the project including this file.
 #
-# NOTE: This is not neccessary, if PnMPI is included via 'add_subdirectory()',
+# NOTE: This is not necessary, if PnMPI is included via 'add_subdirectory()',
 #       as PnMPI's native targets are available.
 if (NOT PnMPI_IS_SUBPROJECT)
   include(${PACKAGE_PREFIX_DIR}/pnmpi-libs.cmake)
@@ -115,7 +115,7 @@ if (NOT PnMPI_IS_SUBPROJECT)
   endif ()
 endif ()
 
-# Set aliasses for PnMPI libraries and executables.
+# Set aliases for PnMPI libraries and executables.
 #
 # These variables may be used to link against the PnMPI libraries. However, the
 # path to the library itself is not stored in these variables, but the names of

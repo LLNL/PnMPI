@@ -57,7 +57,7 @@ typedef int PNMPI_modHandle_t;
 /// \brief PnMPI error codes.
 typedef enum pnmpi_status {
   PNMPI_SUCCESS = 0,    ///< Everything ok.
-  PNMPI_FAILURE = -1,   ///< An error occured.
+  PNMPI_FAILURE = -1,   ///< An error occurred.
   PNMPI_NOMEM = -2,     ///< Not enough memory to perform action.
   PNMPI_NOMODULE = -3,  ///< Requested module not found.
   PNMPI_NOSERVICE = -4, ///< Requested service not found.
@@ -125,7 +125,7 @@ typedef struct PNMPI_Service_descriptor_d
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
- * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
+ * stanza to avoid name mangling. Otherwise PnMPI modules would not find PnMPI
  * API functions. */
 #ifdef __cplusplus
 extern "C" {
@@ -159,7 +159,7 @@ PNMPI_status_t PNMPI_Service_ChangeStack(PNMPI_modHandle_t stack);
 
 /** \defgroup PNMPI_Service_GetGlobalByName PNMPI_Service_GetGlobalByName
  *
- * \details Modules may provide storage that is accessable by other modules.
+ * \details Modules may provide storage that is accessible by other modules.
  *  These functions will be used to register and access this storage.
  *
  * \header{pnmpi/service.h}
@@ -174,7 +174,7 @@ PNMPI_status_t PNMPI_Service_GetGlobalByName(PNMPI_modHandle_t handle,
 
 /** \defgroup PNMPI_Service_GetServiceByName PNMPI_Service_GetServiceByName
  *
- * \details Modules may provide service functions that are accessable by other
+ * \details Modules may provide service functions that are accessible by other
  *  modules. These functions will be used to register and access these
  *  functions.
  */

@@ -148,7 +148,7 @@ int MPI_Pcontrol(const int level, ...)
  */
 int MPI_Finalize()
 {
-  /* Flush the buffers to avoid fragments in the outout.
+  /* Flush the buffers to avoid fragments in the output.
    *
    * NOTE: This can't fully prevent buffered output being displayed between
    *       fresh one, as there's no guaranty the MPI sends the buffers back

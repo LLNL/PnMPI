@@ -36,7 +36,7 @@ if (C11_FOUND)
 endif ()
 
 # Check if atomics are available for thread safe storage. First we try to use
-# C11 atomics, next the GCC builtin atomic_fetch_add method and finaly
+# C11 atomics, next the GCC builtin atomic_fetch_add method and finally
 # sync_fetch_and_add.
 if (NOT C11_ATOMICS_FOUND)
   find_package(BuiltinAtomic)
