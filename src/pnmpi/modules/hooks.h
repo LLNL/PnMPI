@@ -72,7 +72,7 @@ extern const char *PNMPI_ModuleName;
  *
  * \memberof pnmpi_module_hooks
  */
-void PNMPI_RegistrationPoint();
+void PNMPI_RegistrationPoint(void);
 
 /** \brief Called just before the module will be unloaded.
  *

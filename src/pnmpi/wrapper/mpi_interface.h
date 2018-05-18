@@ -66,7 +66,7 @@ extern pnmpi_mpi_interface pnmpi_used_mpi_interface;
  * \private
  */
 PNMPI_UNUSED
-static void pnmpi_set_mpi_interface_fortran()
+static void pnmpi_set_mpi_interface_fortran(void)
 {
   pnmpi_used_mpi_interface = PNMPI_INTERFACE_FORTRAN;
 }
@@ -82,7 +82,7 @@ static void pnmpi_set_mpi_interface_fortran()
  * \private
  */
 PNMPI_UNUSED
-static void pnmpi_reset_mpi_interface()
+static void pnmpi_reset_mpi_interface(void)
 {
   pnmpi_used_mpi_interface = PNMPI_INTERFACE_C;
 }
@@ -99,7 +99,7 @@ static void pnmpi_reset_mpi_interface()
  * \private
  */
 PNMPI_UNUSED
-static pnmpi_mpi_interface pnmpi_get_mpi_interface()
+static pnmpi_mpi_interface pnmpi_get_mpi_interface(void)
 {
   return pnmpi_used_mpi_interface;
 }
