@@ -56,6 +56,7 @@ void PNMPI_Service_CallHook(const char *hook)
 {
   assert(hook);
 
+
   pnmpi_call_hook(hook, PNMPI_CALL_HOOK_NEXT_MODULE, pnmpi_level + 1);
 }
 
@@ -76,6 +77,7 @@ void PNMPI_Service_CallHook(const char *hook)
 void PNMPI_Service_CallHook_NewStack(const char *hook, PNMPI_modHandle_t stack)
 {
   assert(hook);
+
 
   pnmpi_call_hook(hook, PNMPI_CALL_HOOK_NEXT_MODULE, stack);
 }
