@@ -27,6 +27,11 @@
 #
 # LLNL-CODE-402774
 
+# NOTE: Compiler features checked inside this directory should be general
+#       purpose, i.e. reusable at several places inside of PnMPI's source code.
+#       Compiler features related to a specific function should be tested in the
+#       relating CMakeLists file instead!
+
 # Check if thread local storage is available for thread safe variables in PnMPI
 # and modules. First we try to use C11 _Thread_local, next the compiler-specific
 # builtin __thread keyword.
@@ -34,9 +39,9 @@ if (NOT C11_THREAD_LOCAL_FOUND)
   find_package(ThreadKeyword)
 endif ()
 
-# PnMPI will be built threadsafe by default. For performance improvements thread
-# local storage may be disabled.
-option(ENABLE_THREAD_SAFETY "Selects whether pnmpi is built threadsafe." TRUE)
+# PnMPI will be built thread safe by default. For performance improvements
+# thread local storage may be disabled.
+option(ENABLE_THREAD_SAFETY "Selects whether PnMPI is built thread safe." TRUE)
 if (NOT ENABLE_THREAD_SAFETY)
   set(C11_THREAD_LOCAL_FOUND false)
   set(THREADKEYWORD_FOUND false)

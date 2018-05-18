@@ -41,7 +41,7 @@ C LLNL-CODE-402774
 C Note: There is no special test for preloading PnMPI by environment variables,
 C       as different MPI implementations handle environment variables in
 C       different ways and the setting the variables for the whole test
-C       environment interferres with additional tools like AddressSanitizer, as
+C       environment interferes with additional tools like AddressSanitizer, as
 C       it would be preloaded for mpiexec, too. However, preloading is
 C       indirectly tested by the PnMPIze tests.
 C

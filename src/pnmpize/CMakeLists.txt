@@ -87,8 +87,8 @@ set_target_properties(pnmpize PROPERTIES OUTPUT_NAME pnmpi)
 install(TARGETS pnmpize EXPORT pnmpize DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(EXPORT pnmpize DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI)
 
-# If help2man could be found, generate a man-page for pnmpize. The help2man
-# command will install this man-page, too.
+# If help2man could be found, generate a man page for PnMPIze. The help2man
+# command will install this man page, too.
 if (HELP2MAN_FOUND)
   help2man(pnmpize-man TARGET pnmpize NOINFO INSTALL RENAME pnmpi.1)
 endif()

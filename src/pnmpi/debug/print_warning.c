@@ -38,7 +38,7 @@
 /** \brief Print a warning to stderr.
  *
  * \details This function will print a warning to stderr. The selected debug
- *  node will be ignored: warnings will be printed at all nodes if they occure.
+ *  node will be ignored: warnings will be printed at all nodes if they occur.
  *
  *
  * \param format Printf-like format string.

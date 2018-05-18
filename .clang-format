@@ -35,7 +35,7 @@
 # configuration with clang-format.
 
 
-# Basicaly we use LLVM style, but have some changes listet in this
+# Basically we use LLVM style, but have some changes listed in this
 # configuration.
 BasedOnStyle: LLVM
 

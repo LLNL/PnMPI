@@ -31,7 +31,7 @@
 #include <stdio.h>  // fprintf, printf
 #include <stdlib.h> // EXIT_* macros
 
-#include "mpi_errors.h"
+#include <mpi_errors.h>
 
 
 int main(int argc, char **argv)

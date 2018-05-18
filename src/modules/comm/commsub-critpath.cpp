@@ -28,17 +28,18 @@
  * LLNL-CODE-402774
  */
 
-#include <mpi.h>
+#include "commsub.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 
-#include "commsub.h"
+#include <sys/time.h>
 
 #include <graphlib.h>
 #include <libunwind.h>
-
+#include <mpi.h>
 #include <pnmpi/const.h>
+
 
 #define GLOBALTIME(t, n) ((n + 1) * 10000 + t)
 #define EXTRACTNODE(id) ((id / 10000) - 1)

@@ -29,17 +29,17 @@
  */
 
 #include "requests.h"
-#include <mpi.h>
-#include <status.h>
+
+#include <iostream>
+#include <map>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <iostream>
-#include <map>
-
+#include <mpi.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
+#include <status.h>
 
 using namespace std;
 

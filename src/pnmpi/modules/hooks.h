@@ -33,7 +33,7 @@
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
- * stanza to avoid name mangeling. Otherwise PnMPI modules would not find PnMPI
+ * stanza to avoid name mangling. Otherwise PnMPI modules would not find PnMPI
  * API functions. */
 #ifdef __cplusplus
 extern "C" {
@@ -72,7 +72,7 @@ extern const char *PNMPI_ModuleName;
  *
  * \memberof pnmpi_module_hooks
  */
-void PNMPI_RegistrationPoint();
+void PNMPI_RegistrationPoint(void);
 
 /** \brief Called just before the module will be unloaded.
  *

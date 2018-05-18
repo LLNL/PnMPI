@@ -31,6 +31,7 @@
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/modules.h>
 
+
 /** \brief Unload all modules.
  *
  *
@@ -39,12 +40,12 @@
 PNMPI_INTERNAL
 void pnmpi_modules_unload(void)
 {
-  /* Trigger the PNMPI_Fini hook in all modules, so they may do some finaliza-
-   * tion steps before they will be unloaded. */
+  /* Trigger the PNMPI_Fini hook in all modules, so they may do some
+   * finalization steps before they will be unloaded. */
   pnmpi_call_hook("PNMPI_Fini", PNMPI_CALL_HOOK_ALL_MODULES, 0);
 
   /* Trigger the PNMPI_Unregister hook in all modules, so they may destruct
-   * initialized objects and free allocated memory. In constrast to the
+   * initialized objects and free allocated memory. In contrast to the
    * PNMPI_Fini hook above, the modules are not allowed to talk to each other in
    * this hook, as there is no guaranty, that other hooks still exist. */
   pnmpi_call_hook("PNMPI_UnregistrationPoint", PNMPI_CALL_HOOK_ALL_MODULES, 0);

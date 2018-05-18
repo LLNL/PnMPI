@@ -28,9 +28,10 @@
  * LLNL-CODE-402774
  */
 
-#include <pnmpi/service.h>
+#include <assert.h>
 
 #include "core.h"
+#include <pnmpi/service.h>
 
 
 /** \brief Get handle of own module.
@@ -50,6 +51,9 @@
  */
 PNMPI_status_t PNMPI_Service_GetModuleSelf(PNMPI_modHandle_t *handle)
 {
+  assert(handle);
+
+
   *handle = pnmpi_level;
   return PNMPI_SUCCESS;
 }

@@ -45,14 +45,14 @@ endif ()
 # The following executable may be used to check the general functionality of a
 # test case. It does not call any MPI functions, so it is useful for checking
 # non-MPI functionality like the PnMPI startup. Some memory leaks may be tracked
-# with this executable, because every application calling MPI will definitly
+# with this executable, because every application calling MPI will definitely
 # have memory leaks (caused by some MPI implementations).
 easy_add_test(PREFIX binary_nompi SOURCES test-nompi.c)
 set(TESTBIN_NOMPI "$<TARGET_FILE:testbin-binary_nompi>" PARENT_SCOPE)
 
 # The following target may be used to check general PnMPI functionality. It uses
 # the common MPI functions MPI_Init and MPI_Finalize. As all PnMPI core routines
-# will be called in MPI_Init, this should be enogh to check anything except the
+# will be called in MPI_Init, this should be enough to check anything except the
 # wrapper functions.
 easy_add_test(PREFIX binary_mpi_c SOURCES test-mpi.c)
 set(TESTBIN_MPI_C "$<TARGET_FILE:testbin-binary_mpi_c-dynamic>" PARENT_SCOPE)
@@ -62,7 +62,7 @@ set(TESTBIN_MPI_C_STATIC "$<TARGET_FILE:testbin-binary_mpi_c-static>"
 # The following target may be used to check general PnMPI functionality for
 # threaded MPI applications. It uses the common MPI functions MPI_Init_thread
 # and MPI_Finalize. As all PnMPI core routines (with threading support) will be
-# called in MPI_Init_thread, this should be enogh to check the threading
+# called in MPI_Init_thread, this should be enough to check the threading
 # functionality of PnMPI.
 easy_add_test(PREFIX binary_mpi_threaded SOURCES test-mpi-threaded.c)
 set(TESTBIN_MPI_C_THREADED "$<TARGET_FILE:testbin-binary_mpi_threaded>"
@@ -79,7 +79,7 @@ set(TESTBIN_MPI_C_SENDRECV "$<TARGET_FILE:testbin-binary_mpi_sendrecv>"
 if (ENABLE_FORTRAN)
   # The following target may be used to check general PnMPI Fortran
   # functionality. It uses the common MPI functions MPI_Init and MPI_Finalize.
-  # As all PnMPI core routines will be called in MPI_Init, this should be enogh
+  # As all PnMPI core routines will be called in MPI_Init, this should be enough
   # to check anything except the wrapper functions.
   easy_add_test(PREFIX binary_mpi_fortran SOURCES test-mpi.f)
   set(TESTBIN_MPI_FORTRAN "$<TARGET_FILE:testbin-binary_mpi_fortran-dynamic>"
@@ -88,7 +88,7 @@ if (ENABLE_FORTRAN)
   # The following target may be used to check general PnMPI functionality for
   # threaded Fortran MPI applications. It uses the common MPI functions
   # MPI_Init_thread and MPI_Finalize. As all PnMPI core routines (with threading
-  # support) will be called in MPI_Init_thread, this should be enogh to check
+  # support) will be called in MPI_Init_thread, this should be enough to check
   # the threading functionality of PnMPI.
   easy_add_test(PREFIX binary_mpi_fortran_threaded SOURCES test-mpi-threaded.f)
   set(TESTBIN_MPI_FORTRAN_THREADED

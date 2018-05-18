@@ -58,7 +58,7 @@ A1) Dependencies
 In addition, PnMPI uses git submodules for several CMake modules,
 [wrap](https://github.com/LLNL/wrap) and
 [adept-utils](https://github.com/LLNL/adept-utils). While the deploy source
-tarball includes all required submodules, git users need to checkout them with
+tar-ball includes all required submodules, git users need to checkout them with
 the following command in the root of the cloned repository:
 
     git submodule update --init --recursive
@@ -182,7 +182,7 @@ files are included in CMake, additional example files that allow the compilation
 on certain LC machines can be found in `cmakemodules/Platform` and
 `cmakemodules/Toolchain`.
 
-For example, to configure PnMPI for a BG/Q machine using the GNU compliler
+For example, to configure PnMPI for a BG/Q machine using the GNU compiler
 suite, add the following to the `cmake` configuration command:
 
     -DCMAKE_TOOLCHAIN_FILE=../cmakemodules/Toolchain/BlueGeneQ-gnu.cmake
@@ -406,7 +406,7 @@ The source for all modules is stored in separate directories inside the
 * **limit-threading**
   This PnMPI specific module limits the MPI threading level to the value set in
   the `PNMPI_THREADING_LEVEL` environment variable. It may be used to check the
-  behaviour of an application, if the MPI environment doesn't support a specific
+  behavior of an application, if the MPI environment doesn't support a specific
   threading level.
 
 * **metrics-counter**

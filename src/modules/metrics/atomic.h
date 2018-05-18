@@ -28,6 +28,10 @@
  * LLNL-CODE-402774
  */
 
+#ifndef METRICS_ATOMIC_H
+#define METRICS_ATOMIC_H
+
+
 #include "config.h"
 
 
@@ -74,5 +78,8 @@
 #define metric_atomic_inc(var) ++var;
 #define metric_atomic_dec(var) --var;
 #define metric_atomic_add(var, value) var += value;
+
+#endif
+
 
 #endif

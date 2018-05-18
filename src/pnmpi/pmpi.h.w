@@ -36,7 +36,6 @@
 
 
 #include <mpi.h>
-
 #include <pnmpi/private/config.h>
 
 

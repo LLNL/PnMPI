@@ -28,12 +28,13 @@
  * LLNL-CODE-402774
  */
 
-#include <alloca.h>
 #include <ctype.h>
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <alloca.h>
+#include <dlfcn.h>
 #include <unistd.h>
 
 #include "core.h"
@@ -71,7 +72,7 @@
 pnmpi_cell_t pnmpi_activated[NUM_MPI_CELLS];
 pnmpi_functions_t pnmpi_function_ptrs;
 
-int pnmpi_mpi_level = 0;
+pnmpi_compiler_tls_keyword int pnmpi_mpi_level = 0;
 int pnmpi_max_level;
 int pnmpi_initialization_complete;
 int pnmpi_init_done = 0;

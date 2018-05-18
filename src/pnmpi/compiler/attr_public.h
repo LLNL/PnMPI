@@ -39,12 +39,12 @@
 #define PNMPI_ATTRIBUTES_H
 
 
-/** \brief Mark function arguments as nonnull.
+/** \brief Mark function arguments as non-null.
  *
  * \note This macro should be attached to the declaration in the header file.
  *
  *
- * \param ... List of arguments that should be nonnull.
+ * \param ... List of arguments that should be non-null.
  */
 #if defined(__GNUC__) || defined(__clang__)
 #define PNMPI_FUNCTION_ARG_NONNULL(...) __attribute__((nonnull(__VA_ARGS__)))

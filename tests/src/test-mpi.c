@@ -35,7 +35,7 @@
 
 int main(int argc, char **argv)
 {
-  /* Initalize and finalize MPI. This should be enough to call all PnMPI setup
+  /* Initialize and finalize MPI. This should be enough to call all PnMPI setup
    * routines except the wrapper functions. */
   MPI_Init(&argc, &argv);
   MPI_Finalize();
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 /* Note: There is no special test for preloading PnMPI by environment variables,
  *       as different MPI implementations handle environment variables in
  *       different ways and the setting the variables for the whole test
- *       environment interferres with additional tools like AddressSanitizer, as
+ *       environment interferes with additional tools like AddressSanitizer, as
  *       it would be preloaded for mpiexec, too. However, preloading is
  *       indirectly tested by the PnMPIze tests.
  *

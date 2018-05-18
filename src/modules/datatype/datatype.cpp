@@ -28,17 +28,18 @@
  * LLNL-CODE-402774
  */
 
+#include "datatype.h"
+
 #include <iostream>
 #include <map>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "datatype.h"
 #include <mpi.h>
-
 #include <pnmpi/const.h>
 #include <pnmpi/hooks.h>
 #include <pnmpi/service.h>
+
 
 using namespace std;
 

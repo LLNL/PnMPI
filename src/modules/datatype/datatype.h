@@ -28,10 +28,12 @@
  * LLNL-CODE-402774
  */
 
-#include <mpi.h>
-
 #ifndef _PNMPI_MOD_DATATYPE
 #define _PNMPI_MOD_DATATYPE
+
+
+#include <mpi.h>
+
 
 /*------------------------------------------------------------*/
 /* Note: this module must be loaded into the stack close

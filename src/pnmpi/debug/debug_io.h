@@ -115,7 +115,7 @@ typedef enum pnmpi_debug_level {
  * \note To optimize the code for speed, debug messages may be disabled by
  *  defining \ref PNMPI_NO_DEBUG before including any of PnMPI's headers or
  *  passing the flag to the preprocessor.
- * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
+ * \note This macro will prepend the \ref PNMPI_MESSAGE_PREFIX.
  *
  *
  * \param level \ref PNMPI_debug_level_t debug level of the message.
@@ -139,7 +139,7 @@ typedef enum pnmpi_debug_level {
 
 /** \brief Macro to use for warning printing.
  *
- * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
+ * \note This macro will prepend the \ref PNMPI_MESSAGE_PREFIX.
  *
  *
  * \param format Printf-like format string.
@@ -171,7 +171,7 @@ typedef enum pnmpi_debug_level {
  *  format string if no other arguments are passed.
  * \endinternal
  *
- * \note This macro will preprend the \ref PNMPI_MESSAGE_PREFIX.
+ * \note This macro will prepend the \ref PNMPI_MESSAGE_PREFIX.
  *
  *
  * \param format Printf-like format string.
@@ -189,7 +189,7 @@ typedef enum pnmpi_debug_level {
 
 
 /* The PnMPI API should be C++ compatible, too. We have to add the extern "C"
- * stanza to avoid name mangeling. Otherwise C++ PnMPI modules would not find
+ * stanza to avoid name mangling. Otherwise C++ PnMPI modules would not find
  * PnMPI API functions. */
 #ifdef __cplusplus
 extern "C" {

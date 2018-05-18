@@ -32,7 +32,6 @@
 #include <stdlib.h>
 
 #include <mpi.h>
-
 #include <pnmpi/const.h>
 
 

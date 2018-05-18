@@ -1,9 +1,9 @@
 /* This file is part of P^nMPI.
  *
  * Copyright (c)
- *  2008-2018 Lawrence Livermore National Laboratories, United States of America
- *  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
- *  2013-2018 RWTH Aachen University, Federal Republic of Germany
+ *  2008-2017 Lawrence Livermore National Laboratories, United States of America
+ *  2011-2017 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2013-2017 RWTH Aachen University, Federal Republic of Germany
  *
  *
  * P^nMPI is free software; you can redistribute it and/or modify it under the
@@ -29,22 +29,22 @@
  */
 
 #include <pnmpi/private/attributes.h>
-#include <pnmpi/private/mpi_reentry.h>
+#include <pnmpi/private/return_address.h>
 
 
-/** \brief MPI reentry guard.
+/** \brief The application's return address.
  *
- * \details Some MPI implementations send the Fortran MPI calls to the C MPI
- *  interface. However, some implementations behave erroneous and send these
- *  calls to the MPI_* functions instead of the PMPI_* ones. This would end in
- *  duplicate calls of the PnMPI wrappers, so the following variable may be used
- *  to detect these erroneous redirections.
+ * \details This variable stores the application's return address. With
+ *  additional tools like `addr2line` this address may be translated into the
+ *  position in the source-code, where the application called the MPI call, e.g.
+ *  to print warnings to the user.
  *
  * \note This value should not be changed directly by any function, but by using
- *  the \ref pnmpi_reentry_enter and \ref pnmpi_reentry_exit functions.
+ *  the \ref pnmpi_return_address_set and \ref pnmpi_return_address_reset
+ *  functions.
  *
  *
  * \private
  */
 PNMPI_INTERNAL
-pnmpi_compiler_tls_keyword int pnmpi_mpi_reentry = 0;
+pnmpi_compiler_tls_keyword void *pnmpi_return_address = NULL;

@@ -27,7 +27,7 @@
 #
 # LLNL-CODE-402774
 
-# If the PnMPIze tool will not be built, the following testcases can't be
+# If the PnMPIze tool will not be built, the following test cases can't be
 # executed.
 if (NOT ENABLE_PNMPIZE)
   return()

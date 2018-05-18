@@ -44,12 +44,12 @@
  * \details This function is a wrapper for \ref PNMPI_Warning and exit.
  *
  * \details This function will print a warning to stderr. The selected debug
- *  node will be ignored: warnings will be printed at all nodes if they occure.
+ *  node will be ignored: warnings will be printed at all nodes if they occur.
  *
  *
  * \param prefix The value of \ref PNMPI_MESSAGE_PREFIX.
- * \param function Function where the error occured.
- * \param line Line where the error occured.
+ * \param function Function where the error occurred.
+ * \param line Line where the error occurred.
  * \param format Printf-like format string.
  * \param ... Arguments to be evaluated.
  *

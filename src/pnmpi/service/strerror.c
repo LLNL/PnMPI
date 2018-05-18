@@ -51,6 +51,7 @@ const char *PNMPI_Service_strerror(PNMPI_status_t err)
   switch (err)
     {
     case PNMPI_SUCCESS: return "Success";
+    case PNMPI_FAILURE: return "Failure";
     case PNMPI_NOMEM: return "Can't allocate memory";
     case PNMPI_NOMODULE: return "Module not found";
     case PNMPI_NOSERVICE: return "Service not found";
@@ -58,6 +59,7 @@ const char *PNMPI_Service_strerror(PNMPI_status_t err)
     case PNMPI_SIGNATURE: return "Signatures don't match";
     case PNMPI_NOARG: return "Argument not found";
     case PNMPI_NOSTACK: return "Stack not found";
+    case PNMPI_NOT_IMPLEMENTED: return "Service not implemented";
 
     default: return "Unknown";
     }

@@ -124,7 +124,7 @@ if [ -n "$CI" ]
 then
   travis_fold script.0 'Preparation' 'mkdir travis; cd travis'
 
-# If the 'CI' environment variable is not availble, this script is run
+# If the 'CI' environment variable is not available, this script is run
 # interactively. Gather some information about the system, which would be
 # provided by Travis if run in CI.
 else

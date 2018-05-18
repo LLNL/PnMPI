@@ -31,6 +31,7 @@
 #ifndef PNMPI_CORE_H
 #define PNMPI_CORE_H
 
+
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -40,9 +41,8 @@
 
 #include "pnmpi.h"
 #include "pnmpimod.h"
-#include <mpi.h>
-
 #include "wrapper.h"
+#include <mpi.h>
 #include <pnmpi/private/tls.h>
 
 
@@ -119,11 +119,16 @@ typedef struct modules_d
 extern modules_t modules;
 
 // extern int pnmpi_level;
-extern int pnmpi_mpi_level; /**< Is used to control recursive wrapping of MPI
-                               calls, right now we only use it for MPI_X calls
-                               that are triggered be MPI_Finalize (as these
-                               really hurt as we shut down our tools already in
-                               that case).*/
+extern pnmpi_compiler_tls_keyword int pnmpi_mpi_level;
+/**< Is used to control recursive wrapping of MPI calls, right now we only use
+ *   it for MPI_X calls that are triggered be MPI_Finalize (as these really hurt
+ *   as we shut down our tools already in that case).
+ *
+ * \note Although the application should call \ref MPI_Init_thread and \ref
+ *  MPI_Finalize in the master thread only, background tasks might call MPI
+ *  functions when the main thread is calling \ref MPI_Finalize. To not get
+ *  undefined behaviour in these threads, this variable needs to be thread safe.
+ */
 
 /** \brief \ref pnmpi_level is used to store the current level of MPI calls.
  */
