@@ -59,33 +59,11 @@
   #define PNMPI_F_STATUS_SIZE 6
 #endif
 
-/* Define if mpi.h has MPI_Status_c2f() and MPI_Status_f2c() */
-#cmakedefine HAVE_MPI_STATUS_C2F 1
-
-/* Define if mpi.h has MPI_STATUS_IGNORE */
-#cmakedefine HAVE_MPI_STATUS_IGNORE 1
-
-/* Define if mpi.h has MPI_STATUSES_IGNORE */
-#cmakedefine HAVE_MPI_STATUSES_IGNORE 1
-
-/* Define if mpi.h has MPI_F_STATUS_IGNORE */
-#cmakedefine HAVE_MPI_F_STATUS_IGNORE 1
-
-/* Define if mpi.h has MPI_F_STATUSES_IGNORE */
-#cmakedefine HAVE_MPI_F_STATUSES_IGNORE 1
-
 /* Define if mpi.h has working MPI_Init_thread (Fortran)*/
 #cmakedefine HAVE_MPI_INIT_THREAD_Fortran 1
 
 /* Define if mpi.h has working MPI_Init_thread (C)*/
 #cmakedefine HAVE_MPI_INIT_THREAD_C 1
-
-/* Define if PMPI_Type_create_indexed_block is available - fix for MVAPICH1 issue */
-#cmakedefine HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK 1
-
-#ifndef HAVE_PMPI_TYPE_CREATE_INDEXED_BLOCK
-#define PNMPI_MVAPICH1FIX 1
-#endif
 
 
 #endif // PNMPI_CONFIG_H
