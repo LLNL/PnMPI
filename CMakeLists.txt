@@ -152,9 +152,6 @@ find_package(Sanitizers)
 # printed only once.
 find_package(C11 OPTIONAL_COMPONENTS ATOMICS THREAD_LOCAL)
 
-# Run feature tests
-include(FeatureTests)
-
 
 #===================================
 # Recurse to sub-directories

@@ -59,11 +59,5 @@
   #define PNMPI_F_STATUS_SIZE 6
 #endif
 
-/* Define if mpi.h has working MPI_Init_thread (Fortran)*/
-#cmakedefine HAVE_MPI_INIT_THREAD_Fortran 1
-
-/* Define if mpi.h has working MPI_Init_thread (C)*/
-#cmakedefine HAVE_MPI_INIT_THREAD_C 1
-
 
 #endif // PNMPI_CONFIG_H
