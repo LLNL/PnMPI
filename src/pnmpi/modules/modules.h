@@ -32,7 +32,10 @@
 #define PNMPI_PRIVATE_MODULES_H
 
 
+#include <pnmpi/private/attributes.h>
 #include <pnmpi/service.h>
+
+#include "core.h"
 
 
 /** \brief Enum to control different modes of hook functions.
@@ -50,9 +53,26 @@ enum pnmpi_call_hook_mode
 };
 
 
-void pnmpi_modules_unload(void);
+/** \brief Check if \p handle is a valid module handle.
+ *
+ *
+ * \param handle Module handle to be checked.
+ *
+ * \return If \p handle is a valid module handle, a positive integer will be
+ *  returned, otherwise zero.
+ *
+ *
+ * \private
+ */
+PNMPI_UNUSED
+static int pnmpi_valid_modhandle(const PNMPI_modHandle_t handle)
+{
+  return (handle >= 0 && handle < modules.num &&
+          !modules.module[handle]->stack_delimiter);
+}
 
-int pnmpi_valid_modhandle(const PNMPI_modHandle_t);
+
+void pnmpi_modules_unload(void);
 
 int pnmpi_hook_activated(const char *hook,
                          enum pnmpi_call_hook_mode all_modules);

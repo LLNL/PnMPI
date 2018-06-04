@@ -57,8 +57,7 @@ include_directories(
 easy_add_library(pnmpi_modules OBJECT
   call_hook.c
   hook_activated.c
-  unload.c
-  valid_modhandle.c)
+  unload.c)
 
 foreach (target pnmpi_modules pnmpi_modules_pic)
   add_dependencies(${target} generate)
