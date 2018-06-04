@@ -82,7 +82,8 @@ void pnmpi_initialize(void)
  * \private
  */
 PNMPI_INTERNAL
-__attribute__((constructor)) void pnmpi_constructor(int argc, char **argv)
+__attribute__((constructor)) void pnmpi_constructor(PNMPI_UNUSED int argc,
+                                                    PNMPI_UNUSED char **argv)
 {
   pnmpi_initialize();
 }
