@@ -30,7 +30,6 @@
 include(CheckFortranMPIFunctionExists)
 include(CheckMPIFunctionExists)
 include(easylib)
-include(PnMPI_headers)
 
 
 # Feature checks.
@@ -53,6 +52,17 @@ if (C11_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C11_FLAGS}")
 endif ()
 
+
+# Include common include directories.
+#
+# Instead of including the same directories in the recursive directories, the
+# common ones will be included before recursing for sharing.
+include_directories(
+  ${PROJECT_BINARY_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${MPI_C_INCLUDE_PATH}
+)
 
 # Recurse into subdirectories.
 #
@@ -220,11 +230,3 @@ install(
   EXPORT pnmpi-libs
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/PnMPI
 )
-
-# Extra directories to include from when building.
-include_directories(
-  ${PROJECT_BINARY_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PNMPI_HEADER_DIR}
-  ${MPI_C_INCLUDE_PATH})

@@ -27,6 +27,17 @@
 #
 # LLNL-CODE-402774
 
+include(PnMPI_headers)
+
+
+# Include common include directories.
+#
+# As almost all source code files need any kind of PnMPI header to be included,
+# the common PnMPI header path will be included for all subdirectories instead
+# of including the path independently in all paths.
+include_directories(${PNMPI_HEADER_DIR})
+
+
 add_subdirectory(modules)
 add_subdirectory(patch)
 add_subdirectory(pnmpi)

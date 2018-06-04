@@ -47,13 +47,6 @@ pnmpi_add_man(pnmpi_module_hooks PNMPI_AppStartup)
 pnmpi_add_man(pnmpi_module_hooks PNMPI_AppShutdown)
 
 
-include_directories(
-  ${PNMPI_HEADER_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/..
-  ${CMAKE_CURRENT_BINARY_DIR}/..
-  ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})
-
 easy_add_library(pnmpi_modules OBJECT
   call_hook.c
   hook_activated.c

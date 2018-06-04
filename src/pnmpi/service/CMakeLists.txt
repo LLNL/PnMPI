@@ -62,14 +62,6 @@ pnmpi_add_man(PNMPI_Service_strerror "")
 pnmpi_add_man(PNMPI_status_t "")
 
 
-include_directories(
-  ${PNMPI_HEADER_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/..
-  ${CMAKE_CURRENT_BINARY_DIR}/..
-  ${PROJECT_BINARY_DIR}
-  ${MPI_C_INCLUDE_PATH})
-
-
 easy_add_library(pnmpi_service OBJECT
   callHook.c
   changeStack.c

@@ -37,7 +37,6 @@ endif ()
 
 
 include(GNUInstallDirs)
-include(PnMPI_headers)
 
 find_package(argp REQUIRED)
 find_package(help2man)
@@ -71,9 +70,7 @@ configure_file(config.h.in config.h)
 
 
 # Include all required directories.
-include_directories(
-  ${PNMPI_HEADER_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Build and install PnMPIze.

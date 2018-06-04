@@ -35,7 +35,6 @@ if (NOT ENABLE_MODULES)
 endif ()
 
 
-include(PnMPI_headers)
 include(PnMPI_modules)
 include(GNUInstallDirs)
 
@@ -74,7 +73,6 @@ set(PnMPI_MODULES_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/pnmpi-modules"
 # Include directories for all modules.
 include_directories(
   ${MPI_C_INCLUDE_PATH}
-  ${PNMPI_HEADER_DIR}
 )
 
 

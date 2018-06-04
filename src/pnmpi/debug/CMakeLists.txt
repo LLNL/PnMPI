@@ -55,11 +55,6 @@ pnmpi_add_man(pnmpi_debug_io PNMPI_Warning)
 pnmpi_add_man(pnmpi_debug_io PNMPI_Error)
 
 
-include_directories(
-  ${PNMPI_HEADER_DIR}
-  ${MPI_C_INCLUDE_PATH})
-
-
 easy_add_library(pnmpi_debug OBJECT
   get_rank.c
   print_debug.c
