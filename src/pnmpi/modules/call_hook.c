@@ -51,10 +51,16 @@
  * \private
  */
 PNMPI_INTERNAL
-void pnmpi_call_hook(const char *hook, enum pnmpi_call_hook_mode all_modules,
-                     PNMPI_modHandle_t start_level)
+void pnmpi_call_hook(const char *hook,
+                     const enum pnmpi_call_hook_mode all_modules,
+                     const PNMPI_modHandle_t start_level)
 {
   assert(hook);
+
+  /* NOTE: start_level will NOT be checked to be a valid modhandle, as a valid
+   *       usecase is to call this function at the bottom of a stack with
+   *       'current level + 1' as start_level. The for-loop below will take care
+   *       of using just valid handles. */
 
 
   PNMPI_Debug(PNMPI_DEBUG_MODULE, "Checking for %s hook in %s.\n", hook,

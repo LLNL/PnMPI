@@ -65,7 +65,10 @@ PNMPI_status_t PNMPI_Service_GetServiceByName(const PNMPI_modHandle_t handle,
   assert(dest);
 
   /* Check, if module is available and return an error code, if it's not
-   * available. */
+   * available.
+   *
+   * NOTE: This check will NOT be disabled for PNMPI_NO_DEBUG, as it's essential
+   *       for accessing the module by ID below. */
   if (!pnmpi_valid_modhandle(handle))
     return PNMPI_NOMODULE;
 

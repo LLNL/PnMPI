@@ -217,6 +217,7 @@ int PNMPI_Service_GetPcontrolSelf(void);
  *
  * \header{pnmpi/service.h}
  */
+PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr);
 
 /** \defgroup PNMPI_Service_CallHook PNMPI_Service_CallHook

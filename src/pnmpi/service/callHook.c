@@ -74,7 +74,8 @@ void PNMPI_Service_CallHook(const char *hook)
  *
  * \ingroup PNMPI_Service_CallHook
  */
-void PNMPI_Service_CallHook_NewStack(const char *hook, PNMPI_modHandle_t stack)
+void PNMPI_Service_CallHook_NewStack(const char *hook,
+                                     const PNMPI_modHandle_t stack)
 {
   assert(hook);
 

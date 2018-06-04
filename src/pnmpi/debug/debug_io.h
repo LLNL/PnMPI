@@ -205,7 +205,7 @@ PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_FUNCTION_ARG_NONNULL(2)
 PNMPI_FUNCTION_ARG_NONNULL(4)
 PNMPI_FUNCTION_NORETURN
-void pnmpi_print_error(const char *prefix, const char *function, const int line,
+void pnmpi_print_error(const char *prefix, const char *function, int line,
                        const char *format, ...);
 
 PNMPI_FUNCTION_PRINTF(1, 2)

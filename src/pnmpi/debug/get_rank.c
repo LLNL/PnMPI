@@ -49,10 +49,10 @@
 PNMPI_INTERNAL
 int pnmpi_get_rank(void)
 {
+  /* Use the following variable as cache for the rank of this process. If the
+   * rank was cached by a call before, return the cached result instead of
+   * making a new lookup. */
   static int rank = -1;
-
-  /* If the rank was cached by a call before, return the cached result instead
-   * of making a new lookup. */
   if (rank != -1)
     return rank;
 

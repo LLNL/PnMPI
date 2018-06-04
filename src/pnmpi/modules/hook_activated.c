@@ -51,7 +51,7 @@
  */
 PNMPI_INTERNAL
 int pnmpi_hook_activated(const char *hook,
-                         enum pnmpi_call_hook_mode all_modules)
+                         const enum pnmpi_call_hook_mode all_modules)
 {
   size_t i;
   for (i = (all_modules == PNMPI_CALL_HOOK_ALL_MODULES) ? 0 : pnmpi_level;

@@ -45,7 +45,7 @@
  *
  * \ingroup PNMPI_Service_GetStackByName
  */
-PNMPI_status_t PNMPI_Service_ChangeStack(PNMPI_modHandle_t stack)
+PNMPI_status_t PNMPI_Service_ChangeStack(const PNMPI_modHandle_t stack)
 {
   pnmpi_level = stack;
   return PNMPI_SUCCESS;
