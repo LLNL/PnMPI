@@ -66,8 +66,11 @@ endmacro()
 # Use a common path where the PnMPI modules get installed. Modules should use
 # this variable instead of hardcoding a path. Similar modules may be grouped
 # in subdirectories.
+#
+# NOTE: The FORCE parameter is required, so the path gets regenerated, if the
+#       CMAKE_INSTALL_PREFIX changes.
 set(PnMPI_MODULES_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/pnmpi-modules"
-                      CACHE PATH "PnMPI module install path")
+                      CACHE PATH "PnMPI module install path" FORCE)
 
 
 # Include directories for all modules.
