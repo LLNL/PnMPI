@@ -137,7 +137,7 @@ set(PnMPI_Fortran_STATIC_LIBRARIES pnmpif_static CACHE INTERNAL "")
 # PnMPI specific binaries.
 set(PnMPI_PATCHER pnmpi-patch CACHE INTERNAL "")
 if (PnMPI_PnMPIze_FOUND)
-  set(PnMPI_PnMPIze pnmpize CACHE INTERNAL "")
+  set(PnMPI_PnMPIze pnmpi CACHE INTERNAL "")
 endif ()
 
 
