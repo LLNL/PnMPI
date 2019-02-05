@@ -33,7 +33,7 @@ cmake_minimum_required(VERSION 2.8.11.2)
 #===================================
 # Policies
 #===================================
-foreach (POL CMP0017 CMP0042 CMP0051)
+foreach (POL CMP0017 CMP0042 CMP0051 CMP0074)
   if (POLICY ${POL})
     cmake_policy(SET ${POL} NEW)
   endif ()

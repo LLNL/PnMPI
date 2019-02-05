@@ -32,7 +32,16 @@
 #
 # NOTE: Other packages need to be searched before this package is initialized,
 #       as other packages may overwrite the PACKAGE_PREFIX_DIR of this package.
+
+IF (POLICY CMP0074)
+        CMAKE_POLICY(PUSH)
+        #if MPI_ROOT is set, use it for finding MPI
+        CMAKE_POLICY(SET CMP0074 NEW) 
+ENDIF ()
 find_package(MPI REQUIRED)
+IF (POLICY CMP0074)
+        CMAKE_POLICY(POP)
+ENDIF ()
 
 
 @PACKAGE_INIT@
