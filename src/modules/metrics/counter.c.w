@@ -44,7 +44,7 @@
 #include <pnmpi/private/pmpi_assert.h>
 #include <pnmpi/xmpi.h>
 
-#include "atomic.h"
+#include "pnmpi-atomic.h"
 
 
 /* If there is no atomic support, we'll limit the threading level of this module

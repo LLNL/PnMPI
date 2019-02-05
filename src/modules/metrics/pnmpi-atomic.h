@@ -73,7 +73,7 @@
 #else
 
 #define METRIC_NO_ATOMIC
-#define metric_atomic_keyword
+#define metric_atomic_keyword volatile
 #define metric_atomic_init(value) value
 #define metric_atomic_inc(var) ++var;
 #define metric_atomic_dec(var) --var;

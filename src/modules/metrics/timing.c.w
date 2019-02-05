@@ -39,7 +39,7 @@
 #include <pnmpi/service.h>
 #include <pnmpi/xmpi.h>
 
-#include "atomic.h"
+#include "pnmpi-atomic.h"
 
 
 /* If there is no atomic support or no thread local storage support, we'll limit
