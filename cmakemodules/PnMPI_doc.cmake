@@ -29,8 +29,6 @@
 
 include(GNUInstallDirs)
 
-find_package(ln REQUIRED)
-
 
 ## \brief Add a man page for Doxygen \p MODULE with \p SYMBOL as symlink.
 #
@@ -73,7 +71,7 @@ function (pnmpi_add_man MODULE SYMBOL)
         endif ()
 
         if (install_link)
-          execute_process(COMMAND ${LN} -fs ${LINK_TARGET} ${INSTALL_FILE})
+          execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${LINK_TARGET} ${INSTALL_FILE})
           message(STATUS \"Installing: ${INSTALL_FILE}\")
         else ()
           message(STATUS \"Up-to-date: ${INSTALL_FILE}\")
