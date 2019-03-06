@@ -48,7 +48,6 @@
 #include <stdatomic.h>
 
 #define metric_atomic_keyword _Atomic
-#define metric_atomic_init(value) ATOMIC_VAR_INIT(value)
 #define metric_atomic_inc(var) ++var;
 #define metric_atomic_dec(var) --var;
 #define metric_atomic_add(var, value) var += value;
@@ -56,7 +55,6 @@
 #elif defined(BUILTINATOMIC_FOUND)
 
 #define metric_atomic_keyword
-#define metric_atomic_init(value) value
 #define metric_atomic_inc(var) __atomic_add_fetch(&(var), 1, __ATOMIC_SEQ_CST)
 #define metric_atomic_dec(var) __atomic_sub_fetch(&(var), 1, __ATOMIC_SEQ_CST)
 #define metric_atomic_add(var, value) \
@@ -65,7 +63,6 @@
 #elif defined(BUILTINSYNC_FOUND)
 
 #define metric_atomic_keyword
-#define metric_atomic_init(value) value
 #define metric_atomic_inc(var) __sync_add_and_fetch(&(var), 1)
 #define metric_atomic_dec(var) __sync_sub_and_fetch(&(var), 1)
 #define metric_atomic_add(var, value) __sync_fetch_and_add(&(var), value)
@@ -74,7 +71,6 @@
 
 #define METRIC_NO_ATOMIC
 #define metric_atomic_keyword volatile
-#define metric_atomic_init(value) value
 #define metric_atomic_inc(var) ++var;
 #define metric_atomic_dec(var) --var;
 #define metric_atomic_add(var, value) var += value;

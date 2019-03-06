@@ -59,7 +59,7 @@ static struct timing_storage
   {{forallfn fn_name}}
   metric_atomic_keyword timing_t {{fn_name}};
   {{endforallfn}}
-} timing_storage;
+} timing_storage = { 0 };
 
 
 /** \brief Global variable to store how often this module was invoked.
@@ -70,8 +70,7 @@ metric_atomic_keyword size_t metric_invocations = metric_atomic_init(0);
 /** \brief Global variable to store how often this module was invoked with
  *   Pcontrol enabled.
  */
-metric_atomic_keyword size_t metric_invocations_pcontrol =
-  metric_atomic_init(0);
+metric_atomic_keyword size_t metric_invocations_pcontrol = 0;
 
 
 /** \brief Helper function to print \ref timing_storage struct.
@@ -91,29 +90,12 @@ static void print_counters(struct timing_storage *t)
 }
 
 
-/** \brief Helper function to initialize counter struct.
- *
- * \details This function will set all counters in \p counter to zero.
- *
- *
- * \param t \ref timing_struct to be initialized.
- */
-static void init_counters(struct timing_storage *t)
-{
-  {{forallfn fn_name}}
-  t->{{fn_name}} = metric_atomic_init(0);
-  {{endforallfn}}
-}
-
-
 /** \brief PnMPI module initialization hook.
  *
  * \details This function sets all counters to zero and initializes the module.
  */
 void PNMPI_Init()
 {
-  init_counters(&timing_storage);
-
   /* The timing statics should be printed after all MPI_Finalize calls of the
    * following PnMPI levels and stacks have been finished. As the timers may be
    * invoked at different levels to track only some of the PnMPI levels, we have
@@ -278,8 +260,7 @@ int MPI_Finalize()
    * These will be summed up for the total counters printed below, to cache the
    * counters instead of using a reduction for receiving the counters of all
    * ranks a second time. */
-  struct counter tmp;
-  init_counters(&tmp);
+  struct counter tmp = { 0 };
   int n;
   for (n = 1; n < size; n++)
     {

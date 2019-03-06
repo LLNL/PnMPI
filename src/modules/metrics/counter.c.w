@@ -64,7 +64,7 @@ static struct counter
   {{forallfn fn_name MPI_Finalize}}
   metric_atomic_keyword size_t {{fn_name}};
   {{endforallfn}}
-} counters;
+} counters = { 0 };
 
 
 /** \brief Helper function to print counter struct.
@@ -81,31 +81,6 @@ static void print_counters(struct counter *c)
   if (c->{{fn_name}} > 0)
     printf("  %8zu %s\n", c->{{fn_name}}, "{{fn_name}}");
   {{endforallfn}}
-}
-
-
-/** \brief Helper function to initialize counter struct.
- *
- * \details This function will set all counters in \p counter to zero.
- *
- *
- * \param c \ref counter struct to be initialized.
- */
-static void init_counters(struct counter *c)
-{
-  {{forallfn fn_name MPI_Finalize}}
-  c->{{fn_name}} = metric_atomic_init(0);
-  {{endforallfn}}
-}
-
-
-/** \brief PnMPI module initialization hook.
- *
- * \details This function sets all counters to zero.
- */
-void PNMPI_Init()
-{
-  init_counters(&counters);
 }
 
 
@@ -177,8 +152,7 @@ int MPI_Finalize()
    * These will be summed up for the total counters printed below, to cache the
    * counters instead of using a reduction for receiving the counters of all
    * ranks a second time. */
-  struct counter tmp;
-  init_counters(&tmp);
+  struct counter tmp = { 0 };
   int n;
   for (n = 1; n < size; n++)
     {
