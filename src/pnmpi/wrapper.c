@@ -1350,4 +1350,8 @@ double mpi_wtime__(void)
 /*-------------------------------------------------------------------*/
 /* The End. */
 
+#ifdef COMPILE_FOR_FORTRAN
+#include "wrapper_cf.c"
+#else
 #include "wrapper_c.c"
+#endif
