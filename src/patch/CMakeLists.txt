@@ -29,7 +29,15 @@
 
 include(GNUInstallDirs)
 
-find_package(BFD)
+
+# Search for libbfd.
+#
+# NOTE: This tends to break all the time, so it's disabled by default. Using
+#       libbfd may be deprecated in future releases.
+option(PNMPI_ENABLE_BFD "Should the PnMPI patcher use libbfd?" OFF)
+if (PNMPI_ENABLE_BFD)
+  find_package(BFD)
+endif ()
 
 
 # Generate the patcher's configuration.
