@@ -99,12 +99,14 @@ pnmpi_add_private_header(force_link.h)
 pnmpi_add_private_header(initialization.h)
 
 
-if (ENABLE_FORTRAN)
-  set(WRAP_FORTRAN_FLAGS "-f")
-endif ()
-
 add_wrapped_file(wrapper.h   wrapper.h.w -w)
-add_wrapped_file(wrapper_c.c wrapper_c.c.w ${WRAP_FORTRAN_FLAGS} -w)
+add_wrapped_file(wrapper_c.c wrapper_c.c.w -w)
+
+set(PNMPI_ADDITIONAL_FILES "")
+if (ENABLE_FORTRAN)
+  set(PNMPI_ADDITIONAL_FILES "${CMAKE_CURRENT_BINARY_DIR}/wrapper_cf.c")
+  add_wrapped_file(wrapper_cf.c wrapper_c.c.w -f -w)
+endif ()
 
 
 # Add a new target for all generated files. This can be referenced as dependency
@@ -114,7 +116,8 @@ add_custom_target(generate DEPENDS
   ${PNMPI_HEADER_DIR}/pnmpi/newstack.h
   ${PNMPI_HEADER_DIR}/pnmpi/xmpi.h
   ${CMAKE_CURRENT_BINARY_DIR}/wrapper_c.c
-  ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h)
+  ${CMAKE_CURRENT_BINARY_DIR}/wrapper.h
+  ${PNMPI_ADDITIONAL_FILES})
 
 
 # Add linkage to adept utils if we have it
@@ -141,10 +144,6 @@ set(PNMPI_LIB_SOURCES
   $<TARGET_OBJECTS:pnmpi_service>
   $<TARGET_OBJECTS:pnmpi_wrapper>
 )
-
-if (ENABLE_FORTRAN)
-  list(APPEND PNMPI_LIB_SOURCES ${Wrap_EXTRA_SOURCE})
-endif ()
 
 
 # PnMPI shared library
@@ -183,6 +182,8 @@ install(TARGETS pnmpi_static pnmpi EXPORT pnmpi-libs DESTINATION lib)
 # Fortran support (If Fortran was enabled)
 #
 if (CMAKE_Fortran_COMPILER_WORKS)
+  list(APPEND PNMPI_LIB_SOURCES ${Wrap_EXTRA_SOURCE})
+
   # PnMPI fortran shared library
   easy_add_library(pnmpif SHARED ${PNMPI_LIB_SOURCES})
   add_coverage(pnmpif)

@@ -39,14 +39,24 @@
 #include "config.h"
 
 
-/* Define the P^nMPI library to use for preloading. If Fortran is supported, the
- * Fortran PnMPI will be used, thus it covers C and Fortran. In any other case
- * the C library will be used, so Fortran binaries can't be executed with
- * preloaded P^nMPI. */
-#ifdef ENABLE_FORTRAN
-#define PNMPI_LIBRARY_NAME "libpnmpif"
+/**
+ * The extension of the PnMPI library.
+ *
+ * Usually the extension of libraries is `.so`. However, at macOS it's `.dylib`.
+ */
+#ifndef __APPLE__
+#define LIB_EXTENSION ".so"
 #else
-#define PNMPI_LIBRARY_NAME "libpnmpi"
+#define LIB_EXTENSION ".dylib"
+#endif
+
+
+/* Define the P^nMPI library to use for preloading. By default this is the PnMPI
+ * core library including the C-interface. However, the user may choice to load
+ * the Fortran wrapper instead. */
+#define PNMPI_LIBRARY_NAME "libpnmpi" LIB_EXTENSION
+#ifdef ENABLE_FORTRAN
+#define PNMPI_FORTRAN_LIBRARY_NAME "libpnmpif" LIB_EXTENSION
 #endif
 
 
@@ -62,6 +72,18 @@
  */
 #define DEFAULT_FALLBACK_LIBRARY_PATH PNMPIZE_SEARCH_PATHS
 #endif
+
+
+/**
+ * Whether the PnMPI library has already been loaded.
+ *
+ * At the moment, the Fortran PnMPI wrapper includes the full PnMPI library.
+ * Therefore, the C wrapper must not be loaded in addition to avoid the
+ * constructors being called twice. This variable will be set to a value that
+ * equals true (i.e. is not zero), so other parts of PnMPIze can check the
+ * status of loading any interface of PnMPI.
+ */
+int pnmpi_library_loaded = 0;
 
 
 /* Configure argp.
@@ -94,6 +116,14 @@ static struct argp_option options[] = {
                                   "levels init and modules." },
   { "quiet", 'q', 0, 0, "Don't produce any output" },
   { "silent", 's', 0, OPTION_ALIAS },
+
+#ifdef ENABLE_FORTRAN
+  { "fortran", 'f', 0, 0, "Use the PnMPI Fortran wrapper. Usually this option "
+                          "is not required, as most Fortran MPI "
+                          "implementations redirect the calls to the C MPI "
+                          "interface." },
+#endif
+
   { 0 }
 };
 
@@ -247,6 +277,35 @@ static char *find_library(const char *library)
 #endif
 
 
+/**
+ * Preload a specific library.
+ *
+ *
+ * @param library The library to be preloaded.
+ */
+static void preload_library(const char *library)
+{
+#ifdef __APPLE__
+  /* For apple systems, add the library to DYLD_INSERT_LIBRARIES, the macOS
+   * version of LD_PRELOAD. DYLD_FORCE_FLAT_NAMESPACE has to be set, to get all
+   * symbols in the same namespace. Otherwise P^nMPI and libmpi won't see each
+   * other and no preloading will happen. */
+  char *lib = find_library(library);
+  appendenv("DYLD_INSERT_LIBRARIES", lib, 0);
+  setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
+  free(lib);
+
+#else
+  /* For other systems (Linux and other UNIX platforms), add the library to
+   * LD_PRELOAD to load P^nMPI in front of libmpi. No path to the shared object,
+   * but just the filename is required, as the dynamic loader searches in the
+   * LD_LIBRARY_PATH for this file. */
+  appendenv("LD_LIBRARY_PATH", PNMPI_LIBRARY_PATH, 0);
+  appendenv("LD_PRELOAD", library, 0);
+#endif
+}
+
+
 /** \brief Argument parser for argp.
  *
  * \note See argp parser documentation for detailed information about the
@@ -264,6 +323,13 @@ static error_t parse_arguments(int key, char *arg, struct argp_state *state)
     case 's':
       setenv("PNMPI_BE_SILENT", "1", 1);
       break;
+
+#ifdef ENABLE_FORTRAN
+    case 'f':
+        preload_library(PNMPI_FORTRAN_LIBRARY_NAME);
+        pnmpi_library_loaded = 1;
+        break;
+#endif
 
     /* If we have parsed all options, iterate through all non-options in argv.
      * If at there are no non-options in our arguments (argv), the user
@@ -292,24 +358,16 @@ int main(int argc, char **argv)
   int ind;
   argp_parse(&argp, argc, argv, ARGP_IN_ORDER, &ind, NULL);
 
-#ifdef __APPLE__
-  /* For apple systems, add libpnmpif to DYLD_INSERT_LIBRARIES, the apple ver-
-   * sion of LD_PRELOAD. DYLD_FORCE_FLAT_NAMESPACE has to be set, to get all
-   * symbols in the same namespace. Otherwise P^nMPI and libmpi won't see each
-   * other and no preloading will happen. */
-  char *lib = find_library(PNMPI_LIBRARY_NAME ".dylib");
-  appendenv("DYLD_INSERT_LIBRARIES", lib, 0);
-  setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
-  free(lib);
-
-#else
-  /* For other systems (Linux and other UNIX platforms), add the P^nMPI library
-   * to LD_PRELOAD to load P^nMPI in front of libmpi. No path to the shared
-   * object, but just the filename is required, as LD_PRELOAD searches in the
-   * LD_LIBRARY_PATH for this file. */
-  appendenv("LD_LIBRARY_PATH", PNMPI_LIBRARY_PATH, 0);
-  appendenv("LD_PRELOAD", PNMPI_LIBRARY_NAME ".so", 0);
-#endif
+  /* Load the PnMPI core (i.e. the C-interface and the configuration logic).
+   *
+   * NOTE: If PnMPI gets splitted into a core implementation (i.e. the current C
+   *       interface) and additional language-specific wrappers redirecting to
+   *       the C-interface only, just remove the if-clause and everything should
+   *       be fine.*/
+  if (!pnmpi_library_loaded) {
+    preload_library(PNMPI_LIBRARY_NAME);
+    pnmpi_library_loaded = 1;
+  }
 
   /* Execute the utility. If the utility could be started, PnMPIze will exit
    * here. In any other case, the following error processing will be called. */
