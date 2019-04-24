@@ -1,9 +1,9 @@
 C This file is part of P^nMPI.
 C
 C Copyright (c)
-C  2008-2018 Lawrence Livermore National Laboratories, United States of America
+C  2008-2019 Lawrence Livermore National Laboratories, United States of America
 C  2011-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
-C  2013-2018 RWTH Aachen University, Federal Republic of Germany
+C  2013-2019 RWTH Aachen University, Federal Republic of Germany
 C
 C
 C P^nMPI is free software; you can redistribute it and/or modify it under the

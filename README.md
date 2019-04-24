@@ -819,10 +819,10 @@ For more information or in case of questions, please contact
 
 Copyright
 ===========
-Copyright &copy; 2008-2018 Lawrence Livermore National Security, LLC.<br/>
+Copyright &copy; 2008-2019 Lawrence Livermore National Security, LLC.<br/>
 Copyright &copy; 2011-2016 ZIH, Technische Universitaet Dresden, Federal
 Republic of Germany<br/>
-Copyright &copy; 2013-2018 RWTH Aachen University, Federal Republic of Germany
+Copyright &copy; 2013-2019 RWTH Aachen University, Federal Republic of Germany
 
 All rights reserved - please read the information in the [LICENSE](LICENSE)
 file.
