@@ -28,15 +28,14 @@
  * LLNL-CODE-402774
  */
 
-#ifndef PNMPI_PRIVATE_RETURN_ADDRESS_H
-#define PNMPI_PRIVATE_RETURN_ADDRESS_H
+#ifndef PNMPI_PRIVATE_FUNCTION_ADDRESS_H
+#define PNMPI_PRIVATE_FUNCTION_ADDRESS_H
 
 
 #include <stddef.h>
 
 #include <pnmpi/private/attributes.h>
 #include <pnmpi/private/tls.h>
-#include <pnmpi/private/function_address.h>
 
 
 /* The following macro will be defined, if CMake has successfully checked the
@@ -49,15 +48,12 @@
 #cmakedefine HAVE_BUILTIN_RETURN_ADDRESS
 
 
-extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
+extern pnmpi_compiler_tls_keyword void *pnmpi_function_address;
 
 
-/** \brief Store the return address of the application's MPI call.
+/** \brief Store the address of the application's MPI call.
  *
- * \note A macro needs to be used instead of a static function, otherwise the
- *  return address would be pointing to the calling PnMPI function.
- *
- * \note If the return address has already been set, a new value will NOT be
+ * \note If the address has already been set, a new value will NOT be
  *  stored. This is required for the Fortran wrapper redirections, as these call
  *  the C wrappers internal. Remember to reset the return address before exiting
  *  the wrapper.
@@ -68,41 +64,39 @@ extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
  *
  * \private
  */
-#if defined(DOXYGEN) || !defined(HAVE_BUILTIN_RETURN_ADDRESS)
-#define pnmpi_return_address_set(fun)
-#else
-#define pnmpi_return_address_set(fun)  \
-  if (pnmpi_return_address == NULL) \
-    pnmpi_return_address = __builtin_return_address(0); \
-  pnmpi_function_address_set(P##fun)
-#endif
+PNMPI_UNUSED
+static void pnmpi_function_address_set(void *addr)
+{
+  if (pnmpi_function_address == NULL)
+    pnmpi_function_address = (char*)addr;
+}
+
 
 
 /** \brief Get the return address.
  *
  *
- * \return The return address of the function call currently wrapped.
+ * \return The address of the function call currently wrapped.
  *
  *
  * \private
  */
 PNMPI_UNUSED
-static void *pnmpi_return_address_get(void)
+static void *pnmpi_function_address_get(void)
 {
-  return pnmpi_return_address;
+  return pnmpi_function_address;
 }
 
 
-/** \brief Reset the return address.
+/** \brief Reset the function address.
  *
  *
  * \private
  */
 PNMPI_UNUSED
-static void pnmpi_return_address_reset(void)
+static void pnmpi_function_address_reset(void)
 {
-  pnmpi_return_address = NULL;
-  pnmpi_function_address_reset();
+  pnmpi_function_address = NULL;
 }
 
 

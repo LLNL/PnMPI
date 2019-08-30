@@ -92,7 +92,7 @@
     {
     /* Store the return address to the application, so modules may check the
      * origin of this MPI call. */
-    pnmpi_return_address_set();
+    pnmpi_return_address_set({{fn_name}});
 
     WRAP_MPI_CALL_PREFIX
     {{ret_val}}=Internal_X{{fn_name}}({{args}});

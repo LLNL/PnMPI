@@ -220,6 +220,16 @@ int PNMPI_Service_GetPcontrolSelf(void);
 PNMPI_FUNCTION_ARG_NONNULL(1)
 PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr);
 
+/** \defgroup PNMPI_Service_GetFunctionAddress PNMPI_Service_GetFunctionAddress
+ *
+ * \details These functions may be used to query debug information of the
+ *  application's MPI call.
+ *
+ * \header{pnmpi/service.h}
+ */
+PNMPI_FUNCTION_ARG_NONNULL(1)
+PNMPI_status_t PNMPI_Service_GetFunctionAddress(void **ptr);
+
 /** \defgroup PNMPI_Service_CallHook PNMPI_Service_CallHook
  *
  * \details These functions may be used to call hooks recursively in other

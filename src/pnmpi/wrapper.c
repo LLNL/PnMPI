@@ -139,7 +139,7 @@ void mpi_init_(int *ierr)
 
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init);
 
 
   /* some code in here is taken from MPICH-1 */
@@ -222,7 +222,7 @@ void MPI_INIT(int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init);
 
   mpi_init_(ierr);
 }
@@ -237,7 +237,7 @@ void mpi_init(int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init);
 
   mpi_init_(ierr);
 }
@@ -252,7 +252,7 @@ void mpi_init__(int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init);
 
   mpi_init_(ierr);
 }
@@ -271,7 +271,7 @@ int MPI_Init(int *argc, char ***argv)
 
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init);
 
   /* Recurse into the MPI_Init wrapper. After the recursion reaches the bottom
    * of the stack, the real PMPI_Init will be called and its return status
@@ -423,7 +423,7 @@ void mpi_init_thread_(int *required, int *provided, int *ierr)
 
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init_thread);
 
 
   /* some code in here is taken from MPICH-1 */
@@ -507,7 +507,7 @@ void MPI_INIT_THREAD(int *required, int *provided, int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init_thread);
 
   mpi_init_thread_(required, provided, ierr);
 }
@@ -522,7 +522,7 @@ void mpi_init_thread(int *required, int *provided, int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init_thread);
 
   mpi_init_thread_(required, provided, ierr);
 }
@@ -537,7 +537,7 @@ void mpi_init_thread__(int *required, int *provided, int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init_thread);
 
   mpi_init_thread_(required, provided, ierr);
 }
@@ -558,7 +558,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Init_thread);
 
   /* Recurse into the MPI_Init wrapper. After the recursion reaches the bottom
    * of the stack, the real PMPI_Init will be called and its return status
@@ -649,7 +649,7 @@ int MPI_Finalize(void)
 
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Finalize);
 
 
   int err = MPI_ERR_UNKNOWN;
@@ -737,7 +737,7 @@ void mpi_finalize_(int *ierr)
 
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Finalize);
 
   *ierr = MPI_Finalize();
 
@@ -757,7 +757,7 @@ void MPI_FINALIZE(int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Finalize);
 
   mpi_finalize_(ierr);
 }
@@ -772,7 +772,7 @@ void mpi_finalize(int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Finalize);
 
   mpi_finalize_(ierr);
 }
@@ -787,7 +787,7 @@ void mpi_finalize__(int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Finalize);
 
   mpi_finalize_(ierr);
 }
@@ -838,7 +838,7 @@ int MPI_Pcontrol(int level, ...)
 {
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Pcontrol);
 
 #ifdef EXPERIMENTAL_UNWIND
   unw_context_t ctx;
@@ -1122,7 +1122,7 @@ void mpi_pcontrol_(int *level, int *ierr)
 {
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Pcontrol);
 
   int i, ret;
 
@@ -1174,7 +1174,7 @@ void MPI_PCONTROL(int *level, int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Pcontrol);
 
   mpi_pcontrol_(level, ierr);
 }
@@ -1189,7 +1189,7 @@ void mpi_pcontrol(int *level, int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Pcontrol);
 
   mpi_pcontrol_(level, ierr);
 }
@@ -1204,7 +1204,7 @@ void mpi_pcontrol__(int *level, int *ierr)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Pcontrol);
 
   mpi_pcontrol_(level, ierr);
 }
@@ -1216,7 +1216,7 @@ double mpi_wtick_(void)
 {
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   DBGPRINT3("Entering Old Fortran mpi_wtick_ at base level - Location = %px",
             &(MPI_Wtick));
@@ -1243,7 +1243,7 @@ double MPI_WTICK(void)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   return mpi_wtick_();
 }
@@ -1258,7 +1258,7 @@ double mpi_wtick(void)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   return mpi_wtick_();
 }
@@ -1273,7 +1273,7 @@ double mpi_wtick__(void)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   return mpi_wtick_();
 }
@@ -1283,7 +1283,7 @@ double mpi_wtime_(void)
 {
   /* Store the return address to the application, so modules may check the
    * origin of this MPI call. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   DBGPRINT3("Entering Old Fortran mpi_wtime_ at base level - Location = %px",
             &(MPI_Wtime));
@@ -1310,7 +1310,7 @@ double MPI_WTIME(void)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   return mpi_wtime_();
 }
@@ -1325,7 +1325,7 @@ double mpi_wtime(void)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   return mpi_wtime_();
 }
@@ -1340,7 +1340,7 @@ double mpi_wtime__(void)
    *       instead of the callee will be saved in the aliased function. However,
    *       as the aliased function resets the return address, this doesn't need
    *       to be done in this function anymore. */
-  pnmpi_return_address_set();
+  pnmpi_return_address_set(MPI_Wtick);
 
   return mpi_wtime_();
 }
