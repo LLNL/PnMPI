@@ -38,28 +38,15 @@
 #include <pnmpi/private/tls.h>
 
 
-/* The following macro will be defined, if CMake has successfully checked the
- * compiler has the builtin function __builtin_return_address().
- *
- * NOTE: Usually cmakefines should be placed in a separate header file. However,
- *       as this file is private and the macro will be used in this file and the
- *       related service function only, it'll be placed here.
- */
-#cmakedefine HAVE_BUILTIN_RETURN_ADDRESS
-
-
 extern pnmpi_compiler_tls_keyword void *pnmpi_function_address;
 
 
-/** \brief Store the address of the application's MPI call.
+/** \brief Store the address of the application's MPI function call.
  *
- * \note If the address has already been set, a new value will NOT be
+ * \note If the function address has already been set, a new value will NOT be
  *  stored. This is required for the Fortran wrapper redirections, as these call
- *  the C wrappers internal. Remember to reset the return address before exiting
- *  the wrapper.
- *
- * \note If the compiler doesn't support a builtin function to get the return
- *  address, this macro will be empty and no commands will be executed.
+ *  the C wrappers internal. Remember to reset the function address before
+ *  exiting the wrapper.
  *
  *
  * \private
@@ -68,15 +55,15 @@ PNMPI_UNUSED
 static void pnmpi_function_address_set(void *addr)
 {
   if (pnmpi_function_address == NULL)
-    pnmpi_function_address = (char*)addr;
+    pnmpi_function_address = (char *)addr;
 }
 
 
 
-/** \brief Get the return address.
+/** \brief Get the function address.
  *
  *
- * \return The address of the function call currently wrapped.
+ * \return The address of the original function call currently wrapped.
  *
  *
  * \private

@@ -46,10 +46,10 @@ check_c_source_compiles("
 # without getting conflicts about the used paths. Otherwise you'd have to take
 # care about file locations after installation, especially if you use the
 # headers over multiple directories.
+pnmpi_add_private_header(function_address.h)
 pnmpi_add_private_header(mpi_interface.h)
 pnmpi_add_private_header(mpi_reentry.h)
 pnmpi_add_private_header(return_address.h.in return_address.h)
-pnmpi_add_private_header(function_address.h.in function_address.h)
 
 easy_add_library(pnmpi_wrapper OBJECT
   mpi_interface.c

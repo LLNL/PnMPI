@@ -58,6 +58,7 @@ pnmpi_add_man(PNMPI_Service_GetPcontrol PNMPI_Service_GetPcontrolSelf)
 pnmpi_add_man(PNMPI_Service_CallHook "")
 pnmpi_add_man(PNMPI_Service_CallHook PNMPI_Service_CallHook_NewStack)
 pnmpi_add_man(PNMPI_Service_GetReturnAddress "")
+pnmpi_add_man(PNMPI_Service_GetReturnAddress PNMPI_Service_GetFunctionAddress)
 pnmpi_add_man(PNMPI_Service_strerror "")
 pnmpi_add_man(PNMPI_status_t "")
 
@@ -66,6 +67,7 @@ easy_add_library(pnmpi_service OBJECT
   callHook.c
   changeStack.c
   getArgument.c
+  getFunctionAddress.c
   getGlobalByName.c
   getModuleByName.c
   getModuleSelf.c

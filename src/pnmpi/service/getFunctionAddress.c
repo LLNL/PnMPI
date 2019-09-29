@@ -30,40 +30,29 @@
 
 #include <assert.h>
 
-#include <pnmpi/private/return_address.h>
+#include <pnmpi/private/function_address.h>
 #include <pnmpi/service.h>
 
 
-/** \brief Get the application's return address.
+/** \brief Get the MPI function address.
  *
- * \details When entering a wrapped MPI function, PnMPI will store the return
- *  address. Modules may use this address by calling this function to get the
- *  origin of the error.
+ * \details When entering a wrapped MPI function, PnMPI will store the address
+ *  of the original MPI function being wrapped. Modules may use this address by
+ *  calling this function to get the origin of the error.
  *
  *
- * \param [out] ptr Pointer where to store the return address.
+ * \param [out] ptr Pointer where to store the address.
  *
- * \return \ref PNMPI_SUCCESS The return address has been stored into \p ptr.
- * \return \ref PNMPI_NOT_IMPLEMENTED This service is not implemented.
+ * \return \ref PNMPI_SUCCESS The address has been stored into \p ptr.
  *
  *
  * \ingroup PNMPI_Service_GetReturnAddress
  */
-PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr)
+PNMPI_status_t PNMPI_Service_GetFunctionAddress(void **ptr)
 {
   assert(ptr);
 
 
-/* If the compiler does support accessing the return address, it has been saved
- * by accessing the PnMPI wrappers before. Copy the saved return address into
- * the pointer supported by the callee and return success.
- *
- * However, if the compiler doesn't, return an error status code to tell the
- * callee this feature isn't implemented. */
-#ifdef HAVE_BUILTIN_RETURN_ADDRESS
-  *ptr = pnmpi_return_address_get();
+  *ptr = pnmpi_function_address_get();
   return PNMPI_SUCCESS;
-#else
-  return PNMPI_NOT_IMPLEMENTED;
-#endif
 }
