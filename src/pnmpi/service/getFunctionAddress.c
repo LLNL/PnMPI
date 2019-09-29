@@ -53,6 +53,6 @@ PNMPI_status_t PNMPI_Service_GetFunctionAddress(void **ptr)
   assert(ptr);
 
 
-  *ptr = pnmpi_function_address_get();
+  *ptr = pnmpi_get_function_address();
   return PNMPI_SUCCESS;
 }

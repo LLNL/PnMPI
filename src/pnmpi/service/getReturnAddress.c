@@ -61,7 +61,7 @@ PNMPI_status_t PNMPI_Service_GetReturnAddress(void **ptr)
  * However, if the compiler doesn't, return an error status code to tell the
  * callee this feature isn't implemented. */
 #ifdef HAVE_BUILTIN_RETURN_ADDRESS
-  *ptr = pnmpi_return_address_get();
+  *ptr = pnmpi_get_return_address();
   return PNMPI_SUCCESS;
 #else
   return PNMPI_NOT_IMPLEMENTED;

@@ -69,9 +69,9 @@ extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
  * \private
  */
 #if defined(DOXYGEN) || !defined(HAVE_BUILTIN_RETURN_ADDRESS)
-#define pnmpi_return_address_set()
+#define pnmpi_set_return_address()
 #else
-#define pnmpi_return_address_set()  \
+#define pnmpi_set_return_address()  \
   if (pnmpi_return_address == NULL) \
     pnmpi_return_address = __builtin_return_address(0);
 #endif
@@ -86,7 +86,7 @@ extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
  * \private
  */
 PNMPI_UNUSED
-static void *pnmpi_return_address_get(void)
+static void *pnmpi_get_return_address(void)
 {
   return pnmpi_return_address;
 }
@@ -98,7 +98,7 @@ static void *pnmpi_return_address_get(void)
  * \private
  */
 PNMPI_UNUSED
-static void pnmpi_return_address_reset(void)
+static void pnmpi_reset_return_address(void)
 {
   pnmpi_return_address = NULL;
 }

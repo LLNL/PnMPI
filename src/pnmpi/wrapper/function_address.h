@@ -52,7 +52,7 @@ extern pnmpi_compiler_tls_keyword void *pnmpi_function_address;
  * \private
  */
 PNMPI_UNUSED
-static void pnmpi_function_address_set(void *addr)
+static void pnmpi_set_function_address(void *addr)
 {
   if (pnmpi_function_address == NULL)
     pnmpi_function_address = (char *)addr;
@@ -69,7 +69,7 @@ static void pnmpi_function_address_set(void *addr)
  * \private
  */
 PNMPI_UNUSED
-static void *pnmpi_function_address_get(void)
+static void *pnmpi_get_function_address(void)
 {
   return pnmpi_function_address;
 }
@@ -81,7 +81,7 @@ static void *pnmpi_function_address_get(void)
  * \private
  */
 PNMPI_UNUSED
-static void pnmpi_function_address_reset(void)
+static void pnmpi_reset_function_address(void)
 {
   pnmpi_function_address = NULL;
 }
