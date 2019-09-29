@@ -35,8 +35,8 @@
 #include <stddef.h>
 
 #include <pnmpi/private/attributes.h>
-#include <pnmpi/private/tls.h>
 #include <pnmpi/private/function_address.h>
+#include <pnmpi/private/tls.h>
 
 
 /* The following macro will be defined, if CMake has successfully checked the
@@ -69,12 +69,11 @@ extern pnmpi_compiler_tls_keyword void *pnmpi_return_address;
  * \private
  */
 #if defined(DOXYGEN) || !defined(HAVE_BUILTIN_RETURN_ADDRESS)
-#define pnmpi_return_address_set(fun)
+#define pnmpi_return_address_set()
 #else
-#define pnmpi_return_address_set(fun)  \
+#define pnmpi_return_address_set()  \
   if (pnmpi_return_address == NULL) \
-    pnmpi_return_address = __builtin_return_address(0); \
-  pnmpi_function_address_set(P##fun)
+    pnmpi_return_address = __builtin_return_address(0);
 #endif
 
 
@@ -102,7 +101,6 @@ PNMPI_UNUSED
 static void pnmpi_return_address_reset(void)
 {
   pnmpi_return_address = NULL;
-  pnmpi_function_address_reset();
 }
 
 
