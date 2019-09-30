@@ -82,6 +82,11 @@ void pnmpi_force_link(void)
   int (*volatile ptr_service_13)() = PNMPI_Service_GetPcontrolSelf;
   const char *(*volatile ptr_service_14)(PNMPI_status_t err) =
     PNMPI_Service_strerror;
+  PNMPI_status_t (*volatile ptr_service_15)(void **ptr) =
+    PNMPI_Service_GetReturnAddress;
+  PNMPI_status_t (*volatile ptr_service_16)(void **ptr) =
+    PNMPI_Service_GetFunctionAddress;
+
 
   /* Debug printing functions. */
   void (*volatile ptr_debug_01)(PNMPI_debug_level_t level, const char *format,
@@ -97,7 +102,7 @@ void pnmpi_force_link(void)
   if ((ptr_service_01 || ptr_service_02 || ptr_service_03 || ptr_service_04 ||
        ptr_service_05 || ptr_service_06 || ptr_service_07 || ptr_service_08 ||
        ptr_service_09 || ptr_service_10 || ptr_service_11 || ptr_service_12 ||
-       ptr_service_13 || ptr_service_14) ||
+       ptr_service_13 || ptr_service_14 || ptr_service_15 || ptr_service_16) ||
       (ptr_debug_01 || ptr_debug_02 || ptr_debug_03))
     return;
 }
