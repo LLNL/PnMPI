@@ -71,11 +71,11 @@ endif()
 #======================================================
 find_package(wrap QUIET)
 if(wrap_FOUND)
-    find_package_message(wrap "Found warp: ${wrap_DIR}" "${wrap_DIR}")
+    find_package_message(wrap "Found wrap: ${wrap_DIR}" "${wrap_DIR}")
 else()
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/wrap/CMakeLists.txt)
         ADD_SUBDIRECTORY (wrap)
-        find_package_message(wrap "Found warp as submodule." "submodule")
+        find_package_message(wrap "Found wrap as submodule." "submodule")
         set(WRAP ${CMAKE_CURRENT_SOURCE_DIR}/wrap/wrap.py)
         set(GETSTATUSSIZE ${CMAKE_CURRENT_SOURCE_DIR}/wrap/getStatusSize.f)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wrap/wrap-config.cmake.in
