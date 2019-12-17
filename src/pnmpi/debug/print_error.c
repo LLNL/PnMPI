@@ -35,8 +35,31 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <mpi.h>
 #include <pnmpi/debug_io.h>
 #include <pnmpi/private/print.h>
+
+
+/** \brief Abort the application.
+ *
+ * \details This function aborts the execution of the application by either
+ *  calling `MPI_Abort()` in an active MPI environment or the regular `exit()`
+ *  function in any other case.
+ */
+PNMPI_FUNCTION_NORETURN
+static void pnmpi_exit()
+{
+  /* If the MPI runtime is initialized but not finalized yet, MPI_Abort must be
+   * used to kill the whole application on all ranks. */
+  int flag;
+  if ((PMPI_Initialized(&flag) == MPI_SUCCESS) && flag)
+    if ((PMPI_Finalized(&flag) == MPI_SUCCESS) && !flag)
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+
+  /* If the conditions listed above are not met, just exit the application the
+   * regular way. */
+  exit(EXIT_FAILURE);
+}
 
 
 /** \brief Print a warning to stderr and exit the application.
@@ -80,7 +103,7 @@ void pnmpi_print_error(const char *prefix, const char *function, const int line,
        * endless loop. */
       fprintf(stderr, "%s:%d: Not enough memory for snprintf.\n", __FUNCTION__,
               __LINE__);
-      exit(EXIT_FAILURE);
+      pnmpi_exit();
     }
 
   /* Print the new format string with the variadic arguments passed to the
@@ -91,5 +114,5 @@ void pnmpi_print_error(const char *prefix, const char *function, const int line,
   va_end(ap);
 
   /* Exit the application with an error code. */
-  exit(EXIT_FAILURE);
+  pnmpi_exit();
 }
