@@ -6,28 +6,28 @@
 	url = https://github.com/llnl/wrap.git
 [submodule "externals/CMake-codecov"]
 	path = externals/CMake-codecov
-	url = git://github.com/RWTH-HPC/CMake-codecov.git
+	url = https://github.com/RWTH-HPC/CMake-codecov.git
 [submodule "externals/CMake-sanitizers"]
 	path = externals/CMake-sanitizers
-	url = git://github.com/arsenm/sanitizers-cmake.git
+	url = https://github.com/arsenm/sanitizers-cmake.git
 [submodule "externals/CMake-MPIhelper"]
 	path = externals/CMake-MPIhelper
-	url = git://github.com/RWTH-HPC/CMake-MPIhelper.git
+	url = https://github.com/RWTH-HPC/CMake-MPIhelper.git
 [submodule "externals/CMake-argp"]
 	path = externals/CMake-argp
-	url = git://github.com/alehaa/CMake-argp.git
+	url = https://github.com/alehaa/CMake-argp.git
 [submodule "externals/CMake-gitinfo"]
 	path = externals/CMake-gitinfo
-	url = git://github.com/RWTH-HPC/CMake-gitinfo.git
+	url = https://github.com/RWTH-HPC/CMake-gitinfo.git
 [submodule "externals/CMake-easylib"]
 	path = externals/CMake-easylib
-	url = git://github.com/alehaa/CMake-easylib.git
+	url = https://github.com/alehaa/CMake-easylib.git
 [submodule "externals/CMake-CChelper"]
 	path = externals/CMake-CChelper
-	url = git://github.com/alehaa/CMake-CChelper.git
+	url = https://github.com/alehaa/CMake-CChelper.git
 [submodule "externals/CMake-easytest"]
 	path = externals/CMake-easytest
-	url = git://github.com/RWTH-HPC/CMake-easytest.git
+	url = https://github.com/RWTH-HPC/CMake-easytest.git
 [submodule "externals/CMake-gitpack"]
 	path = externals/CMake-gitpack
-	url = git://github.com/RWTH-HPC/CMake-gitpack.git
+	url = https://github.com/RWTH-HPC/CMake-gitpack.git
