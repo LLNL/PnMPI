@@ -59,12 +59,12 @@ static struct timing_storage
   {{forallfn fn_name}}
   metric_atomic_keyword timing_t {{fn_name}};
   {{endforallfn}}
-} timing_storage = { 0 };
+} timings = { 0 };
 
 
 /** \brief Global variable to store how often this module was invoked.
  */
-metric_atomic_keyword size_t metric_invocations = metric_atomic_init(0);
+metric_atomic_keyword size_t metric_invocations = 0;
 
 
 /** \brief Global variable to store how often this module was invoked with
@@ -150,11 +150,11 @@ static timing_t start_stop_timer(timing_t *t)
   static pnmpi_compiler_tls_keyword timing_t timer = 0;
 
 
-  metric_atomic_add(timing_storage.{{fn_name}}, start_stop_timer(&timer));
+  metric_atomic_add(timings.{{fn_name}}, start_stop_timer(&timer));
   WRAP_MPI_CALL_PREFIX
   int ret = X{{fn_name}}({{args}});
   WRAP_MPI_CALL_POSTFIX
-  metric_atomic_add(timing_storage.{{fn_name}}, start_stop_timer(&timer));
+  metric_atomic_add(timings.{{fn_name}}, start_stop_timer(&timer));
 
   return ret;
 {{endfnall}}
@@ -190,7 +190,7 @@ int MPI_Pcontrol(const int level, ...)
    * This variable also will be used to indicate, if the timer is active. If the
    * timer is 0, it is inactive, otherise it is active. */
   static pnmpi_compiler_tls_keyword timing_t timer = 0;
-  metric_atomic_add(timing_storage.MPI_Pcontrol, start_stop_timer(&timer));
+  metric_atomic_add(timings.MPI_Pcontrol, start_stop_timer(&timer));
 
   return MPI_SUCCESS;
 }
@@ -206,20 +206,6 @@ int MPI_Pcontrol(const int level, ...)
  */
 int MPI_Finalize()
 {
-  /* The local timer will be defined as thread local storage, as each thread may
-   * call the function to be measured at the same time. With thread local
-   * storage, each thread has its own timer and does not get into conflict with
-   * other threads.
-   *
-   * This variable also will be used to indicate, if the timer is active. If the
-   * timer is 0, it is inactive, otherwise it is active. */
-  static pnmpi_compiler_tls_keyword timing_t timer = 0;
-
-  metric_atomic_add(timing_storage.MPI_Finalize, start_stop_timer(&timer));
-  int ret = XMPI_Finalize();
-  metric_atomic_add(timing_storage.MPI_Finalize, start_stop_timer(&timer));
-
-
   /* Only the first module in the PnMPI stack should print the timing statistics
    * AFTER all the other stacks have finished. As this module may have been
    * invoked more than once in the stack, we've counted how often it was invoked
@@ -228,7 +214,7 @@ int MPI_Finalize()
    * call to this module in the PnMPI stack. */
   size_t level = metric_atomic_dec(metric_invocations);
   if (level != 0)
-    return ret;
+    return 0;
 
 
   /* Flush the buffers to avoid fragments in the output.
@@ -253,26 +239,26 @@ int MPI_Finalize()
       printf("\n\n################################\n\n"
              "Timing stats:\n\n"
              " Rank 0:\n");
-      print_counters(&counters);
+      print_counters(&timings);
     }
 
-  /* Rank 0 should receive the counters from other ranks now, to display those.
-   * These will be summed up for the total counters printed below, to cache the
-   * counters instead of using a reduction for receiving the counters of all
+  /* Rank 0 should receive the times from other ranks now, to display those.
+   * These will be summed up for the total times printed below, to cache the
+   * times instead of using a reduction for receiving the counters of all
    * ranks a second time. */
-  struct counter tmp = { 0 };
+  struct timing_storage tmp = { 0 };
   int n;
   for (n = 1; n < size; n++)
     {
       {{forallfn fn_name MPI_Finalize}}
         if (rank > 0)
-          PMPI_Send(&(counters.{{fn_name}}), 1, MPI_UNSIGNED_LONG_LONG, 0, 0,
+          PMPI_Send(&(timings.{{fn_name}}), 1, MPI_UNSIGNED_LONG_LONG, 0, 0,
                     MPI_COMM_WORLD);
         else
           {
             PMPI_Recv(&(tmp.{{fn_name}}), 1, MPI_UNSIGNED_LONG_LONG, n, 0,
                       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            counters.{{fn_name}} += tmp.{{fn_name}};
+            metric_atomic_add(timings.{{fn_name}},tmp.{{fn_name}});
           }
       {{endforallfn}}
 
@@ -287,10 +273,10 @@ int MPI_Finalize()
    * of rank 0, so these have not to be received a second time. */
   if (rank == 0) {
     printf("\n Total:\n");
-    print_counters(&counters);
+    print_counters(&timings);
     fflush(stdout);
   }
 
-
-  return ret;
+  /* The time spent in MPI_Finalize will not be accouted for */
+  return XMPI_Finalize();
 }
